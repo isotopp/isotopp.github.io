@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>MySQL Commit Size and Speed | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2020/07/27/mysql-commit-size-and-speed/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='MySQL Commit Size and Speed | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2020/07/27/mysql-commit-size-and-speed/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2020-07-27T21:03:09Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='MySQL Commit Size and Speed' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="mysql-commit-size-and-speed-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						MySQL Commit Size and Speed
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>July 27, 2020</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/07/27/mysql-transactions/">MySQL Transactions - the physical side</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/07/28/mysql-connection-scoped-state/">MySQL Connection Scoped State</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>When writing data to disk, for small transactions the cost of writing the
+commit out do disk dominates the execution time of the script. In order to
+show that, I wrote a little Python script.</p>
+<p>The script creates a test table in a database and writes 10.000 rows of test
+data into it, in commit sizes of 1, 2, 4, &hellip;, 1024 rows.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> ./mysql.py --help
+</span></span><span class="line"><span class="cl"><span class="go">Usage: mysql.py [OPTIONS] COMMAND [ARGS]...
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">  Test commit sizes.
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">Options:
+</span></span></span><span class="line"><span class="cl"><span class="go">  --help  Show this message and exit.
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">Commands:
+</span></span></span><span class="line"><span class="cl"><span class="go">  create    Create the demo table empty.
+</span></span></span><span class="line"><span class="cl"><span class="go">  drop      Drop the demo table
+</span></span></span><span class="line"><span class="cl"><span class="go">  fill      Write test records into the demo table.
+</span></span></span><span class="line"><span class="cl"><span class="go">  truncate  Truncate the demo table.
+</span></span></span></code></pre></div><p>There is a small driver script to run the test. The driver creates the
+table, truncates it and will then run the fill command of the script over
+and over again, with growing commit-sizes. All powers of 2 from 0 to 10 are
+being tried with 10.000 rows of test data.</p>
+<p>The test system has a very old SSD (Crucial M4-CT512M4SSD2) as a data
+directory.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ cat driver.sh
+</span></span><span class="line"><span class="cl"><span class="c1">#! /bin/bash --</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">./mysql.py drop
+</span></span><span class="line"><span class="cl">./mysql.py create
+</span></span><span class="line"><span class="cl"><span class="k">for</span> i in <span class="o">{</span>0..10<span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">do</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">csize</span><span class="o">=</span><span class="k">$((</span><span class="m">2</span> <span class="o">**</span> <span class="nv">$i</span><span class="k">))</span>
+</span></span><span class="line"><span class="cl">        ./mysql.py truncate
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="s2">&#34;./mysql.py fill --size=10000 --commit-size=</span><span class="nv">$csize</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">time</span> ./mysql.py fill --size<span class="o">=</span><span class="m">10000</span> --commit-size<span class="o">=</span><span class="nv">$csize</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></div><p>The result of the test run is as follows shown, and since at point 10.000
+rows were not enough, I later added a second test run with 100.000 rows and
+step sizes of <code>5..14</code> (32 rows to 16384 rows).</p>
+<p><p class="md__image">
+  <img src="2020/07/transactions-benchmark.jpg" alt=""  />
+</p>
+
+</p>
+<p><em>Script runtime as a function of commit batch size. x-Axis is logarithmic, y-axis is linear.</em></p>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: right">Txn Sz</th>
+          <th style="text-align: right">Runtime</th>
+          <th style="text-align: right">Rows/s</th>
+          <th style="text-align: right">Runtime</th>
+          <th style="text-align: right">Rows/s</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: right">0</td>
+          <td style="text-align: right">127</td>
+          <td style="text-align: right">78</td>
+          <td style="text-align: right"></td>
+          <td style="text-align: right"></td>
+      </tr>
+      <tr>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">68.7</td>
+          <td style="text-align: right">145</td>
+          <td style="text-align: right"></td>
+          <td style="text-align: right"></td>
+      </tr>
+      <tr>
+          <td style="text-align: right">2</td>
+          <td style="text-align: right">38.4</td>
+          <td style="text-align: right">260</td>
+          <td style="text-align: right"></td>
+          <td style="text-align: right"></td>
+      </tr>
+      <tr>
+          <td style="text-align: right">3</td>
+          <td style="text-align: right">20.93</td>
+          <td style="text-align: right">477</td>
+          <td style="text-align: right"></td>
+          <td style="text-align: right"></td>
+      </tr>
+      <tr>
+          <td style="text-align: right">4</td>
+          <td style="text-align: right">12.03</td>
+          <td style="text-align: right">831</td>
+          <td style="text-align: right"></td>
+          <td style="text-align: right"></td>
+      </tr>
+      <tr>
+          <td style="text-align: right">5</td>
+          <td style="text-align: right">7.04</td>
+          <td style="text-align: right">1420</td>
+          <td style="text-align: right">71.01</td>
+          <td style="text-align: right">1409</td>
+      </tr>
+      <tr>
+          <td style="text-align: right">6</td>
+          <td style="text-align: right">4.38</td>
+          <td style="text-align: right">2283</td>
+          <td style="text-align: right">46.40</td>
+          <td style="text-align: right">2156</td>
+      </tr>
+      <tr>
+          <td style="text-align: right">7</td>
+          <td style="text-align: right">2.92</td>
+          <td style="text-align: right">3412</td>
+          <td style="text-align: right">30.13</td>
+          <td style="text-align: right">3319</td>
+      </tr>
+      <tr>
+          <td style="text-align: right">8</td>
+          <td style="text-align: right">2.24</td>
+          <td style="text-align: right">4464</td>
+          <td style="text-align: right">20.94</td>
+          <td style="text-align: right">4776</td>
+      </tr>
+      <tr>
+          <td style="text-align: right">9</td>
+          <td style="text-align: right">1.77</td>
+          <td style="text-align: right">5649</td>
+          <td style="text-align: right">17.51</td>
+          <td style="text-align: right">5712</td>
+      </tr>
+      <tr>
+          <td style="text-align: right">10</td>
+          <td style="text-align: right">1.58</td>
+          <td style="text-align: right">6329</td>
+          <td style="text-align: right">15.35</td>
+          <td style="text-align: right">6515</td>
+      </tr>
+      <tr>
+          <td style="text-align: right">11</td>
+          <td style="text-align: right"></td>
+          <td style="text-align: right"></td>
+          <td style="text-align: right">14.16</td>
+          <td style="text-align: right">7063</td>
+      </tr>
+      <tr>
+          <td style="text-align: right">12</td>
+          <td style="text-align: right"></td>
+          <td style="text-align: right"></td>
+          <td style="text-align: right">13.63</td>
+          <td style="text-align: right">7337</td>
+      </tr>
+      <tr>
+          <td style="text-align: right">13</td>
+          <td style="text-align: right"></td>
+          <td style="text-align: right"></td>
+          <td style="text-align: right">13.59</td>
+          <td style="text-align: right">7359</td>
+      </tr>
+      <tr>
+          <td style="text-align: right">14</td>
+          <td style="text-align: right"></td>
+          <td style="text-align: right"></td>
+          <td style="text-align: right">13.26</td>
+          <td style="text-align: right">7542</td>
+      </tr>
+  </tbody>
+</table>
+<p><em>Raw data from the test runs.</em></p>
+<p><em>We observe:</em> Going from single row commits to 16 row commits, we get a
+10-fold speed increase, and going to 1024 row commits, we are seeing another
+factor of 10. After that, there is hardly any improvement for our chosen
+record size and hardware.</p>
+<h2 id="tldr">
+    <a href="#tldr">
+	TL;DR
+    </a>
+</h2>
+<p>A transaction size of 1000 rows or larger does not seem to improve write
+speed (i.e. in a data load).</p>
+<p>From 1 row/commit to 16 rows/commit, we see an increase of an order of
+magnitude, and another order of magnitude can be had by going from 16
+rows/commit to 1024 rows/commit.</p>
+<h2 id="the-script">
+    <a href="#the-script">
+	The script
+    </a>
+</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> cat requirements.txt
+</span></span><span class="line"><span class="cl"><span class="go">click
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqlclient
+</span></span></span><span class="line"><span class="cl"><span class="gp">$</span> python3 -mvenv venv
+</span></span><span class="line"><span class="cl"><span class="gp">$</span> <span class="nb">source</span> venv/bin/activate
+</span></span><span class="line"><span class="cl"><span class="go">(venv) $ pip install --upgrade pip
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) $ pip install wheel
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) $ pip install -r requirements.txt
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) $ pip freeze -r requirements.txt &gt; requirements-frozen.txt
+</span></span></span></code></pre></div><p>and</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#! /usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">random</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">string</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">click</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb.cursors</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">db_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">host</span><span class="o">=</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">user</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">passwd</span><span class="o">=</span><span class="s2">&#34;geheim&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cursorclass</span><span class="o">=</span><span class="n">MySQLdb</span><span class="o">.</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sql_drop_table</span> <span class="o">=</span> <span class="s2">&#34;drop table </span><span class="si">%s</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sql_create_table</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;create table </span><span class="si">%s</span><span class="s2"> (
+</span></span></span><span class="line"><span class="cl"><span class="s2">    id serial,
+</span></span></span><span class="line"><span class="cl"><span class="s2">    data varbinary(255) not null
+</span></span></span><span class="line"><span class="cl"><span class="s2">)&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sql_truncate_table</span> <span class="o">=</span> <span class="s2">&#34;truncate table </span><span class="si">%s</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sql_insert_into</span> <span class="o">=</span> <span class="s1">&#39;insert into </span><span class="si">%s</span><span class="s1"> ( id, data) values ( </span><span class="si">%d</span><span class="s1">, &#34;</span><span class="si">%s</span><span class="s1">&#34; )&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@click.group</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Test commit sizes.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">sql</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@sql.command</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click.option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to drop&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">drop</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; Drop the demo table &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cmd</span> <span class="o">=</span> <span class="n">sql_drop_table</span> <span class="o">%</span> <span class="n">name</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; dropped.&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; did not exist.&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@sql.command</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click.option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to create&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; Create the demo table empty. &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cmd</span> <span class="o">=</span> <span class="n">sql_create_table</span> <span class="o">%</span> <span class="n">name</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; created.&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; did already exist&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@sql.command</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click.option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to insert into&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click.option</span><span class="p">(</span><span class="s2">&#34;--size&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Number of rows to create in total&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click.option</span><span class="p">(</span><span class="s2">&#34;--commit-size&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Commit batch size&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click.option</span><span class="p">(</span><span class="s2">&#34;--verbose/--no-verbose&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Log each commit?&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">commit_size</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; Write test records into the demo table. &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">str</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_uppercase</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cmd</span> <span class="o">=</span> <span class="n">sql_insert_into</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;MySQL Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="n">commit_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Commit at </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@sql.command</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click.option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to truncate here&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">truncate</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; Truncate the demo table. &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cmd</span> <span class="o">=</span> <span class="n">sql_truncate_table</span> <span class="o">%</span> <span class="n">name</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; truncated.&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">MySQL</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; does not exist.&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sql</span><span class="p">()</span>
+</span></span></code></pre></div>
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+				<a href="/tags/#database" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				database
+				</a>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+				<a href="/tags/#innodb" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				innodb
+				</a>
+				
+				<a href="/tags/#erklaerbaer" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				erklaerbaer
+				</a>
+				
+				<a href="/tags/#mysqldev" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysqldev
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2020-07-27-mysql-commit-size-and-speed/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/07/27/mysql-transactions/">MySQL Transactions - the physical side</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/07/28/mysql-connection-scoped-state/">MySQL Connection Scoped State</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

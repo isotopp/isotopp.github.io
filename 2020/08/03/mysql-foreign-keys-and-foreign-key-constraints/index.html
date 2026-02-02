@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>MySQL Foreign Keys and Foreign Key Constraints | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2020/08/03/mysql-foreign-keys-and-foreign-key-constraints/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='MySQL Foreign Keys and Foreign Key Constraints | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2020/08/03/mysql-foreign-keys-and-foreign-key-constraints/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2020-08-03T07:29:49Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='MySQL Foreign Keys and Foreign Key Constraints' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="mysql-foreign-keys-and-foreign-key-constraints-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						MySQL Foreign Keys and Foreign Key Constraints
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>August 3, 2020</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/08/02/mysql-deadlocks-with-insert/">MySQL Deadlocks with INSERT</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/08/04/mysql-foreign-key-constraints-and-locking/">MySQL Foreign Key Constraints and Locking</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>Foreign Keys are what links tables together and turns a set of tables into a model. Foreign Key Constraints are conditions that must be true for the content of the tables to be an internally consistent model. Foreign Key Constraints can be defined and enforced in InnoDB, but this comes at a considerable price, and for some it may hurt more than it is worth.</p>
+<p><p class="md__image">
+  <img src="2020/08/fk.png" alt=""  />
+</p>
+
+</p>
+<p><em>A very simple shop as an ER-model. <code>order_id</code> is the primary key of the Orders table.  <code>customer_id</code> in the Orders table is a foreign key: The primary key of another (&ldquo;foreign&rdquo;) table in this table. Foreign keys can model relationships between tables (&ldquo;entities&rdquo;) in an entity-relationship diagram.</em></p>
+<h2 id="entities-and-their-relationships">
+    <a href="#entities-and-their-relationships">
+	Entities and their relationships
+    </a>
+</h2>
+<p>In Entity-Relationship modelling we are using tables in a database to model entities in the real world. Each entry in such a table is meant to represent a &ldquo;thing&rdquo; in the real world. For example, in our very simple shop model above, we have Articles, and Customers as real world &ldquo;things&rdquo; in our model. We also have Orders, and Orders can have multiple lines, Orderlines. Each Orderline connects an Order with an Article.</p>
+<p>In order to be able to distinguish real world things in our tables, we require each entry to have a unique identifier, the id. These will then show up in the real world as customer numbers, order numbers or article numbers. The uniqueness of these numbers in their respective tables makes them a Key.</p>
+<h2 id="keys-and-indexes">
+    <a href="#keys-and-indexes">
+	Keys and Indexes
+    </a>
+</h2>
+<p>Technically a Key does not have to have a corresponding Index in the table: Keys and Indexes are separate things.</p>
+<p>One - the Key - is a property of the model: &ldquo;There exists a bijektive function between the <code>customer_id</code> and the real world customers&rdquo;, meaning &ldquo;Each customer has a <code>customer_id</code>&rdquo;, and &ldquo;Any two different customers have different <code>customer_id</code>s&rdquo;. This is what allows us to use <code>customer_id</code>s as stand-ins for all the other values in the Customers table, and for the real world customers themselves, for the purpose of modelling them in the database.</p>
+<p>The other - the Index - is a data structure that allows us to look up the other values of a Customer fast, given any <code>customer_id</code> value.</p>
+<p>There is no need for a Key to have an Index, but we need to ensure that a new <code>customer_id</code> is unique. We are also given <code>customer_id</code>s all of the time, and then need to fetch the other data we have on this customer from the table. That means we need to look up <code>customer_id</code>s in the Customers table all the time, and without the index we can only resort to a full table scan for this. This is going to be so slow that the table will be without any real-world value for us.</p>
+<p>Practically, a Key and an Index go so much hand-in-hand that database people are using both terms interchangeably when they are clearly different things: An average database person will say Key, when they mean Index or the other way around, because in their minds having a Key without an Index is Not A Thing at all.</p>
+<p>There may be multiple things - or combinations of things - that uniquely identify real world things in a given table of our model of the world. We call these Key Candidates. We then elect one to be the actual Key (or make one up, a Synthetic Key such as a <code>customer_id</code>), and call that the Primary Key or just the Key.</p>
+<p>In the mind of a database person, the Primary Key is the row, and the row is the Primary Key. That is what bijektive functions are for.</p>
+<p>Technically, a table doesn&rsquo;t need to not have a Primary Key. Practically, this creates so many kinds of problems that many databases have options to prevent this: They will reject table definitions without a primary key definition for good, and responsible database administrators enable these restrictions.</p>
+<h2 id="foreign-keys">
+    <a href="#foreign-keys">
+	Foreign Keys
+    </a>
+</h2>
+<p>A column in table <code>B</code> that contains primary key values from a table <code>A</code> is called a <em>foreign key</em>. It defines a relationship. Just the presence of that key column is enough, there need not be any declaration or enforcement for it to be a foreign key.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">a_id</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="n">auto_increment</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">a_other_data</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">b_id</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="n">auto_increment</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">a_id</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">b_other_data</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">200</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">index</span><span class="w"> </span><span class="n">a_id</span><span class="w"> </span><span class="p">(</span><span class="n">a_id</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><p>In this example the table <code>a</code> has a primary key <code>a.a_id</code>. Table <code>b</code> contains a reference to <code>a</code> in the form of the column <code>b.a_id</code>. This column is a foreign key. Technically, &ldquo;foreign key&rdquo; is a meaningless term, so actually &ldquo;<code>b.a_id</code> is a foreign key of <code>a</code> in <code>b</code>&rdquo; to be precise. When talking about tables, this is often implicitly clear, so many people omit this and just say &ldquo;foreign key&rdquo; and assume you understand what is means.</p>
+<p>As can be seen, table <code>b</code> is also defined with an <code>index a_id (a_id)</code> - what we model here ia a 1:n relationship between <code>a</code> and <code>b</code> (an &ldquo;a&rdquo; can have many &ldquo;b&rdquo;), and we expect to look up all the <code>b</code>&rsquo;s for a given <code>a</code> a lot, so having that index is a no-brainer.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">from</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">join</span><span class="w"> </span><span class="n">b</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">on</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">a_id</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">somecondition_on_a</span><span class="w">
+</span></span></span></code></pre></div><p>This query will list all the <code>b</code>&rsquo;s that belong to the <code>a</code>&rsquo;s selected by the given condition, and it will only be fast with an index on <code>b.a_id</code>.</p>
+<h2 id="foreign-key-constraints">
+    <a href="#foreign-key-constraints">
+	Foreign Key Constraints
+    </a>
+</h2>
+<p>Now, when we put a <code>b.a_id</code> into <code>b</code>, we would normally want the matching <code>a.a_id</code> to exist. That is, when we put in an <code>orders.customer_id</code> value, there better be a <code>customers.customer_id</code> for this, or there will be problems.</p>
+<p>Foreign Key Constrains are conditions that can be put into table definitions to enforce that. Actually doing this may or may not be a good idea, we will be looking at that in some more detail in a separate article.</p>
+<p>Let&rsquo;s define a useless base table with a primary key:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">a_id</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="n">auto_increment</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">05</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><p>For this we want a table b that references the base table, and has a constraint for this.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">b_id</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="n">auto_increment</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">a_id</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">index</span><span class="w"> </span><span class="n">a_id</span><span class="w"> </span><span class="p">(</span><span class="n">a_id</span><span class="p">),</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">constraint</span><span class="w"> </span><span class="n">a_id_exists</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">a_id</span><span class="p">)</span><span class="w"> </span><span class="k">references</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">a_id</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">on</span><span class="w"> </span><span class="k">delete</span><span class="w"> </span><span class="k">restrict</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">on</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="k">restrict</span><span class="w"> </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">13</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><p>There are many things to this, and all of them are required to make this work.</p>
+<ul>
+<li>We need a base table <code>a</code> with a primary key defined.</li>
+<li>We need a secondary table <code>b</code> with a column that we want to use to reference <code>a.a_id</code>. We can name it anything we want, but we usually use the name of the foreign tables primary key. If that is not unique (simply <code>id</code>), we usually prefix it with the table name and an underscore. We are using <code>a_id</code> here, because that works.</li>
+<li>We have to define an index in the foreign key column in <code>b</code>. When we don&rsquo;t, MySQL does this automatically and uses the constraint name for this. Leave off <code>index a_id (a_id)</code> from our <code>CREATE TABLE b</code> statement, and see what you get.</li>
+<li>The constraint we define can get a name, or MySQL chooses one when we leave of the <code>constraint a_id_exists</code> part of the statement.</li>
+<li>We then describe which of &ldquo;our&rdquo; columns points to what column in the other table: <code>foreign key (a_id) references a(a_id)</code>.</li>
+<li>Finally, we get to say what shall happen when there are update or delete statements that would invalidate the relationship. This part is also optional.</li>
+</ul>
+<p>Thus, the shortest possible definition of <code>b</code> would be</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="p">(</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">b_id</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="n">auto_increment</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">a_id</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">a_id</span><span class="p">)</span><span class="w"> </span><span class="k">references</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">a_id</span><span class="p">)</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>and yields</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">b</span><span class="err">\</span><span class="k">G</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">***************************</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="k">Table</span><span class="p">:</span><span class="w"> </span><span class="n">b</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">Create</span><span class="w"> </span><span class="k">Table</span><span class="p">:</span><span class="w"> </span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">b</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">b_id</span><span class="o">`</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="n">AUTO_INCREMENT</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">a_id</span><span class="o">`</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">b_id</span><span class="o">`</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">KEY</span><span class="w"> </span><span class="o">`</span><span class="n">a_id</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">a_id</span><span class="o">`</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="o">`</span><span class="n">b_ibfk_1</span><span class="o">`</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">a_id</span><span class="o">`</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="o">`</span><span class="n">a</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">a_id</span><span class="o">`</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">)</span><span class="w"> </span><span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="w">
+</span></span></span></code></pre></div><p><a href="https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html" target="_blank" rel="noopener">The Manual</a>
+
+ describes the other terms and conditions that apply, and also explains which types of referential actions are valid for the <code>ON DELETE</code> and <code>ON UPDATE</code> clauses.</p>
+<h2 id="playing-with-foreign-key-constraints">
+    <a href="#playing-with-foreign-key-constraints">
+	Playing with foreign key constraints
+    </a>
+</h2>
+<p>Using the definitions of <code>a</code> and <code>b</code> from above, we are now playing with foreign key constraints a bit:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">20</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">30</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">40</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Records</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="n">Duplicates</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span></span></span></code></pre></div><p>The values 10, 20, 30 and 40 are now valid primary keys in <code>a</code>, and hence valid values for <code>a_id</code>in <code>b</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">start</span><span class="w"> </span><span class="k">transaction</span><span class="w"> </span><span class="k">read</span><span class="w"> </span><span class="k">write</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ERROR</span><span class="w"> </span><span class="mi">1452</span><span class="w"> </span><span class="p">(</span><span class="mi">23000</span><span class="p">):</span><span class="w"> </span><span class="n">Cannot</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">child</span><span class="w"> </span><span class="k">row</span><span class="p">:</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="n">fails</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">kris</span><span class="o">`</span><span class="p">.</span><span class="o">`</span><span class="n">b</span><span class="o">`</span><span class="p">,</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="o">`</span><span class="n">a_id_exists</span><span class="o">`</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">a_id</span><span class="o">`</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="o">`</span><span class="n">a</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">a_id</span><span class="o">`</span><span class="p">)</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">DELETE</span><span class="w"> </span><span class="k">RESTRICT</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="k">RESTRICT</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">commit</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">------+------+
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">b_id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">a_id</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">------+------+
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">   </span><span class="mi">10</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">10</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">   </span><span class="mi">40</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">40</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">------+------+
+</span></span></span><span class="line"><span class="cl"><span class="mi">2</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><p>The tuple (50, 50) caused a foreign key validation error on an extended insert statement, the second statement in our transaction. The entire statement was rejected. The first and third statement in our transaction were valid and accepted. The entire transaction was not rejected and committed.</p>
+<p>This is potentially dangerous.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">a_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">b_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">Rows</span><span class="w"> </span><span class="n">matched</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="n">Changed</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">a_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">15</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">b_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ERROR</span><span class="w"> </span><span class="mi">1452</span><span class="w"> </span><span class="p">(</span><span class="mi">23000</span><span class="p">):</span><span class="w"> </span><span class="n">Cannot</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">child</span><span class="w"> </span><span class="k">row</span><span class="p">:</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="n">fails</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">kris</span><span class="o">`</span><span class="p">.</span><span class="o">`</span><span class="n">b</span><span class="o">`</span><span class="p">,</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="o">`</span><span class="n">b_ibfk_1</span><span class="o">`</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">a_id</span><span class="o">`</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="o">`</span><span class="n">a</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">a_id</span><span class="o">`</span><span class="p">))</span><span class="w">
+</span></span></span></code></pre></div><p>We can change the <code>b.aid</code> to values present in the <code>a.a_id</code> table. Changing them to invalid values is being rejected.</p>
+<p>Likewise, we are prevented from deleting a row from <code>a</code> if there are still values in <code>b.a_id</code> referencing this row, and summary deletion, truncation or dropping of table <code>a</code> are also prevented as long as any reference from <code>b</code> to <code>a</code> exists.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">delete</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">a_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ERROR</span><span class="w"> </span><span class="mi">1451</span><span class="w"> </span><span class="p">(</span><span class="mi">23000</span><span class="p">):</span><span class="w"> </span><span class="n">Cannot</span><span class="w"> </span><span class="k">delete</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">parent</span><span class="w"> </span><span class="k">row</span><span class="p">:</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="n">fails</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">kris</span><span class="o">`</span><span class="p">.</span><span class="o">`</span><span class="n">b</span><span class="o">`</span><span class="p">,</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="o">`</span><span class="n">b_ibfk_1</span><span class="o">`</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">a_id</span><span class="o">`</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="o">`</span><span class="n">a</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">a_id</span><span class="o">`</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">delete</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">a_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">delete</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ERROR</span><span class="w"> </span><span class="mi">1451</span><span class="w"> </span><span class="p">(</span><span class="mi">23000</span><span class="p">):</span><span class="w"> </span><span class="n">Cannot</span><span class="w"> </span><span class="k">delete</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">parent</span><span class="w"> </span><span class="k">row</span><span class="p">:</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="n">fails</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">kris</span><span class="o">`</span><span class="p">.</span><span class="o">`</span><span class="n">b</span><span class="o">`</span><span class="p">,</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="o">`</span><span class="n">b_ibfk_1</span><span class="o">`</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">a_id</span><span class="o">`</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="o">`</span><span class="n">a</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">a_id</span><span class="o">`</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">truncate</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ERROR</span><span class="w"> </span><span class="mi">1701</span><span class="w"> </span><span class="p">(</span><span class="mi">42000</span><span class="p">):</span><span class="w"> </span><span class="n">Cannot</span><span class="w"> </span><span class="k">truncate</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">referenced</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">kris</span><span class="o">`</span><span class="p">.</span><span class="o">`</span><span class="n">b</span><span class="o">`</span><span class="p">,</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="o">`</span><span class="n">b_ibfk_1</span><span class="o">`</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">drop</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ERROR</span><span class="w"> </span><span class="mi">3730</span><span class="w"> </span><span class="p">(</span><span class="n">HY000</span><span class="p">):</span><span class="w"> </span><span class="n">Cannot</span><span class="w"> </span><span class="k">drop</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="s1">&#39;a&#39;</span><span class="w"> </span><span class="n">referenced</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="s1">&#39;b_ibfk_1&#39;</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="s1">&#39;b&#39;</span><span class="p">.</span><span class="w">
+</span></span></span></code></pre></div><h2 id="a-self-referential-structure">
+    <a href="#a-self-referential-structure">
+	A self-referential structure
+    </a>
+</h2>
+<p>We can define tables that describe hierarchies by using recursive foreign key relationships, but we have to take care to allow termination of the recursion.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">serial</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">parent</span><span class="w"> </span><span class="nb">bigint</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="w"> </span><span class="k">references</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>This is a valid definition that is accepted by MySQL. In order for an insert to succeed, we would have to provide a valid value for <code>d.parent</code>, but the table is empty, and we did not allow <code>NULL</code>.</p>
+<p>The only valid thing we could insert is the value we are inserting right now, and that value is then undeletable.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ERROR</span><span class="w"> </span><span class="mi">1048</span><span class="w"> </span><span class="p">(</span><span class="mi">23000</span><span class="p">):</span><span class="w"> </span><span class="k">Column</span><span class="w"> </span><span class="s1">&#39;parent&#39;</span><span class="w"> </span><span class="n">cannot</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="k">null</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">delete</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ERROR</span><span class="w"> </span><span class="mi">1451</span><span class="w"> </span><span class="p">(</span><span class="mi">23000</span><span class="p">):</span><span class="w"> </span><span class="n">Cannot</span><span class="w"> </span><span class="k">delete</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">parent</span><span class="w"> </span><span class="k">row</span><span class="p">:</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="n">fails</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">kris</span><span class="o">`</span><span class="p">.</span><span class="o">`</span><span class="n">d</span><span class="o">`</span><span class="p">,</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="o">`</span><span class="n">d_ibfk_1</span><span class="o">`</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">parent</span><span class="o">`</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="o">`</span><span class="n">d</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">))</span><span class="w">
+</span></span></span></code></pre></div><p>Allowing <code>NULL</code> may be making a structure that is a tiny bit easier to maintain. We can now define a tree structure, but we have to do it from the top down.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="nb">serial</span><span class="p">,</span><span class="w"> </span><span class="n">parent</span><span class="w"> </span><span class="nb">bigint</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w"> </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="w"> </span><span class="k">references</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">06</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ERROR</span><span class="w"> </span><span class="mi">1452</span><span class="w"> </span><span class="p">(</span><span class="mi">23000</span><span class="p">):</span><span class="w"> </span><span class="n">Cannot</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">child</span><span class="w"> </span><span class="k">row</span><span class="p">:</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="n">fails</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">kris</span><span class="o">`</span><span class="p">.</span><span class="o">`</span><span class="k">c</span><span class="o">`</span><span class="p">,</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="o">`</span><span class="n">c_ibfk_1</span><span class="o">`</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">parent</span><span class="o">`</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="o">`</span><span class="k">c</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Records</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="w">  </span><span class="n">Duplicates</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span></span></span></code></pre></div><p>Both statements define the same tree structure, but one does it from the bottom up, the other from the top down. We can see that even inside a single statement referential integrity is enforced at a per-row level and the first statement is impossible to load. Order suddenly matters.</p>
+<p>The same would be true if we used multiple insert statements inside the same transaction: Even if the entire set of rows is only committed at the end of the transaction, statements inside the transaction suddenly have to have an order, and all referential integrity constraints have to be valid at all times (&ldquo;for each row&rdquo;).</p>
+<p>For individual tables or simple 1:1 relationships this matters little, but referential integrity is transitive, and it is very easy to build completely validated structures that become uninsertable, unupdateable or undeletable, or to build referential integrity puzzles.</p>
+<p>The SQL Standard defines behavior for this - checking referential integrity only at the end of a transaction - but InnoDB does not implement this. This makes working with foreign key constraints very hard and limits their usefulness.</p>
+<h2 id="walking-our-tree">
+    <a href="#walking-our-tree">
+	Walking our tree
+    </a>
+</h2>
+<p>But at least we can walk our tree, and be sure it is well-defined:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">with</span><span class="w"> </span><span class="k">recursive</span><span class="w"> </span><span class="n">tree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">select</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="k">level</span><span class="p">,</span><span class="w"> </span><span class="k">convert</span><span class="p">(</span><span class="s2">&#34;1&#34;</span><span class="p">,</span><span class="w"> </span><span class="nb">char</span><span class="p">(</span><span class="mi">255</span><span class="p">))</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">path</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">from</span><span class="w"> </span><span class="k">c</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="k">where</span><span class="w"> </span><span class="n">parent</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">null</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">union</span><span class="w"> </span><span class="k">all</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">select</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="n">tree</span><span class="p">.</span><span class="k">level</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="k">level</span><span class="p">,</span><span class="w"> </span><span class="n">concat</span><span class="p">(</span><span class="n">tree</span><span class="p">.</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;,&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">path</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">from</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">x</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">join</span><span class="w"> </span><span class="n">tree</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">on</span><span class="w"> </span><span class="n">tree</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">parent</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tree</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">------+--------+-------+-------+
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="n">parent</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">level</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">path</span><span class="w">  </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">------+--------+-------+-------+
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">    </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="w">     </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">    </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="w">   </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">    </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="w">   </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">    </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">    </span><span class="mi">5</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">    </span><span class="mi">6</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">    </span><span class="mi">7</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">    </span><span class="mi">8</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">------+--------+-------+-------+
+</span></span></span></code></pre></div><h2 id="what-we-found-so-far">
+    <a href="#what-we-found-so-far">
+	What we found so far.
+    </a>
+</h2>
+<ul>
+<li>Foreign Keys are everywhere.</li>
+<li>Foreign Key Constraints look attractive at first, in order to ensure our Foreign Keys are valid.</li>
+<li>But they are being enforced at the row level.
+<ul>
+<li>That enforces an order to operations within a transaction.</li>
+<li>It is easy to build structures that are hard to update, delete from, truncate or even drop.</li>
+<li>It is easy to create structures with undeletable records.</li>
+</ul>
+</li>
+<li>The SQL Standard has options to make this less painful, but MySQL does not implement these.</li>
+</ul>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+				<a href="/tags/#database" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				database
+				</a>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+				<a href="/tags/#innodb" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				innodb
+				</a>
+				
+				<a href="/tags/#mysqldev" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysqldev
+				</a>
+				
+				<a href="/tags/#erklaerbaer" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				erklaerbaer
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2020-08-03-mysql-foreign-keys-and-foreign-key-constraints/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/08/02/mysql-deadlocks-with-insert/">MySQL Deadlocks with INSERT</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/08/04/mysql-foreign-key-constraints-and-locking/">MySQL Foreign Key Constraints and Locking</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

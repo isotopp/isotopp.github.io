@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>fork, exec, wait und exit | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2007/01/07/fork-exec-wait-und-exit/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='fork, exec, wait und exit | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="de_DE" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2007/01/07/fork-exec-wait-und-exit/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2007-01-07T01:09:00Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='fork, exec, wait und exit' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="fork-exec-wait-und-exit-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						fork, exec, wait und exit
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>January 7, 2007</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/rijksmuseum.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2006/12/26/bundestrojaner/">Bundestrojaner</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2007/01/07/fork-und-exec-vs-createprocess/">fork und exec vs. CreateProcess</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>In
+<a href="news:de.comp.os.unix.linux.misc">de.comp.os.unix.linux.misc</a>
+
+
+fragte jemand:</p>
+<blockquote>
+<ul>
+<li>Werden in einem Skript die Befehle streng sequentiell ausgeführt, d.h.
+der nächste erst bearbeitet, wenn der Vorgänger vollständig ausgeführt
+ist, oder wird <strong>automatisch</strong> bei unvollständiger Auslastung des
+Systems bereits der nächste Befehl angefangen?</li>
+<li>Lässt sich das Standardverhalten – wie auch immer es sein mag – bei
+Bedarf ändern?</li>
+</ul>
+</blockquote>
+<p>Wenn man in ein Shellbuch schaut, wird einem an der einen oder anderen Stelle möglicherweise erläutert,
+dass die Shell jeden Befehl in einem eigenen Prozess abarbeitet.
+Dann wiederum fängt man möglicherweise an zu denken und fragt sich, wie das alles zusammenhängt.
+Sobald man dort angekommen ist, kann man sich mit dem Unix-Prozesszyklus beschäftigen.</p>
+<h2 id="prozess-und-programm">
+    <a href="#prozess-und-programm">
+	Prozess und Programm
+    </a>
+</h2>
+<p>Ein Programm ist in Unix eine Serie von ausführbaren Maschineninstruktionen auf der Platte.
+Man kann mit dem Befehl <em>size</em> einen sehr oberflächlichen Blick auf die Struktur des Programmes werfen
+oder mit <em>objdump</em> sehr viel mehr Detailinformation bekommen.
+Der Aspekt, der uns hier interessieren soll:
+Ein Programm ist eine Folge von Anweisungen und Daten (auf der Platte),
+die möglicherweise einmal ausgeführt werden.</p>
+<p>Ein Prozess ist ein in Ausführung befindliches Programm.
+Er besteht aus dem Programm selbst (also der Versammlung von Anweisungen und Daten)
+und dem aktuellen Zustand der Ausführung.
+Dazu gehört neben der Memory-Map, die sagt wie das Programm und seine Daten im Speicher angeordnet sind,
+auch der Programmzähler, die Prozessorregister und der Stack des Prozesses,
+aber auch sein Root-Directory, sein aktuelles Verzeichnis, die Umgebungsvariablen,
+und alle offenen Dateien sowie einige weitere Dinge.</p>
+<p>Unix behandelt Prozesse und Programme als die verschiedenen Dinge, die es sind:
+Es ist möglich, ein Programm mehr als einmal auszuführen – es ist zum Beispiel möglich,
+mehr als eine Kopie des Texteditors vi offen zu haben, die zwei unterschiedliche Texte bearbeiten.
+Programm und (initiale) Daten beider Prozesse sind gleich,
+aber der Zustand beider Prozesse ist verschieden.
+Es ist auch möglich, im selben Prozess nacheinander mehr als ein Programm auszuführen:
+dazu wirft sich das aktuelle Programm in dem Prozess selbst weg
+und ersetzt sich durch ein zweites, in diesen Prozess nachgeladenes Programm.</p>
+<p>Unix regelt all diese Dinge mit vier sehr einfachen Systemkonzepten:</p>
+<ul>
+<li><code>fork()</code></li>
+<li><code>exec()</code></li>
+<li><code>wait()</code> und</li>
+<li><code>exit()</code></li>
+</ul>
+<h2 id="usermode-und-kernel">
+    <a href="#usermode-und-kernel">
+	Usermode und Kernel
+    </a>
+</h2>
+<p><p class="md__image">
+  <img src="prozesswechsel.png" alt=""  />
+</p>
+
+</p>
+<p>Prozesswechsel: Es wird ein Stück Prozess 1 abgearbeitet,
+dann (1) auf Prozess 2 umgeschaltet.
+Nach einer Weile wird (2) wieder auf Prozess 1 zurück geschaltet.
+Die Ausführung von Prozess 1 erscheint lückenlos, erfolgt aber in zeitlich nicht zusammenhängenden Intervallen.</p>
+<p>Wenn ein Unix-Prozess eine Systemfunktion aufruft (und noch bei ein paar anderen Gelegenheiten),
+verläßt der betreffende Prozess seinen Userkontext und betritt den privilegierten Betriebsystemkern,
+den Kernel.
+Dort wird die aufgerufene Systemfunktion ausgeführt, und danach landet jede dieser Funktionen im Scheduler.
+Der Scheduler entscheidet dann, welcher Prozess als Nächstes dran kommt,
+und kehrt aus dem Kernel in diesen Prozess zurück.
+Das kann unser Ausgangsprozess oder nach Entscheidung des Schedulers ein anderer Prozess sein.</p>
+<p>Wir halten für die Zwecke dieses Textes fest:
+Jeder Systemaufruf wechselt vom Userkontext in den Kernel.
+Der einzige Weg aus dem Kernel in einen Userkontext führt durch den Scheduler,
+und dann kehren wir unter Umständen nicht in den Ausgangsprozess zurück.
+Bei jedem Systemaufruf kann ein Prozess also seine CPU verlieren.</p>
+<p>Das ist nicht schlimm, weil dieser andere Prozess auch irgendwann einmal die CPU aufgeben muss
+und wir dann in unseren eigenen Prozess zurückkehren als sei nichts gewesen.</p>
+<p>Unser Programm wird also nicht linear abgearbeitet, sondern in kurzen linearen Segmenten,
+zwischen denen Pausen liegen können.
+In den Pausen arbeitet die CPU an den Segmenten der anderen Prozesse, die ebenfalls lauffähig sind.</p>
+<h2 id="fork-und-exit">
+    <a href="#fork-und-exit">
+	fork() und exit()
+    </a>
+</h2>
+<p>In traditionellem Unix ist der Systemaufruf <code>fork()</code> die einzige Methode, einen neuen Prozess zu erzeugen.
+Der neue Prozess enthält eine Kopie des laufenden Programmes.
+Er hat eine neue Prozess-ID und die Prozess-ID des Erzeugers ist als seine Parent Prozess-ID (PPID) eingetragen.</p>
+<p>Im Parent-Prozess kehrt <code>fork()</code> mit der PID des neuen Prozesses als Ergebnis zurück.
+Der neue Prozess kehrt ebenfalls aus dem Systemaufruf <code>fork()</code> zurück, liefert dort aber das Resultat 0.</p>
+<p>Der Systemaufruf fork() ist also insofern besonders, indem er einmal betreten wird,
+\aber zweimal verlassen wird:
+Einmal im Elternprozess und einmal im neu erzeugten Kindprozess.
+<code>fork()</code> erhöht die Anzahl der laufenden Prozesse im System um eins.</p>
+<p>Jeder Unix-Prozess beginnt seine Existenz also, indem er aus einem <code>fork()</code>-Systemaufruf spontan zurückkehrt
+und ein Programm ausführt, dass eine Kopie des Elternprogrammes ist.
+Sein Schicksal unterscheidet sich vom Schicksal des Elternprozesses,
+weil das Ergebnis des <code>fork()</code>-Aufrufes unterschiedlich ist (0 statt der PID des Kindes)
+und man dies zur Verzweigung nutzen kann.</p>
+<p>In Code:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">pid_t</span> <span class="n">pid</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">pid</span> <span class="o">=</span> <span class="nf">fork</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Ich bin der Kindprozess.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Ich bin der Elternprozess, das Kind ist %d.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">pid</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">perror</span><span class="p">(</span><span class="s">&#34;In fork():&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nf">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>und</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@linux:/tmp/kris&gt; make probe1
+</span></span></span><span class="line"><span class="cl"><span class="go">cc     probe1.c   -o probe1
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@linux:/tmp/kris&gt; ./probe1
+</span></span></span><span class="line"><span class="cl"><span class="go">Ich bin der Kindprozess.
+</span></span></span><span class="line"><span class="cl"><span class="go">Ich bin der Elternprozess, das Kind ist 16959.
+</span></span></span></code></pre></div><p>Wir vereinbaren also eine Variable <code>pid</code> vom Typ <code>pid_t</code>.</p>
+<p>Diese Variable speichert das Ergebnis des Systemaufrufs <code>fork()</code>
+und mit Hilfe dieses Wertes aktivieren wir entweder das eine
+(&ldquo;Ich bin der Kindprozess&rdquo;) oder das andere (&ldquo;Ich bin der Elternprozess&rdquo;) <code>if()</code>.</p>
+<p>Starten wir das Programm, erhalten wir zwei Ausgaben.
+Da innerhalb eines Prozesses nur ein Status existieren kann
+und nur eines der beiden <code>if()</code> betreten werden kann,
+wir aber zwei Ausgaben erhalten haben, müssen wir zwei Prozesse erzeugt haben.</p>
+<p>Indem wir das Ergebnis von <code>getpid()</code> druckten, könnten wir das sogar noch anschaulicher zeigen.</p>
+<p>Der Systemaufruf <code>fork()</code> wird einmal betreten, aber zweimal verlassen
+und erhöht die Anzahl der Prozesse im System um eins.
+Nach dem Ablauf unseres Programms ist die Anzahl der Prozesse im System aber wieder genauso hoch
+wie vor dem Aufruf des Programms.
+Es muss also einen weiteren Systemaufruf geben, der die Anzahl der Prozesse im System um eins erniedrigt.</p>
+<p>Dieser Aufruf ist <code>exit()</code>.</p>
+<p><code>exit()</code> wird einmal betreten und nie verlassen.
+Er verkleinert die Anzahl der Prozesse im System um eins.
+<code>exit()</code> liefert außerdem einen Exitstatus, den der Elternprozess abholen kann (oder gar muss)
+und der ihn über das Schicksal seines Kindes informiert.</p>
+<p>In unserem Beispiel enden alle Varianten unseres Programmes mit <code>exit()</code>.
+Wir rufen <code>exit()</code> also im Elternprozess und im Kindprozess auf, beenden also zwei Prozesse.
+Das können wir nur deswegen tun, weil unser Elternprozess auch ein Kindprozess ist, und zwar ein Kind der Shell.</p>
+<p>Die Shell arbeitet also genau wie wir:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">bash (16957) --- erzeugt durch fork() ---&gt; bash (16958) --- wird zu ---&gt; probe1 (16958)
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">probe1 (16958) --- erzeugt durch fork() ---&gt; probe1 (16959) --&gt; exit()
+</span></span></span><span class="line"><span class="cl"><span class="go">   |
+</span></span></span><span class="line"><span class="cl"><span class="go">   +---&gt; exit()
+</span></span></span></code></pre></div><p><code>exit()</code> schließt alle Dateien und Internetverbindungen eines Prozesses,
+gibt allen Speicher frei, und beendet dann den Prozess.
+Der Parameter von <code>exit()</code>, der Exitstatus, wird an den Elternprozess zurückgegeben.</p>
+<h2 id="wait">
+    <a href="#wait">
+	wait()
+    </a>
+</h2>
+<p>Der Kindprozess endet durch ein exit(0).
+Die 0 ist der Exitstatus unseres Programmes und steht nun zur Abholung bereit.
+Wir müssen im Elternprozess den Exitstatus abholen.
+Dies geschieht mit der Systemfunktion <code>wait()</code>.</p>
+<p>In Code:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/wait.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">pid_t</span> <span class="n">pid</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span>   <span class="n">status</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">pid</span> <span class="o">=</span> <span class="nf">fork</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Ich bin der Kindprozess.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Ich bin der Kindprozess 10 Sekunden spaeter.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Ich bin der Elternprozess, das Kind ist %d.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">pid</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pid</span> <span class="o">=</span> <span class="nf">wait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">status</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Ende des Prozesses %d: &#34;</span><span class="p">,</span> <span class="n">pid</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nf">WIFEXITED</span><span class="p">(</span><span class="n">status</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Der Prozess wurde mit exit(%d) beendet.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="nf">WEXITSTATUS</span><span class="p">(</span><span class="n">status</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nf">WIFSIGNALED</span><span class="p">(</span><span class="n">status</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Der Prozess wurde mit kill -%d beendet.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="nf">WTERMSIG</span><span class="p">(</span><span class="n">status</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">perror</span><span class="p">(</span><span class="s">&#34;In fork():&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>und</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@linux:/tmp/kris&gt; make probe2
+</span></span></span><span class="line"><span class="cl"><span class="go">cc     probe2.c   -o probe2
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@linux:/tmp/kris&gt; ./probe2
+</span></span></span><span class="line"><span class="cl"><span class="go">Ich bin der Kindprozess.
+</span></span></span><span class="line"><span class="cl"><span class="go">Ich bin der Elternprozess, das Kind ist 17399.
+</span></span></span><span class="line"><span class="cl"><span class="go">Ich bin der Kindprozess 10 Sekunden spaeter.
+</span></span></span><span class="line"><span class="cl"><span class="go">Ende des Prozesses 17399: Der Prozess wurde mit exit(0) beendet.
+</span></span></span></code></pre></div><p>Die Variable <code>status</code> wird dem Systemaufruf <code>wait()</code> als Referenzparameter mit übergeben und von diesem überschrieben.
+Neben dem Exitstatus finden wir dort auch noch weitere Informationen über den Grund des Programmendes hinterlegt.
+Zur Decodierung stellt das System eine Reihe von Prädikaten wie <code>WIFEXITED()</code> oder <code>WIFSIGNALED()</code> zur Abfrage bereit
+und Extraktoren wie <code>WEXITSTATUS()</code> und <code>WTERMSIG()</code>.
+<code>wait()</code> gibt außerdem die Prozess-ID des Prozesses zurück, der beendet wurde.</p>
+<p><code>wait()</code> hängt im Elternprozess so lange bis entweder ein Signal eintrifft oder ein Kindprozess beendet wird.</p>
+<p>Das Programm init mit der PID 1 macht übrigens den ganzen lieben langen Tag nichts anderes:
+Es hängt im <code>wait()</code> und frühstückt die ihm zugeworfenen Exitstatus ab,
+um sie zu verwerfen.
+Außerdem liest es die <code>/etc/inittab</code> und startet die dort konfigurierten Programme.
+Ist eines dieser Programme auf Respawn gesetzt und wird beendet, wird es von init neu gestartet.</p>
+<p>Beendet sich ein Kindprozess, ohne dass der Elternprozess ein <code>wait()</code> macht,
+zerstört <code>exit()</code> schon einmal alle Datenstrukturen des Kindprozesses,
+kann jedoch den Prozesslisteneintrag des Prozesses noch nicht wegwerfen,
+denn hier steht der Exitstatus des Kindes drin.
+Es könnte ja nun sein, dass der Elternprozess sich irgendwann entschließt,
+ein <code>wait()</code> auszuführen und dann muss der Exitstatus ja bereitstehen.</p>
+<p>Der Kindprozess ist also bereits tot: er hat <code>exit()</code> ausgeführt und alle Ressourcen freigegeben,
+kann aber noch nicht sterben, weil ja der Elternprozess den Status noch nicht abgeholt hat.
+Unix nennt so einen Prozess einen Zombie-Prozess.
+Zombies werden in der Prozessliste sichtbar, wenn ein Prozesserzeuger falsch programmiert ist
+und nicht ausreichend <code>wait()</code> aufruft.</p>
+<p>Andersherum ist es auch möglich, dass ein Kindprozess weiter läuft, während ein Elternprozess beendet wird.
+Dann wird die Parent Prozess-ID (PPID) des Kindes von der PID des Elternprozesses auf die Konstante 1 geändert,
+oder in anderen Worten: init erbt den Prozess.</p>
+<p>Beendet sich das Kind, empfängt init den Exitstatus des Kindes, denn init hängt ja sowieso dauernd im wait.
+Dadurch wird die Entstehung eines Zombies in diesem Fall verhindert.</p>
+<p>Wenn die Anzahl der Prozesse im System über die Laufzeit des Systems im Mittel konstant ist,
+dann ist die Anzahl der <code>fork()</code>, <code>exit()</code> und <code>wait()</code>-Aufrufe im System ebenfalls im Mittel gleich,
+denn für jedes <code>fork()</code> muss irgendwann einmal ein <code>exit()</code> gemacht werden
+und für jedes <code>exit()</code> muss der Elternprozess einmal ein <code>wait()</code> machen
+(In Wirklichkeit ist die Situation wegen einiger anderer Regeln noch ein wenig komplizierter,
+aber erst einmal soll dies hier genügen).</p>
+<p>Wir haben also ein sauberes fork-exit-wait-Dreieck.</p>
+<h2 id="exec">
+    <a href="#exec">
+	exec()
+    </a>
+</h2>
+<p>So wie <code>fork()</code> Prozesse erzeugt, so lädt <code>exec()</code> Programme in einen Prozess.</p>
+<p>In  Code:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/wait.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">pid_t</span> <span class="n">pid</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span>   <span class="n">status</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">pid</span> <span class="o">=</span> <span class="nf">fork</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Ich bin der Kindprozess.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">execl</span><span class="p">(</span><span class="s">&#34;/bin/ls&#34;</span><span class="p">,</span> <span class="s">&#34;ls&#34;</span><span class="p">,</span> <span class="s">&#34;-l&#34;</span><span class="p">,</span> <span class="s">&#34;/tmp/kris&#34;</span><span class="p">,</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">perror</span><span class="p">(</span><span class="s">&#34;In exec(): &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Ich bin der Elternprozess, das Kind ist %d.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">pid</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pid</span> <span class="o">=</span> <span class="nf">wait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">status</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Ende des Prozesses %d: &#34;</span><span class="p">,</span> <span class="n">pid</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nf">WIFEXITED</span><span class="p">(</span><span class="n">status</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Der Prozess wurde mit exit(%d) beendet.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="nf">WEXITSTATUS</span><span class="p">(</span><span class="n">status</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nf">WIFSIGNALED</span><span class="p">(</span><span class="n">status</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Der Prozess wurde mit kill -%d beendet.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="nf">WTERMSIG</span><span class="p">(</span><span class="n">status</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">perror</span><span class="p">(</span><span class="s">&#34;In fork():&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@linux:/tmp/kris&gt; make probe3
+</span></span></span><span class="line"><span class="cl"><span class="go">cc     probe3.c   -o probe3
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@linux:/tmp/kris&gt; ./probe3
+</span></span></span><span class="line"><span class="cl"><span class="go">Ich bin der Kindprozess.
+</span></span></span><span class="line"><span class="cl"><span class="go">Ich bin der Elternprozess, das Kind ist 17690.
+</span></span></span><span class="line"><span class="cl"><span class="go">total 36
+</span></span></span><span class="line"><span class="cl"><span class="go">-rwxr-xr-x 1 kris users 6984 2007-01-05 13:29 probe1
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-r--r-- 1 kris users  303 2007-01-05 13:36 probe1.c
+</span></span></span><span class="line"><span class="cl"><span class="go">-rwxr-xr-x 1 kris users 7489 2007-01-05 13:37 probe2
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-r--r-- 1 kris users  719 2007-01-05 13:40 probe2.c
+</span></span></span><span class="line"><span class="cl"><span class="go">-rwxr-xr-x 1 kris users 7513 2007-01-05 13:42 probe3
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-r--r-- 1 kris users  728 2007-01-05 13:42 probe3.c
+</span></span></span><span class="line"><span class="cl"><span class="go">Ende des Prozesses 17690: Der Prozess wurde mit exit(0) beendet.
+</span></span></span></code></pre></div><p>Hier wird im Sohnprozess der Code von probe3 weggeworfen (Das <code>perror(&quot;In exec():&quot;)</code> wird niemals ausgeführt)
+und durch den angegebenen Aufruf von <code>ls</code> ersetzt.
+In der Ausführung erkennen wir, dass <code>probe3</code> wartet, bis das <code>ls</code> sich mit <code>exit()</code> beendet hat
+und dann seine eigene Ausführung danach fortsetzt.</p>
+<h2 id="als-shellscript">
+    <a href="#als-shellscript">
+	Als Shellscript
+    </a>
+</h2>
+<p>Die Beispiele oben operieren in C.
+In bash sieht es so aus:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@linux:/tmp/kris&gt; cat probe1.sh
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span>! /bin/bash --
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">echo &#34;Starte Kindprozess&#34;
+</span></span></span><span class="line"><span class="cl"><span class="go">sleep 10 &amp;
+</span></span></span><span class="line"><span class="cl"><span class="go">echo &#34;Der Kindprozess hat die ID $!&#34;
+</span></span></span><span class="line"><span class="cl"><span class="go">echo &#34;Der Elternprozess hat die ID $$&#34;
+</span></span></span><span class="line"><span class="cl"><span class="go">echo &#34;$(date): Elternprozess geht schlafen.&#34;
+</span></span></span><span class="line"><span class="cl"><span class="go">wait
+</span></span></span><span class="line"><span class="cl"><span class="go">echo &#34;Der Kindprozess $! hat den Exit-Status $?&#34;
+</span></span></span><span class="line"><span class="cl"><span class="go">echo &#34;$(date): Elternprozess ist aufgewacht.&#34;
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@linux:/tmp/kris&gt; ./probe1.sh
+</span></span></span><span class="line"><span class="cl"><span class="go">Starte Kindprozess
+</span></span></span><span class="line"><span class="cl"><span class="go">Der Kindprozess hat die ID 18071
+</span></span></span><span class="line"><span class="cl"><span class="go">Der Elternprozess hat die ID 18070
+</span></span></span><span class="line"><span class="cl"><span class="go">Fri Jan  5 13:49:56 CET 2007: Elternprozess geht schlafen.
+</span></span></span><span class="line"><span class="cl"><span class="go">Der Kindprozess 18071 hat den Exit-Status 0
+</span></span></span><span class="line"><span class="cl"><span class="go">Fri Jan  5 13:50:06 CET 2007: Elternprozess ist aufgewacht.
+</span></span></span></code></pre></div><p>Und hier beobachten wir die Shell bei der Ausführung von Kommandos:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@linux:~&gt; strace -f -e execve,clone,fork,waitpid bash
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@linux:~&gt; ls
+</span></span></span><span class="line"><span class="cl"><span class="go">clone(Process 30048 attached
+</span></span></span><span class="line"><span class="cl"><span class="go">child_stack=0, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD,
+</span></span></span><span class="line"><span class="cl"><span class="go">child_tidptr=0xb7dab6f8) = 30048
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 30025] waitpid(-1, Process 30025 suspended
+</span></span></span><span class="line"><span class="cl"><span class="go"> &lt;unfinished ...&gt;
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 30048] execve(&#34;/bin/ls&#34;, [&#34;/bin/ls&#34;, &#34;-N&#34;, &#34;--color=tty&#34;, &#34;-T&#34;, &#34;0&#34;],
+</span></span></span><span class="line"><span class="cl"><span class="go">[/* 107 vars */]) = 0
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">Process 30025 resumed
+</span></span></span><span class="line"><span class="cl"><span class="go">Process 30048 detached
+</span></span></span><span class="line"><span class="cl"><span class="go">&lt;... waitpid resumed&gt; [{WIFEXITED(s) &amp;&amp; WEXITSTATUS(s) == 0}], WSTOPPED
+</span></span></span><span class="line"><span class="cl"><span class="go">WCONTINUED) = 30048
+</span></span></span><span class="line"><span class="cl"><span class="go">--- SIGCHLD (Child exited) @ 0 (0) ---
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span></code></pre></div><p>Linux verwendet eine Verallgemeinerung von <code>fork()</code> mit dem Namen <code>clone()</code> um einen Kindprozess zu erzeugen.
+Daher sehen wir keinen <code>fork()</code>, sondern einen <code>clone()</code>-Aufruf mit einigen Parametern.</p>
+<p>Linux verwendet außerdem die Variante <code>waitpid()</code> von <code>wait()</code>, um auf eine bestimmte PID zu warten.</p>
+<p>Linux startet außerdem das Programm mit <code>execve()</code> statt mit <code>execl()</code>,
+aber das ist nur eine andere Anordnung von Parametern.
+Nach dem Ende von <code>ls</code> (PID 30048) wird der Prozess 30025 aus dem <code>wait()</code> erweckt und fortgesetzt.</p>
+<p>Und
+<a href="http://minnie.tuhs.org/UnixTree/V7/usr/src/cmd/sh/xec.c.html" target="_blank" rel="noopener">hier</a>
+
+
+ist der C-Code der Originalshell aus dem Jahre 1979, mit dem <code>fork()</code>
+(Man suche nach &ldquo;case TFORK:&rdquo; und wundere sich nicht über den Programmierstil von Herrn Bourne).
+Ja, bash ist schöner - GNU Code oder nicht.</p>
+<p>(nach
+<a href="http://groups.google.com/group/de.comp.os.unix.linux.misc/msg/4035c67415f9bc09" target="_blank" rel="noopener">einem News-Artikel</a>
+
+
+von mir)</p>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#linux" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				linux
+				</a>
+				
+				<a href="/tags/#erklaerbaer" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				erklaerbaer
+				</a>
+				
+				<a href="/tags/#computer" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				computer
+				</a>
+				
+				<a href="/tags/#lang_de" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_de
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2007-01-07-fork-exec-wait-und-exit/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2006/12/26/bundestrojaner/">Bundestrojaner</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2007/01/07/fork-und-exec-vs-createprocess/">fork und exec vs. CreateProcess</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

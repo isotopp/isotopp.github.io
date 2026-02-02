@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Systemd Service and Socket Activation | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2022/11/27/systemd-service-and-socket-activation/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='Systemd Service and Socket Activation | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2022/11/27/systemd-service-and-socket-activation/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2022-11-27T06:07:08Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='Systemd Service and Socket Activation' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="systemd-service-and-socket-activation-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						Systemd Service and Socket Activation
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>November 27, 2022</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/rijksmuseum.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/11/20/etl-from-a-django-model/">ETL from a Django Model</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/11/28/systemd-service-and-stdio/">Systemd Service and stdio</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>In today&rsquo;s Yak Shaving session I needed to understand how to expose the docker socket of a remote machine over the network.
+You should not do that, it is totally insecure, but I needed to do that to test something.</p>
+<h1 id="socket-activation">
+    <a href="#socket-activation">
+	Socket Activation
+    </a>
+</h1>
+<p>I discovered that <code>dockerd</code> is running with <code>-H fd://</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> ps axuwww <span class="p">|</span> grep docker<span class="o">[</span>d<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="go">root     1616732  0.5  0.1 2930892 52168 ?       Ssl  15:32   2:25 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+</span></span></span></code></pre></div><p>That is happening in the <code>docker.service</code> definition for Docker:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> systemctl cat docker.service <span class="p">|</span> egrep <span class="s1">&#39;(service$|ExecStart)&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> /lib/systemd/system/docker.service
+</span></span><span class="line"><span class="cl"><span class="go">After=network-online.target firewalld.service containerd.service
+</span></span></span><span class="line"><span class="cl"><span class="go">Wants=containerd.service
+</span></span></span><span class="line"><span class="cl"><span class="go">ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+</span></span></span></code></pre></div><p>That is, <code>/lib/systemd/system/docker.service</code> defines activation through the <code>fd://</code> file descriptor.
+That descriptor is in turn provided by the <code>docker.socket</code> unit, which looks like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">root</span><span class="nd">@server</span><span class="p">:</span><span class="o">~</span><span class="c1"># systemctl cat docker.socket</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># /lib/systemd/system/docker.socket</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="n">Unit</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">Description</span><span class="o">=</span><span class="n">Docker</span> <span class="n">Socket</span> <span class="k">for</span> <span class="n">the</span> <span class="n">API</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="n">Socket</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">ListenStream</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">docker</span><span class="o">.</span><span class="n">sock</span>
+</span></span><span class="line"><span class="cl"><span class="n">SocketMode</span><span class="o">=</span><span class="mi">0660</span>
+</span></span><span class="line"><span class="cl"><span class="n">SocketUser</span><span class="o">=</span><span class="n">root</span>
+</span></span><span class="line"><span class="cl"><span class="n">SocketGroup</span><span class="o">=</span><span class="n">docker</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="n">Install</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">WantedBy</span><span class="o">=</span><span class="n">sockets</span><span class="o">.</span><span class="n">target</span>
+</span></span></code></pre></div><p>Both units are in <code>/lib/systemd/system</code>, which means they are OS-provided and should not be directly edited.</p>
+<h1 id="overriding">
+    <a href="#overriding">
+	Overriding
+    </a>
+</h1>
+<p>I could override the service with <code>systemctl edit docker.service</code>, and provide a different <code>ExecStart</code>.
+Since that is a list, I need to empty it first, and then put a new definition in.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[Service]
+</span></span></span><span class="line"><span class="cl"><span class="go">ExecStart=
+</span></span></span><span class="line"><span class="cl"><span class="go">ExecStart=/usr/bin/dockerd
+</span></span></span></code></pre></div><p>This starts docker without options, and I could define one or more sockets in <code>/etc/docker/daemon.json</code>.
+It would also drop systemd socket activation, though.</p>
+<p>That led me to the question &ldquo;How does one actually write a daemon that cooperates with systemctl socket activation?&rdquo;
+and also to the question &ldquo;Can I have socket activation listen to more than one port, for example a Unix Domain Socket and a TCP-Socket?&rdquo;</p>
+<h1 id="writing-a-python-daemon-with-socket-activation">
+    <a href="#writing-a-python-daemon-with-socket-activation">
+	Writing a Python daemon with socket activation
+    </a>
+</h1>
+<p>Let&rsquo;s write a simple daemon:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#! /usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">socketserver</span> <span class="kn">import</span> <span class="n">TCPServer</span><span class="p">,</span> <span class="n">StreamRequestHandler</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">socket</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">logging</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">MyDaemon</span><span class="p">(</span><span class="n">StreamRequestHandler</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Connection from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">client_address</span><span class="si">}</span><span class="s2">.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rfile</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&#34;utf-8&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">response</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Data: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2"> Response: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&#34;utf-8&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Server</span><span class="p">(</span><span class="n">TCPServer</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_address</span><span class="p">,</span> <span class="n">hnd</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># call superclass, but bind_and_activate is done by systemd.</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># If we set that to True, it could run as a standalone program.</span>
+</span></span><span class="line"><span class="cl">        <span class="n">TCPServer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_address</span><span class="p">,</span> <span class="n">hnd</span><span class="p">,</span> <span class="n">bind_and_activate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># take socket passed on from systemd (3, first after stdin, stdout, stderr)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">fromfd</span><span class="p">(</span><span class="bp">self</span><span class="mf">.3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_family</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_type</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">HOST</span><span class="p">,</span> <span class="n">PORT</span> <span class="o">=</span> <span class="s2">&#34;127.0.0.1&#34;</span><span class="p">,</span> <span class="mi">12345</span>
+</span></span><span class="line"><span class="cl">    <span class="n">server</span> <span class="o">=</span> <span class="n">Server</span><span class="p">((</span><span class="n">HOST</span><span class="p">,</span> <span class="n">PORT</span><span class="p">),</span> <span class="n">Handler</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</span></span></code></pre></div><p>If we set <code>bind_and_activate=</code> to <code>True</code>, that thing would run from the command line as a standalone server.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> ./demoserver.py   <span class="c1"># now telnet 127.0.0.1 12345 to test</span>
+</span></span></code></pre></div><p>Instead, we need to set this up with systemd.</p>
+<h1 id="a-service-and-a-socket-unit">
+    <a href="#a-service-and-a-socket-unit">
+	A service and a socket unit
+    </a>
+</h1>
+<p>We need to set up a service definition unit.
+Since we chose a high port number (&gt;1024), we can run it as a user without privileges.</p>
+<p>Systemd is actually running a copy of itself for each logged-in user:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> ps axuwww <span class="p">|</span> grep system<span class="o">[</span>d<span class="o">]</span> <span class="p">|</span> grep user
+</span></span><span class="line"><span class="cl"><span class="go">kris      327983  0.1  0.0  20144 11948 ?        Ss   Nov06  31:11 /lib/systemd/systemd --user
+</span></span></span><span class="line"><span class="cl"><span class="go">gdm      2419957  0.1  0.0  18768 10884 ?        Ss   Nov21  13:03 /lib/systemd/systemd --user
+</span></span></span></code></pre></div><p>So we define a <code>service</code> unit using <code>systemctl --user --full --force kris.service</code> and then do the same for a <code>socket</code> unit:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> systemctl --user cat kris.service
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> /home/kris/.config/systemd/user/kris.service
+</span></span><span class="line"><span class="cl"><span class="go">[Unit]
+</span></span></span><span class="line"><span class="cl"><span class="go">Description=Kris Service
+</span></span></span><span class="line"><span class="cl"><span class="go">After=network.target kris.socket
+</span></span></span><span class="line"><span class="cl"><span class="go">Requires=kris.socket
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">[Service]
+</span></span></span><span class="line"><span class="cl"><span class="go">Type=simple
+</span></span></span><span class="line"><span class="cl"><span class="go">ExecStart=/usr/bin/python3 %h/Python/systemd-socketserver/demoserver.py
+</span></span></span><span class="line"><span class="cl"><span class="go">TimeoutStopSec=5
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">[Install]
+</span></span></span><span class="line"><span class="cl"><span class="go">WantedBy=default.target
+</span></span></span></code></pre></div><p>Our service is declared as having a <code>Requires=</code> relationship to its socket.
+And because relationships do not define ordering, we also put the sockets into the <code>After=</code> relationship.</p>
+<p>The service is a simple service, so systemd will simply fork off the defined binary.
+Ths service definition uses <code>%h</code>, which is replaced by the users home directory.
+We also define a timeout.</p>
+<p>Now the socket, on which we depend:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> systemctl --user cat kris.socket
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> /home/kris/.config/systemd/user/kris.socket
+</span></span><span class="line"><span class="cl"><span class="go">[Unit]
+</span></span></span><span class="line"><span class="cl"><span class="go">Description=Kris Socket
+</span></span></span><span class="line"><span class="cl"><span class="go">PartOf=kris.service
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">[Socket]
+</span></span></span><span class="line"><span class="cl"><span class="go">ListenStream=127.0.0.1:12345
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">[Install]
+</span></span></span><span class="line"><span class="cl"><span class="go">WantedBy=default.target
+</span></span></span></code></pre></div><p>The <code>PartOf=</code> makes sure the socket is started and stopped together with the server.
+The <code>ListenStream=</code> is the port systemd will open, bind to and listen on.
+The socket produced by systemd will them be handed off to us on FD 3.</p>
+<h1 id="starting-the-service">
+    <a href="#starting-the-service">
+	Starting the service
+    </a>
+</h1>
+<p>It is sufficient to work on <code>kris.service</code> to start and stop things, because of the relationships we defined between socket and service.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> systemctl --user show kris.service<span class="p">|</span> grep kris
+</span></span><span class="line"><span class="cl"><span class="go">ExecStart=...
+</span></span></span><span class="line"><span class="cl"><span class="go">ExecStartEx=...
+</span></span></span><span class="line"><span class="cl"><span class="go">WorkingDirectory=!/home/kris
+</span></span></span><span class="line"><span class="cl"><span class="go">Id=kris.service
+</span></span></span><span class="line"><span class="cl"><span class="go">Names=kris.service
+</span></span></span><span class="line"><span class="cl"><span class="go">Requires=kris.socket basic.target app.slice
+</span></span></span><span class="line"><span class="cl"><span class="go">ConsistsOf=kris.socket
+</span></span></span><span class="line"><span class="cl"><span class="go">After=kris.socket basic.target network.target app.slice
+</span></span></span><span class="line"><span class="cl"><span class="go">TriggeredBy=kris.socket
+</span></span></span><span class="line"><span class="cl"><span class="go">FragmentPath=/home/kris/.config/systemd/user/kris.service
+</span></span></span></code></pre></div><p>The <code>ConsistsOf=</code> here comes from the <code>PartOf=</code> defined in the socket.
+After running <code>systemctl --user start kris.service</code> we will see the service running using <code>lsof</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> lsof -i -n -P
+</span></span><span class="line"><span class="cl"><span class="go">COMMAND     PID USER   FD   TYPE     DEVICE SIZE/OFF NODE NAME
+</span></span></span><span class="line"><span class="cl"><span class="go">systemd  327983 kris   36u  IPv4 2390840115      0t0  TCP 127.0.0.1:12345 (LISTEN)
+</span></span></span><span class="line"><span class="cl"><span class="go">python3 1957657 kris    3u  IPv4 2390840115      0t0  TCP 127.0.0.1:12345 (LISTEN)
+</span></span></span><span class="line"><span class="cl"><span class="go">python3 1957657 kris    5u  IPv4 2390840115      0t0  TCP 127.0.0.1:12345 (LISTEN)
+</span></span></span></code></pre></div><h1 id="testing-the-service">
+    <a href="#testing-the-service">
+	Testing the service
+    </a>
+</h1>
+<p>We can now test:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> <span class="nb">echo</span> <span class="s2">&#34;I am a test&#34;</span> <span class="p">|</span> netcat 127.0.0.1 12345<span class="p">;</span> <span class="nb">echo</span>
+</span></span><span class="line"><span class="cl"><span class="go">tset a ma I
+</span></span></span></code></pre></div><p>And the log shows:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> journalctl --user-unit kris.service<span class="p">|</span> tail -5
+</span></span><span class="line"><span class="cl"><span class="go">Nov 27 23:58:48 server systemd[327983]: Started Kris Service.
+</span></span></span><span class="line"><span class="cl"><span class="go">Nov 27 23:59:59 server python3[1957657]: INFO:root:Connection from (&#39;127.0.0.1&#39;, 57512).
+</span></span></span><span class="line"><span class="cl"><span class="go">Nov 27 23:59:59 server python3[1957657]: INFO:root:Data: I am a test Response: tset a ma I
+</span></span></span><span class="line"><span class="cl"><span class="go">Nov 28 00:00:05 server python3[1957657]: INFO:root:Connection from (&#39;127.0.0.1&#39;, 57528).
+</span></span></span><span class="line"><span class="cl"><span class="go">Nov 28 00:00:05 server python3[1957657]: INFO:root:Data: I am a test Response: tset a ma I
+</span></span></span></code></pre></div><h1 id="listening-on-two-ports">
+    <a href="#listening-on-two-ports">
+	Listening on two ports
+    </a>
+</h1>
+<p>We can now change the socket unit:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">(systemd-socketserver) kris@server:~$ systemctl --user cat kris.socket
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> /home/kris/.config/systemd/user/kris.socket
+</span></span><span class="line"><span class="cl"><span class="go">[Unit]
+</span></span></span><span class="line"><span class="cl"><span class="go">Description=Kris Socket
+</span></span></span><span class="line"><span class="cl"><span class="go">PartOf=kris.service
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">[Socket]
+</span></span></span><span class="line"><span class="cl"><span class="go">ListenStream=127.0.0.1:12345
+</span></span></span><span class="line"><span class="cl"><span class="go">ListenStream=127.0.0.1:23456
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">[Install]
+</span></span></span><span class="line"><span class="cl"><span class="go">WantedBy=default.target
+</span></span></span></code></pre></div><p>When we restart the service, this is being reflected in the systemd running, but only partially in the service running:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> systemctl --user stop kris.service
+</span></span><span class="line"><span class="cl"><span class="gp">$</span> systemctl --user start kris.service
+</span></span><span class="line"><span class="cl"><span class="gp">$</span> lsof -i -n -P
+</span></span><span class="line"><span class="cl"><span class="go">COMMAND     PID USER   FD   TYPE     DEVICE SIZE/OFF NODE NAME
+</span></span></span><span class="line"><span class="cl"><span class="go">systemd  327983 kris   35u  IPv4 2391279244      0t0  TCP 127.0.0.1:12345 (LISTEN)
+</span></span></span><span class="line"><span class="cl"><span class="go">systemd  327983 kris   37u  IPv4 2391279245      0t0  TCP 127.0.0.1:23456 (LISTEN)
+</span></span></span><span class="line"><span class="cl"><span class="go">python3 1961235 kris    3u  IPv4 2391279244      0t0  TCP 127.0.0.1:12345 (LISTEN)
+</span></span></span><span class="line"><span class="cl"><span class="go">python3 1961235 kris    4u  IPv4 2391279245      0t0  TCP 127.0.0.1:23456 (LISTEN)
+</span></span></span><span class="line"><span class="cl"><span class="go">python3 1961235 kris    6u  IPv4 2391279244      0t0  TCP 127.0.0.1:12345 (LISTEN)
+</span></span></span></code></pre></div><p>So we also need to adjust our binds (or, in the case of docker, the <code>daemon.json</code>).</p>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+				<a href="/tags/#python" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				python
+				</a>
+				
+				<a href="/tags/#devops" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				devops
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2022-11-27-systemd-service-and-socket-activation/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/11/20/etl-from-a-django-model/">ETL from a Django Model</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/11/28/systemd-service-and-stdio/">Systemd Service and stdio</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

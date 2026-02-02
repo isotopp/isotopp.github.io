@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Optimistic locking | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2020/06/04/optimistic-locking/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='Optimistic locking | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2020/06/04/optimistic-locking/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2020-06-04T09:00:01Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='Optimistic locking' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="optimistic-locking-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						Optimistic locking
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>June 4, 2020</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/06/03/fertig-gelesen-rolf-ulrici/">Fertig gelesen: Rolf Ulrici</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/06/07/fixing-ip-netns-for-docker/">Fixing &#34;ip netns&#34; for docker</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>A <a href="https://www.reddit.com/r/mysql/comments/gwc0ry/concurrent_queries_with_mysql/" target="_blank" rel="noopener">question</a>
+
+ from Reddit&rsquo;s /r/mysql:</p>
+<blockquote>
+<p>Hey, I was planning to make a dashboard, where Users are subjected to make edits on their profiles every now and then, and I expect a high volume of requests to the database.</p>
+<p>Having worked previously with MySQL for another Dashboard, I encountered errors for:</p>
+<ul>
+<li>
+<p>Maximum user connections - when I connected to the database only while query was to be executed</p>
+</li>
+<li>
+<p>Lock wait timeout exceeded; try restarting transaction - when I connected to the database whenever a user logged into the dashboard, and ended the connection when he ended the session.</p>
+</li>
+</ul>
+<p>Both the approaches resulted in different errors, that too when I had a small user base, but they were active at the same time. Since, for the New Dashboard, I expect way more oscillating traffic, depending upon events, is there any way I can optimize my process of queries so that I can prevent the errors.</p>
+</blockquote>
+<p>I am having trouble understanding what was being tried. The host language was not stated, but that choice could influence system behavior because of the way the host language connects to the database.</p>
+<p>Assuming a 2-tier system where the web frontend contains the host language directly or indirectly (any of Perl, PHP, Python, Ruby as module or FCGI process), we will see as many connections to the database as there are web server processes or FCGI workers. Each connection spawns a thread in the database, and that will, when idle consume some 500 KB or so of memory in the database server. Obviously, the <code>max_connections</code> value must be higher or equal to the maximum number of workers.</p>
+<p>There is no way for this to stall &ldquo;when I connected to the database only while query was to be executed&rdquo;. By default, each worker has one database connection and query execution is synchronous, the worker is stalled while the database is working on the query. This could be different, if a language such as Java or Javascript (node.js?) is being used, and a connection pool has been configured. In this case, if queries stall, the connection pool may be undersized.</p>
+<p>The &ldquo;Lock wait timeout exceeded&rdquo; means an InnoDB row lock has been held for a transaction duration longer than 50 seconds. This seems to be either a deadlock (two transactions trying to change an overlapping set of rows) that is not properly detected, or it is an attempt to hold a lock over a human user interface transactions - always an error.</p>
+<p>For the latter problem often an optimistic locking approach is successful. That is: No locking when generating the data entry screen for the UI. When the data entry screen is comitted, start the transaction and guard it with a version number or the full data set.</p>
+<p>Let&rsquo;s look at this in a concrete fashion, using Python and a Flask app, using the ideas of Miguel Grinberg&rsquo;s <a href="https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms" target="_blank" rel="noopener">The Flask Mega-Tutorial</a>
+
+ as a foundation.</p>
+<p>We want to edit some dummy table without timing out. The table is defined like so:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">editme</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="nb">bigint</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="n">AUTO_INCREMENT</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">name</span><span class="o">`</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">city</span><span class="o">`</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">editme</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;Name 1&#39;</span><span class="p">,</span><span class="s1">&#39;City 1&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">editme</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s1">&#39;Name 2&#39;</span><span class="p">,</span><span class="s1">&#39;City 2&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">editme</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s1">&#39;Name 3&#39;</span><span class="p">,</span><span class="s1">&#39;City 3&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">editme</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="s1">&#39;Name 4&#39;</span><span class="p">,</span><span class="s1">&#39;City 4&#39;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>It has an integer field <code>id</code>, which is the primary key, and two data fields, <code>name</code>, and <code>city</code>. We do not care what that means, it is just an example. We provide some sample data.</p>
+<p>The web form shows these values, and as hidden fields, also preserves the pre-edit values. So we get the <code>id</code> field to identify rows, and then hidden fields <code>oldname</code> and <code>oldcity</code>, and the matching visible edit fields <code>name</code> and <code>city</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">{% extends &#34;base.html&#34; %}
+</span></span><span class="line"><span class="cl">{% block content %}
+</span></span><span class="line"><span class="cl">	{% for row in table %}
+</span></span><span class="line"><span class="cl">	<span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&#34;&#34;</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;post&#34;</span> <span class="na">novalidate</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">		{{ form.csrf_token }}
+</span></span><span class="line"><span class="cl">		{{ form.id(value=row.id) }}
+</span></span><span class="line"><span class="cl">		{{ form.oldname(value=row.name) }}
+</span></span><span class="line"><span class="cl">		{{ form.oldcity(value=row.city) }}
+</span></span><span class="line"><span class="cl">		<span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ form.name(value=row.name, size=40) }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ form.city(value=row.city, siz=40) }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ form.submit() }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">	{% endfor %}
+</span></span><span class="line"><span class="cl">{% endblock %}
+</span></span></code></pre></div><p><p class="md__image">
+  <img src="2020/06/optimistic-locking-1.png" alt=""  />
+</p>
+
+</p>
+<p>Flask and WTForms demand a Form Class to handle this. We name it <code>EditForm</code> and define our hidden and visible fields:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#! /usr/bin/env python</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask_wtf</span> <span class="kn">import</span> <span class="n">FlaskForm</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">wtforms</span> <span class="kn">import</span> <span class="n">StringField</span><span class="p">,</span> <span class="n">SubmitField</span><span class="p">,</span> <span class="n">HiddenField</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">wtforms.validators</span> <span class="kn">import</span> <span class="n">DataRequired</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">EditForm</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">id</span> <span class="o">=</span> <span class="n">HiddenField</span><span class="p">(</span><span class="s2">&#34;id&#34;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">oldname</span> <span class="o">=</span> <span class="n">HiddenField</span><span class="p">(</span><span class="s2">&#34;oldname&#34;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">oldcity</span> <span class="o">=</span> <span class="n">HiddenField</span><span class="p">(</span><span class="s2">&#34;oldcity&#34;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">name</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s2">&#34;name&#34;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">city</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s2">&#34;city&#34;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s2">&#34;Save&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>Finally we can put all the cabling into our routes:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#! /usr/bin/env python</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">flash</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">app</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">app.forms</span> <span class="kn">import</span> <span class="n">EditForm</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">app.data</span> <span class="kn">import</span> <span class="n">FormUpdater</span>  <span class="c1"># this is where the optimistic locking happens</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@app.route</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;GET&#34;</span><span class="p">,</span> <span class="s2">&#34;POST&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@app.route</span><span class="p">(</span><span class="s2">&#34;/index&#34;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;GET&#34;</span><span class="p">,</span> <span class="s2">&#34;POST&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">f</span> <span class="o">=</span> <span class="n">FormUpdater</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">table</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>   <span class="c1"># load table into memory</span>
+</span></span><span class="line"><span class="cl">    <span class="n">form</span> <span class="o">=</span> <span class="n">EditForm</span><span class="p">()</span>   <span class="c1"># show an edit form</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>   <span class="c1"># if the form has been submitted back,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">modified</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>   <span class="c1"># save the data, remember the number of changed rows</span>
+</span></span><span class="line"><span class="cl">        <span class="n">table</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>           <span class="c1"># reload the data for checking</span>
+</span></span><span class="line"><span class="cl">        <span class="n">flash</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Updated </span><span class="si">{</span><span class="n">modified</span><span class="si">}</span><span class="s2"> rows.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">flash</span><span class="p">(</span><span class="s2">&#34;No data received.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># show the form</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">&#34;index.html&#34;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&#34;Home&#34;</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+</span></span></code></pre></div><p>We register only one action, for the routes <code>/</code> and <code>/index</code>. This route loads the data from the database, by creating a <code>FormUpdater</code> and calling <code>fetch()</code> on it.</p>
+<p>In case this form has been edited and the <code>Save</code> button pressed, we end up in the if-branch for <code>validate_on_submit()</code>. Here we call <code>update()</code> on the <code>FormUpdater</code>, and the re-fetch the data to make sure we show the updates. We also remember the number of modified rows in <code>modified</code>.</p>
+<p>In any case, we show the table as a form.</p>
+<p>Now, the <code>FormUpdater</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#! /usr/bin/env python</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb.cursors</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">FormUpdater</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&#34;root&#34;</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cur</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">query</span> <span class="o">=</span> <span class="s2">&#34;select id, name, city from editme&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">query</span> <span class="o">=</span> <span class="s2">&#34;update editme set name = </span><span class="si">%s</span><span class="s2">, city = </span><span class="si">%s</span><span class="s2"> where id = </span><span class="si">%s</span><span class="s2"> and name = </span><span class="si">%s</span><span class="s2"> and city = </span><span class="si">%s</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">form</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">form</span><span class="o">.</span><span class="n">city</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">form</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">form</span><span class="o">.</span><span class="n">oldname</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">form</span><span class="o">.</span><span class="n">oldcity</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">modified</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">rowcount</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">modified</span>
+</span></span></code></pre></div><p>The <code>fetch()</code> method simply runs <code>select id, name, city from editme</code> and returns all rows. In order to make our life easier, we are using a <code>DictCursor</code>, so we get named columns.</p>
+<p>The <code>update()</code> method generates a query that sets the new values for <code>name</code> and <code>city</code>, identifying the row by <code>id</code>. The where-clasuse of the update statement contains the additional condition <code>AND name = %s AND city = %s</code>, where we put the old name and old city into the placeholders.</p>
+<p>So when we generate the form, we do not lock the record, and we put the old name and old city into the form itself in hidden fields. When we accept the form, we check if the name and city are unchanged by comparing them against the old name and old city as they have been submitted back.</p>
+<p>In case they have been changed, the update fails and the user edits are lost. Otherwise the update statement goes through. We report back the number of rows changes, 0 or 1.</p>
+<p>More intelligence could be put into the function: In case we do not modify any row, we could reload the row and check if the oldname still matches - if yes, we could accept any user edit on the name field, as there is no collision. Then we could do the same with the city.</p>
+<p>More intelligence could be put into the editor: In case we have any collision, we could flash and highlight the collision and allow the user to resubmit their change, resolving the conflict.</p>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+				<a href="/tags/#mysqldev" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysqldev
+				</a>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+				<a href="/tags/#erklaerbaer" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				erklaerbaer
+				</a>
+				
+				<a href="/tags/#reddit" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				reddit
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2020-06-04-optimistic-locking/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/06/03/fertig-gelesen-rolf-ulrici/">Fertig gelesen: Rolf Ulrici</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/06/07/fixing-ip-netns-for-docker/">Fixing &#34;ip netns&#34; for docker</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

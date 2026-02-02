@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Rolling MySQL back and forward | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2022/06/03/rolling-back/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='Rolling MySQL back and forward | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2022/06/03/rolling-back/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2022-06-02T08:42:00Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='Rolling MySQL back and forward' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="rolling-mysql-back-and-forward-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						Rolling MySQL back and forward
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>June 3, 2022</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/05/17/wie-normale-leute-eben/">Wie normale Leute eben...</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/06/07/mysql-binlog-compression-and-large-transactions/">Binlog Compression and Large Transactions</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>Where I work, we <a href="/2021/03/24/a-lot-of-mysql/">manage databases in an automated way</a>
+
+.
+Not as automated as I wish it to be, but largely without touching boxes.</p>
+<p>We have been doing so for a long time.</p>
+<p>Over ten years ago, I set the team the challenge &ldquo;be on an arbitrary version of MySQL within 20 workdays (one calendar month), no matter how many servers we have&rdquo;.
+We are there now, in a way: we are on a 30-day refresh cycle for our bare metal cloud, and we match that cycle for our virtualized fleet.
+It was a long road.</p>
+<h1 id="cloning-upgrading-and-downgrading">
+    <a href="#cloning-upgrading-and-downgrading">
+	Cloning, upgrading and downgrading
+    </a>
+</h1>
+<p>The three most basic operations we need to solve in order to manage a fleet of instances are:
+creating clones of an existing database instance in a way that they can participate in a replication hierarchy,
+upgrading instances to a new minor or major version,
+and downgrading instances.</p>
+<h2 id="cloning">
+    <a href="#cloning">
+	Cloning
+    </a>
+</h2>
+<p>Our tooling has three ways of cloning databases:</p>
+<ul>
+<li>Using the high-speed native <a href="https://dev.mysql.com/doc/refman/8.0/en/clone-plugin.html" target="_blank" rel="noopener"><code>CLONE</code></a>
+
+ command.</li>
+<li>Using Percona <code>xtrabackup</code>.</li>
+<li>Shutting down an instance and running <code>rsync</code>.</li>
+</ul>
+<p>Using native cloning is by far the fastest and most convenient version, but it also comes with the most restrictions:
+Currently MySQL insists that the donor and the receiving instance be the exact same version.
+This makes <code>CLONE</code> the preferred method for scaling operations, but useless in upgrade and downgrade processing.</p>
+<p><code>CLONE</code> could be much more useful in upgrade contexts:
+MySQL knows how to upgrade a datadir in-place.
+There is even no longer a need to run an external <code>mysql_upgrade</code> program, the code is now part of the server core.</p>
+<p>It would be easy to allow cloning from a lower version donor, drop the received data into a local datadir and then restart the server process into an upgrade cycle.
+For forward version movements this would be a big improvement.</p>
+<p>For us, <code>rsync</code> is an acceptable workaround to cloning, even if it is somewhat limited in speed.
+That is, because we consider any use of MySQL without a minimum number of replicas broken, and prevent it.
+Even for customers who think they do not need it &ndash; eventually they all do.</p>
+<p>So we can always stop an instance, and take our time to do things with it after we have copied it.
+It allows us to experiment, give extra capacity or try out new versions safely, even Pre-GA MySQL.</p>
+<p>Our safe fallback and the best compromise in speed, comfort and safety is, as always, Percona <code>xtrabackup</code>.</p>
+<h2 id="upgrading">
+    <a href="#upgrading">
+	Upgrading
+    </a>
+</h2>
+<p>In the past, MySQL had the rule that there are never on-disk format changes within a single major version.
+That made it easy to move forward and backward between versions within a major release.
+It was also kind of necessary &ndash; the release quality of MySQL back then was not always of the kind where you could upgrade to the most recent version and be certain that it was an improvement.</p>
+<p>A lot has changed since then, and specifically MySQL 8 has seen fantastic improvements in refactoring of the codebase, in feature planning and in an improved software production process.</p>
+<p>A bit of these improvements has been traded for evolutionary speed, though:
+With MySQL 8, on-disk format changes within the release series have been explicitly allowed, announced and in fact also happened several times.</p>
+<p>This became a lot easier since <code>mysql_upgrade</code> functionality has been integrated into the server, and made automatic.</p>
+<h2 id="downgrading">
+    <a href="#downgrading">
+	Downgrading
+    </a>
+</h2>
+<p>Downgrades have never been a great concern for MySQL.</p>
+<p>In the past that was not an issue, because upgrading between major versions was seen as a major effort and did not happen en-passant and outside a migration project.
+That meant extensive testing, and retaining binary, up-to-date data directories of the replication hierarchy in question.
+In case a downgrade was necessary, one would reclone the old version and inject it into the replication tree, reaping instances running the new version to balance.</p>
+<p>All this assumes that you did not yet upgrade the primary, which in any seamless migration always is the last step.</p>
+<h1 id="mysql-8-complicates-this-a-bit">
+    <a href="#mysql-8-complicates-this-a-bit">
+	MySQL 8 complicates this a bit
+    </a>
+</h1>
+<p>With MySQL 8, this becomes a bit more complicated, or more common.</p>
+<p>While MySQL 8 gives us very welcome new features, (<a href="https://www.percona.com/blog/quick-peek-at-mysql-8-0-29/" target="_blank" rel="noopener">here are some highlights</a>
+
+), they are sometimes a bit… undertested.</p>
+<p>Some examples:</p>
+<ul>
+<li>Our <a href="https://www.percona.com/blog/mysql-8-0-29-and-percona-xtrabackup-incompatibilities/" target="_blank" rel="noopener">default clone mechanism</a>
+
+ does not work yet with 8.0.29. In our case, it affects several thousand instances that fall back to <code>rsync</code> cloning, because <code>CLONE</code>&rsquo;s strict version requirements render it useless, too.</li>
+<li>Some people experience <a href="https://forums.mysql.com/read.php?22,704532,704675" target="_blank" rel="noopener">corruption with the new improved instance schema change</a>
+
+ in 8.0.29 and need to consider downgrading to 8.0.28.</li>
+<li>We had an instance the JAMF database, tables without primary key, virtual columns and broken utf16 combine in an unholy and explosive way that required us going back from 8.0.28 to 8.0.27.</li>
+<li>And there are some problems with Spatial Indexes not being used in 8.0.29 that can make it necessary to downgrade to 8.0.28 from 8.0.29.</li>
+</ul>
+<p>All of these involve at one or two major versions to fix.
+Being able to go back &ldquo;a quarter or half a year&rdquo; would make this much easier for everyone:
+Users and Developers, and take a lot of strain of the vendor/customer relationship.</p>
+<h2 id="clone-would-profit-too">
+    <a href="#clone-would-profit-too">
+	<code>CLONE</code> would profit, too
+    </a>
+</h2>
+<p>As discussed above, <code>CLONE</code> has extremely strict version requirements between donor and destination.</p>
+<p>The upgrade path is fixable relatively trivial, as shown above, by falling into a server restart with upgrading.
+A guaranteed two-minor-version downgradability (6 months window) could enable <code>CLONE</code> to also handle downgrades, at speed.
+It would make version movements up and down a lot less risky.</p>
+<p>That would be a lot of value added for little effort.</p>
+<h1 id="dump-and-restore-are-not-an-option">
+    <a href="#dump-and-restore-are-not-an-option">
+	Dump and Restore are not an option
+    </a>
+</h1>
+<p>The default way to upgrade and downgrade a database is to dump and restore.
+For Postgres for many years this was the recommended way to jump to the next version: <code>pg_dump</code> and be done with it.</p>
+<p>Obviously that works only for toy deployments, because it does not scale.
+Dumping throws away the indexes, and importing the dump involves reading the data, scanning and sorting it, and then rebuilding the index structures again.</p>
+<p>We have been there, in the past.</p>
+<h2 id="the-51-to-55-disaster">
+    <a href="#the-51-to-55-disaster">
+	The 5.1 to 5.5 disaster
+    </a>
+</h2>
+<p>For our upgrade from MySQL 5.1 to 5.5, our starting point was a non-GA version of MySQL 5.1 that included a bugfix we considered critical.
+For this version, no binary, in-place upgrade path to 5.5 existed.</p>
+<p>That meant, our upgrade to 5.5 consisted in dumping each replication hierarchy and importing the dump into 5.5.
+The 5.5 instance would then be connected to the replication tree, and had opportunity to catch up.
+We would make it an intermediate primary eating 5.1 binlog, and emitting 5.5 binlog to further 5.5 instances we cloned out of the initial one.
+At the same time we would reap production 5.1 instances to match the growth of the 5.5 population.</p>
+<p><p class="md__image">
+  <img src="2022/06/mysql-upgrade.png" alt=""  />
+</p>
+
+</p>
+<p>Eventually we would move writes down from the 5.1 primary, promoting the 5.5 intermediate primary to try primary, &ldquo;beheading&rdquo; the replication hierarchy.
+Back then we already had a three-digit number of MySQL replication hierarchies, and even back then a replication hierarchy typically had a disk footprint of 1-2 TB (ie 2-4h at 200 MB/s).</p>
+<p>All this takes around a week per hierarchy, and was not properly automated back then.
+It meant that the transition from 5.1 to 5.5 took us almost two years.
+In fact, the entire 5.1 upgrade experience is part of why we have so much automation.</p>
+<h2 id="mysql-8-makes-this-easier">
+    <a href="#mysql-8-makes-this-easier">
+	MySQL 8 makes this easier
+    </a>
+</h2>
+<p>Things are marginally better in MySQL 8 these days:</p>
+<ul>
+<li>You can <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-redo-log.html#innodb-disable-redo-logging" target="_blank" rel="noopener">turn off redo logging</a>
+
+ while doing bulk loading or importing (8.0.21 or better).</li>
+<li>You can do <a href="https://dev.mysql.com/doc/refman/8.0/en/online-ddl-parallel-thread-configuration.html" target="_blank" rel="noopener">parallel index creation</a>
+
+, so that is faster, if you have the CPU and memory to burn (8.0.27 or better) and your tables are within the constraints given.</li>
+</ul>
+<p>On the other hand, data grew.
+Sometimes imports can become multi-month projects:
+We had a 120 TB MariaDB instance that was converted to Oracle MySQL 5.7 by dump and reload.
+This took a machine with AMD EPYC CPU, 1 TB of RAM, and multiple months to complete.
+The conversion saga was painful enough to warrant a <a href="https://twitter.com/_digitalknight/status/1526671502116114435" target="_blank" rel="noopener">Percona Live talk</a>
+
+ about the entire thing by Mohammed Gaafar and Pep Pla.</p>
+<h2 id="mysql-8-makes-it-worse">
+    <a href="#mysql-8-makes-it-worse">
+	MySQL 8 makes it worse
+    </a>
+</h2>
+<p>While MySQL makes &ldquo;downgrades by reading a dump&rdquo; somewhat better, at the same time there are aspects that make it worse.
+The new dynamic permission system in MySQL 8 makes it easy to add new privileges over time.
+The result is that privileges now change more rapidly.</p>
+<p>When you dump and reload (or downgrade a binary datadir), there is no mechanism currently to handle this safely.</p>
+<p>For example, 8.0.28 might add <code>AUDIT_ABORT_EXEMPT</code>, and downgrading this in any way to 8.0.27 requires some <code>sed</code> artistics in the dump or other kludgery: 8.0.27 won&rsquo;t overlook the privilege names it does not know anything about.
+Clearly, here is a tooling gap.</p>
+<h1 id="tldr">
+    <a href="#tldr">
+	TL;DR
+    </a>
+</h1>
+<p>Databases are where the state is kept.
+State has size, and copying state is slow.
+That is why everybody is always very protective of state.
+Do not treat on-disk data the Yolo way that Devops treats stateless instances.</p>
+<ul>
+<li>Introducing new features in a major version is okay if you have a mature codebase and development process.</li>
+<li>Changing persistent state on disk is more complicated than that.
+<ul>
+<li>Upgrades should always be binary and in-place.</li>
+<li>Downgrades should be possible binary and in-place at least for 2 minor version (6 months)</li>
+</ul>
+</li>
+<li>If you do not allow that, it is painful for everybody.
+<ul>
+<li>That includes us, because we can test slower, so Oracle MySQL gets less feedback.</li>
+<li>That includes Oracle MySQL itself, because it makes nifty features such as <code>CLONE</code> needlessly specific and much less useful.</li>
+</ul>
+</li>
+<li>We will, even with today&rsquo;s degree of automation, never be able to upgrade by dump and restore, just because reindexing is very, very expensive. It is just too much data.</li>
+</ul>
+<p>Binary in-place upgrade and downgrade paths are completely non-optional.
+We will never have the hell of the 5.1 to 5.5 transition again.
+We simply cannot afford this anymore.</p>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#database" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				database
+				</a>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2022-06-03-rolling-back/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/05/17/wie-normale-leute-eben/">Wie normale Leute eben...</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/06/07/mysql-binlog-compression-and-large-transactions/">Binlog Compression and Large Transactions</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

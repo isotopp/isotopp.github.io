@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>MySQL Performance Limits | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2019/09/06/mysql-performance-limits/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='MySQL Performance Limits | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2019/09/06/mysql-performance-limits/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2019-09-06T15:30:14Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='MySQL Performance Limits' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="mysql-performance-limits-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						MySQL Performance Limits
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>September 6, 2019</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2019/09/03/konsenssysteme/">Konsenssysteme</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2019/09/26/how-not-to-handle-an-ingame-incident/">The Rockforth Fertilizer Incident</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>The last time I saw a MySQL server operating at a performance limit
+was in 2012. Back them we had a production master on (then) current
+hardware, running stable at about 21000 QPS. At 24000 QPS it tended
+to become unstable and fall over, dying in global locks on the
+InnoDB Adaptive Hash Index or other global locks.</p>
+<p>I need to better understand how MySQL works today, and what the limits
+are on a box that is considered large in 2019.</p>
+<h1 id="what-do-i-expect">
+    <a href="#what-do-i-expect">
+	What do I expect?
+    </a>
+</h1>
+<p>Well, boxen are a lot larger than they have been in 2012, and
+we invented NVME and Flash Storage since then.</p>
+<p>I expect MySQL to be able to eat the full box I am throwing at
+it and not die in locks. I also expect the performance levels
+I can reach to be scaling with the query execution times I observe
+in production times number of cores.</p>
+<p>I do observe appro. 1/3 ms query execution time on the queries
+I simulate here, in production. So I would like to see about
+3000 QPS per core. With a 64 core box, that would be around 200k QPS,
+easily 10x-ish more than in 2012.</p>
+<h1 id="what-did-i-get">
+    <a href="#what-did-i-get">
+	What did I get?
+    </a>
+</h1>
+<p>This is all read testing of a memory resident data set. Other testing
+to follow.</p>
+<p>After some woes described below, I got 200k QPS or better in all
+cases, for simple PK lookups in fact almost 2x as much.</p>
+<p>SK lookups are about 1/2 as fast as PK lookups or faster, allowing
+for &ldquo;one level of indirection&rdquo;.</p>
+<p>MySQL 8 scales well enough to eat all of a 64 core box with 1/2 TB
+of RAM without choking or locking up or being otherwise jittery. It
+is adequate for any hardware that in 2019 we can reasonably throw at
+it. From a 2012 PoV this is an awesome achievement.</p>
+<h1 id="the-box">
+    <a href="#the-box">
+	The box
+    </a>
+</h1>
+<p>So my current test box is an single socket AMD 7702 (64C, HT off)
+with 512G of memory and</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># nvme list</span>
+</span></span><span class="line"><span class="cl">Node             SN                   Model                                    Namespace Usage                      Format           FW Rev
+</span></span><span class="line"><span class="cl">---------------- -------------------- ---------------------------------------- --------- -------------------------- ---------------- --------
+</span></span><span class="line"><span class="cl">/dev/nvme0n1     39X0A05ZTZZF         KCM51VUG800G                             <span class="m">1</span>          27.79  GB / 800.17  GB    <span class="m">512</span>   B +  <span class="m">0</span> B   3006T21F
+</span></span><span class="line"><span class="cl">/dev/nvme1n1     29X0A00CTZZF         KCM51VUG800G                             <span class="m">1</span>          27.79  GB / 800.17  GB    <span class="m">512</span>   B +  <span class="m">0</span> B   3006T21F
+</span></span><span class="line"><span class="cl">/dev/nvme2n1     2950A00FTZZF         KCM51VUG800G                             <span class="m">1</span>          27.79  GB / 800.17  GB    <span class="m">512</span>   B +  <span class="m">0</span> B   3006T21F
+</span></span><span class="line"><span class="cl">/dev/nvme3n1     39X0A067TZZF         KCM51VUG800G                             <span class="m">1</span>          27.79  GB / 800.17  GB    <span class="m">512</span>   B +  <span class="m">0</span> B   3006T21F
+</span></span><span class="line"><span class="cl">/dev/nvme4n1     39X0A060TZZF         KCM51VUG800G                             <span class="m">1</span>          27.79  GB / 800.17  GB    <span class="m">512</span>   B +  <span class="m">0</span> B   3006T21F
+</span></span><span class="line"><span class="cl">/dev/nvme5n1     39X0A069TZZF         KCM51VUG800G                             <span class="m">1</span>          27.79  GB / 800.17  GB    <span class="m">512</span>   B +  <span class="m">0</span> B   3006T21F
+</span></span><span class="line"><span class="cl">/dev/nvme6n1     39X0A06ETZZF         KCM51VUG800G                             <span class="m">1</span>          27.79  GB / 800.17  GB    <span class="m">512</span>   B +  <span class="m">0</span> B   3006T21F
+</span></span><span class="line"><span class="cl">/dev/nvme7n1     39X0A05LTZZF         KCM51VUG800G                             <span class="m">1</span>          27.79  GB / 800.17  GB    <span class="m">512</span>   B +  <span class="m">0</span> B   3006T21F
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># vgcreate kristest /dev/nvme{0..7}n1</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># lvcreate -n mysql -L4T -i8 kristest</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># mkfs -t xfs /dev/kristest/mysql</span>
+</span></span></code></pre></div><p>I then run the performance-datagen.sql script to create a test table
+kristest.t, and then run performance-querygen.py to create a file
+with test queries, file.sql.</p>
+<p>mysqlslap then does</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mysqlslap --user<span class="o">=</span>kristest --password<span class="o">=</span><span class="s1">&#39;&lt;secret&gt;&#39;</span> --host<span class="o">=</span>localhost --concurrency<span class="o">=</span><span class="m">64</span> --iterations<span class="o">=</span><span class="m">20000</span> --create-schema<span class="o">=</span>kristest --verbose --query<span class="o">=</span>./file.sql
+</span></span></code></pre></div><p>and I observe the running test with <code>innotop -d1 -mQ</code> and <code>innotop -d1 -mC</code>.</p>
+<h1 id="findings">
+    <a href="#findings">
+	Findings
+    </a>
+</h1>
+<h2 id="mysql-8016-binlog-row-minimal-buffer-pool-384g">
+    <a href="#mysql-8016-binlog-row-minimal-buffer-pool-384g">
+	MySQL 8.0.16, Binlog, ROW, MINIMAL, Buffer Pool 384G
+    </a>
+</h2>
+<p>For all tests:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ du -sh /mysql/kristest/data
+</span></span><span class="line"><span class="cl">87G
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">root</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kristest</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">t</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-----------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w">  </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-----------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">134217728</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-----------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">6</span><span class="p">.</span><span class="mi">13</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><h3 id="testmodes-1">
+    <a href="#testmodes-1">
+	Testmodes 1
+    </a>
+</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">testmodes = [ 1 ]
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">VSZ 421G
+</span></span></span><span class="line"><span class="cl"><span class="go">RES 32.8G
+</span></span></span><span class="line"><span class="cl"><span class="go">load average: 63.52, 61.70, 59.23
+</span></span></span><span class="line"><span class="cl"><span class="go">QPS 384k
+</span></span></span></code></pre></div><h3 id="testmodes-1-2">
+    <a href="#testmodes-1-2">
+	Testmodes 1, 2
+    </a>
+</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">testmodes = [ 1, 2 ]
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">VSZ 421G
+</span></span></span><span class="line"><span class="cl"><span class="go">RES 34.3G
+</span></span></span><span class="line"><span class="cl"><span class="go">load average: 63.82, 64.89, 61.63
+</span></span></span><span class="line"><span class="cl"><span class="go">QPS 270k-320k
+</span></span></span></code></pre></div><h3 id="testmodes-1-2-3">
+    <a href="#testmodes-1-2-3">
+	Testmodes 1, 2, 3
+    </a>
+</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">testmodes = [ 1, 2, 3 ]
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">VSZ 421G
+</span></span></span><span class="line"><span class="cl"><span class="go">RES 88.4G
+</span></span></span><span class="line"><span class="cl"><span class="go">load average: 64.10, 57.94, 56.72
+</span></span></span><span class="line"><span class="cl"><span class="go">QPS 5.5k-6.2k
+</span></span></span></code></pre></div><p>There is a distinct warmup phase during which the box is not
+saturated and Read I/O can be observed. When the RES approaches
+disk size, this disk traffic ceases and final load and final
+QPS ratings are achieved.</p>
+<h3 id="testmodes-1-2-3-4">
+    <a href="#testmodes-1-2-3-4">
+	Testmodes 1, 2, 3, 4
+    </a>
+</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">testmodes = [ 1, 2, 3, 4 ]
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">VSZ 421G
+</span></span></span><span class="line"><span class="cl"><span class="go">RES 94.6G
+</span></span></span><span class="line"><span class="cl"><span class="go">load average: 65.91, 63.10, 59.75
+</span></span></span><span class="line"><span class="cl"><span class="go">QPS 407-1002 (yup, no &#34;k&#34;, this is as low as 407 QPS)
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">root</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kristest</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="k">explain</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">i1</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="mi">64419</span><span class="p">,</span><span class="mi">37384</span><span class="p">,</span><span class="mi">17490</span><span class="p">,</span><span class="mi">7919</span><span class="p">,</span><span class="mi">42137</span><span class="p">,</span><span class="mi">70137</span><span class="p">,</span><span class="mi">56196</span><span class="p">,</span><span class="mi">54754</span><span class="p">,</span><span class="mi">70263</span><span class="w"> </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----+-------------+-------+------------+-------+---------------+------+---------+------+-------+----------+-----------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">select_type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">partitions</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">type</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">possible_keys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">key</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">key_len</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ref</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">rows</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Extra</span><span class="w">                 </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----+-------------+-------+------------+-------+---------------+------+---------+------+-------+----------+-----------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">SIMPLE</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">t</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="no">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">i1</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">i1</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="mi">4</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="no">NULL</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">12674</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="k">condition</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----+-------------+-------+------------+-------+---------------+------+---------+------+-------+----------+-----------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nf">warning</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">root</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kristest</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">i1</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="mi">64419</span><span class="p">,</span><span class="mi">37384</span><span class="p">,</span><span class="mi">17490</span><span class="p">,</span><span class="mi">7919</span><span class="p">,</span><span class="mi">42137</span><span class="p">,</span><span class="mi">70137</span><span class="p">,</span><span class="mi">56196</span><span class="p">,</span><span class="mi">54754</span><span class="p">,</span><span class="mi">70263</span><span class="w"> </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">134777240</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">95</span><span class="n">ab0836</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">95</span><span class="n">ab0838</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">95</span><span class="n">ab0839</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">95</span><span class="n">ab083b</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">95</span><span class="n">ab083c</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">95</span><span class="n">ab083e</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">95</span><span class="n">ab083f</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">95</span><span class="n">ab0841</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">95</span><span class="n">ab0842</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">95</span><span class="n">ab0844</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">70263</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">27807</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">28246</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">57810</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">4313</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">48136</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">27740</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">94290</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">88230</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">58281</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">12674</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">38</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><h1 id="increase-selectivity">
+    <a href="#increase-selectivity">
+	Increase selectivity
+    </a>
+</h1>
+<p>In our testing above, we see that the cardinality of i1 is 100k, and
+the table size is 128m. That&rsquo;s 1280 result rows on the average for
+a random value of i1.</p>
+<p>We also observe that testmode 4 results ask for 2-11 values of i1 or i2,
+where testmode 3 results ask for a single value of i1 or i2. The average
+number of testmode 4 values we ask for is 6, and testmode 4 happens
+to be 6x slower.</p>
+<p>So it might be that the number of result set rows is determining the
+query speed.</p>
+<p>We can test: We increase the cardinality of i1 to match id, 128. And
+for i2 we are going up to 256m cardinality.</p>
+<h2 id="the-slow-way">
+    <a href="#the-slow-way">
+	The slow way
+    </a>
+</h2>
+<p>Modify the dataset:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">root</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kristest</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="n">i1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">rand</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">134937574</span><span class="p">,</span><span class="w"> </span><span class="n">i2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">rand</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">134937574</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">134217728</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="nf">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="n">hour</span><span class="w"> </span><span class="mi">53</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="mi">17</span><span class="p">.</span><span class="mi">46</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Rows</span><span class="w"> </span><span class="n">matched</span><span class="p">:</span><span class="w"> </span><span class="mi">134217728</span><span class="w">  </span><span class="n">Changed</span><span class="p">:</span><span class="w"> </span><span class="mi">134217728</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span></span></span></code></pre></div><p>During the execution of that update statement, we see an aggregate write
+load of 320 MB/s (~40 MB/s per NVME). This is not very high. It needs to
+be tested with more write benchmarks, later.</p>
+<p>Also, there are four INDEX() definitions active on t, i1, i2, c1
+and c2, two of which are being updated.</p>
+<p>This is not fast, either, and this is the n00b way of doing things. We
+redo this again, differently:</p>
+<h2 id="a-faster-way">
+    <a href="#a-faster-way">
+	A faster way
+    </a>
+</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">root</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kristest</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">drop</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">i1</span><span class="p">,</span><span class="w"> </span><span class="k">drop</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">i2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="nf">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="mi">46</span><span class="p">.</span><span class="mi">85</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Records</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Duplicates</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">root</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kristest</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="n">i1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">rand</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">134937574</span><span class="p">,</span><span class="w"> </span><span class="n">i2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">rand</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">134937574</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">134217728</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="nf">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">26</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="mi">5</span><span class="p">.</span><span class="mi">07</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Rows</span><span class="w"> </span><span class="n">matched</span><span class="p">:</span><span class="w"> </span><span class="mi">134217728</span><span class="w">  </span><span class="n">Changed</span><span class="p">:</span><span class="w"> </span><span class="mi">134217728</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">root</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kristest</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="p">(</span><span class="n">i1</span><span class="p">),</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="p">(</span><span class="n">i2</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="nf">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">6</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="mi">23</span><span class="p">.</span><span class="mi">04</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Records</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Duplicates</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span></span></span></code></pre></div><p>TBH, I&rsquo;d expect MySQL by now to do bulk index updates in mass ALTER tables
+quicker than &rsquo;the slow way&rsquo; in 2019. OTOH, that is probably stuff that
+you get when you pay for Red Oracle instead of Blue.</p>
+<h2 id="testing-with-selective-i1-i2">
+    <a href="#testing-with-selective-i1-i2">
+	Testing with selective i1, i2
+    </a>
+</h2>
+<p>Now i1 and i2 are much more selective, and instead of 12k result rows,
+a search on i1 should on the average return 1 row, on i2 even 0.5 rows.
+Let&rsquo;s see how that affects runtimes up SK lookup queries (testmode 3, 4).</p>
+<p>Let&rsquo;s rerun everything, starting with a cold mysqld again, so that I
+do get proper memory sizes as well.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># du -sh /mysql/kristest/data</span>
+</span></span><span class="line"><span class="cl">94G     /mysql/kristest/data
+</span></span></code></pre></div><h3 id="testmodes-1-1">
+    <a href="#testmodes-1-1">
+	Testmodes 1
+    </a>
+</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">testmodes = [ 1 ]
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">VSZ 421G
+</span></span></span><span class="line"><span class="cl"><span class="go">RES 32.8G
+</span></span></span><span class="line"><span class="cl"><span class="go">load average: 64.14, 43.67, 20.08
+</span></span></span><span class="line"><span class="cl"><span class="go">QPS 360k-420k
+</span></span></span></code></pre></div><h3 id="testmodes-1-2-1">
+    <a href="#testmodes-1-2-1">
+	Testmodes 1, 2
+    </a>
+</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">testmodes = [ 1, 2 ]
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">VSZ 421G
+</span></span></span><span class="line"><span class="cl"><span class="go">RES 33.8G
+</span></span></span><span class="line"><span class="cl"><span class="go">load average: 60.36, 56.82, 39.73
+</span></span></span><span class="line"><span class="cl"><span class="go">QPS 280k-330k
+</span></span></span></code></pre></div><h3 id="testmodes-1-2-3-1">
+    <a href="#testmodes-1-2-3-1">
+	Testmodes 1, 2, 3
+    </a>
+</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">testmodes = [ 1, 2, 3 ]
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">VSZ 421G
+</span></span></span><span class="line"><span class="cl"><span class="go">RES 34.6G
+</span></span></span><span class="line"><span class="cl"><span class="go">load average: 58.61, 58.29, 55.80
+</span></span></span><span class="line"><span class="cl"><span class="go">QPS 200k-320k (very jittery)
+</span></span></span></code></pre></div><p>Did not reach load 60+, even after long warmup and with 0 I/O.
+Some i2 queries can return 0 rows, might be the cause?</p>
+<h3 id="testmodes-1-2-3-4-1">
+    <a href="#testmodes-1-2-3-4-1">
+	Testmodes 1, 2, 3, 4
+    </a>
+</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">testmodes = [ 1, 2, 3, 4 ]
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">VSZ 421G
+</span></span></span><span class="line"><span class="cl"><span class="go">RES 35.6G
+</span></span></span><span class="line"><span class="cl"><span class="go">load average: 67.68, 63.57, 58.80
+</span></span></span><span class="line"><span class="cl"><span class="go">QPS 210k-260k
+</span></span></span></code></pre></div><p>After an even longer wait, performance jitters way less and stabilizes
+around 248k with a jitter of &lt;10k in both directions. Warmup times
+for this size of hardware and this amount of memory are insane.</p>
+<p>And with our changes:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">root</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kristest</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="k">explain</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">i1</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="mi">64419</span><span class="p">,</span><span class="mi">37384</span><span class="p">,</span><span class="mi">17490</span><span class="p">,</span><span class="mi">7919</span><span class="p">,</span><span class="mi">42137</span><span class="p">,</span><span class="mi">70137</span><span class="p">,</span><span class="mi">56196</span><span class="p">,</span><span class="mi">54754</span><span class="p">,</span><span class="mi">70263</span><span class="w"> </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----+-------------+-------+------------+-------+---------------+------+---------+------+------+----------+-----------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">select_type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">partitions</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">type</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">possible_keys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">key</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">key_len</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ref</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Extra</span><span class="w">                 </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----+-------------+-------+------------+-------+---------------+------+---------+------+------+----------+-----------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">SIMPLE</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">t</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="no">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">i1</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">i1</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="mi">4</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="no">NULL</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">22</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="k">condition</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----+-------------+-------+------------+-------+---------------+------+---------+------+------+----------+-----------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nf">warning</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">root</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kristest</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">i1</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="mi">64419</span><span class="p">,</span><span class="mi">37384</span><span class="p">,</span><span class="mi">17490</span><span class="p">,</span><span class="mi">7919</span><span class="p">,</span><span class="mi">42137</span><span class="p">,</span><span class="mi">70137</span><span class="p">,</span><span class="mi">56196</span><span class="p">,</span><span class="mi">54754</span><span class="p">,</span><span class="mi">70263</span><span class="w"> </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">116937151</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">68</span><span class="n">da9462</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">68</span><span class="n">da9464</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">68</span><span class="n">da9466</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">68</span><span class="n">da9467</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">68</span><span class="n">da9469</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">68</span><span class="n">da946a</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">68</span><span class="n">da946c</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">68</span><span class="n">da946d</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">68</span><span class="n">da946f</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">68</span><span class="n">da9470</span><span class="o">-</span><span class="n">c97e</span><span class="o">-</span><span class="mi">11</span><span class="n">e9</span><span class="o">-</span><span class="n">b92c</span><span class="o">-</span><span class="mi">98039</span><span class="n">bbd64c8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">56196</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">74380528</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">81571</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">57401</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">42293</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">39260</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">69425</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">29342</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">38434</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">4147</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">15</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><p>Yes, optimizer estimates can be a bit off. Still, the point is being
+made: Cardinality is up, result set size is down, performance returns.</p>
+<p>We have been looking at a result set size/selectivity problem, not at
+sucky handling of SK in InnoDB.</p>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+				<a href="/tags/#database" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				database
+				</a>
+				
+				<a href="/tags/#performance" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				performance
+				</a>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2019-09-06-mysql-performance-limits/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2019/09/03/konsenssysteme/">Konsenssysteme</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2019/09/26/how-not-to-handle-an-ingame-incident/">The Rockforth Fertilizer Incident</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

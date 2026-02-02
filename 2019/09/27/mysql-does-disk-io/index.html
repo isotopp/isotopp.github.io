@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>MySQL Does Disk I/O | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2019/09/27/mysql-does-disk-io/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='MySQL Does Disk I/O | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2019/09/27/mysql-does-disk-io/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2019-09-27T09:49:03Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='MySQL Does Disk I/O' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="mysql-does-disk-i/o-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						MySQL Does Disk I/O
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>September 27, 2019</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2019/09/26/how-not-to-handle-an-ingame-incident/">The Rockforth Fertilizer Incident</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2019/10/05/data-centers-and-energy/">Data Centers and Energy</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>We had a discussion at work about MySQL doing Disk I/O to a NVME
+disk, and if it is valid to turn off the doublewrite buffer when
+using XFS.</p>
+<p><strong>TL;DR:</strong> It&rsquo;s not, you can turn off the doublewrite buffer
+only on filesystems that never do in-place updates (ZFS, btrfs),
+or that have their own doublewrite buffer (ext4 with
+<code>journal=data</code>). A flash layer underneath the actual filesystem
+is likely not going to help you without additional measures.</p>
+<h3 id="tracing-disk-io">
+    <a href="#tracing-disk-io">
+	Tracing Disk I/O
+    </a>
+</h3>
+<p>In order to better show what is going on, I ran an idle instance
+with <code>innodb_use_native_aio = false</code> for easier tracing, and
+here is is the trace:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> lsof -p <span class="m">29169</span>
+</span></span><span class="line"><span class="cl"><span class="go">…
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql    3uW  REG              253,0 536870912  68238213 /var/lib/mysql/ib_logfile0
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql    4uW  REG              253,0 864026624    178570 /var/lib/mysql/kris/t.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">…
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql    9uW  REG              253,0 536870912  68238220 /var/lib/mysql/ib_logfile1
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql   10uW  REG              253,0 415236096  68239130 /var/lib/mysql/ibdata1
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql   11uW  REG              253,0  12582912  68238214 /var/lib/mysql/ibtmp1
+</span></span></span><span class="line"><span class="cl"><span class="go">…
+</span></span></span></code></pre></div><p>We are using a database <code>kris</code> with a test table <code>t</code>. The file
+handles that are relevant for observation are 4 for the ibd
+file, 3 and 9 for the logfiles and 10 for the ibdata1, which
+would also be the location of the doublewrite buffer.</p>
+<p>I am running an <code>insert into t values (NULL, RANDOM_BYTES(255))</code>
+into my test table (which has an <code>id serial</code> and a <code>d varchar(255)</code>).</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29441] recvfrom(39, &#34;\3insert into t values(NULL, rand&#34;..., 46, MSG_DONTWAIT, NULL, NULL) = 46
+</span></span></span></code></pre></div><p>This is the SQL command coming in over the socket. And we fetch some
+randomness:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29441] openat(AT_FDCWD, &#34;/dev/urandom&#34;, O_RDONLY) = 42
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29441] read(42, &#34;\207H\241\254O\317\10\fk\3447\201\277\267\223,Oi\202\272\222\16(\210\333\300&#39;&amp;\302g!&amp;&#34;, 32) = 32
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29441] close(42)                   = 0
+</span></span></span></code></pre></div><p>Some action on the metadata, then a log write from the implied
+commit:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29441] pread64(10, &#34;H\252\364\35\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\0\0,\346\365\0\2\0\0\0\0\0\0&#34;..., 16384, 7028736) = 16384
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29441] pwrite64(3, &#34;\200\201\23D\2\0\0\30\0\0\38bd\08\0\0\0\1\0!\257\23\267&gt;\0\0\r./k&#34;..., 1024, 34426368) = 1024
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29441] fsync(3)                    = 0
+</span></span></span></code></pre></div><p>This is the only <code>fsync</code> that contributed to commit-Latency. The write is
+now persisted to disk, and can be reconstructed using the unmodified page
+from the tablespace and the change information from the redo-log during
+recovery.</p>
+<p>The modified page is still in memory, though, and in order to reclaim redo
+log space, needs to be eventually checkpointed.</p>
+<p>This happens later, and with many more <code>fsync</code> operations. It does happen in
+batch, for many commits and multiple pages, normally, but in our easily
+traceable test setup, it&rsquo;s looking like a lot of overhead.</p>
+<p>During normal operations, a page often is modified in multiple commits over
+a short amount of time. Each of these commits is a separate redo-log sync,
+but all these changes are being accumulated on the dirty in-memory page, and
+get persisted into the tablespace in a single checkpoint write. Also, during
+checkpointing one doublewrite buffer worth of pages gets written out in a
+single sync operation, so we do see a far better page/sync and MB/sync ratio
+then in this test setup.</p>
+<p>Anyway, this is what checkpointing to the the doublewrite buffer, at offset
+1M in the ibdata looks like:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29181] pwrite64(10, &#34;\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&amp;\211\225\0\2\0\0\0\0\0\0&#34;..., 32768, 1048576) = 32768
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29181] fsync(10)                   = 0
+</span></span></span></code></pre></div><p>Metadata update and write to table:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29179] pwrite64(10, &#34;\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&amp;\211\225\0\2\0\0\0\0\0\0&#34;..., 16384, 7028736) = 16384
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29179] pwrite64(4, &#34;.KT\0\0\0d\225\0\0d\224\377\377\377\377\0\0\0\1\2&amp;\211\216E\277\0\0\0\0\0\0&#34;..., 16384, 421871616) = 16384
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29179] fsync(4)                    = 0
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29179] fsync(10)                   = 0
+</span></span></span></code></pre></div><p>And the log entry is done:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29187] pwrite64(3, &#34;\200\201\23E\1\271\0&amp;\0\0\39\22\2\0\201\255\0(\201\20\2\0\201\255\0*\201\20\2\0\201&#34;..., 512, 34426880) = 512
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29187] fsync(3)                    = 0
+</span></span></span></code></pre></div><h3 id="why-does-mysql-do-this">
+    <a href="#why-does-mysql-do-this">
+	Why does MySQL do this?
+    </a>
+</h3>
+<p>Enterprise Grade hardware usually guarantees atomic block
+writes, even during catastrophic events. Blocks are, depending
+on the media, 512 bytes or 4096 bytes in size.</p>
+<p>InnoDB, on the other hand, uses 16 KB blocks. So when writing
+data back to a table, it is entirely possible for the page write
+to be interrupted in the middle, resulting in a page that is
+half old and half new. This is often called a <em>torn page</em>.</p>
+<p>Note that this is for checkpointing only.</p>
+<p>When you insert and commit a thing, it is being written to one
+<code>ib_logfile</code>, and the change is also added to the in-memory
+image of the InnoDB page. So on disk, after commit you have an
+pre-change image of the page and an image of the change in the
+logfile, and in memory you have the changed page - such
+in-memory pages that differ from their on-disk counterpart are
+called dirty.</p>
+<p>The checkpointing is about writing back the dirty page to the
+tablefile and getting rid of the log entry. This is being done
+for whole InnoDB pages, and with most filesystems it is an
+in-place update. So it can result in torn pages, if the write
+fails in the middle of a page.</p>
+<p>With the doublewrite buffer enabled, the write goes to the
+ibdata file first, as we can see in the trace - the write to the
+position at 1M offset in the file. Then the same writes are
+being spread out to the individual pages in their respective
+tablefiles.</p>
+<p>This ensures that there is always a whole old page and a log
+entry with intructions to patch the old image (&ldquo;Redo-Log
+Recovery&rdquo;) or a whole image of the new page on disk inside the
+doublewrite buffer, for recovery of torn pages.</p>
+<h3 id="performance-implications">
+    <a href="#performance-implications">
+	Performance Implications
+    </a>
+</h3>
+<p>Having a single doublewrite buffer can in extreme cases make the
+doublewrite buffer a point of contention. Percona have shown
+that
+<a href="https://www.percona.com/blog/2016/05/09/percona-server-5-7-parallel-doublewrite/" target="_blank" rel="noopener">a long time ago</a>
+
+
+and also fixed this by having multiple doublewrite buffers.</p>
+<p>Note that in  most Unix filesystems, writes to a single file are
+serialized on a global lock on the in-memory inode of the file.</p>
+<p>So if the doublewrite buffer is part of the ibdata file all
+writes to that buffer compete with all other write operations on
+that file. And even if you had multiple doublewrite buffers at
+different offsets in the same ibdata file, it would not improve
+things at all, because of that lock. The best solution would
+put each doublewrite buffer into a separate file on its own.</p>
+<p>The only filesystem in Linux that does not do this in-memory
+inode locking is XFS, and only when the file is being opened in
+O_DIRECT mode.</p>
+<h3 id="how-are-other-systems-doing-it">
+    <a href="#how-are-other-systems-doing-it">
+	How are other systems doing it?
+    </a>
+</h3>
+<p>Postgres writes a WAL, which is very similar to the redo-log
+that MySQL writes. The main difference is that they write out a
+full page whenever a page transitions from clean to dirty, and
+then similar to MySQL write out incremental changes for
+additional changes to a page already dirty. Using the WAL, you
+can pick up the full page and all additional incremental changes
+by simply going through the WAL front to back, and recreate the
+page that should have been written. MySQL could do the same and
+get rid of the doublewrite buffer writes, but it does not play
+well with the concept of the MySQL Redo-Log being a ring buffer.</p>
+<p>MyRocks, and all other variants of
+<a href="https://en.wikipedia.org/wiki/Log-structured_merge-tree" target="_blank" rel="noopener">LSM</a>
+
+,
+do never overwrite data. They always append to the latest
+logfile, and then have a process not entirely unlike the Java
+multi-generational garbage collection to compact multiple
+logfiles, throwing away deleted data and writing things back in
+a more sorted manner. As this rewrites data instead of
+overwriting data, not only is this safe in the case of
+unexpected shutdowns, it is also very easy to backup and it is,
+at least in theory, suitable for object storages as a backing
+store for the data.</p>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+				<a href="/tags/#database" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				database
+				</a>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2019-09-27-mysql-does-disk-io/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2019/09/26/how-not-to-handle-an-ingame-incident/">The Rockforth Fertilizer Incident</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2019/10/05/data-centers-and-energy/">Data Centers and Energy</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

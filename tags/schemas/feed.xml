@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Schemas on Die wunderbare Welt von Isotopp</title>
-    <link>https://blog.koehntopp.info/tags/schemas.html</link>
+    <link>https://blog.koehntopp.info/tags/schemas/</link>
     <description>Recent content in Schemas on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
@@ -12,18 +12,18 @@
     <webMaster>kris-blog@koehntopp.de (Kristian Köhntopp)</webMaster>
 
     
-    <lastBuildDate>Wed, 14 Jan 2026 11:35:25 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/schemas/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 02 Feb 2026 14:49:38 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/schemas/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Some rules for primary keys</title>
-      <link>https://blog.koehntopp.info/2020/01/28/some-rules-for-primary-keys.html</link>
+      <link>https://blog.koehntopp.info/2020/01/28/some-rules-for-primary-keys/</link>
       <pubDate>Tue, 28 Jan 2020 19:26:35 +0000</pubDate><author>kris-blog@koehntopp.de (Kristian Köhntopp)</author>
 
-      <guid>https://blog.koehntopp.info/2020/01/28/some-rules-for-primary-keys.html</guid>
+      <guid>https://blog.koehntopp.info/2020/01/28/some-rules-for-primary-keys/</guid>
       <description>&lt;p&gt;On Twitter, &lt;a href=&#34;https://twitter.com/CaptainEyesight/status/1221889419654787073&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@CaptainEyesight&lt;/a&gt;
 
  asked a question:&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://twitter.com/CaptainEyesight/status/1221889419654787073&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/pk-question.png&#34; alt=&#34;&#34;  /&gt;
+  &lt;img src=&#34;2020/01/pk-question.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 
 &lt;/a&gt;
@@ -40,7 +40,7 @@
 &lt;/h2&gt;
 &lt;p&gt;In InnoDB, data is stored as a B+-Tree indexed by the primary key. A B+-Tree is a B-Tree in which the leaf pages contain the actual data records. That means that data is (within limits) stored physically, on disk, in primary key order. A record with a lower primary key value will be &amp;ldquo;further left&amp;rdquo; in the B+-Tree than a record with a higher primary key value, and within limits will also be on a disk block with a lower or equal number than blocks with higher primary key values.&lt;/p&gt;
 &lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/pk-innodb-order.png&#34; alt=&#34;&#34;  /&gt;
+  &lt;img src=&#34;2020/01/pk-innodb-order.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 
 &lt;/p&gt;
@@ -48,7 +48,7 @@
 &lt;p&gt;The limitation is here that InnoDB allocates data in chunks (of 64 pages of 16 KB by default, for segments of 1 MB), and filesystems of course do not really guarantee &amp;ldquo;low to high disk space allocation&amp;rdquo;. Another, weaker and slightly better way to describe the physical ordering would be that two primary key values with a small value difference are more likely to be phsically closer on the storage medium, but it is still a kind of best effort estimate.&lt;/p&gt;
 &lt;p&gt;In any case in InnoDB, the physical record position is a function of the primary key. Changing a PK the way described will physically move the record from &amp;ldquo;right&amp;rdquo; in the B+ tree to the left, inducing a lot of rebalancing operations, page splits and merges. Ultimately actually deleting always from the left and appending always on the right is producing the worst physical page structure InnoDB could have: Permanent page merges on the left, permanent page splits at the right and a permanent maximal rebalancing of the entire tree.&lt;/p&gt;
 &lt;p&gt;This is an abysmally slow data structure. I wrote about it in german language in
-&lt;a href=&#34;https://blog.koehntopp.info/2009/10/28/ein-paar-gedanken-zu-zeitreihendaten.html&#34;&gt;Ein paar Gedanken zu Zeitreihendaten&lt;/a&gt;
+&lt;a href=&#34;https://blog.koehntopp.info/2009/10/28/ein-paar-gedanken-zu-zeitreihendaten/&#34;&gt;Ein paar Gedanken zu Zeitreihendaten&lt;/a&gt;
 
 
 in 2009, where I have been discussing the way Nagios NDO Schema abuses the database on the Open Source Monitoring Conference in Nürnberg.&lt;/p&gt;
@@ -83,7 +83,7 @@ in 2009, where I have been discussing the way Nagios NDO Schema abuses the datab
 &lt;p&gt;In any case, there will likely be dead records on each page loaded into memory, poisoning your expensive caches with dead data. This is not a good use of your money or hardware budget. The recommendation is to keep only live data in transactional tables. Actually delete completed transactions from your transactional tables. Keep your transactional system small. A transactional system ideally never reads data, because it can keep the pages of the working set of your current transactions in memory. Only writes happen, to persist the actual transactions.&lt;/p&gt;
 &lt;p&gt;You will need a log of changes, for compliance reasons, for business intelligence (BI) reasons and for reporting as well as many other use cases. You can implement an Extract-Transform-Load (ETL) process into a data warehouse, with the usual DW transaction from online transaction processing normalized schemas into data warehousey star and snowflake schemas. That is, in the DW you will not store ids, but actual data values, because you are not interested where customer_id 17 lives now in 2020, but that the item &amp;ldquo;USB Memory Stick 128 GB&amp;rdquo; was actually priced &amp;ldquo;24.99 EUR&amp;rdquo; when you delivered it to a customer in 24110, Germany in August 2013. So part of the ETL process is to join all the things, keep the values you want to archive and then archive them into a giant fact table (and maybe recompressing the values back to DW ids in sideways lookup tables for space reasons). Then you create daily aggregate along the dimensions of reporting, creating a star or snowflake from the fact table timeline.&lt;/p&gt;
 &lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/pk-innodb-order-2.png&#34; alt=&#34;&#34;  /&gt;
+  &lt;img src=&#34;2020/01/pk-innodb-order-2.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 
 &lt;/p&gt;

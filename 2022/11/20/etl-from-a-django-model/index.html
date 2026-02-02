@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>ETL from a Django Model | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2022/11/20/etl-from-a-django-model/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='ETL from a Django Model | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2022/11/20/etl-from-a-django-model/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2022-11-20T06:07:08Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='ETL from a Django Model' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="etl-from-a-django-model-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						ETL from a Django Model
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>November 20, 2022</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/11/16/of-stars-and-snowflakes/">Of Stars and Snowflakes</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/11/27/systemd-service-and-socket-activation/">Systemd Service and Socket Activation</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>Continued from <a href="/2022/11/16/of-stars-and-snowflakes/">last weeks article</a>
+
+ on data warehouses.</p>
+<p>At work, I was tasked with building a capacity model for data center growth.
+The basic assumption of these things is often that the future behaves similarly to the past, so the future predicted capacity model is somehow an extension of past growth.
+I needed old server usage data, and was indeed able to find that in one of our systems, called ServerDB.</p>
+<p>ServerDB is an in-house Django application that models server ownership, equipment, rack positions, and usage.
+It drives provisioning of machines, exposing a REST API, and driving an automated installation process, based on requests, availability, redundancy concerns and other factors.
+It also manages tickets for Data Center Operations Engineers, and interfaces with a number of other, similar systems.</p>
+<p>I did find that ServerDB was keeping a log of all changes to the core <code>server_servers</code> table by the means of a Django save handler, and that it had accumulated six years worth of data.
+It was in fact the largest table in the system, larger than all other tables together.
+While that was not the data I needed it was the data I had, and I could make it work.</p>
+<p>For the future I wanted something more, so I wrote an ETL process that each night would export the entire server fleet, denormalizing the data, and pushing the attributes I wanted to record into a second database, <code>serverdb_dw</code>.
+I would keep three months worth of daily exports, and expire all weekdays but Mondays after that.
+This would be leaving me with weekly data for an indefinite timespan.</p>
+<h1 id="an-etl-driver">
+    <a href="#an-etl-driver">
+	An ETL driver
+    </a>
+</h1>
+<p>The ETL script is written in Python, and uses Click to handle command line options.</p>
+<p>We make ourselves a CLI to add commands to:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@click.group</span><span class="p">(</span><span class="n">chain</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click.option</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;--verbose&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;-v&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">default</span><span class="o">=</span><span class="s2">&#34;WARNING&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">([</span><span class="s2">&#34;DEBUG&#34;</span><span class="p">,</span> <span class="s2">&#34;INFO&#34;</span><span class="p">,</span> <span class="s2">&#34;WARNING&#34;</span><span class="p">,</span> <span class="s2">&#34;ERROR&#34;</span><span class="p">,</span> <span class="s2">&#34;CRITICAL&#34;</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">    <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Set the debug level.&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="s2">&#34;WARNING&#34;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;Extract data from serverdb2, denormalize it and load it into serverdb_dw, run aggregations.
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    This command runs regularly, extracting a number of attributes about
+</span></span></span><span class="line"><span class="cl"><span class="s2">    servers from serverdb2, denormalizes the data and loads it into a single
+</span></span></span><span class="line"><span class="cl"><span class="s2">    table &#39;server_facts&#39; into serverdb_dw. It will then run a number of
+</span></span></span><span class="line"><span class="cl"><span class="s2">    aggregations on the serverdb_dw table, creating a bunch of tables in
+</span></span></span><span class="line"><span class="cl"><span class="s2">    serverdb_dw starting with the prefix &#39;server_by_...&#39;.
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    By default, the aggregations are run only on the data from today. Options
+</span></span></span><span class="line"><span class="cl"><span class="s2">    can be used to process larger chunks of data or all data. This will then
+</span></span></span><span class="line"><span class="cl"><span class="s2">    take a lot of time. Options can also be used to process only individual
+</span></span></span><span class="line"><span class="cl"><span class="s2">    aggregations.
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="se">\b</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    A regular full run looks like this: ./serverdb_etl.py etl aggregate
+</span></span></span><span class="line"><span class="cl"><span class="s2">    cube_aggregate
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="se">\b</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    To re-aggregate all dimensions: ./serverdb_etl.py aggregate
+</span></span></span><span class="line"><span class="cl"><span class="s2">    cube_aggregate
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="making-a-fact-table">
+    <a href="#making-a-fact-table">
+	Making a fact table
+    </a>
+</h2>
+<p>We can then hook up subcommands to our CLI.</p>
+<p>We will need a fact table to write data to, so the first subcommand will be &ldquo;etl_init&rdquo;, which will run a <code>CREATE TABLE</code> for us.
+We collect all our methods in an <code>Etl</code> class, and call our <code>create_table()</code> method:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@cli.command</span><span class="p">(</span><span class="s2">&#34;etl_init&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">etl_init</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; Create the server_facts table if it does not exist. Safe to use.
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        The will run a CREATE TABLE IF NOT EXISTS statement to create a
+</span></span></span><span class="line"><span class="cl"><span class="s2">        server_facts table. If a server_facts table exists, a new table will
+</span></span></span><span class="line"><span class="cl"><span class="s2">        NOT be created, and no data will be lost.
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        If the definition of the server_facts table does not match our table,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        it will not be changed or repaired. You need to write a manual
+</span></span></span><span class="line"><span class="cl"><span class="s2">        migration to fix this.
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">run</span> <span class="o">=</span> <span class="n">Etl</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">run</span><span class="o">.</span><span class="n">create_table</span><span class="p">()</span>
+</span></span></code></pre></div><p>And that is basically parametrizing a large <code>CREATE TABLE</code> statement with some config values, and then running it on the target database.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">create_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34; Create the server_facts table, if it does not exist, yet.
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">            This method is safe to use: The table will not be created
+</span></span></span><span class="line"><span class="cl"><span class="s2">            if it already exists. No data is lost.
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&#34;start create_table&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fact_create_table</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">fact_param</span>
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&#34;Create Query = </span><span class="si">%s</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">write</span> <span class="o">=</span> <span class="n">get_serverdb_dw_connection</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cursor</span> <span class="o">=</span> <span class="n">write</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&#34;end create_table&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>The actual statement is also stored in that <code>Etl</code> class.
+I have shortened the statement considerably &ndash; we are collecting many items more than listed here.
+Fact tables are often very wide.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">    <span class="n">fact_create_table</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;CREATE TABLE IF NOT EXISTS </span><span class="si">%(target_db)s</span><span class="s2">.</span><span class="si">%(target_table)s</span><span class="s2"> (
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `id` int(10) unsigned NOT NULL DEFAULT &#39;0&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `report_date` date NOT NULL,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `name` varchar(128) NOT NULL DEFAULT &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `asset_type` varchar(32) NOT NULL DEFAULT &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `serialnumber` varchar(64) NOT NULL DEFAULT &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `delivery_date` date NOT NULL,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `ip_address` varchar(16) NULL,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `mac_address` varchar(17) NULL,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `status` varchar(16) NOT NULL DEFAULT &#39;&lt;unknown&gt;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `site` varchar(4) NOT NULL DEFAULT &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `region` varchar(25) NOT NULL DEFAULT &#39;&lt;unknown&gt;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `role_ids` varchar(255) NOT NULL DEFAULT &#39;&#39;, --
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `puppet_services` varchar(255) NOT NULL DEFAULT &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `role_names` varchar(255) NOT NULL DEFAULT &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `rack` varchar(128) NOT NULL DEFAULT &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `cpu_count` int(10) NOT NULL DEFAULT -1, --
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `memory` decimal(8,3) NOT NULL DEFAULT &#39;0.000&#39;, --
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `network_speed` int(11) NOT NULL DEFAULT -1,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `manufacturer` varchar(32) NOT NULL DEFAULT &#39;&lt;unknown&gt;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `model` varchar(32) NOT NULL DEFAULT &#39;&lt;unknown&gt;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `owner` varchar(20) NOT NULL  DEFAULT &#39;&lt;unknown&gt;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `wou_id` int(10) NOT NULL DEFAULT 0,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `wou_name` varchar(80) NOT NULL DEFAULT &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `created_at` datetime NOT NULL,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        `last_edit` datetime NOT NULL,
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        PRIMARY KEY (`id`,`report_date`),
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        KEY `name` (`name`),
+</span></span></span><span class="line"><span class="cl"><span class="s2">        KEY `status` (`status`),
+</span></span></span><span class="line"><span class="cl"><span class="s2">        KEY `site` (`site`),
+</span></span></span><span class="line"><span class="cl"><span class="s2">    ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span></code></pre></div><h2 id="running-the-etl">
+    <a href="#running-the-etl">
+	Running the ETL
+    </a>
+</h2>
+<p>Now that we have a table, we can load data into it.
+For that, we will be going through the classical three phases: Extract, Transform and Load.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@cli.command</span><span class="p">(</span><span class="s2">&#34;etl&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">etl</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;Extract data from serverdb2, denormalize and load.
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">       This subcommand will run a large join on serverdb2, using the
+</span></span></span><span class="line"><span class="cl"><span class="s2">       serverdb connection, and will then insert the data into the
+</span></span></span><span class="line"><span class="cl"><span class="s2">       serverdb_dw.server_facts table.  The data is materialized and kept in
+</span></span></span><span class="line"><span class="cl"><span class="s2">       RAM between extract and load phases.
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">run</span> <span class="o">=</span> <span class="n">Etl</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">run</span><span class="o">.</span><span class="n">fact_extract</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">run</span><span class="o">.</span><span class="n">fact_transform</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">run</span><span class="o">.</span><span class="n">fact_load</span><span class="p">()</span>
+</span></span></code></pre></div><h3 id="the-extract-phase">
+    <a href="#the-extract-phase">
+	The Extract Phase
+    </a>
+</h3>
+<p>The fact extraction is basically one single select that joins against all the tables we need in order to get the data we want.
+We are fetching the result into a giant list of rows, which we keep in our <code>Etl</code> object in the <code>data</code> slot.
+Each row is a <code>dict</code> of field names and values.
+This is going to be using a lot of memory, but we will make do.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">fact_extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34; Run the fact_select query on serverdb2, loading the data
+</span></span></span><span class="line"><span class="cl"><span class="s2">            into memory. The fact_query is being parametrized from
+</span></span></span><span class="line"><span class="cl"><span class="s2">            self.fact_param.
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">            Set logging to debug to see queries. Set logging to info
+</span></span></span><span class="line"><span class="cl"><span class="s2">            to see execution.
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&#34;start fact_extract&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">read</span> <span class="o">=</span> <span class="n">get_serverdb2_connection</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rcursor</span> <span class="o">=</span> <span class="n">read</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">MySQLdb</span><span class="o">.</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># fetch default values from the class object</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fact_param</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fact_select</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span> <span class="o">%</span> <span class="n">param</span>
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&#34;Query = </span><span class="si">%s</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rcursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&#34;end fact_extract&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">rcursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span></span></code></pre></div><p>Again, we pick up the default SQL from our <code>Etl</code> class, parametrize it and run it.
+We simply suck all the data into memory and keep it.</p>
+<p>The query is… ugly, and very long.
+Again, I shorten it in order to save some space.
+It gets repetitive anyway.</p>
+<p>ServerDB is storing facts about Servers.
+As a Django Application, it uses Django models, and the database mode is autogenerated from that.
+The Django Application name is <code>servers</code>, so all tables are prefixed with that.</p>
+<p>Server class objects are stored in the <code>servers_server</code> table, <code>servers</code> is the application prefix, and <code>server</code> the table matching the Django object.</p>
+<p>But since the <code>Server</code> class is a subclass of <code>RackedAsset</code>, and that in turn is a subclass of <code>Asset</code>,
+we are getting three tables <code>servers_server</code>, <code>servers_rackedasset</code> and <code>servers_asset</code>, which share a common <code>id</code>.
+They are being joined together with an inner join, because we are only interested in servers and not in any other assets (such as Switches or Filers).</p>
+<p>The <code>id</code> of an Asset, a RackedAsset and a Server are the same, since each is a specialization of the previous one:
+Assets are things we have.
+RackedAssets also have a position in the data center (and a site).
+And servers have all the properties associated with a machine, such as a CPU type, memory, and disk space.</p>
+<p>All rows are uniquely identified by an <code>id</code>, but since later in the data warehouse we will be tracking an <code>id</code> over time, we also need to record the <code>report_date</code> on which we collected the data.</p>
+<p>Some values may be <code>NULL</code>, which will be inconvenient for us.
+So we will be protecting us with use of <code>COALESCE()</code> a lot: This function goes through its parameters left to right and returns the first Non-NULL value it finds.
+This allows us to provide a default value for NULLs.</p>
+<p>We are working with <code>dict</code> cursors across our code, so the columns returned here and the columns we will be using to store data do not need to line up positionally,
+as long as we provide proper names.</p>
+<p>Finally, this is a monster join.
+Joining more than ten tables in MySQL will blow up the optimizer, because the number of possible join permutations grows too large.
+We are getting away with joining far more tables than that in our example, because all of our joins are <code>LEFT JOIN</code>, which are not commutative.
+That means, the optimizer cannot do anything anyway: The asset/rackedasset/server triple is the driving table, and all other tables are just adjunct to that.</p>
+<p>In any case, the query gets us the data we want &ndash; all values, no IDs, completely denormalized.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">    <span class="n">fact_select</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;select a.id
+</span></span></span><span class="line"><span class="cl"><span class="s2">        , date_format(now(), &#34;</span><span class="si">%%</span><span class="s2">Y-</span><span class="si">%%</span><span class="s2">m-</span><span class="si">%%</span><span class="s2">d&#34;)    as report_date
+</span></span></span><span class="line"><span class="cl"><span class="s2">        , a.name                               as name
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        , coalesce(da.asset_type, &#34;&lt;unknown&gt;&#34;) as asset_type
+</span></span></span><span class="line"><span class="cl"><span class="s2">        , coalesce(a.status, &#34;&lt;unknown&gt;&#34;)      as status
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        , sn.shortname                         as site
+</span></span></span><span class="line"><span class="cl"><span class="s2">        , coalesce(concat(sar.shortname, &#34;-&#34;, saz.shortname), &#34;&lt;unknown&gt;&#34;) as region
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        , coalesce(group_concat(distinct r1.id order by r1.id), -1)                          as role_ids
+</span></span></span><span class="line"><span class="cl"><span class="s2">        , coalesce(group_concat(distinct r1.puppet_service order by r1.puppet_service), &#34;&#34;)  as puppet_services
+</span></span></span><span class="line"><span class="cl"><span class="s2">        , coalesce(group_concat(distinct r1.name order by r1.name), &#34;&#34;)                      as role_names
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        , coalesce(t.org_unit_id, -1)          as wou_id
+</span></span></span><span class="line"><span class="cl"><span class="s2">        , coalesce(t.name, &#34;&lt;unknown&gt;&#34;)        as wou_name
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    ... a few hundred lines deleted ...
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    -- a server is an asset, rackedasset and server
+</span></span></span><span class="line"><span class="cl"><span class="s2">    -- and that is why we do JOIN instead of LEFT JOIN here
+</span></span></span><span class="line"><span class="cl"><span class="s2">    FROM </span><span class="si">%(source_db)s</span><span class="s2">.servers_asset AS a
+</span></span></span><span class="line"><span class="cl"><span class="s2">    JOIN </span><span class="si">%(source_db)s</span><span class="s2">.servers_rackedasset AS ra
+</span></span></span><span class="line"><span class="cl"><span class="s2">          ON (ra.asset_ptr_id = a.id)
+</span></span></span><span class="line"><span class="cl"><span class="s2">    JOIN </span><span class="si">%(source_db)s</span><span class="s2">.servers_server AS s
+</span></span></span><span class="line"><span class="cl"><span class="s2">          ON (s.rackedasset_ptr_id = a.id)
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    -- unfold asset_type
+</span></span></span><span class="line"><span class="cl"><span class="s2">    LEFT JOIN </span><span class="si">%(source_db)s</span><span class="s2">.servers_deliveryasset as da
+</span></span></span><span class="line"><span class="cl"><span class="s2">        ON (da.asset_id = a.id)
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    -- unfold the site_id, region and az data
+</span></span></span><span class="line"><span class="cl"><span class="s2">    LEFT JOIN </span><span class="si">%(source_db)s</span><span class="s2">.servers_site AS sn
+</span></span></span><span class="line"><span class="cl"><span class="s2">        ON (sn.id = a.site_id)
+</span></span></span><span class="line"><span class="cl"><span class="s2">    LEFT JOIN </span><span class="si">%(source_db)s</span><span class="s2">.servers_availabilityzone as saz
+</span></span></span><span class="line"><span class="cl"><span class="s2">        ON (sn.availability_zone_id = saz.id)
+</span></span></span><span class="line"><span class="cl"><span class="s2">    LEFT JOIN </span><span class="si">%(source_db)s</span><span class="s2">.servers_region as sar
+</span></span></span><span class="line"><span class="cl"><span class="s2">        ON (saz.region_id = sar.id)
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    -- unfold the serverrole_id (many-to-many, hence the group by in the end)
+</span></span></span><span class="line"><span class="cl"><span class="s2">    LEFT JOIN </span><span class="si">%(source_db)s</span><span class="s2">.servers_server_role AS sr
+</span></span></span><span class="line"><span class="cl"><span class="s2">          ON (sr.server_id = a.id)
+</span></span></span><span class="line"><span class="cl"><span class="s2">    LEFT JOIN </span><span class="si">%(source_db)s</span><span class="s2">.servers_serverrole AS r1
+</span></span></span><span class="line"><span class="cl"><span class="s2">          ON (sr.serverrole_id = r1.id)
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    -- unfold team ownership information 
+</span></span></span><span class="line"><span class="cl"><span class="s2">    LEFT JOIN </span><span class="si">%(source_db)s</span><span class="s2">.servers_team as t
+</span></span></span><span class="line"><span class="cl"><span class="s2">          ON (t.id = r1.managed_by)
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    ... about a dozen tables deleted ...
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">%(where_condition)s</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    group by a.id
+</span></span></span></code></pre></div><h3 id="the-transform-phase">
+    <a href="#the-transform-phase">
+	The Transform Phase
+    </a>
+</h3>
+<p>The data we get from our Extract is not suitable for us without a few corrections and fixes.</p>
+<p>We do have all the data in memory now, in <code>Etl.data</code>, so we can fix up things by running over that and applying a few filters.
+Again, this is boring and repetitive cleanup work, so I have simplified things and show just one exemplary phase.</p>
+<p>The CPU data in our data source is not the way we want it.
+We apply a cleanup filter, <code>fact_transform_cpu()</code> to it.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">fact_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34; Transform and amend the loaded data from serverdb.
+</span></span></span><span class="line"><span class="cl"><span class="s2">            - Fix CPU descriptions.
+</span></span></span><span class="line"><span class="cl"><span class="s2">            - Extract CPU die counts and thread counts from description.
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&#34;start fact_transform&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># Clean up the CPU data in self.data</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">fact_transform_cpu</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&#34;end fact_transform&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>The filter looks like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">   <span class="k">def</span> <span class="nf">fact_transform_cpu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34; Clean up the broken data from the servers_cpu table
+</span></span></span><span class="line"><span class="cl"><span class="s2">            manually until serverdb2 fixes it at the source.
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&#34;start fact_transform_cpu&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">row</span><span class="p">[</span><span class="s2">&#34;cpu_version&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cpu_cleanup</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;cpu_version&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&#34;end fact_transform_cpu&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>It iterates over the <code>data</code> list and calls a cleanup function for the field <code>cpu_version</code>.
+We basically drop certain words (we only want types, no marketing names), we drop multiple spaces, and we drop MHz numbers after an &ldquo;@&quot;-sign.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">cpu_cleanup</span><span class="p">(</span><span class="n">cpu</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dropwords</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;intel(r)&#34;</span><span class="p">,</span> <span class="s2">&#34;xeon(r)&#34;</span><span class="p">,</span> <span class="s2">&#34;amd&#34;</span><span class="p">,</span> <span class="s2">&#34;dual-core&#34;</span><span class="p">,</span> <span class="s2">&#34;0&#34;</span><span class="p">,</span> <span class="s2">&#34;virtual&#34;</span><span class="p">,</span> <span class="s2">&#34;cpu&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Nothing to see here: move on</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">cpu</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&#34;&lt;unknown&gt;&#34;</span><span class="p">,</span> <span class="s2">&#34;Not Specified&#34;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">cpu</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># uniform case, remove extra spaces, speed info</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cpu</span> <span class="o">=</span> <span class="n">cpu</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cpu</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&#34; +&#34;</span><span class="p">,</span> <span class="s2">&#34; &#34;</span><span class="p">,</span> <span class="n">cpu</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cpu</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&#34; *@ *[0-9.]+.*&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="n">cpu</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># drop items we do not care about</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cpu_fields</span> <span class="o">=</span> <span class="n">cpu</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&#34; &#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cpu</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">cpu_fields</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dropwords</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">cpu</span> <span class="o">+=</span> <span class="n">field</span> <span class="o">+</span> <span class="s2">&#34; &#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># make sure we don&#39;t have strange spacing in the version name</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># we previously had that</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cpu</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&#34;- +&#34;</span><span class="p">,</span> <span class="s2">&#34;-&#34;</span><span class="p">,</span> <span class="n">cpu</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">cpu</span>
+</span></span></code></pre></div><p>Other filters exist for other fields, where we have similar anomalies and annoyances.</p>
+<p>We might also call out to other data source or databases, and add data from them to our in-memory dataset.
+For example, we could call out to Puppet, to collect Puppet Facts collected from &ldquo;inside&rdquo; the running machine.
+Or we could call to our Network Equipment Management System, Nemo, to collect data about machines from a Switch PoV.</p>
+<h3 id="the-load-phase">
+    <a href="#the-load-phase">
+	The Load Phase
+    </a>
+</h3>
+<p>Now that we have a clean dataset in memory we can write it out into our <code>server_facts</code> table in the data warehouse.
+We do that using <code>REPLACE</code> statements, which will allow us to run the ETL process multiple times per day.
+Newer runs will simply overwrite older runs, by primary key (<code>(id, report_date)</code>)</p>
+<p>Originally, we wrote out the data in a single connection, but that created many problems:</p>
+<ul>
+<li>The large write created replication delay.</li>
+<li>The large write exceeded the maximum transaction size for compressed binlog (1 GB).</li>
+<li>The large write exceeded the maximum transaction size for group replication primaries.</li>
+</ul>
+<p>So we now run our write query with an <code>executemany_in_batched()</code>, which makes multiple smaller writes.
+It also checks replication, and waits with the execution of the next transaction until the previous one has finished replicating.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">   <span class="k">def</span> <span class="nf">fact_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34; Take the data and load it into the target table in the target database,
+</span></span></span><span class="line"><span class="cl"><span class="s2">            using replace-statements. The use of replace-statements makes the data
+</span></span></span><span class="line"><span class="cl"><span class="s2">            load idempotent on a single day.
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">            The query is being parametrized using self.fact_param.
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&#34;start fact_load </span><span class="si">%s</span><span class="s2"> rows.&#34;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">write</span> <span class="o">=</span> <span class="n">get_serverdb_dw_connection</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">replica</span> <span class="o">=</span> <span class="n">get_serverdb_dw_replica_connection</span><span class="p">()</span> <span class="c1"># get one load-balanced random replica of many </span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># getting some default parameters</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fact_param</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># we are only interested into the keys here, for query building</span>
+</span></span><span class="line"><span class="cl">        <span class="n">firstrow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># replace into serverdb_dw.server_facts set col1 = %(col1)s, ...</span>
+</span></span><span class="line"><span class="cl">        <span class="n">query</span> <span class="o">=</span> <span class="s2">&#34;replace into </span><span class="si">%(target_db)s</span><span class="s2">.</span><span class="si">%(target_table)s</span><span class="s2"> set &#34;</span> <span class="o">%</span> <span class="n">param</span>
+</span></span><span class="line"><span class="cl">        <span class="n">query</span> <span class="o">+=</span> <span class="s2">&#34;, &#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> = %(</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">)s&#34;</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">firstrow</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&#34;Query = </span><span class="si">%s</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">executemany_in_batches</span><span class="p">(</span><span class="n">write</span><span class="p">,</span> <span class="n">replica</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&#34;end fact_load&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>The <code>executemany_in_batches()</code> looks like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">executemany_in_batches</span><span class="p">(</span><span class="n">write</span><span class="p">,</span> <span class="n">replica</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">wcursor</span> <span class="o">=</span> <span class="n">write</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">MySQLdb</span><span class="o">.</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rcursor</span> <span class="o">=</span> <span class="n">replica</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">MySQLdb</span><span class="o">.</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># It&#39;s nonfatal for the SET SESSION command to fail</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># It means there were multiple batches executed within the same</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># script invocation and a previous one still has an ongoing transaction</span>
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="n">MySQLdb</span><span class="o">.</span><span class="n">_exceptions</span><span class="o">.</span><span class="n">OperationalError</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">wcursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&#34;SET SESSION session_track_gtids=OWN_GTID&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">wcursor</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">n</span> <span class="p">:</span> <span class="n">n</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="n">write</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">wcursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&#34;SELECT @@GLOBAL.GTID_EXECUTED as gtid&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">        <span class="n">gtid</span> <span class="o">=</span> <span class="n">wcursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="s2">&#34;gtid&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rcursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&#34;SELECT WAIT_FOR_EXECUTED_GTID_SET(</span><span class="si">%s</span><span class="s2">, 10)&#34;</span><span class="p">,</span> <span class="p">(</span><span class="n">gtid</span><span class="p">,))</span>
+</span></span></code></pre></div><p>This will push <code>batch_size</code> many rows at once into the database, commit, and wait for the replication to acknowledge the arrival in the replica.</p>
+<h2 id="running-aggregations">
+    <a href="#running-aggregations">
+	Running Aggregations
+    </a>
+</h2>
+<p>After loading the data into the database, we update a bunch of aggregations.
+We count machines per Puppet class, per Data Center, and per Vendor and Type.
+We do keep these counts per <code>report_date</code>.</p>
+<p>That also means we can add to existing aggregations and need to run sums only for the current day.
+This is much faster than regenerating data for the entire collection every day, and past numbers also do not change.</p>
+<h1 id="data-size">
+    <a href="#data-size">
+	Data size
+    </a>
+</h1>
+<p>Our <code>server_facts</code> table is very wide, the values shown here are simplified and the table shortened.
+We do not yet compress strings with lookup tables, so each server name is repeated for each day over the lifetime of the server.
+A CPU or Vendor name is also repeated, and much more often.</p>
+<p>Assuming 100.000 machines and one KB of data per machine, we end up with 100 MB of data per day retained.
+90 days are kept at full resolution, for 9 GB of data.
+Additionally, another 100 MB per week is retained, for 5.2 GB of data per year, or an additional 26 GB in five years.</p>
+<p>A 35 GB database is not large, and can be kept in memory easily on most database server machines.
+So we do not actually have a &ldquo;big data&rdquo; problem here, but we do have a valuable collection of server data that enables us to</p>
+<ul>
+<li>document server use by team,</li>
+<li>model refresh projects by predicting server retirement dates,</li>
+<li>analyze per team/use-case fleet growth over time,</li>
+<li>make predictions and model fleet growth for the coming year, planning procurement and capex,</li>
+<li>and collect aggregate power consumption and compare it to metered and predicted power consumption at the rack, row and room level.</li>
+</ul>
+<p>This enables a number of planning use-cases and gives visibility for the data center team.</p>
+<p>It also makes a nice model use-case to explain data warehouses and how to transform transactional data into business intelligence data.</p>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+				<a href="/tags/#mysqldev" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysqldev
+				</a>
+				
+				<a href="/tags/#data-warehouse" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				data warehouse
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2022-11-20-etl-from-a-django-model/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/11/16/of-stars-and-snowflakes/">Of Stars and Snowflakes</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/11/27/systemd-service-and-socket-activation/">Systemd Service and Socket Activation</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

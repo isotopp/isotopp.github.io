@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Beyond rwx: Linux permissions | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2024/06/07/beyond-rwx/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='Beyond rwx: Linux permissions | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2024/06/07/beyond-rwx/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2024-05-31T05:06:07Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='Beyond rwx: Linux permissions' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="beyond-rwx-linux-permissions-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						Beyond rwx: Linux permissions
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>June 7, 2024</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/rijksmuseum.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2024/05/31/llms-daheim-mit-ollama/">LLMs daheim mit Ollama</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2024/06/10/die-welt-deiner-kindheit-existiert-nicht-mehr/">Die Welt Deiner Kindheit existiert nicht mehr</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+				<header class="toc bg-light">
+					<nav id="TableOfContents">
+  <ul>
+    <li><a href="#you-do-not-open-files">You do not open files</a></li>
+    <li><a href="#how-do-you-get-a-file-descriptor">How do you get a file descriptor?</a></li>
+    <li><a href="#what-can-a-fd-do">What can a <code>fd</code> do?</a></li>
+    <li><a href="#permission-checks">Permission checks</a></li>
+    <li><a href="#where-do-we-get-permissions-from">Where do we get permissions from?</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#standard-unix-file-access-checks">Standard Unix File Access Checks</a></li>
+            <li><a href="#linux-file-access-checks-with-acls">Linux File Access Checks with ACLs</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#pathnames">Pathnames</a>
+      <ul>
+        <li><a href="#directory-r-permission-but-no-x">Directory <code>r</code> permission (but no <code>x</code>)</a></li>
+        <li><a href="#directory-x-permission-but-no-r">Directory <code>x</code> permission (but no <code>r</code>)</a></li>
+        <li><a href="#directory-w-permission">Directory <code>w</code> permission</a></li>
+      </ul>
+    </li>
+    <li><a href="#deleting-files">Deleting files</a></li>
+    <li><a href="#who-owns-new-files">Who owns new files?</a></li>
+  </ul>
+</nav>
+				</header>
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>I wrote this article before, in 1996, in german:
+<a href="/1996/03/01/rwx-sonst-nix/">rwx–sonst nix?</a>
+
+,
+and in 2005, in german:
+<a href="/2005/11/01/user-und-gruppen-prozesse-und-dateien/">User und Gruppen, Prozesse und Dateien</a>
+
+.
+This is not a translation because some things changed.</p>
+<p>A file in Linux has three permissions, <code>rwx</code>,
+which are applied to three categories, the owner, their group and everyone else.
+To read a file you need <code>r</code> permission, to write it you need <code>w</code>, and to run it <code>x</code>.</p>
+<p>That&rsquo;s it, right?</p>
+<p><p class="md__image">
+  <img src="2024/06/opening-files-01.jpg" alt=""  />
+</p>
+
+</p>
+<p><em>A developer opening a file. (ChatGPT)</em></p>
+<h1 id="you-do-not-open-files">
+    <a href="#you-do-not-open-files">
+	You do not open files
+    </a>
+</h1>
+<p>Most people say &ldquo;I&rsquo;m reading this file&rdquo; or &ldquo;I&rsquo;m opening this file for writing&rdquo; without thinking much about it.
+But in fact, nobody in the history of Unix has ever opened or deleted a file.</p>
+<p>&ldquo;You&rdquo; as a person are being represented in Linux as a user.
+You have a username, which is translated on login into a UID, a number.
+In the language of identity and access management, this number is &ldquo;a principal,&rdquo;
+a token that represents your identity in the system for permission management.</p>
+<p>This token is assigned to initially one single process that can perform actions on the system on your behalf.
+The process can also create more processes with
+<a href="/2020/12/28/fork-exec-wait-and-exit/">fork and exec</a>
+
+, which inherit the UID.</p>
+<p>So, strictly speaking, you do not open files.</p>
+<blockquote>
+<p>A Linux process with your UID tries to open files on your behalf,
+and if it succeeds, gains access to a file descriptor (fd) that allows this process to perform actions on that file.</p>
+</blockquote>
+<p>and</p>
+<blockquote>
+<p>Access control, the checking if a process is allowed to do things, happens only on file open.</p>
+</blockquote>
+<p>File descriptors can also be passed along between processes.</p>
+<blockquote>
+<p>As long as that fd is kept open, the file exists,
+and any process having access to that fd can do the operations on that fd that it allows.</p>
+</blockquote>
+<p>That has a lot of implications.</p>
+<p>For example, it is possible to delete all names of a file, and still use it – as long as any process has a fd open,
+the file exists (even when it has no name).
+Disk space is not freed.
+The file descriptor can be used to give the file a name again (in Linux, with <code>linkat(2)</code> and the <code>/proc</code> file system).</p>
+<p>That is, for example,
+while programs such as <code>logrotate</code> have to send a <code>SIGHUP</code> signal to syslog after rotating logfiles.
+Syslog then closes and reopens all file descriptors, ensuring that the logs go into new, not deleted files.</p>
+<p>That is also why programs such as <code>lsof</code> sometimes list files with no name, marked as <code>(DELETED)</code>.</p>
+<h1 id="how-do-you-get-a-file-descriptor">
+    <a href="#how-do-you-get-a-file-descriptor">
+	How do you get a file descriptor?
+    </a>
+</h1>
+<p>The answer used to be &ldquo;with the <code>open(2)</code> syscall, of course.&rdquo;</p>
+<p>But running <code>strace</code> on a modern Linux you will see that it is <code>openat(2)</code> now.
+This call is a generalization of <code>open()</code>, and <code>open(3)</code> could be a library function that calls <code>openat(2)</code>,
+but for compatibility and ABI stability, <code>open(2)</code> still exists in parallel.</p>
+<blockquote>
+<p>In old Unix, 40 years ago, the system manual had chapters.
+Chapter 1 was user commands,
+chapter 8 was sysadmin commands,
+chapter 2 was syscalls (kernel functions),
+and chapter 3 was library functions.
+By looking at the chapter number to a manual page reference,
+you could see if a thing was a native kernel call from chapter 2.
+A library function from chapter 3 would internally use a different kernel function to perform its action.</p>
+<p>Kernel functions are wrapped in library functions for convenience,
+which are then wrapped in command line programs to make them available from the shell.</p>
+</blockquote>
+<h1 id="what-can-a-fd-do">
+    <a href="#what-can-a-fd-do">
+	What can a <code>fd</code> do?
+    </a>
+</h1>
+<p>The Linux manpage for the <code>openat(2)</code> syscall lists a number of flags for the syscall, all starting with <code>O_</code>.
+Using these flags, a process declares what it intends to be able to do with the file.
+On checking the intent against the permissions that a file has,
+the kernel decides to grant access.
+This is done by handing out a file descriptor.
+If access is not granted, an error is returned instead.</p>
+<p>An error from insufficient permissions usually is an <code>EPERM</code> (error code 13),
+but Linux has become complicated.
+<code>EPERM</code> may also come from other subsystems (such as AppArmor or SELinux),
+and there may be other error codes that ultimately have permissions as a root cause.</p>
+<p>In any case, here is what a process can declare that it wants to do with a file:</p>
+<p>In traditional Unix, there were three basic flags.</p>
+<dl>
+<dt>O_RDONLY</dt>
+<dd>The fd is to be used read-only.</dd>
+<dt>O_WRONLY</dt>
+<dd>The fd is to be used write-only.</dd>
+<dt>O_RDWR</dt>
+<dd>The fd is to be used for reading and writing.</dd>
+<dt>O_PATH</dt>
+<dd>Since Linux 2.6.39, there is also <code>O_PATH</code>:
+the fd is to be used for reference only.
+Reading or writing will fail with <code>EBADF</code>, as will any operations that modify metadata such as <code>fchown(2)</code>.
+But you can use it as a base to open other files with <code>openat(2)</code>,
+as a base to try to execute a file (if you have <code>x</code> on that file),
+and for a few other operations documented in the <code>openat(2)</code> manual page.</dd>
+</dl>
+<p>These basic flags can be &ldquo;or&quot;ed together with additional flags that modify the behavior of the file open operation.</p>
+<p>The most important ones are <code>O_CREAT</code> (&ldquo;make me a new file, if it does not exist when I try to open it&rdquo;),
+and <code>O_EXCL</code> (&ldquo;fail if that file already exists, when I try to open it with <code>O_WRONLY|O_CREAT</code>,
+to make sure it is actually a new file&rdquo;).</p>
+<h1 id="permission-checks">
+    <a href="#permission-checks">
+	Permission checks
+    </a>
+</h1>
+<p>&ldquo;Authorization&rdquo; schemes in computer systems take your principal (that UID)
+and determine what you can do with it, by performing operations on other system objects.
+This can be written as simple &ldquo;three-word sentences&rdquo; in subject-predicate-object form,
+or <a href="https://en.wikipedia.org/wiki/Semantic_triple" target="_blank" rel="noopener">RDF triples</a>
+
+:</p>
+<ul>
+<li>&ldquo;Kris&rdquo; &ldquo;can read and write&rdquo; &ldquo;/home/kris/notes.txt&rdquo;</li>
+<li>&ldquo;Kris&rdquo; &ldquo;can read&rdquo; &ldquo;/etc/passwd&rdquo;</li>
+</ul>
+<p>For storage, we need to cut these triples along the subject axis or the object axis.
+That is, we either store with each file which user can do things with the file,
+or we store with each user what files that user can work on.</p>
+<p>Storing the data in the object yields a <strong>permission system</strong> as we have in Unix:
+Each file contains a record (the inode and the access control list records)
+that lists which users can do what with this file.</p>
+<p>It is also possible to store this data with the user.
+Storing authorizations with the user generates a <strong>capability system</strong>.</p>
+<p>AppArmor is an example for a capability-based system to limit what file accesses and system calls a process
+is allowed to do.</p>
+<p><p class="md__image">
+  <img src="2024/06/opening-files-04.png" alt=""  />
+</p>
+
+</p>
+<p><em>Slicing RDF triples with authorizations by object,
+creating a permission system, or by subject, creating a capability system.</em></p>
+<p>Normal processes are subject to these access control checks:</p>
+<ul>
+<li>To be able to execute <code>open(&quot;./somefile.txt&quot;, O_RDONLY)</code> on a file, a process needs <code>r</code>-permission on that file.</li>
+<li>To be able to execute <code>open(&quot;./somefile.txt&quot;, O_WRONLY)</code> on a file, a process needs <code>w</code>-permission on that file.</li>
+<li>To be able to execute <code>open(&quot;./somefile.txt&quot;, O_RDWR)</code> on a file, a process needs both <code>r</code> and <code>w</code>-permission on that file.</li>
+<li>To be able to run a variant of the <code>exec(2)</code> syscall on a file, a process needs <code>x</code>-permission on that file.</li>
+</ul>
+<h1 id="where-do-we-get-permissions-from">
+    <a href="#where-do-we-get-permissions-from">
+	Where do we get permissions from?
+    </a>
+</h1>
+<p>Okay, what have we learned?</p>
+<ul>
+<li>Users, the people, are being represented in the system as principals, UIDs.</li>
+<li>These UIDs are being held by processes, which execute system calls.</li>
+<li>Certain system calls normally perform permission checks, and if they succeed, they do work for us.</li>
+<li>If the UID is associated with certain capabilities, these permission checks are bypassed, and they &ldquo;always work&rdquo;
+(They can still fail, but not for permission reasons).</li>
+</ul>
+<p>Users without special capabilities are subject to permission checks.
+Permissions are stored with the objects, the files being operated on.</p>
+<p>So where exactly are permissions stored, and how can we see them?</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -l somefile.txt
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw-r--+ 1 kris kris 0 Jun  7 06:15 somefile.txt
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -ln somefile.txt
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw-r--+ 1 1000 1000 0 Jun  7 06:15 somefile.txt
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ id
+</span></span></span><span class="line"><span class="cl"><span class="go">uid=1000(kris) gid=1000(kris) 
+</span></span></span><span class="line"><span class="cl"><span class="go">  groups=1000(kris),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),122(lpadmin),134(lxd),135(sambashare),143(docker)
+</span></span></span></code></pre></div><p>The Linux command <code>ls -l</code> shows us a file, and some file metadata in a concise single line form.
+The first block, <code>-rw-rw-r--+</code> shows us the file permissions, followed by the link count (the number of names the file has),
+followed by the files owner (kris) and the files group (also kris).
+Using the <code>-n</code> flag, we get the UID and GID numbers unresolved, instead of the names of the user and group.</p>
+<p>The permission bits <code>rwx</code> are shown three times, with the letter if set, and with a <code>-</code> if not.
+The first three permissions are the user permissions,
+the next three are the group permissions, and the final three are the other permissions.</p>
+<p>The <code>id</code> command shows us the UID and the GIDs of our process (one of the GIDs is a primary GID for that process).</p>
+<h3 id="standard-unix-file-access-checks">
+    <a href="#standard-unix-file-access-checks">
+	Standard Unix File Access Checks
+    </a>
+</h3>
+<p>In traditional Unix, the logic was as follows:</p>
+<ol>
+<li>Do the file UID and the process UID match? If yes, use the user permissions.
+In our example, the UID 1000 on the file and the UID 1000 from <code>id</code> match, so this is what is being used.</li>
+<li>Do the file GID and any of the GIDs from the process GID set match? If yes, use the group permissions.
+In our example, the file GID is 1000, and the process GID set is 1000, 4, 24, 27, 30, 46, 122, 134, 135 and 143.
+Any user being in any of these groups gets to use the second set of permission bits.</li>
+<li>All other users get to use the other permissions.</li>
+</ol>
+<p><p class="md__image">
+  <img src="2024/06/opening-files-02.png" alt=""  />
+</p>
+
+</p>
+<p><em><strong>A different example:</strong> A process wants to open a file. The UID does not match, the GID does match. Group permissions are granted.</em></p>
+<h3 id="linux-file-access-checks-with-acls">
+    <a href="#linux-file-access-checks-with-acls">
+	Linux File Access Checks with ACLs
+    </a>
+</h3>
+<p>In modern Linux, this is still the case, <strong>but</strong> we get to define optional, additional permission sets.
+If they are present, a trailing <code>+</code> is shown, as is in our example file.</p>
+<p>We can read these additional permission with <code>getfacl</code> and set them with <code>setfacl</code>.
+A &ldquo;facl&rdquo; is a <em>file access control list</em>.</p>
+<p>We are reading the files facl with <code>getfacl</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ getfacl ./somefile.txt
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> file: somefile.txt
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> owner: kris
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> group: kris
+</span></span><span class="line"><span class="cl"><span class="go">user::rw-
+</span></span></span><span class="line"><span class="cl"><span class="go">user:sammy:r--
+</span></span></span><span class="line"><span class="cl"><span class="go">group::rw-
+</span></span></span><span class="line"><span class="cl"><span class="go">mask::rw-
+</span></span></span><span class="line"><span class="cl"><span class="go">other::r--
+</span></span></span></code></pre></div><p>We get to see the standard three entries as <code>user</code>, <code>group</code> and <code>other</code>.
+We also get to see a mask, which we have not mentioned yet, and which can be used to set maximum allowed permissions.
+And we get to see a named entry, for a <code>user</code> named <code>sammy</code> which has only <code>r</code> permissions.</p>
+<p>The ACL check is done as step 1b.
+It is performed after the UID check, and before the GID check.</p>
+<p>1b. For each named ACL entry:</p>
+<p>Is this a <code>user</code> ACL?
+If so, does the UID in the ACL match the UID from the process?
+If so, use the permission <code>rwx</code> triplet from this ACL entry.</p>
+<p>Is this a <code>group</code> ACL?
+If so, does the GID in the ACL match any GID from the processes HID set?
+If so, use the permission <code>rwx</code> triplet from this ACL entry.</p>
+<p>Because this is done as 1b, it happens before the GID check in step 2.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris$ getfacl ./somefile.txt
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> file: somefile.txt
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> owner: kris
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> group: kris
+</span></span><span class="line"><span class="cl"><span class="go">user::rw-
+</span></span></span><span class="line"><span class="cl"><span class="go">user:sammy:r--
+</span></span></span><span class="line"><span class="cl"><span class="go">group::rw-
+</span></span></span><span class="line"><span class="cl"><span class="go">mask::rw-
+</span></span></span><span class="line"><span class="cl"><span class="go">other::r--
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris$ id
+</span></span></span><span class="line"><span class="cl"><span class="go">uid=1002(sammy) gid=1000(kris) groups=1000(kris)
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris$ ls -l ./somefile.txt
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw-r--+ 1 kris kris 0 jun  7 06:33 ./somefile.txt
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris$ &gt; ./somefile.txt
+</span></span></span><span class="line"><span class="cl"><span class="go">-bash: ./somefile.txt: Permission denied
+</span></span></span></code></pre></div><p>With the <code>getfacl</code> output we can see that a special named entry for <code>user:sammy</code> exists.
+This entry grants only <code>r</code>.</p>
+<p>Sammy is also member of the group <code>kris (1000)</code>, so the file GID and the process GID match (both are 1000, kris).
+Because of this group membership, the group permissions <code>rw-</code> should be applied.</p>
+<p>But because the named entry for sammy is checked before the GID entry, and matches,
+sammy is only granted <code>r--</code> permission on this file.
+Trying to write to the file with <code>&gt; ./somefile.txt</code> fails.</p>
+<h1 id="pathnames">
+    <a href="#pathnames">
+	Pathnames
+    </a>
+</h1>
+<p>In Unix, directories have permissions, too.</p>
+<p>For files, having <code>r</code> means you can read the file, having <code>w</code> means you can write to the file,
+and having <code>x</code> means you can execute the file.</p>
+<p>For directories, the same bits exist, but mean subtly different things:</p>
+<ul>
+<li><code>r</code> on a directory allows you to run <code>readdir</code> on the directory. You can see the filenames in the directory.</li>
+<li><code>w</code> on a directory allows you to modify directory names in the directory. You can remove or add filenames in the directory.</li>
+<li><code>x</code> on a directory means you can resolve names of files in this directory.</li>
+</ul>
+<p>Wait, what? Let&rsquo;s have a more detailed look at that.</p>
+<p>But first:
+Permissions are being checked according to the pathname.</p>
+<p>So if you write a pathname such as <code>./somefile.txt</code> (or <code>somefile.txt</code>, which is exactly the same), this is</p>
+<ul>
+<li>the permission check of the current directory, <code>.</code></li>
+<li>the permission check of the file <code>somefile.txt</code> in that directory.</li>
+</ul>
+<p>If you write <code>../../bin/ls</code>, this is</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ pwd
+</span></span></span><span class="line"><span class="cl"><span class="go">/home/kris
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -l ../../bin/ls
+</span></span></span><span class="line"><span class="cl"><span class="go">-rwxr-xr-x 1 root root 138216 Feb  8 04:46 ../../bin/ls
+</span></span></span></code></pre></div><ul>
+<li>the permission check for <code>..</code> (traversing <code>/home</code>)</li>
+<li>the permission check for <code>..</code> (traversing <code>/</code>)</li>
+<li>the permission check for <code>bin</code> (traversing <code>/bin</code>)</li>
+<li>the permission check for the file <code>ls</code></li>
+</ul>
+<blockquote>
+<p>Or, in other words,
+a file&rsquo;s effective permission is the sequence of permissions along the path plus the permission on the file,
+individual permissions and file access control lists and all.</p>
+</blockquote>
+<p>But if you write <code>/bin/ls</code>, this is</p>
+<ul>
+<li>the permission check for <code>/</code>,</li>
+<li>the permission check for <code>/bin</code></li>
+<li>and the permission check for the file <code>ls</code></li>
+</ul>
+<p>and that is a subtly different set of permissions,
+because it is a different path to the same file, but we check along the path.</p>
+<p>Now, let&rsquo;s look at directory permissions in detail:</p>
+<h2 id="directory-r-permission-but-no-x">
+    <a href="#directory-r-permission-but-no-x">
+	Directory <code>r</code> permission (but no <code>x</code>)
+    </a>
+</h2>
+<p>Let&rsquo;s create a directory and a file in that directory:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ mkdir cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ echo schokokeks &gt;  cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -ld cookie cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="go">drwxrwxr-x 2 kris kris  3 Jun  7 06:57 cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw-r-- 1 kris kris 11 Jun  7 06:58 cookie/choc
+</span></span></span></code></pre></div><p>Now let&rsquo;s remove the <code>x</code> permission from the directory.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ chmod a-x cookie/
+</span></span></span></code></pre></div><p>I have no <code>x</code>, and that means I cannot get to any of these files:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -ld cookie/
+</span></span></span><span class="line"><span class="cl"><span class="go">drw-rw-r-- 2 kris kris 3 Jun  7 06:57 cookie/
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -l cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="go">ls: cannot access &#39;cookie/choc&#39;: Permission denied
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ cat cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="go">cat: cookie/choc: Permission denied
+</span></span></span></code></pre></div><p>I still have <code>r</code>, so I can list the names.
+I would need access to the files to get more than the name, for example file length or permissions with <code>stat(2)</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ echo cookie/*
+</span></span></span><span class="line"><span class="cl"><span class="go">cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -l cookie/
+</span></span></span><span class="line"><span class="cl"><span class="go">ls: cannot access &#39;cookie/choc&#39;: Permission denied
+</span></span></span><span class="line"><span class="cl"><span class="go">total 0
+</span></span></span><span class="line"><span class="cl"><span class="go">-????????? ? ? ? ?            ? choc
+</span></span></span></code></pre></div><p>Restoring <code>x</code> permission fixes things.</p>
+<p><strong>Destructive Sysadmin Exercise:</strong> Get yourself a throwaway virtual machine.
+As root, run <code>chmod a-x /</code>.
+<em>Do not do this with a production machine.</em>
+Predict what will happen.
+What actually happens?
+Can you fix it?</p>
+<h2 id="directory-x-permission-but-no-r">
+    <a href="#directory-x-permission-but-no-r">
+	Directory <code>x</code> permission (but no <code>r</code>)
+    </a>
+</h2>
+<p>Let&rsquo;s recreate the setup and then remove the <code>r</code> permission, keeping <code>x</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ mkdir cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ echo &#34;schokokeks&#34; &gt; cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ chmod 111 cookie
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -ld cookie cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="go">d--x--x--x 2 kris kris  3 Jun  7 07:06 cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw-r-- 1 kris kris 11 Jun  7 07:06 cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ cat cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="go">schokokeks
+</span></span></span></code></pre></div><p>Kris can still access the files in the directory and their contents.
+But:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -l cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">ls: cannot open directory &#39;cookie&#39;: Permission denied
+</span></span></span></code></pre></div><p>While <code>ls -ld cookie cookie/choc</code> tries to directly list files with known names,
+<code>ls -l</code> tries to open the directory for reading with <code>opendir</code>
+and then discover the content (the file names) using <code>readdir</code>.
+This fails.</p>
+<p>Running <code>stat</code> system calls on files with known names traverses the directory
+and requires <code>x</code> permission on the directory containing the files.
+Running <code>opendir</code> and <code>readdir</code> calls to discover filenames requires <code>r</code> permission.
+We have <code>x</code>, but not <code>r</code>, so one operation succeeds, the other does not.</p>
+<h2 id="directory-w-permission">
+    <a href="#directory-w-permission">
+	Directory <code>w</code> permission
+    </a>
+</h2>
+<p>Let&rsquo;s create a directory with <code>w</code> permission for the group:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ mkdir cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ echo &#34;schokokeks&#34; &gt; cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ chmod 730 cookie
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -ld cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">drwx-wx--- 2 kris kris 3 Jun  7 07:12 cookie
+</span></span></span></code></pre></div><p>Now, as a different user, let&rsquo;s do things:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$ id
+</span></span></span><span class="line"><span class="cl"><span class="go">uid=1002(sammy) gid=1000(kris) groups=1000(kris)
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:~$ cd ~kris/cookie
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$ ls -l
+</span></span></span><span class="line"><span class="cl"><span class="go">ls: cannot open directory &#39;.&#39;: Permission denied
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$ cat choc
+</span></span></span><span class="line"><span class="cl"><span class="go">schokokeks
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$ ls -l choc
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw-r-- 1 kris kris 11 jun  7 07:12 choc
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$ echo butter &gt; butter_cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$ ls -l butter_cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-r--r-- 1 sammy kris 7 jun  7 07:15 butter_cookie
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$ rm choc
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$ 
+</span></span></span></code></pre></div><p>Sammy, being member of the group kris, can enter the directory with <code>cd</code>.</p>
+<p>Sammy has no <code>r</code> permission, so she cannot list the directory contents.</p>
+<p>Sammy has <code>x</code> permission, so she can access files in the directory, if the file permission allows this.
+She can also <code>stat(2)</code> files with known names to learn the files&rsquo; metadata.</p>
+<p>Having <code>w</code> permission, sammy can create filenames in this directory, here <code>butter_cookie</code>.
+The new file has her UID and the parent directories GID (what?).</p>
+<p>Having <code>w</code> permission, sammy can also remove filenames in this directory, here <code>choc</code>, which she does not own (what?).</p>
+<h1 id="deleting-files">
+    <a href="#deleting-files">
+	Deleting files
+    </a>
+</h1>
+<p>Let&rsquo;s address the second &ldquo;What?&rdquo; first: Nobody in Unix has ever deleted a file.</p>
+<p>Unix garbage collects files automatically when the number of their names is zero (their link count is zero),
+and the number of open file descriptors is zero.</p>
+<p>You knew this: The syscall is called <code>unlink(2)</code> and not <code>delete</code>.
+<code>unlink</code> will remove one of potentially many names of a file.
+Even the last one.</p>
+<p>Giving <code>w</code>-permission allows people to create or remove filenames in a directory.
+The file is never involved with this, hence permissions are not checked.</p>
+<p>That&rsquo;s bad.</p>
+<p>Let&rsquo;s fix that.</p>
+<p>I lied. There are not nine permission bits to a file, there are 12. It&rsquo;s not <code>rwxrwxrwx</code>, it&rsquo;s <code>sstrwxrwxrwx</code>.
+The <code>sst</code> is rarely set, so it is not shown unless it is set.
+When it is set, it is shown instead of the three <code>x</code>, in lower case if the <code>x</code> below is set, else in upper case.</p>
+<p><p class="md__image">
+  <img src="2024/06/opening-files-03.png" alt=""  />
+</p>
+
+</p>
+<p><em>What are the <code>sst</code> bits and why don&rsquo;t we see them?</em></p>
+<p>The <code>t</code>-bit is called &ldquo;sticky bit&rdquo; because of an obscure function (for files) for a computer type that no longer exists.
+You can interpret is as &ldquo;this thing needs special treatment&rdquo; in modern Unix.
+If you set it on directories, it will prevent a user from deleting files they do not own.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ mkdir cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ echo &#34;schokokeks&#34; &gt; cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ chmod 1730 cookie
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -ld cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">drwx-wx--T 2 kris kris 3 Jun  7 07:25 cookie
+</span></span></span></code></pre></div><p>We have set the permissions <code>1730</code> aka <code>--trwx-wx--T</code> on this directory.
+The <code>T</code> is shown instead of the last <code>x</code> and it is uppercase because the <code>x</code> beneath it is not there.</p>
+<p>And now</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">sammy@server:~$ cd ~kris/cookie
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$ ls -l choc
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw-r-- 1 kris kris 11 jun  7 07:25 choc
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$ rm choc
+</span></span></span><span class="line"><span class="cl"><span class="go">rm: cannot remove &#39;choc&#39;: Operation not permitted
+</span></span></span></code></pre></div><p>but</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$ echo butter &gt; butter_cookie
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$ ls -l butter_cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-r--r-- 1 sammy kris 7 jun  7 07:28 butter_cookie
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$ rm butter_cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">sammy@server:/home/kris/cookie$
+</span></span></span></code></pre></div><p>So sammy can still create files, which she then owns, and which she can delete.</p>
+<p>But sammy can no longer delete files that she does not own.</p>
+<p>Remember to set <code>t</code> on a directory that is also writeable by other persons.</p>
+<h1 id="who-owns-new-files">
+    <a href="#who-owns-new-files">
+	Who owns new files?
+    </a>
+</h1>
+<p>When creating new files, the new file gets an owner UID, a file GID and a default ACL.</p>
+<p>Let&rsquo;s try this:</p>
+<pre tabindex="0"><code class="language-conosle" data-lang="conosle">kris@server:~$ id
+uid=1000(kris) gid=1000(kris) 
+  groups=1000(kris),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),122(lpadmin),134(lxd),135(sambashare),143(docker)
+
+kris@server:~$ mkdir cookie
+kris@server:~$ echo &#34;schokokeks&#34; &gt; cookie/choc
+
+kris@server:~$ ls -l cookie/choc
+-rw-rw-r-- 1 kris kris  11 Jun  7 07:31 cookie/choc
+</code></pre><p>I can try to give the file to a different group.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ chgrp doesnotexist cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="go">chgrp: invalid group: ‘doesnotexist’
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ chgrp scanner cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="go">chgrp: changing group of &#39;cookie/choc&#39;: Operation not permitted
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ chgrp sambashare cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -l cookie/choc
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw-r-- 1 kris sambashare 11 Jun  7 07:31 cookie/choc
+</span></span></span></code></pre></div><p>I can&rsquo;t give the file to a group that does not exist.</p>
+<p>I can&rsquo;t give the file to a group that I am not a member of.
+That is, because that file will count against that groups&rsquo; quota,
+and I am not allowed to book this file on a foreign groups&rsquo; quota.</p>
+<p>I can give the file to any group that I am a member of.
+That is how the GID set of a process matters.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ mkdir cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ chgrp sambashare cookie
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -ld cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">drwxrwxr-x 2 kris sambashare 2 Jun  7 07:37 cookie
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ echo butter &gt; cookie/butter_cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -l cookie
+</span></span></span><span class="line"><span class="cl"><span class="go">total 1
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw-r-- 1 kris sambashare 7 Jun  7 07:38 butter_cookie
+</span></span></span></code></pre></div><p>When I create files in a directory, the file will inherit the group of the directory.
+That makes it easier for a group of people working together in a group,
+because shared group directories will now automatically behave properly.</p>
+<ul>
+<li>Normal users are being created with a group after them, and ideally with the name GID and UID.
+Effectively, they do no longer need to care about groups because they are the only members of their own group.</li>
+<li>Additional groups can be created for cooperation.
+A sysadmin adds members to these groups effectively.</li>
+<li>Directories that belong to a group will contain newly created files, which are created with a GID of that share group.</li>
+<li>That is what you want:
+If you put files into a share directory for a group, they should be UID you, GID the share group.</li>
+</ul>
+<p>This happens, because the file system is mounted with the option <code>bsdgroups</code>.
+For file systems that are mounted without this option, the primary GID of the user is chosen.
+All file systems should always be mounted with <code>bsdgroups</code>.</p>
+<p>If you need the opposite behavior for a single directory, <code>chmod g+s my_directory</code> on it.
+For a filesystem without <code>bsdgroups</code>, this one directory will have <code>bsdgroups</code> semantics.
+For a filesystem with <code>bsdgroups</code>, this one directory will have no <code>bsdgroups</code> semantics.</p>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+				<a href="/tags/#linux" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				linux
+				</a>
+				
+				<a href="/tags/#erklaerbaer" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				erklaerbaer
+				</a>
+				
+				<a href="/tags/#filesystems" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				filesystems
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2024-06-07-beyond-rwx/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2024/05/31/llms-daheim-mit-ollama/">LLMs daheim mit Ollama</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2024/06/10/die-welt-deiner-kindheit-existiert-nicht-mehr/">Die Welt Deiner Kindheit existiert nicht mehr</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

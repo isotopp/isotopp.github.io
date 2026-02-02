@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Binlog Compression and Large Transactions | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2022/06/07/mysql-binlog-compression-and-large-transactions/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='Binlog Compression and Large Transactions | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2022/06/07/mysql-binlog-compression-and-large-transactions/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2022-06-07T09:42:00Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='Binlog Compression and Large Transactions' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="binlog-compression-and-large-transactions-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						Binlog Compression and Large Transactions
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>June 7, 2022</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/06/03/rolling-back/">Rolling MySQL back and forward</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/06/08/how-to-buy-an-ebike/">How to buy an e-Bike</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>(<a href="https://twitter.com/isotopp/status/1532752730229559300" target="_blank" rel="noopener">Twitter thread</a>
+
+, reproduction in english, and update)</p>
+<p>On Friday, 2022-06-03, 14:42, we lost a replication hierarchy, on the primary, all replicas down.
+At 16:30 the escalation hits my desk, because this one is special.</p>
+<h1 id="replication-stops-and-wants-more-max_allowed_packet">
+    <a href="#replication-stops-and-wants-more-max_allowed_packet">
+	Replication stops, and wants more <code>max_allowed_packet</code>
+    </a>
+</h1>
+<p>There is a sequence of binlogs, each 1 GB in size, as configured, except for the broken one, which is 3 GB.
+Replication stops with</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">Got fatal error 1236 from master when reading data from binary log: &#39;log event entry exceeded max_allowed_packet; Increase max_allowed_packet on master; the first event &#39;&#39; at 4, the last event read from &#39;../log/binlog.002558&#39; at 19959785, the last byte read from &#39;../log/binlog.002558&#39; at 19959804
+</span></span></span></code></pre></div><p>Trying to run <code>mysqldump -vvv ...</code> on the broken binlog fails and produces no output useful for diagnostics.</p>
+<h1 id="using-the-flight-recorder">
+    <a href="#using-the-flight-recorder">
+	Using the flight recorder
+    </a>
+</h1>
+<p>We do know the statement failed at 14:42 and we run a copy of <a href="/2021/04/22/a-mysql-flight-recorder/">MySQL Flight Recorder</a>
+
+ on every box, even this one.</p>
+<p>Among the many things the flight recorder records is the processlist and also the output of <code>SHOW ENGINE INNODB STATUS</code>.
+Indeed we find a long running transaction.
+At 14:41, we see <code>Compressing transaction changes</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">---TRANSACTION 6702541326, ACTIVE (PREPARED) 7419 sec
+</span></span></span><span class="line"><span class="cl"><span class="go">mysql tables in use 2, locked 2
+</span></span></span><span class="line"><span class="cl"><span class="go">2185611 lock struct(s), heap size 232317048, 73307452 row lock(s), undo log entries 70077831
+</span></span></span><span class="line"><span class="cl"><span class="go">MySQL thread id 1532688506, OS thread handle 139765193623296, query id 22431944402 SOME_SERVERNAME 10.10.10.10 SOE_USERNAME Compressing transaction changes.
+</span></span></span><span class="line"><span class="cl"><span class="go">INSERT IGNORE INTO target_table  SELECT * FROM source_table
+</span></span></span></code></pre></div><p>And at 14:42 the same thing is visible with <code>waiting for handler commit</code>.
+Then replication died.</p>
+<h1 id="what-happened">
+    <a href="#what-happened">
+	What happened
+    </a>
+</h1>
+<p>So this machine is running with compressed binlogs enabled.
+It was processing a large <code>INSERT INTO t SELECT * FROM s</code> statement to copy rows.
+We see <code>70 077 831</code> (70M) Undo Log entries.
+The transaction compressed data, then commits, then the replication stops on all replicas, in an unrecoverable way.
+At least the primary is still happy, if unaware of the problem.
+The binlog file is 2GB larger than it should be.</p>
+<p>The immediate theory:
+Somebody wrote a small statement that produces a very large transaction.
+Binlog compression works with compression on a per-event basis, and we do get a very large row change event.
+But the zstd compression in MySQL cannot handle events this large.
+The size of the binlog suggests a signed 4 byte integer overflow.</p>
+<p>Being unable to see the binlog, and getting some garbage error message make this very hard to debug.
+Our solution is to reclone the entire hierarchy (which is nasty, because it is a set of machines &gt;10TB each).</p>
+<p>Later investigation confirms that there is a binlog compression transaction size limit, but it is apparently even 1 GB, not 2 GB.
+This is not too bad a restriction. You probably do not want transactions that large anyway:
+They would break group replication, they would take ages to roll back, and they would create a lot of other problems as well.</p>
+<h1 id="problems-and-solutions">
+    <a href="#problems-and-solutions">
+	Problems and Solutions
+    </a>
+</h1>
+<p>So we learn:</p>
+<ul>
+<li>Avoid large transactions. <a href="/2020/07/27/mysql-commit-size-and-speed/">1000 to 10.000 rows</a>
+
+ are probably something you should aim for.</li>
+<li>Configure <a href="https://dev.mysql.com/doc/refman/8.0/en/replication-options-binary-log.html#sysvar_max_binlog_cache_size" target="_blank" rel="noopener">max_binlog_cache_size</a>
+
+ to under 1 GB. The server will then reject the large transaction instead of committing it to the binlog. This will prevent breaking the replication hierarchy.
+<ul>
+<li>Maybe similar or a small multiple of <code>max_allowed_packet</code>?</li>
+<li>The default is wrong: <code>18446744073709547520</code>, and the manual itself recommends 4 GB, but the product does not set the default to this.
+Given that binlog compression can&rsquo;t do more than 1 GB, that should probably the default.
+MySQL should come with sensible defaults.</li>
+</ul>
+</li>
+<li><code>mysqlbinlog -vvv ...</code> is not helpful, as it cannot parse this binlog, and the error message given is useless.
+The program should give a proper diagnostic message.</li>
+<li>The server cannot handle this, and the error message shown above about <code>max_allowed_packet</code> is misdirecting.
+The server should give proper diagnostic messages.</li>
+</ul>
+<p>Once you experience this error, it is rather hard to fix:
+Recloning does it, but that takes long.
+Setting the <code>max_binlog_cache_size</code> prevents the situation.</p>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#database" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				database
+				</a>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2022-06-07-mysql-binlog-compression-and-large-transactions/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/06/03/rolling-back/">Rolling MySQL back and forward</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2022/06/08/how-to-buy-an-ebike/">How to buy an e-Bike</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

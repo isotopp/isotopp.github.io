@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>MySQL: Import CSV, not using LOAD DATA | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2020/09/28/mysql-import-csv-not-using-load-data/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='MySQL: Import CSV, not using LOAD DATA | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2020/09/28/mysql-import-csv-not-using-load-data/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2020-09-28T18:00:34Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='MySQL: Import CSV, not using LOAD DATA' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="mysql-import-csv-not-using-load-data-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						MySQL: Import CSV, not using LOAD DATA
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>September 28, 2020</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/09/26/my-private-data-warehouse/">Importing account statements and building a data warehouse</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/10/05/what-are-the-problems-with-posix/">What are the problems with POSIX?</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>All over the Internet people are having trouble getting <code>LOAD DATA</code> and <code>LOAD DATA LOCAL</code> to work. Frankly, do not use them, and especially not the <code>LOCAL</code> variant. They are insecure, and even if you get them to work, they are limited and unlikely to do what you want. Write a small data load program as shown below.</p>
+<h2 id="not-using-load-data-local">
+    <a href="#not-using-load-data-local">
+	Not using LOAD DATA LOCAL
+    </a>
+</h2>
+<p><a href="https://dev.mysql.com/doc/refman/8.0/en/load-data-local-security.html" target="_blank" rel="noopener">The fine manual says</a>
+
+:</p>
+<blockquote>
+<p>The LOCAL version of LOAD DATA has two potential security issues:</p>
+<ul>
+<li>
+<p>Because LOAD DATA LOCAL is an SQL statement, parsing occurs on the server side, and transfer of the file from the client host to the server host is initiated by the MySQL server, which tells the client the file named in the statement. In theory, a patched server could tell the client program to transfer a file of the server&rsquo;s choosing rather than the file named in the statement. Such a server could access any file on the client host to which the client user has read access. (A patched server could in fact reply with a file-transfer request to any statement, not just LOAD DATA LOCAL, so a more fundamental issue is that clients should not connect to untrusted servers.)</p>
+</li>
+<li>
+<p>In a Web environment where the clients are connecting from a Web server, a user could use LOAD DATA LOCAL to read any files that the Web server process has read access to (assuming that a user could run any statement against the SQL server). In this environment, the client with respect to the MySQL server actually is the Web server, not a remote program being run by users who connect to the Web server.</p>
+</li>
+</ul>
+</blockquote>
+<p>The second issue in reality means that if the web server has a suitable SQL injection vulnerability, the attacker may use that to read any file the web server has access to, bouncing this through the database server.</p>
+<p>In short, never use (or even enable) <code>LOAD DATA LOCAL</code>.</p>
+<ul>
+<li><code>local_infile</code> is disabled in the server config, and you should keep it that way.</li>
+<li>client libraries are by default compiled with <code>ENABLED_LOCAL_INFILE</code> set to off. It can still be enabled using a call to the <code>mysql_options()</code> C-API, but never do that.</li>
+<li>8.0.21+ places additional restrictions on this, to prevent you from being stupid (that is, actually enabling this anywhere).</li>
+</ul>
+<h2 id="not-using-load-data">
+    <a href="#not-using-load-data">
+	Not using LOAD DATA
+    </a>
+</h2>
+<p>The <code>LOAD DATA</code> variant of the command assumes that you place a file on the database server, into a directory in the file system of the server, and load it from there. In the age of &ldquo;MySQL as a service&rdquo; this is inconvenient to impossible, so forget about this option, too.</p>
+<p>If you were able to do place files onto the system where your mysqld lives,</p>
+<ul>
+<li>your user needs to have <code>FILE</code> as a privilege, a global privilege (<code>GRANT FILE TO ... ON *.*</code>)</li>
+<li>the server variable <a href="https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_secure_file_priv" target="_blank" rel="noopener"><code>secure_file_priv</code></a>
+
+ needs to be set to a directory name, and that directory needs to be world-readable. <code>LOAD DATA</code> and <code>SELECT INTO OUTFILE</code> work only with filenames below this directory. Setting this variable requires a server restart, this is not a dynamic variable (on purpose).</li>
+</ul>
+<p>Note that the variable can be <code>NULL</code> (this is secure in the sense that <code>LOAD DATA</code> is disabled) or empty (this is insecure in that there are no restrictions).</p>
+<p>There is nothing preventing you from setting the variable to <code>/var/lib/mysql</code> or other dumb locations which would expose vital system files to load and save operations. Do not do this.</p>
+<p>Also, a location such as <code>/tmp</code> or any other world-writeable directory would be dumb: Use a dedicated directory that is writeable by the import user only, and make sure that it is world-readable in order to make the command work.</p>
+<p><strong>Better:</strong> Do not use this command at all (and set <code>secure_file_priv</code> to NULL).</p>
+<h2 id="using-data-dump-and-load-programs-instead">
+    <a href="#using-data-dump-and-load-programs-instead">
+	Using data dump and load programs instead
+    </a>
+</h2>
+<p>We spoke about dumping a schema into CSV files in <a href="/2020/06/20/export-the-entire-database-to-csv/">Export the entire database to CSV</a>
+
+ already.</p>
+<p>To complete the discussion we need to provide a way to do the inverse and load data from a CSV file into a table.</p>
+<p>The full code is in <a href="https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-csv/load.py" target="_blank" rel="noopener">load.py</a>
+
+.</p>
+<p>The main idea is to open a <code>.csv</code> file with <code>csv.reader</code>, and then iterate over the rows. For each row, we execute an <code>INSERT</code> statement, and every few rows we also <code>COMMIT</code>.</p>
+<p>In terms of dependencies, we rely on <code>MySQLdb</code> and <code>csv</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">csv</span>
+</span></span></code></pre></div><p>We need to know the name of a table, and the column names of that table (in the order in which they appear).</p>
+<p>We should also make sure we can change the delimiter and quoting character used by the CSV, and make the commit interval variable.</p>
+<p>Finally, we need to be able to connect to the database.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># table to load into</span>
+</span></span><span class="line"><span class="cl"><span class="n">table</span> <span class="o">=</span> <span class="s2">&#34;data&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># column names to load into</span>
+</span></span><span class="line"><span class="cl"><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;id&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;d&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;e&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># formatting options</span>
+</span></span><span class="line"><span class="cl"><span class="n">delimiter</span> <span class="o">=</span> <span class="s2">&#34;,&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">quotechar</span> <span class="o">=</span> <span class="s1">&#39;&#34;&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># commit every commit_interval lines</span>
+</span></span><span class="line"><span class="cl"><span class="n">commit_interval</span> <span class="o">=</span> <span class="mi">1000</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># connect to database, set mysql_use_results mode for streaming</span>
+</span></span><span class="line"><span class="cl"><span class="n">db_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">host</span><span class="o">=</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">user</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">passwd</span><span class="o">=</span><span class="s2">&#34;geheim&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></div><p>From this, we can build a database connection and an <code>INSERT</code> statement, using the table name and column names:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># build a proper insert command</span>
+</span></span><span class="line"><span class="cl"><span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;insert into </span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2"> ( &#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&#34;, &#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&#34;) values (&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&#34;</span><span class="si">%s</span><span class="s2">,&#34;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&#34;)&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;cmd = </span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>The actual code is then rather simple: Open the CSV file, named after the table, and create a <code>csv.reader()</code>. Using this, we iterate over the rows.</p>
+<p>For each row, we execute the insert statement.</p>
+<p>Every <code>commit_interval</code> rows we commit, and for good measure we also commit after finishing, to make sure any remaining rows also get written out.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">.csv&#34;</span><span class="p">,</span> <span class="s2">&#34;r&#34;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="n">quotechar</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># insert the rows as we read them</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># ever commit_interval we issue a commit</span>
+</span></span><span class="line"><span class="cl">        <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">counter</span> <span class="o">%</span> <span class="n">commit_interval</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># final commit to the remainder</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span></code></pre></div><p>And that it. That&rsquo;s all the code.</p>
+<ul>
+<li>No <code>FILE</code> privilege,</li>
+<li>No special permissions besides <code>insert_priv</code> into the target table.</li>
+<li>No config in the database.</li>
+<li>No server restart to set up the permissions.</li>
+</ul>
+<p>And using Python&rsquo;s multiprocessing, you could make it load multiple tables in parallel or chunk a very large table and load that in parallel - assuming you have database hardware that could profit from any of this.</p>
+<p>In any case - this is simpler, more secure and less privileged than any of the broken <code>LOAD DATA</code> variants.</p>
+<p>Don&rsquo;t use them, write a loader program.</p>
+<p>Let&rsquo;s run it. First we generate some data, using the previous example from the partitions tutorial:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">(venv) kris@server:~/Python/mysql$ mysql-partitions/partitions.py setup-tables
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) kris@server:~/Python/mysql$ mysql-partitions/partitions.py start-processing
+</span></span></span><span class="line"><span class="cl"><span class="go">create p2 reason: not enough partitions
+</span></span></span><span class="line"><span class="cl"><span class="go">cmd = alter table data add partition ( partition p2 values less than ( 20000))
+</span></span></span><span class="line"><span class="cl"><span class="go">create p3 reason: not enough partitions
+</span></span></span><span class="line"><span class="cl"><span class="go">cmd = alter table data add partition ( partition p3 values less than ( 30000))
+</span></span></span><span class="line"><span class="cl"><span class="go">create p4 reason: not enough partitions
+</span></span></span><span class="line"><span class="cl"><span class="go">cmd = alter table data add partition ( partition p4 values less than ( 40000))
+</span></span></span><span class="line"><span class="cl"><span class="go">create p5 reason: not enough partitions
+</span></span></span><span class="line"><span class="cl"><span class="go">cmd = alter table data add partition ( partition p5 values less than ( 50000))
+</span></span></span><span class="line"><span class="cl"><span class="go">create p6 reason: not enough empty partitions
+</span></span></span><span class="line"><span class="cl"><span class="go">cmd = alter table data add partition ( partition p6 values less than ( 60000))
+</span></span></span><span class="line"><span class="cl"><span class="go">counter = 1000
+</span></span></span><span class="line"><span class="cl"><span class="go">counter = 2000
+</span></span></span><span class="line"><span class="cl"><span class="go">counter = 3000
+</span></span></span><span class="line"><span class="cl"><span class="go">counter = 4000
+</span></span></span><span class="line"><span class="cl"><span class="go">^CError in atexit._run_exitfuncs:               
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span></code></pre></div><p>We then dump the data, truncate the table, and reload the data. We count the rows to be sure we get all of them back.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">(venv) kris@server:~/Python/mysql$ mysql-csv/dump.py
+</span></span></span><span class="line"><span class="cl"><span class="go">table = data
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e &#39;select count(*) from data&#39;
+</span></span></span><span class="line"><span class="cl"><span class="go">mysql: [Warning] Using a password on the command line interface can be insecure.
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">| count(*) |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">|     4511 |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e &#39;truncate table data&#39;
+</span></span></span><span class="line"><span class="cl"><span class="go">mysql: [Warning] Using a password on the command line interface can be insecure.
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) kris@server:~/Python/mysql$ mysql-csv/load.py
+</span></span></span><span class="line"><span class="cl"><span class="go">cmd = insert into data ( id, d, e) values (%s,%s,%s)
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e &#39;select count(*) from data&#39;
+</span></span></span><span class="line"><span class="cl"><span class="go">mysql: [Warning] Using a password on the command line interface can be insecure.
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">| count(*) |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">|     4511 |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span></code></pre></div>
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+				<a href="/tags/#database" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				database
+				</a>
+				
+				<a href="/tags/#erklaerbaer" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				erklaerbaer
+				</a>
+				
+				<a href="/tags/#mysqldev" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysqldev
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2020-09-28-mysql-import-csv-not-using-load-data/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/09/26/my-private-data-warehouse/">Importing account statements and building a data warehouse</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/10/05/what-are-the-problems-with-posix/">What are the problems with POSIX?</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

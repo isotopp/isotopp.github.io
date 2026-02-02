@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Importing account statements and building a data warehouse | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2020/09/26/my-private-data-warehouse/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='Importing account statements and building a data warehouse | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2020/09/26/my-private-data-warehouse/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2020-09-26T09:50:00Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='Importing account statements and building a data warehouse' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="importing-account-statements-and-building-a-data-warehouse-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						Importing account statements and building a data warehouse
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>September 26, 2020</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/09/25/mysql-dynamic-partitions-suck/">MySQL: automatic partitions surely would be nice</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/09/28/mysql-import-csv-not-using-load-data/">MySQL: Import CSV, not using LOAD DATA</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>This is an update and translation of a
+<a href="/2006/07/23/mein-privates-datawarehouse-sparen-mit-mysql/">much older article</a>
+
+,
+which I originally wrote in German.
+Back then, I was experimenting with importing account statements from my German Sparkasse,
+which were available as CSV files.</p>
+<h2 id="the-initial-data-load">
+    <a href="#the-initial-data-load">
+	The initial data load
+    </a>
+</h2>
+<p>The data appeared as follows:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> head -2 /home/kris/Documents/banking/umsatz-22758031-29122004.csv
+</span></span><span class="line"><span class="cl"><span class="go">&#34;Local Account&#34;;&#34;Book Date&#34;;&#34;Valuta Date&#34;;&#34;Transaction Type&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="go">&#34;Purpose&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="go">&#34;Remote Party&#34;;&#34;Remote Account&#34;;&#34;Bank Code&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="go">&#34;Amount&#34;;&#34;Currency&#34;;&#34;Info&#34;
+</span></span></span><span class="line"><span class="cl"><span class="go">&#34;08154711&#34;;&#34;30.12&#34;;&#34;30.12.05&#34;;&#34;Direct Debit&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="go">&#34;DRP 08154711 040441777  INKL. 16% UST 5.38 EUR&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="go">&#34;STRATO MEDIEN AG&#34;;&#34;040441777&#34;;&#34;10050000&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="go">&#34;-39,00&#34;;&#34;EUR&#34;;&#34;Direct Debit booked&#34;
+</span></span></span></code></pre></div><p>Because I want to know how I spend my money, I am loading the data into MySQL.
+Here is how:
+To understand my spending habits, I decided to load the data into MySQL.
+Here’s how:</p>
+<p>First, we define a table to load the data.
+The table has columns to hold the raw data.
+We still need to clean and adjust the data, so we are not concerned with the final fields or types yet.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="c1">-- load data
+</span></span></span><span class="line"><span class="cl"><span class="n">warnings</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">transactions</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">transactions</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">localaccount</span><span class="w"> </span><span class="nb">char</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">bookdate_text</span><span class="w"> </span><span class="nb">char</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">valutadate_text</span><span class="w"> </span><span class="nb">char</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">transactiontype</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">purpose</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">180</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">remoteaccount_name</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w">  </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">remoteaccount_number</span><span class="w"> </span><span class="nb">char</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">remoteaccount_bankcode</span><span class="w"> </span><span class="nb">char</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">amount_text</span><span class="w"> </span><span class="nb">char</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">currentcy</span><span class="w"> </span><span class="nb">char</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">info</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w">  </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">unique</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">bookdate_text</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">transactiontype</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">purpose</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">remoteaccount_number</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">remoteaccount_bankcode</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">amount_text</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">)</span><span class="w"> </span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">truncate</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">transactions</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><p>Unfortunately, there are no unique transaction identifiers, so I can&rsquo;t define a proper primary key.
+Instead, I use a <code>UNIQUE INDEX</code>, which may be overly specific.</p>
+<p>When exporting account statements, I must specify start and end dates,
+which sometimes result in duplicate records at the end of one statement and the beginning of the next.</p>
+<p>To avoid loading the same line twice if it appears in multiple CSV files, this unique index should be adequate.</p>
+<p>I can load the various CSV files into this table:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">load</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="n">infile</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="s1">&#39;/home/kris/Documents/banking/umsatz-22758031-29122004.csv&#39;</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="k">into</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">buchungen</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="n">fields</span><span class="w"> </span><span class="n">terminated</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="s2">&#34;;&#34;</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="n">optionally</span><span class="w"> </span><span class="n">enclosed</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="s1">&#39;&#34;&#39;</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="k">ignore</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">lines</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">load</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="n">infile</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="s1">&#39;/home/kris/Documents/banking/umsatz-22758031-24012005.csv&#39;</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="k">into</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">buchungen</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="n">fields</span><span class="w"> </span><span class="n">terminated</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="s2">&#34;;&#34;</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="n">optionally</span><span class="w"> </span><span class="n">enclosed</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="s1">&#39;&#34;&#39;</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="k">ignore</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">lines</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">...</span><span class="w">
+</span></span></span></code></pre></div><p>Next, it’s time to clean the data.
+We create a target table and add a primary key.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="c1">-- prepare conversion stage
+</span></span></span><span class="line"><span class="cl"><span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">like</span><span class="w"> </span><span class="n">transactions</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="k">first</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">change</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">id</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="n">auto_increment</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h2 id="cleaning-and-transforming-data">
+    <a href="#cleaning-and-transforming-data">
+	Cleaning and Transforming Data
+    </a>
+</h2>
+<p>We can now copy the data over, and in the process clean it up.</p>
+<p>We can now copy and clean the data during the process.</p>
+<ul>
+<li>Change the <code>amount</code> field from <code>xxx.xxx,yy</code> (German notation) to <code>xxxxxxx.yy</code>.</li>
+<li>Convert the date fields <code>valutadate_text</code> and <code>bookdate_text</code> to ISO date format.</li>
+<li>Add a year to <code>bookdate_text</code> from <code>valutadate_text</code>.</li>
+<li>The <code>info</code> column is not useful.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="c1">-- load data into conversion stage
+</span></span></span><span class="line"><span class="cl"><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">transactions</span><span class="p">.</span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">transactions</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">-- adapt amount
+</span></span></span><span class="line"><span class="cl"><span class="k">update</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">amount_text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">replace</span><span class="p">(</span><span class="n">amount_text</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;.&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">update</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">amount_text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">replace</span><span class="p">(</span><span class="n">amount_text</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;,&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;.&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">change</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">amount_text</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">amount</span><span class="w"> </span><span class="nb">decimal</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">-- adapt valutadate
+</span></span></span><span class="line"><span class="cl"><span class="k">update</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">valutadate_text</span><span class="w"> </span><span class="o">=</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="n">concat</span><span class="p">(</span><span class="s2">&#34;20&#34;</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="k">substring</span><span class="p">(</span><span class="n">valutadate_text</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="s2">&#34;-&#34;</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="k">substring</span><span class="p">(</span><span class="n">valutadate_text</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="s2">&#34;-&#34;</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="k">substring</span><span class="p">(</span><span class="n">valutadate_text</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">change</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">valutadate_text</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">valutadate</span><span class="w"> </span><span class="nb">date</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">-- adapt bookdate
+</span></span></span><span class="line"><span class="cl"><span class="k">update</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">bookdate_text</span><span class="w"> </span><span class="o">=</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="n">concat</span><span class="p">(</span><span class="k">year</span><span class="p">(</span><span class="n">valutadate</span><span class="p">),</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="s2">&#34;-&#34;</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="k">substring</span><span class="p">(</span><span class="n">bookdate_text</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="s2">&#34;-&#34;</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="k">substring</span><span class="p">(</span><span class="n">bookdate_text</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">change</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">bookdate_text</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">bookdate</span><span class="w"> </span><span class="nb">date</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">-- drop info
+</span></span></span><span class="line"><span class="cl"><span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">drop</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">info</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h2 id="preparing-binning-categories">
+    <a href="#preparing-binning-categories">
+	Preparing Binning Categories
+    </a>
+</h2>
+<p>I want to aggregate my expenses.
+The raw data lists spent money with the corresponding remote account.
+To aggregate, we assign each of these accounts to a category,
+e.g., assigning all gas stations to the &ldquo;fuel&rdquo; category or all supermarkets to the &ldquo;food&rdquo; category.</p>
+<p>We can have a table, <code>moneysinks</code> for this account-to-category assignment.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="c1">-- add category
+</span></span></span><span class="line"><span class="cl"><span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">category</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><p>Here is the <code>moneysinks</code> table, which needed manual population (assigning a category to each pattern by hand):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="nb">int</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="n">auto_increment</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">pattern</span><span class="o">`</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">category</span><span class="o">`</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w">  </span><span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">LOCK</span><span class="w"> </span><span class="n">TABLES</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">WRITE</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">77</span><span class="p">,</span><span class="s1">&#39;sparkasse&#39;</span><span class="p">,</span><span class="s1">&#39;account and card&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">78</span><span class="p">,</span><span class="s1">&#39;ga&#39;</span><span class="p">,</span><span class="s1">&#39;ATM domestic&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">79</span><span class="p">,</span><span class="s1">&#39;qsc&#39;</span><span class="p">,</span><span class="s1">&#39;Internet&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">80</span><span class="p">,</span><span class="s1">&#39;linux new media&#39;</span><span class="p">,</span><span class="s1">&#39;Newspaper&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">81</span><span class="p">,</span><span class="s1">&#39;premiere&#39;</span><span class="p">,</span><span class="s1">&#39;TV&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">82</span><span class="p">,</span><span class="s1">&#39;walmart&#39;</span><span class="p">,</span><span class="s1">&#39;Food&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">83</span><span class="p">,</span><span class="s1">&#39;kabel bw&#39;</span><span class="p">,</span><span class="s1">&#39;TV&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">84</span><span class="p">,</span><span class="s1">&#39;gez&#39;</span><span class="p">,</span><span class="s1">&#39;TV&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">85</span><span class="p">,</span><span class="s1">&#39;t-mobile&#39;</span><span class="p">,</span><span class="s1">&#39;Telefon&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">86</span><span class="p">,</span><span class="s1">&#39;finanzkasse&#39;</span><span class="p">,</span><span class="s1">&#39;Tax&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">87</span><span class="p">,</span><span class="s1">&#39;domainfactory&#39;</span><span class="p">,</span><span class="s1">&#39;Internet&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">88</span><span class="p">,</span><span class="s1">&#39;nagel ue&#39;</span><span class="p">,</span><span class="s1">&#39;Clothing&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">89</span><span class="p">,</span><span class="s1">&#39;mobilcom&#39;</span><span class="p">,</span><span class="s1">&#39;Telefon&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">90</span><span class="p">,</span><span class="s1">&#39;domainfactory&#39;</span><span class="p">,</span><span class="s1">&#39;Internet&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">91</span><span class="p">,</span><span class="s1">&#39;strato&#39;</span><span class="p">,</span><span class="s1">&#39;Internet&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">92</span><span class="p">,</span><span class="s1">&#39;stadtwerke&#39;</span><span class="p">,</span><span class="s1">&#39;Gas Water Shit&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">93</span><span class="p">,</span><span class="s1">&#39;deutsche bahn&#39;</span><span class="p">,</span><span class="s1">&#39;Rail&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">94</span><span class="p">,</span><span class="s1">&#39;debeka&#39;</span><span class="p">,</span><span class="s1">&#39;Insurance&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">95</span><span class="p">,</span><span class="s1">&#39;ec-ga&#39;</span><span class="p">,</span><span class="s1">&#39;ATM intl&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">96</span><span class="p">,</span><span class="s1">&#39;scheck in&#39;</span><span class="p">,</span><span class="s1">&#39;Food&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">97</span><span class="p">,</span><span class="s1">&#39;mastercard&#39;</span><span class="p">,</span><span class="s1">&#39;Kreditkarte&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">98</span><span class="p">,</span><span class="s1">&#39;dr.&#39;</span><span class="p">,</span><span class="s1">&#39;Miete&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">99</span><span class="p">,</span><span class="s1">&#39;a.t.u&#39;</span><span class="p">,</span><span class="s1">&#39;Auto&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="s1">&#39;ungeheuer&#39;</span><span class="p">,</span><span class="s1">&#39;Auto&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">101</span><span class="p">,</span><span class="s1">&#39;agip&#39;</span><span class="p">,</span><span class="s1">&#39;Fuel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">102</span><span class="p">,</span><span class="s1">&#39;aral&#39;</span><span class="p">,</span><span class="s1">&#39;Fuel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">103</span><span class="p">,</span><span class="s1">&#39;avia&#39;</span><span class="p">,</span><span class="s1">&#39;Fuel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">104</span><span class="p">,</span><span class="s1">&#39;bab&#39;</span><span class="p">,</span><span class="s1">&#39;Fuel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">105</span><span class="p">,</span><span class="s1">&#39;citti&#39;</span><span class="p">,</span><span class="s1">&#39;Food&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">106</span><span class="p">,</span><span class="s1">&#39;efa&#39;</span><span class="p">,</span><span class="s1">&#39;Fuel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">107</span><span class="p">,</span><span class="s1">&#39;esso&#39;</span><span class="p">,</span><span class="s1">&#39;Fuel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">108</span><span class="p">,</span><span class="s1">&#39;expedia&#39;</span><span class="p">,</span><span class="s1">&#39;Travel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">109</span><span class="p">,</span><span class="s1">&#39;fantasy&#39;</span><span class="p">,</span><span class="s1">&#39;RPG&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">110</span><span class="p">,</span><span class="s1">&#39;gravis&#39;</span><span class="p">,</span><span class="s1">&#39;Toys und Gadgets&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">111</span><span class="p">,</span><span class="s1">&#39;foto&#39;</span><span class="p">,</span><span class="s1">&#39;Toys und Gadgets&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">112</span><span class="p">,</span><span class="s1">&#39;heinrich&#39;</span><span class="p">,</span><span class="s1">&#39;Clothing&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">113</span><span class="p">,</span><span class="s1">&#39;hem&#39;</span><span class="p">,</span><span class="s1">&#39;Fuel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">114</span><span class="p">,</span><span class="s1">&#39;hotel&#39;</span><span class="p">,</span><span class="s1">&#39;Travel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">115</span><span class="p">,</span><span class="s1">&#39;jet-tank&#39;</span><span class="p">,</span><span class="s1">&#39;Fuel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">116</span><span class="p">,</span><span class="s1">&#39;karstadt&#39;</span><span class="p">,</span><span class="s1">&#39;Food&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">117</span><span class="p">,</span><span class="s1">&#39;kassen-&#39;</span><span class="p">,</span><span class="s1">&#39;Tax&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">118</span><span class="p">,</span><span class="s1">&#39;leichtsinn&#39;</span><span class="p">,</span><span class="s1">&#39;Toys und Gadgets&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">119</span><span class="p">,</span><span class="s1">&#39;media markt&#39;</span><span class="p">,</span><span class="s1">&#39;Toys und Gadgets&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">120</span><span class="p">,</span><span class="s1">&#39;mios&#39;</span><span class="p">,</span><span class="s1">&#39;Fuel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">121</span><span class="p">,</span><span class="s1">&#39;plaza&#39;</span><span class="p">,</span><span class="s1">&#39;Food&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">122</span><span class="p">,</span><span class="s1">&#39;rundfunkgebuehren&#39;</span><span class="p">,</span><span class="s1">&#39;TV&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">123</span><span class="p">,</span><span class="s1">&#39;saturn&#39;</span><span class="p">,</span><span class="s1">&#39;Toys und Gadgets&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">124</span><span class="p">,</span><span class="s1">&#39;sb tank&#39;</span><span class="p">,</span><span class="s1">&#39;Fuel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">125</span><span class="p">,</span><span class="s1">&#39;segelkiste&#39;</span><span class="p">,</span><span class="s1">&#39;Clothing&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">126</span><span class="p">,</span><span class="s1">&#39;total/&#39;</span><span class="p">,</span><span class="s1">&#39;Fuel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">127</span><span class="p">,</span><span class="s1">&#39;trx&#39;</span><span class="p">,</span><span class="s1">&#39;Travel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="s1">&#39;tst. bensheim&#39;</span><span class="p">,</span><span class="s1">&#39;Fuel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">129</span><span class="p">,</span><span class="s1">&#39;vobis&#39;</span><span class="p">,</span><span class="s1">&#39;Toys und Gadgets&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">130</span><span class="p">,</span><span class="s1">&#39;willenberg&#39;</span><span class="p">,</span><span class="s1">&#39;Toys und Gadgets&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">131</span><span class="p">,</span><span class="s1">&#39;shell&#39;</span><span class="p">,</span><span class="s1">&#39;Fuel&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">132</span><span class="p">,</span><span class="s1">&#39;spreadshirt&#39;</span><span class="p">,</span><span class="s1">&#39;Clothing&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">133</span><span class="p">,</span><span class="s1">&#39;armin meier&#39;</span><span class="p">,</span><span class="s1">&#39;Clothing&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">134</span><span class="p">,</span><span class="s1">&#39;itzehoer&#39;</span><span class="p">,</span><span class="s1">&#39;Insurance&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">135</span><span class="p">,</span><span class="s1">&#39;ec-pos&#39;</span><span class="p">,</span><span class="s1">&#39;ATM intl&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">136</span><span class="p">,</span><span class="s1">&#39;euf-ga&#39;</span><span class="p">,</span><span class="s1">&#39;ATM intl&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">137</span><span class="p">,</span><span class="s1">&#39;dell&#39;</span><span class="p">,</span><span class="s1">&#39;Toys und Gadgets&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">moneysinks</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">138</span><span class="p">,</span><span class="s1">&#39;yvonne&#39;</span><span class="p">,</span><span class="s1">&#39;RPG&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">UNLOCK</span><span class="w"> </span><span class="n">TABLES</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h2 id="asking-questions">
+    <a href="#asking-questions">
+	Asking Questions
+    </a>
+</h2>
+<p>Using the mapping in <code>moneysinks</code> and the query below, I can permanently assign the <code>category</code> field in <code>b</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">update</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">select</span><span class="w"> </span><span class="n">category</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">from</span><span class="w"> </span><span class="n">moneysinks</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">w</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">     </span><span class="k">where</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">remoteaccount_name</span><span class="w"> </span><span class="k">like</span><span class="w"> </span><span class="n">concat</span><span class="p">(</span><span class="n">w</span><span class="p">.</span><span class="n">pattern</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;%&#34;</span><span class="p">)</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="k">length</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span><span class="w"> </span><span class="k">desc</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">limit</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">amount</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><p>As I complete my list of patterns, each transaction gets a <code>category</code>.</p>
+<p>That enables me to ask questions:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w">   </span><span class="n">remoteaccount_name</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">         </span><span class="k">count</span><span class="p">(</span><span class="n">remoteaccount_name</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">income</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">from</span><span class="w"> </span><span class="n">b</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="k">where</span><span class="w"> </span><span class="n">betrag</span><span class="o">&gt;=</span><span class="mi">0</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">remoteaccount_name</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">income</span><span class="w"> </span><span class="k">desc</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">--------------------------------------------------------+-----------+
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">remoteaccount_name</span><span class="w">                                     </span><span class="o">|</span><span class="w"> </span><span class="n">income</span><span class="w">    </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">--------------------------------------------------------+-----------+
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">WEB</span><span class="p">.</span><span class="n">DE</span><span class="w"> </span><span class="n">AG</span><span class="w"> </span><span class="n">AMALIENBADSTR</span><span class="p">.</span><span class="w"> </span><span class="mi">41</span><span class="w">                            </span><span class="o">|</span><span class="w">        </span><span class="mi">12</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">MYSQL</span><span class="w"> </span><span class="n">GMBH</span><span class="w">                                             </span><span class="o">|</span><span class="w">         </span><span class="mi">7</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">MYSQL</span><span class="w"> </span><span class="n">GMBH</span><span class="w"> </span><span class="n">SCHLOSSERSTR</span><span class="p">.</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">72622</span><span class="w"> </span><span class="n">NUERTINGEN</span><span class="w">            </span><span class="o">|</span><span class="w">         </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">COOP</span><span class="w"> </span><span class="n">SCHLESWIG</span><span class="o">-</span><span class="n">HOLSTEIN</span><span class="w"> </span><span class="n">EG</span><span class="w"> </span><span class="n">BENZSTR</span><span class="p">.</span><span class="w"> </span><span class="mi">10</span><span class="w">                 </span><span class="o">|</span><span class="w">         </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">--------------------------------------------------------+-----------+
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w">   </span><span class="n">remoteaccount_name</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">         </span><span class="k">count</span><span class="p">(</span><span class="n">remoteaccount_name</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">payments</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">from</span><span class="w"> </span><span class="n">b</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="k">where</span><span class="w"> </span><span class="n">betrag</span><span class="o">&lt;</span><span class="mi">0</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">remoteaccount_name</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">payments</span><span class="w"> </span><span class="k">desc</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">---------------------------------------------------------+----------+
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">remoteaccount_name</span><span class="w">                                      </span><span class="o">|</span><span class="w"> </span><span class="n">payments</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">---------------------------------------------------------+----------+
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">SCHECK</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="n">CENTER</span><span class="w"> </span><span class="n">KA</span><span class="w"> </span><span class="n">DURLACH</span><span class="w">                             </span><span class="o">|</span><span class="w">       </span><span class="mi">36</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">MOBILCOM</span><span class="w"> </span><span class="n">COMMUNICATIONSTECH</span><span class="w">                             </span><span class="o">|</span><span class="w">       </span><span class="mi">22</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">STRATO</span><span class="w"> </span><span class="n">MEDIEN</span><span class="w"> </span><span class="n">AG</span><span class="w">                                        </span><span class="o">|</span><span class="w">       </span><span class="mi">22</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">VERMIETER</span><span class="w">                                               </span><span class="o">|</span><span class="w">       </span><span class="mi">19</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">T</span><span class="o">-</span><span class="n">MOBILE</span><span class="w"> </span><span class="n">DEUTSCHLAND</span><span class="w"> </span><span class="n">GMBH</span><span class="w">                               </span><span class="o">|</span><span class="w">       </span><span class="mi">18</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">DEUTSCHE</span><span class="w"> </span><span class="n">BAHN</span><span class="w"> </span><span class="n">KARLSRUHE</span><span class="w"> </span><span class="n">HB</span><span class="w">                              </span><span class="o">|</span><span class="w">       </span><span class="mi">17</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">KABEL</span><span class="w"> </span><span class="n">BW</span><span class="w"> </span><span class="n">GMBH</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">CO</span><span class="p">.</span><span class="w"> </span><span class="n">KG</span><span class="w">                                  </span><span class="o">|</span><span class="w">       </span><span class="mi">17</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">QSC</span><span class="w"> </span><span class="n">AG</span><span class="w">                                                  </span><span class="o">|</span><span class="w">       </span><span class="mi">17</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">STADTWERKE</span><span class="w"> </span><span class="n">KARLSRUHE</span><span class="w">                                    </span><span class="o">|</span><span class="w">       </span><span class="mi">17</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">...</span><span class="w">
+</span></span></span></code></pre></div><p>Using the <code>category</code>, I can also group and sum expenses.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="n">category</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">         </span><span class="k">count</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">payments</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">         </span><span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">total</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">from</span><span class="w"> </span><span class="n">b</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="k">where</span><span class="w"> </span><span class="n">amount</span><span class="o">&lt;</span><span class="mi">0</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">category</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">total</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><p>This shows how I spend my money.</p>
+<p>I often want to observe how my spending habits change over time.
+So,
+I group not only by categories from the <code>moneysinks</code> table but also by time dimension
+(<code>GROUP BY year(bookdate) as year, category</code>).</p>
+<p>As my data warehouse grows,
+it may be useful to run the aggregation query and save the result in a pre-aggregated table (daily or monthly),
+serving as a materialized view of the aggregates.
+These can be used to create coarser-grained aggregates faster.</p>
+<h2 id="summary-and-outlook">
+    <a href="#summary-and-outlook">
+	Summary and Outlook
+    </a>
+</h2>
+<p>Using bank account statements, we built a basic data warehouse.
+We demonstrated data import, staging, and cleaning processes.
+Using category tables,
+we showed how to bin individual records into larger sets for statistical analysis and how to materialize these aggregations into pre-aggregated tables.</p>
+<p>This is a toy data warehouse, posing no significant data management challenges due to its small size.
+Still, it shares many properties with larger structures.
+Let&rsquo;s generalize:</p>
+<p>A data warehouse centers around one or more fact tables, always including a time dimension and having a log-like nature.</p>
+<h3 id="literal-attribute-values-resolve-ids">
+    <a href="#literal-attribute-values-resolve-ids">
+	Literal Attribute Values, Resolve IDs
+    </a>
+</h3>
+<p>Fact tables contain snapshot data not normalized, featuring literal values.</p>
+<p>For example, in a sales warehouse,
+we record the actual sale price and the shipping address at the time of sale, not the current price or address.
+We log literal attributes, not current IDs.</p>
+<h3 id="encoding-can-shrink-tables-but-only-do-what-is-necessary">
+    <a href="#encoding-can-shrink-tables-but-only-do-what-is-necessary">
+	Encoding Can Shrink Tables, But Only Do What Is Necessary
+    </a>
+</h3>
+<p>This often leads to data duplication.
+In our example, the string &ldquo;SCHECK IN CENTER KA DURLACH&rdquo; is repeated 36 times.
+For our data size, this doesn&rsquo;t matter much.
+Even in larger data sets,
+encoding can be deferred until there&rsquo;s infrastructure for online schema changes and sufficient disk space.</p>
+<p>Even in the one-million-row example in
+<a href="/2020/09/18/mysql-encoding-fields-for-great-profit/">Coding fields for great profit</a>
+
+
+the gain is not critical,
+though substantial.
+A data warehouse starting out can often skip encoding the values and just take the hit from the duplication.
+An encoding step can be performed later,
+as long as there is infrastructure in place for online schema change, and sufficient disk space.</p>
+<h3 id="the-star-and-the-snowflake">
+    <a href="#the-star-and-the-snowflake">
+	The Star and the Snowflake
+    </a>
+</h3>
+<p>For OLTP databases, normalization to the third normal form is ideal.
+However, in data warehousing, where we are interested in historical data, normalization isn&rsquo;t as crucial.
+The logged data usually doesn&rsquo;t change much after the fact.
+Any necessary changes, such as backfilling or corrections, are managed within a specific time window.
+Once this window closes, the data becomes immutable.</p>
+<p>The classical structure of a data warehouse is the star schema,
+with a central fact table surrounded by category tables and pre-aggregated outputs.
+In our example, we have the <code>b</code> fact table and a single binning input table, <code>moneysinks</code>.
+Larger warehouses may have more auxiliary tables.</p>
+<p>We don&rsquo;t have materialized output tables in this example due to the small data set(<code>expenses per days</code> or similar),
+but larger warehouses benefit from materializing aggregates for faster reporting.
+Adding categories of categories or multidimensional aggregates turns a Star into a Snowflake Schema.</p>
+<blockquote>
+<p>The Star and Snowflake are the normal forms for Data Warehouses.
+Normalization as practiced in transactional databases is not helpful; 3NF is not a thing here.</p>
+</blockquote>
+<h3 id="time-dimensional-tables-in-oltp-schemas">
+    <a href="#time-dimensional-tables-in-oltp-schemas">
+	Time Dimensional Tables in OLTP Schemas
+    </a>
+</h3>
+<p>Many OLTP schemas have tables with a time dimension, either in the table name (<code>shop.sales_202009</code>) or primary key.
+Identifying these unbounded tables helps manage data growth.</p>
+<blockquote>
+<p>Assume unchanging conditions: a webshop with fixed articles and customers.</p>
+<p>Which tables grow without bounds?</p>
+<p>Solution: The <code>orders</code> table.</p>
+</blockquote>
+<p>Recognizing these structures and establishing an
+<em>Extract, Transform, Load (ETL) cycle</em>
+is crucial for managing data lifecycle and isolating transactional and non-transactional concerns.</p>
+<p>In the Extract phase, resolve IDs and extract literal attributes into a staging table.
+This is usually done using a monster join in which we resolve all id values present in the normalized data,
+extract the literal attributes of interest, and push them into a staging area.
+This isolation allows the OLTP system to manage its data lifecycle without affecting non-transactional functions,
+which are handled by the data warehouse.</p>
+<p>Data in the OLTP system can now be deleted by the OLTP systems data lifecycle management
+without concern for other, non-transactional business functions:
+we have isolated the non-transactional concerns and confined them to the extraction process</p>
+<p>The staged data can then be cleaned, categorized,
+and aggregated based on non-transactional needs like statistics and business intelligence.</p>
+<p>Without taking the non-transactional, long-term business functions out the OLTP system will grow without bounds,
+and ultimately transactional performance will suffer - the system will choke on itself.
+The non-transactional concerns not being isolated and bundled will also impede OLTP schema evolution
+and choke the development process on the money-earning side.</p>
+<h3 id="data-lifecycle-management-at-the-warehouse">
+    <a href="#data-lifecycle-management-at-the-warehouse">
+	Data Lifecycle Management at the Warehouse
+    </a>
+</h3>
+<p>Fact tables with a time dimension accumulate more data over time.
+Managing this requires a deletion policy.
+Queries to the data warehouse are often time-bounded.</p>
+<p>Handling data at volume, and getting rid of data no longer needed, is much easier in MySQL
+<a href="/2020/09/24/mysql-deleting-data/">when using partitions</a>
+
+.</p>
+<p>In data warehouses, partitions are usually on a time value as the first dimension.
+That is, we partition our data set by year, month or day, and we delete data by dropping old partitions.</p>
+<p>As queries also have a time dimension, the optimizer profits from this structure as well.
+It can exclude entire partitions from consideration, making the subset of data to look at much smaller.</p>
+<h3 id="daily-snapshots-are-slow-but-simple">
+    <a href="#daily-snapshots-are-slow-but-simple">
+	Daily Snapshots are slow, but simple
+    </a>
+</h3>
+<p>A daily snapshot ETL import is slow but simple to implement retroactively.
+Realtime structures require more engineering but can be built on existing architectures,
+which we will explore in later examples.</p>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+				<a href="/tags/#database" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				database
+				</a>
+				
+				<a href="/tags/#data-warehouse" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				data warehouse
+				</a>
+				
+				<a href="/tags/#erklaerbaer" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				erklaerbaer
+				</a>
+				
+				<a href="/tags/#mysqldev" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysqldev
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2020-09-26-my-private-data-warehouse/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/09/25/mysql-dynamic-partitions-suck/">MySQL: automatic partitions surely would be nice</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2020/09/28/mysql-import-csv-not-using-load-data/">MySQL: Import CSV, not using LOAD DATA</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

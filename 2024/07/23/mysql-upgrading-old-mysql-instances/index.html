@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>MySQL: Upgrading old MySQL instances | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2024/07/23/mysql-upgrading-old-mysql-instances/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='MySQL: Upgrading old MySQL instances | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Converting a large database to a newer version of MySQL can be done in place,
+using binary database files.
+Or it can be done by dumping the database and loading the dump into a newer version.
+What are the considerations?
+' />
+<meta property="og:description" content='Converting a large database to a newer version of MySQL can be done in place,
+using binary database files.
+Or it can be done by dumping the database and loading the dump into a newer version.
+What are the considerations?
+' />
+<meta property="og:url" content="https://blog.koehntopp.info/2024/07/23/mysql-upgrading-old-mysql-instances/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2024-07-23T05:06:07Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='MySQL: Upgrading old MySQL instances' />
+<meta property="twitter:description" content='Converting a large database to a newer version of MySQL can be done in place,
+using binary database files.
+Or it can be done by dumping the database and loading the dump into a newer version.
+What are the considerations?
+' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="mysql-upgrading-old-mysql-instances-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						MySQL: Upgrading old MySQL instances
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>July 23, 2024</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2024/07/22/crowdstroke/">Crowdstroke</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2024/09/03/zigbee2mqtt-in-rootless-podman/">zigbee2mqtt in rootless podman</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+				<header class="toc bg-light">
+					<nav id="TableOfContents">
+  <ul>
+    <li><a href="#a-consistent-backup-and-a-binlog-position">A consistent backup and a binlog position</a></li>
+    <li><a href="#upgrading-in-place">Upgrading in place</a></li>
+    <li><a href="#reading-a-dump">Reading a dump</a></li>
+    <li><a href="#beheading">Beheading</a></li>
+    <li><a href="#tldr">TL;DR</a></li>
+  </ul>
+</nav>
+				</header>
+				
+			</div>
+			<div class='col-lg-8'>
+				<blockquote>
+<p>Dear Kris,</p>
+<p>We have a number of old MySQL instances, version 5.5 and 5.6.
+We want to upgrade them to a current version of MySQL.
+The databases are between 0.5 TB to 8 TB in size.</p>
+<p>Unfortunately, using rsync on a stopped MySQL instance is not an option because the versions are too different,
+and the new version seems unable to read the binary data.
+I could use a dump (multi-threaded), but importing a single file with mysql takes forever
+(it would need to be single-threaded).</p>
+<p>Would you simply create a dump per table and then import them in parallel?
+Or has MySQL improved, allowing for better import methods now?</p>
+</blockquote>
+<p>That is a lot to unpack.</p>
+<h1 id="a-consistent-backup-and-a-binlog-position">
+    <a href="#a-consistent-backup-and-a-binlog-position">
+	A consistent backup and a binlog position
+    </a>
+</h1>
+<p>First off, a backup needs to be consistent.
+You cannot make a backup of individual tables, one after the other, and expect the target database to be consistent.
+A backup is a backup of all tables referencing each other, at a known binlog position.
+Only then a clean cut-over can be done.</p>
+<p>We are discussing the why and how in
+<a href="/2020/11/27/backups-and-replication/">Backups and Replication</a>
+
+.</p>
+<p>We are discussing the proper <code>mysqldump</code> options in
+<a href="/2023/01/03/mysql-ways-to-run-mysqldump/">Ways to run mysqldump</a>
+
+.</p>
+<p>There are now other, better ways to dump the database, using <code>mysqlsh</code>.
+This also provides facilities for parallel import.
+See
+<a href="https://dev.mysql.com/doc/mysql-shell/8.4/en/mysql-shell-utilities-parallel-table.html" target="_blank" rel="noopener">Parallel Table Import Utility</a>
+
+.
+I have never tested that at scale.
+According to the documentation, you need to be at MySQL 5.7 or later for the data source for this to work:
+<a href="https://dev.mysql.com/doc/mysql-shell/8.4/en/mysql-shell-utilities-dump-instance-schema.html#mysql-shell-utilities-dump-opt-requirements" target="_blank" rel="noopener">Schema Dump Utility: Requirements and Restrictions</a>
+
+.</p>
+<p>That makes it a non-option for the original ask, and we are limited to traditional options for the task.</p>
+<h1 id="upgrading-in-place">
+    <a href="#upgrading-in-place">
+	Upgrading in place
+    </a>
+</h1>
+<p>MySQL&rsquo;s data files have a defined format that is independent of the various operating system facilities,
+and from the way the hardware represents certain data types.
+It will not change inside one stable major version (except MySQL 8.0,
+and that turned out a major source of downtime and problems for a deployment I was in charge of).</p>
+<p>An upgrade of libc that changes collations will not affect MySQL indexes,
+because MySQL does not use operating system collations.
+It defines its own – they are faster, stable across OS vendors, libc upgrades and other changes, and they are immutable.
+A collation, even if faulty, will never change.
+To fix bugs, a new collation with a new name will be created.
+This has not always been the case, and that is a long and sad story.
+Read about it in
+<a href="/2022/01/12/utf8mb4/">UTF8MB4</a>
+
+.</p>
+<p>MySQL does support upgrading binary data files,
+but does so only one version step at a time from one major stable version to the next.</p>
+<p>That is, you can safely go from</p>
+<ul>
+<li>5.5 to 5.6</li>
+<li>5.6 to 5.7</li>
+<li>5.7 to 8.0</li>
+<li>8.0 to 8.4</li>
+</ul>
+<p>and specifically from the latest version of the OLD major version to the latest version of the new major version.
+To go from 5.5 to 8.4, first upgrade to the latest 5.5 build.
+Then go to 5.6, 5.7, 8.0 and 8.4 using the respective latest versions of each.
+Use the version-specific upgrade process as documented in the manual,
+and test each upgrade before proceeding to the next.</p>
+<p>MySQL 8.1, 8.2 and 8.3 have been innovation releases and are not &ldquo;major stable versions&rdquo;.
+So is MySQL 9.0.
+Don&rsquo;t use any of them in production.</p>
+<blockquote>
+<p><strong>Note on Non-GA Versions of MySQL:</strong>
+It is useful to run new versions of MySQL and innovation releases as replicas <em>for testing</em> in production.
+Doing this helps you to stay on top of current developments and get familiar with new features and quirks early.</p>
+<p>An idle replica will check your write-transactions, using SBR.
+If you feel adventurous, divert a minimal amount of read-transactions to it from the database load balancer to
+check how reads perform.</p>
+<p>Do not use 8.1, 8.2, 8.3 or 9.0 in a productive context or for a primary.
+They are called &ldquo;Innovation Releases&rdquo; for a reason.</p>
+<p>Do use them to experiment and innovate, in a safe way.</p>
+</blockquote>
+<blockquote>
+<p><strong>Note on SBR in MySQL replication:</strong>
+SBR has a lot of limitations and quirks, but it does transport original SQL to a replica.
+It is useful to test write-transactions on a replica.</p>
+<p>It is not recommended to use SBR in production replication. Use RBR or group-replication.</p>
+</blockquote>
+<p>Upgrading in place changes the on-disk format of the database,
+the valid syntax of some queries you may use, and the behavior of some data types.
+It is a tricky thing and usually requires more than one attempt to get right.</p>
+<p>Thus, it is very much recommended you create a new instance from a valid backup,
+and make this instance a replica of the primary, old server.</p>
+<p>You then stop the replica, perform the upgrade as outlined in the relevant manual
+(and the procedure&rsquo;s details change from version to version,
+because each major version does have other special concerns),
+and then try to restart the replica.</p>
+<p>If that works, divert a bit of read-load to the replica to see if your queries are still valid SQL under the new version.
+If you are confident everything works, you can point the writes from the primary to the replica and be done with it.</p>
+<p>Continue with the next version until done.
+This sounds tedious, and it is.
+Especially if you have put off upgrading.
+Don&rsquo;t do that, upgrade early (at least one replica), and it will hurt a lot less.</p>
+<h1 id="reading-a-dump">
+    <a href="#reading-a-dump">
+	Reading a dump
+    </a>
+</h1>
+<p>On disk, a database is a collection of files that represent the actual data in the database,
+plus additional structures for quick access, the indexes.
+A dump will create a representation of the data in the database in SQL syntax.
+The index definitions are also generated, but the actual indexes are not part of the dump.</p>
+<p>On reading the dump, the new database instance has to read and parse the SQL.
+While this is not as fast as loading binary data, it is usually not a bottleneck.
+The MySQL SQL parser is quite fast.</p>
+<p>What takes time is the recreation of the indexes after reading a table.
+To do that, the database will have to extract the indexed columns from the table by reading through the table,
+and sort them.
+It will then write out the index as tuples
+that contain the indexed columns and a copy of the primary key as a pointer to the full row,
+in sorted order.</p>
+<p>Sorting the data in index order is what takes time and potentially a lot of memory.
+If you do not have enough memory, sorting is done in &ldquo;runs&rdquo;, with intermediate results on disk,
+and a merge sort to build the final version of the index.
+The full process is documented in
+<a href="https://dev.mysql.com/doc/refman/8.4/en/sorted-index-builds.html" target="_blank" rel="noopener">Sorted Index Builds</a>
+
+.</p>
+<p>Run size is controlled by the variable
+<a href="https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html#sysvar_innodb_sort_buffer_size" target="_blank" rel="noopener">innodb_sort_buffer_size</a>
+
+.
+Note that this is different from
+<a href="https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html#sysvar_sort_buffer_size" target="_blank" rel="noopener">sort_buffer_size</a>
+
+
+(a variable used in ORDER BY optimization, but not in InnoDB bulk index builds).</p>
+<h1 id="beheading">
+    <a href="#beheading">
+	Beheading
+    </a>
+</h1>
+<p>No matter what you do, you can upgrade the database using replicas with minimal operations impact and downtime.</p>
+<p><p class="md__image">
+  <img src="2024/07/upgrade-01.png" alt=""  />
+</p>
+
+</p>
+<p><em>A database client writes to a MySQL 5.5 primary, and reads from a MySQL 5.5.
+replica.
+An additional replica for upgrades has been created from a backup. It is also MySQL 5.5.</em></p>
+<p><p class="md__image">
+  <img src="2024/07/upgrade-02.png" alt=""  />
+</p>
+
+</p>
+<p><em>The additional replica has been upgraded to MYSQL 5.6,
+following the upgrade procedure for this specific version in the manual.
+If the replication keeps up, it means the SQL you write is probably good (using SBR).
+RBR will simply work.</em></p>
+<p><p class="md__image">
+  <img src="2024/07/upgrade-03.png" alt=""  />
+</p>
+
+</p>
+<p><em>The replication hierarchy has been extended to one additional replica of MySQL 5.6.
+We also have moved the reads from MySQL 5.5 to MySQL 5.6.
+At this point in time we can test our reading SQL with the new version, and if that fails, cut back to the old version.
+After fixing the problem we try again.</em></p>
+<p><p class="md__image">
+  <img src="2024/07/upgrade-04.png" alt=""  />
+</p>
+
+</p>
+<p><em>Once we are confident the reads work, we can try the same with the write traffic.
+This is the point of no return: The old primary is now idle, and is missing writes.
+We can only fail forward, that is, fix the problematic write SQL, as we are committed to the new version.</em></p>
+<p><p class="md__image">
+  <img src="2024/07/upgrade-05.png" alt=""  />
+</p>
+
+</p>
+<p><em>We can now delete all old version instances, that is, we behead the replication tree.
+We can then start over and move to the next version in our upgrade sequence.</em></p>
+<h1 id="tldr">
+    <a href="#tldr">
+	TL;DR
+    </a>
+</h1>
+<ul>
+<li>If your MySQL instance does not have at least one replica more than you are going to need, you are holding it wrong.
+<ul>
+<li>You must be operationally capable of casually creating new MySQL replicas from a backup or a donor instance at will.
+This must be an operational procedure, a day-to-day task, not a project.
+If you can&rsquo;t do this, you can&rsquo;t move.
+Solve this problem first, then return to the upgrade task.</li>
+</ul>
+</li>
+<li>Upgrade MySQL from one major version to the next one, using in-place upgrades – on a replica.
+<ul>
+<li>When done, behead the replication tree. That is, point the writes from the old version primary to the new database,
+promoting the replica to the new primary.</li>
+<li>Make sure to build new replicas using the new version as needed, in time.</li>
+</ul>
+</li>
+<li>If you must upgrade using a dump, plan this.
+<ul>
+<li>Dumps are slow because they rebuild indexes.</li>
+<li>Try this out and time it, optimize it by playing with <code>innodb_sort_buffer_size</code>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Note:</strong> This article has been edited on 24-Jul-2024 to include additional input from Simon Mudd. Thank you, Simon!</p>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+				<a href="/tags/#database" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				database
+				</a>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2024-07-23-mysql-upgrading-old-mysql-instances/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2024/07/22/crowdstroke/">Crowdstroke</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2024/09/03/zigbee2mqtt-in-rootless-podman/">zigbee2mqtt in rootless podman</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

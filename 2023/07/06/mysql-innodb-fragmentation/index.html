@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>MySQL: InnoDB Fragmentation | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2023/07/06/mysql-innodb-fragmentation/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='MySQL: InnoDB Fragmentation | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2023/07/06/mysql-innodb-fragmentation/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2023-07-06T01:02:03Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='MySQL: InnoDB Fragmentation' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="mysql-innodb-fragmentation-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						MySQL: InnoDB Fragmentation
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>July 6, 2023</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2023/06/22/a-great-resignation-management-edition/">A Great Resignation, Management Edition</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2023/07/12/ubuntu-systemctl-user-does-not-work/">Ubuntu: systemctl --user does not work</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>There is a really nice article by Pep Pla, over at
+<a href="https://www.percona.com/blog/the-impacts-of-fragmentation-in-mysql/" target="_blank" rel="noopener">the Percona blog</a>
+
+
+about fragmentation in MySQL InnoDB tablespaces, which you should read.</p>
+<p>The article discusses &ldquo;fragmentation&rdquo; of data in tables, which happens in a way similar to how it happens in filesystems.</p>
+<p>InnoDB stores data by default in tablespaces, which by default are a file per table.
+These files are subject to the fragmentation and growth rules of your filesystem,
+but if you are smart, you are running MySQL on Linux on the XFS.
+In that case, filesystem fragmentation (and unexplained commit latency variance) are not an issue,
+because XFS takes care of handling this properly, and only database-internal fragmentation remains.</p>
+<h1 id="primary-keys-data-order-and-working-set-size">
+    <a href="#primary-keys-data-order-and-working-set-size">
+	Primary keys, data order and working set size
+    </a>
+</h1>
+<p>Data inside an InnoDB tablespace is placed in primary key order, and that used to matter a lot,
+because rows with closer primary keys used to be stored closer together on disk.
+Up to the point where rows with adjacent primary keys had a good chance of being on the same page.</p>
+<p>In the past, it mattered more than today, because even if data was not stored on the same page,
+pages that were physically stored closely together (on the same HDD track or cylinder) could be loaded faster.
+That was the case, since &ldquo;near&rdquo; disk seeks were executed faster by an HDD than &ldquo;far&rdquo; disk seeks across the entire surface of a hard disk.</p>
+<p>With flash, seek times are largely irrelevant:
+In fact, the internal Flash Translation Layer of flash storage will put data anywhere it sees fit,
+and then issue you a Logical Block Address (LBA) that has no bearing whatsoever on the actual physical location of the page on the flash drive.
+It may even move the actual physical data under you behind the scenes, and still refer to it by the same LBA.</p>
+<p>What matters a lot as a concept, though, is the Working Set Size (WSS) of your database.</p>
+<blockquote>
+<p>The Working Set is the set of pages your database is going to reference in the next future interval</p>
+</blockquote>
+<p>This interval may be, for example, the next 1m, 10m or 1h.
+That is, it makes initially limited sense to speak of the WSS as an unqualified term.
+You&rsquo;d have to use it with an interval instead, so the WSS-1m, WSS-10m, WSS-1h and so on.</p>
+<p>If you could predict what pages will be needed in the WSS-10m, you could preload these pages and cache them.
+This would bring the disk reads to zero or close to zero for the coming 10 minutes.</p>
+<blockquote>
+<p>Predicting the future is hard, though, especially if accuracy is required.
+What we do instead is look to the past and hope the future looks alike.</p>
+</blockquote>
+<p>So most people would want to look at the past 10 minutes,
+and the recorded page numbers requested from disk as a triple of <code>(timestamp, tablespace_id, page_number)</code>.
+From this, we can build a histogram for a sliding 10m window, and we would know which pages have been in demand.
+From the height of the histogram counter, we would even know how much.</p>
+<p>We can now size an InnoDB buffer pool, and calculate how large this pool would have to be to cache 95%, 99%, 99.99%, &hellip;
+of all page read requests.
+Having a handle on the desired buffer pool size for a data set and a workload would be very useful to determine the amount
+of memory our database instance would need to perform adequately:
+It must be sized for – at least – the estimated buffer pool plus overhead plus some safety margin,
+rounded up to available instance types.</p>
+<p>Unfortunately, we can only get aggregate statistics from an unpatched MySQL, and no page-read-request timeline as shown above.
+Neither can we get a page-request histogram from <code>P_S</code>, or a properly precalculated WSS estimation.
+So it is necessary to patch MySQL to get this data, unfortunately.</p>
+<p>When we do this, and math a bit on the results, we observe there is actually such a thing as a WSS without a time-interval:</p>
+<p>As long as the workload is stable,
+we can identify with some confidence a set of pages that need to be cached in order to quench most of the reads.
+Adding buffer pool pages past this point will not improve performance substantially,
+and there might still be a certain number of residual random page reads due to random accesses in the workload.
+In order to also quench these, you&rsquo;d have to be able to keep the entire database in memory.
+While this is sometimes possible, there are workloads where this is not economical, especially at cloud pricing structures.</p>
+<h2 id="designing-for-locality">
+    <a href="#designing-for-locality">
+	Designing for locality
+    </a>
+</h2>
+<p>Here Pep Pla comes in again, because he highlights in his article the principle of locality,
+which is exactly what the working set size is.
+Specifically, WSS is temporal locality – we cache the pages we will need in the future in memory,
+so that spatial locality does no longer matter.
+Even when using HDD.</p>
+<blockquote>
+<p>By choosing a primary key smartly, we can make sure that primary keys that are being accessed &ldquo;together&rdquo; have similar values,
+and each page is filled closely with many rows that we will be needing at the same time.</p>
+<p>For a fixed data size, this lowers the number of pages active concurrently, bringing down WSS size,
+bringing down pool size, bringing down instance size, bringing down cloud cost.</p>
+</blockquote>
+<p>Also, it is important to keep the row size down, so many rows fit into the same page,
+and finally getting a handle on fragmentation inside a page – but this is actually the least important factor in design.</p>
+<p>For the various MySQL flavors, exposing disk read request traces (as <code>(ts, tablespace_id, page#)</code> triples)
+and deriving a histogram and a WSS metric from it remains an open TODO point.</p>
+<p>Note how &ldquo;Designing for locality&rdquo; is not primarily a &ldquo;fragmentation&rdquo; issue – the amount of empty space per page,
+segment or tablespace does not matter in the first place.
+Packing rows that are needed together densely is what matters: data density matters.
+And empty space in a page can ultimately adversely affect that, but it is really the last item on the list.</p>
+<h1 id="fill-factors-and-you-do-not-need-to-optimize-table">
+    <a href="#fill-factors-and-you-do-not-need-to-optimize-table">
+	Fill Factors, and you do not need to <code>OPTIMIZE TABLE</code>
+    </a>
+</h1>
+<p>&ldquo;Empty space in a page&rdquo; is a special kind of fragmentation, and in databases it is commonly called &ldquo;fill factor.&rdquo;
+Pep Pla has been testing the behavior of InnoDB with various workloads and page fill factor settings,
+and this is the first documented and systematic work in this area that I am aware of.</p>
+<p>Using the <code>innodb_space</code> tool from <a href="https://github.com/jeremycole/innodb_ruby" target="_blank" rel="noopener">Jeremy Cole&rsquo;s Tooling</a>
+
+,
+he observed the behavior of InnODB after a longer term mixed insert and delete workload.</p>
+<p>The results are pretty encouraging.
+Basically, according to the results from his testing,
+it never made sense to run <code>OPTIMIZE TABLE</code> to repack and re-order the data for flash storage.
+Disk seeks do not matter much any more on flash,
+and there will always be empty space in the pages of tables that see permanent random inserts and deletes.
+So running <code>OPTIMIZE TABLE</code> will bring the table size down and repack it,
+only to create a wave of page splits immediately after when the DML workload continues and needs room to work.</p>
+<p>Pep Pla shows fragmentation maps for the same table after 400 iterations of his DML workload using different fill factors,
+and it shows that the initial fill factor after an <code>OPTIMIZE TABLE</code> is no longer visually identifiable.
+Instead, all tables look similarly fragmented, so their shape is dominated by the workload, not the
+<code>OPTIMIZE TABLE</code> and the fill factor parameters.</p>
+<p>It may be useful to <code>OPTIMIZE</code> (and compress) tables that are being archived, but as soon as they see DML,
+they will be reshaped by the workload again, and you might as well not <code>OPTIMIZE</code>.</p>
+<h1 id="designing-for-locality-vs-uuid">
+    <a href="#designing-for-locality-vs-uuid">
+	Designing for locality vs UUID
+    </a>
+</h1>
+<p>It is worth mentioning that very many tables have a row-access frequency that matches the rows primary key,
+if the rows&rsquo; primary key is an <code>auto_increment</code>.
+That is, very many applications frequently access rows that have recently been written,
+while older rows are being used much less frequently.</p>
+<p>By using <code>auto_increment</code> primary keys,
+data is automatically ordered physically so that &ldquo;cold data&rdquo; is at the front of the table and &ldquo;hot data&rdquo; is at the end.
+This also puts hot rows together into the same page or pages close by, at the end of the table.
+This is good for performance in InnoDB, and also keeps the WSS down.</p>
+<p>Using a random primary key (a MD5 or a UUID v4) will not impose any order on the primary key.
+In InnoDB, where the primary key value determines the physical position of the row in the table,
+this essentially scatters rows across the entire table.
+This creates a very large working set, bloating required buffer space, and increasing instance size:
+There will be a hot row in any page with the same probability, so you&rsquo;ll have to cache all pages to quench reads.</p>
+<p>Using a UUID v1 is better because they have a temporal component,
+which can be used to leverage an <code>auto_increment</code>-like ordering.
+Unfortunately, MySQL does not do this by providing a UUID v1 data type, which does the right thing automatically.
+Instead, we get to use a pair of functions <code>UUID_TO_BIN()</code> and <code>BIN_TO_UUID()</code>,
+which require you to manually cast the data every time you access it and remember to set the swap flag properly.
+This is very uncomfortable and error-prone,
+more so in large development organizations.</p>
+<p>Try to use <code>auto_increment</code> with MySQL InnoDB.
+If you can&rsquo;t, try to go with UUID v1 and the <code>UUID_TO_BIN()</code> functions, with the swap flag set.</p>
+<p>For the various MySQL flavors, it remains an open TODO point to provide a UUID v1 and a UUID v4 data type.</p>
+<h1 id="row-fragmentation">
+    <a href="#row-fragmentation">
+	Row Fragmentation
+    </a>
+</h1>
+<p>MySQL InnoDB is famously bad at storing files, and Pep Pla discusses that cursory, too.
+In fact, the Percona Blog also provides
+<a href="https://www.percona.com/blog/how-innodb-handles-text-blob-columns/" target="_blank" rel="noopener">another article on this</a>
+
+
+with some more depth, which is a lot more opinionated than the official manual on the subject at hand.</p>
+<p>Basically, when a row becomes too large (at 1/2 page size, 8 KB),
+InnoDB stores individual fields of a row &ldquo;off-table&rdquo; in overflow pages.
+The article does not discuss this, but to my knowledge, each overflow page holds only one field,
+so the overhead is statistically much larger than &ldquo;on average 1/2 page&rdquo; as stated in that article.
+This effect becomes stronger if you have tables with multiple BLOB/TEXT columns in a row,
+and each is just barely large enough to trigger off-table storage.</p>
+<p>Accessing data that is stored in overflow pages uses up additional buffer pool pages to hold them,
+at a rate of at least one per overflowed field, increasing the working set size, and hence necessary instance size.
+In versions of MySQL before MySQL 8, such data also forced the use of on-disk temporary tables,
+which impacted query performance badly to a large extent,
+but this is now fortunately fixed.</p>
+<p>So in the past, the general advice was to avoid TEXT/BLOB columns altogether,
+and if you must use them, do not use them as part of a join or any query that was marked as &ldquo;using temporary.&rdquo;
+Since MySQL 8, this is much better, but still be aware of the working set size increase.</p>
+<p>For the various MySQL flavors remains an open TODO point to provide a more efficient (Postgres TOAST-like?) BLOB storage,
+in order to bring down storage overhead.</p>
+<p>Another long-standing BLOB performance-related work item that is not linked to fragmentation
+would be to provide a &ldquo;partial updates&rdquo;/&ldquo;BLOB streaming&rdquo; API in the protocol,
+because this is another well-known point of inefficiency:</p>
+<ul>
+<li>Try to store a BLOB larger than <code>max_allowed_packed</code> in the database.</li>
+<li>Try to change 4 bytes at offset 32M in a 64M BLOB efficiently using MySQL protocol.</li>
+</ul>
+<p>If you do, and observe what happens on the wire, in memory and on disk, you&rsquo;d be scared.
+Until it is fixed, use the filesystem or S3 for this, and store filenames or URLs instead.</p>
+<h1 id="recommendations">
+    <a href="#recommendations">
+	Recommendations?
+    </a>
+</h1>
+<ul>
+<li>You probably do not need to care much about fragmentation if your database uses flash-based storage.
+InnoDB is relatively stable for DML workload, and <code>OPTIMIZE TABLE</code> is usually not worth the effort,
+unless you move a table to archive/read-only.</li>
+<li>You would do well to design for data density and temporal locality, bringing down working set size.
+<ul>
+<li>Often this happens automatically when using <code>auto_increment</code> as a primary key.</li>
+</ul>
+</li>
+<li>Even in MySQL 8, you would still do well to keep BLOB and TEXT fields out of main tables,
+or where it makes sense, out of the database completely.</li>
+</ul>
+<p>Server Side improvements needed:</p>
+<ul>
+<li>MySQL has no good instrumentation that can trace disk read requests by <code>(ts, tablespace_id, page#)</code>,
+making it hard to estimate working set size, and derive an optimal instance size from it.
+You will need to patch the database server in order to grab this data.
+This needs fixing in the mainline server source.</li>
+<li>MySQL should have a UUID v1 and a UUID v4 data type, which would be a lot less error-prone that the
+current set of functions.
+This needs fixing in the mainline server source.</li>
+<li>MySQL has an abysmally underdeveloped BLOB storage and long-standing gaps in its BLOB access API
+(efficient partial updates, BLOB streaming).
+This needs fixing in the mainline server source.</li>
+</ul>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+				<a href="/tags/#database" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				database
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2023-07-06-mysql-innodb-fragmentation/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2023/06/22/a-great-resignation-management-edition/">A Great Resignation, Management Edition</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2023/07/12/ubuntu-systemctl-user-does-not-work/">Ubuntu: systemctl --user does not work</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>

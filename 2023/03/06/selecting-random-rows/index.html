@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>MySQL: Selecting random rows | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2023/03/06/selecting-random-rows/">
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+<meta name="generator" content="Hugo 0.155.2">
+<meta property="og:title" content='MySQL: Selecting random rows | Die wunderbare Welt von Isotopp' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="og:url" content="https://blog.koehntopp.info/2023/03/06/selecting-random-rows/" />
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2023-02-20T12:13:14Z' />
+<meta name="fediverse:creator" content="@isotopp@infosec.exchange">
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content='@isotopp@infosec.exchange' />
+<meta property="twitter:title" content='MySQL: Selecting random rows' />
+<meta property="twitter:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.0248f4aedc205eb068896d7fb6e925db3bb8ab7279afaa176782bd9d62cf8462.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+
+
+
+
+
+<div class="page">
+	<article class="mysql-selecting-random-rows-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						MySQL: Selecting random rows
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='@isotopp@infosec.exchange image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://infosec.exchange/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>March 6, 2023</div>
+						
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2023/02/20/rotating-accounts-or-passwords/">Rotating Accounts or Passwords?</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2023/03/14/tracing-python/">Tracing Python</a>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>Given a table named <code>tbl</code> with one million entries, we want to select a random row from this table, fast.
+Our table definition looks like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="nf">tbl</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="kt">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">d</span><span class="w"> </span><span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">INDEX</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h1 id="dense-id-space">
+    <a href="#dense-id-space">
+	Dense <code>id</code> space
+    </a>
+</h1>
+<p>We can generate some test data using a recursive CTE:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="n">cte_max_recursion_depth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100000</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">tbl</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">recursive</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">-&gt;</span><span class="w">   </span><span class="k">select</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nf">uuid</span><span class="p">()</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">union</span><span class="w"> </span><span class="k">all</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">-&gt;</span><span class="w">   </span><span class="k">select</span><span class="w"> </span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nf">uuid</span><span class="p">()</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">100000</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><p>The Recursive CTE will generate 100k pairs of (number, uuid()).
+The initial row is defined in the upper row of the <code>UNION</code>, each subsequent row builds recursively on top of that, by simply counting up.</p>
+<p>Since we generate all the values in one transaction, the <code>uuid()</code> is actually static.
+That is, because inside a transaction time stops, and the uuid is internally time-based.</p>
+<p>Since the <code>id</code>-space is free of gaps, we have <code>rng</code> many numbers between <code>min(id) as min</code> and <code>max(id) as max</code>.
+Using the index on <code>id</code>, we can simply generate a random number between these boundaries and select the row.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="o">@</span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="o">@</span><span class="n">max</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">@</span><span class="n">max</span><span class="o">-@</span><span class="n">min</span><span class="o">+</span><span class="mi">1</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="o">@</span><span class="n">rng</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="nf">rand</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">@</span><span class="n">rng</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">@</span><span class="n">min</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">d</span><span class="w">                                    </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">79720</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">13</span><span class="n">b94bdf</span><span class="o">-</span><span class="n">bc1c</span><span class="o">-</span><span class="mi">11</span><span class="n">ed</span><span class="o">-</span><span class="mi">9</span><span class="n">c65</span><span class="o">-</span><span class="mi">08606</span><span class="n">ee5ff82</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">06</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="nf">rand</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">@</span><span class="n">rng</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">@</span><span class="n">min</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">d</span><span class="w">                                    </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">28379</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">13</span><span class="n">b64d6a</span><span class="o">-</span><span class="n">bc1c</span><span class="o">-</span><span class="mi">11</span><span class="n">ed</span><span class="o">-</span><span class="mi">9</span><span class="n">c65</span><span class="o">-</span><span class="mi">08606</span><span class="n">ee5ff82</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">06</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><h1 id="gaps-and-we-dont-care">
+    <a href="#gaps-and-we-dont-care">
+	Gaps, and we don&rsquo;t care
+    </a>
+</h1>
+<p>If our table has gaps, and we do not care, we can simply move to an inequality and work with that:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="nf">rand</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">@</span><span class="n">rng</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">@</span><span class="n">min</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="o">@</span><span class="n">val</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">@</span><span class="n">val</span><span class="p">,</span><span class="w"> </span><span class="n">tbl</span><span class="p">.</span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="o">@</span><span class="n">val</span><span class="w"> </span><span class="k">limit</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-------+-------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="o">@</span><span class="n">val</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">d</span><span class="w">                                    </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-------+-------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">46346</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">46346</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">13</span><span class="n">b74a19</span><span class="o">-</span><span class="n">bc1c</span><span class="o">-</span><span class="mi">11</span><span class="n">ed</span><span class="o">-</span><span class="mi">9</span><span class="n">c65</span><span class="o">-</span><span class="mi">08606</span><span class="n">ee5ff82</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-------+-------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">delete</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">50000</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="nf">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">71</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">@</span><span class="n">val</span><span class="p">,</span><span class="w"> </span><span class="n">tbl</span><span class="p">.</span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">&gt;=</span><span class="w"> </span><span class="o">@</span><span class="n">val</span><span class="w"> </span><span class="k">limit</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-------+-------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="o">@</span><span class="n">val</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">d</span><span class="w">                                    </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-------+-------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">46346</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">46347</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">13</span><span class="n">b74a1c</span><span class="o">-</span><span class="n">bc1c</span><span class="o">-</span><span class="mi">11</span><span class="n">ed</span><span class="o">-</span><span class="mi">9</span><span class="n">c65</span><span class="o">-</span><span class="mi">08606</span><span class="n">ee5ff82</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+-------+-------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><h1 id="generating-truly-random-rows">
+    <a href="#generating-truly-random-rows">
+	Generating truly random rows
+    </a>
+</h1>
+<p>Using Python, we can generate truly random rows.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="n">count</span> <span class="o">=</span> <span class="mi">1000000</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; Generate some test data &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sqlcmd</span> <span class="o">=</span> <span class="s2">&#34;insert into tbl (id, d) values ( </span><span class="si">%(id)s</span><span class="s2">, </span><span class="si">%(d)s</span><span class="s2"> )&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># ID values with a step of 100, in random order</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">     <span class="c1"># this ues a lot of memory to materialize the list</span>
+</span></span><span class="line"><span class="cl">    <span class="n">id_list</span> <span class="o">=</span> <span class="p">[</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">count</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span> <span class="p">)]</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># but if we want to shuffle, we have hardly any other option </span>
+</span></span><span class="line"><span class="cl">    <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">id_list</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Write them out, in batches of 1000.</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">id_list</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">item</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;id&#34;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span> <span class="s2">&#34;d&#34;</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">counter</span> <span class="o">%</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">                <span class="n">c</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="n">sqlcmd</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;MySQL Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span></code></pre></div><p>and that yields</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">limit</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">d</span><span class="w">                                    </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">   </span><span class="mi">720800</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">d6aba075</span><span class="o">-</span><span class="n">d30c</span><span class="o">-</span><span class="mi">4159</span><span class="o">-</span><span class="n">a3f9</span><span class="o">-</span><span class="mi">67</span><span class="n">e23ac5674e</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">  </span><span class="mi">2548500</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">18</span><span class="n">fccfa2</span><span class="o">-</span><span class="mi">4</span><span class="n">fc6</span><span class="o">-</span><span class="mi">4642</span><span class="o">-</span><span class="mi">861</span><span class="n">b</span><span class="o">-</span><span class="mi">4</span><span class="n">c98314cd6f1</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">86144900</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">e5a58428</span><span class="o">-</span><span class="n">c5e1</span><span class="o">-</span><span class="mi">4</span><span class="n">a32</span><span class="o">-</span><span class="n">a009</span><span class="o">-</span><span class="mi">88</span><span class="n">b5877348bf</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">88949600</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">fabbce25</span><span class="o">-</span><span class="mi">221</span><span class="n">e</span><span class="o">-</span><span class="mi">41</span><span class="n">d3</span><span class="o">-</span><span class="mi">97</span><span class="n">e4</span><span class="o">-</span><span class="mi">8</span><span class="n">cfa6bdc4816</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">18642300</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">6</span><span class="n">df95b85</span><span class="o">-</span><span class="mi">0</span><span class="n">d49</span><span class="o">-</span><span class="mi">487</span><span class="n">c</span><span class="o">-</span><span class="mi">98</span><span class="n">b0</span><span class="o">-</span><span class="mi">548980479</span><span class="n">e16</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">59352400</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">4</span><span class="n">dfa8a3c</span><span class="o">-</span><span class="mi">95</span><span class="n">e7</span><span class="o">-</span><span class="mi">41</span><span class="n">b6</span><span class="o">-</span><span class="mi">83</span><span class="n">f4</span><span class="o">-</span><span class="mi">1</span><span class="n">f1c9f647ecd</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">11149400</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">60</span><span class="n">d19e1f</span><span class="o">-</span><span class="mi">1</span><span class="n">bca</span><span class="o">-</span><span class="mi">41</span><span class="n">d2</span><span class="o">-</span><span class="mi">93</span><span class="n">a6</span><span class="o">-</span><span class="mi">1</span><span class="n">f9af585bbd4</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">37822800</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">eebeafd8</span><span class="o">-</span><span class="n">b08a</span><span class="o">-</span><span class="mi">483</span><span class="n">d</span><span class="o">-</span><span class="mi">88</span><span class="n">a5</span><span class="o">-</span><span class="n">f779de5d6888</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">88126400</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">04</span><span class="n">c4d0ed</span><span class="o">-</span><span class="n">ba7c</span><span class="o">-</span><span class="mi">456</span><span class="n">f</span><span class="o">-</span><span class="n">ac8c</span><span class="o">-</span><span class="n">a72448f38621</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">65363500</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">876794</span><span class="n">c9</span><span class="o">-</span><span class="n">b3b5</span><span class="o">-</span><span class="mi">4</span><span class="n">cda</span><span class="o">-</span><span class="mi">9</span><span class="n">acd</span><span class="o">-</span><span class="n">dacb4f5a9419</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">10</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><p>If we had defined the table with a primary key, InnoDB would have kept the data in primary key order &ndash; sorted by id.
+Since we did not, the output is kept in generative order.</p>
+<h1 id="window-functions-do-not-help-us-here">
+    <a href="#window-functions-do-not-help-us-here">
+	Window functions do not help us here
+    </a>
+</h1>
+<p>We can generate row numbers, using window functions:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">tbl</span><span class="p">.</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="nf">row_number</span><span class="p">()</span><span class="w"> </span><span class="nf">over</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">limit</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+----+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">d</span><span class="w">                                    </span><span class="o">|</span><span class="w"> </span><span class="n">r</span><span class="w">  </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+----+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">   </span><span class="mi">720800</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">d6aba075</span><span class="o">-</span><span class="n">d30c</span><span class="o">-</span><span class="mi">4159</span><span class="o">-</span><span class="n">a3f9</span><span class="o">-</span><span class="mi">67</span><span class="n">e23ac5674e</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w">  </span><span class="mi">2548500</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">18</span><span class="n">fccfa2</span><span class="o">-</span><span class="mi">4</span><span class="n">fc6</span><span class="o">-</span><span class="mi">4642</span><span class="o">-</span><span class="mi">861</span><span class="n">b</span><span class="o">-</span><span class="mi">4</span><span class="n">c98314cd6f1</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">86144900</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">e5a58428</span><span class="o">-</span><span class="n">c5e1</span><span class="o">-</span><span class="mi">4</span><span class="n">a32</span><span class="o">-</span><span class="n">a009</span><span class="o">-</span><span class="mi">88</span><span class="n">b5877348bf</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">88949600</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">fabbce25</span><span class="o">-</span><span class="mi">221</span><span class="n">e</span><span class="o">-</span><span class="mi">41</span><span class="n">d3</span><span class="o">-</span><span class="mi">97</span><span class="n">e4</span><span class="o">-</span><span class="mi">8</span><span class="n">cfa6bdc4816</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">18642300</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">6</span><span class="n">df95b85</span><span class="o">-</span><span class="mi">0</span><span class="n">d49</span><span class="o">-</span><span class="mi">487</span><span class="n">c</span><span class="o">-</span><span class="mi">98</span><span class="n">b0</span><span class="o">-</span><span class="mi">548980479</span><span class="n">e16</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">5</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">59352400</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">4</span><span class="n">dfa8a3c</span><span class="o">-</span><span class="mi">95</span><span class="n">e7</span><span class="o">-</span><span class="mi">41</span><span class="n">b6</span><span class="o">-</span><span class="mi">83</span><span class="n">f4</span><span class="o">-</span><span class="mi">1</span><span class="n">f1c9f647ecd</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">6</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">11149400</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">60</span><span class="n">d19e1f</span><span class="o">-</span><span class="mi">1</span><span class="n">bca</span><span class="o">-</span><span class="mi">41</span><span class="n">d2</span><span class="o">-</span><span class="mi">93</span><span class="n">a6</span><span class="o">-</span><span class="mi">1</span><span class="n">f9af585bbd4</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">7</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">37822800</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">eebeafd8</span><span class="o">-</span><span class="n">b08a</span><span class="o">-</span><span class="mi">483</span><span class="n">d</span><span class="o">-</span><span class="mi">88</span><span class="n">a5</span><span class="o">-</span><span class="n">f779de5d6888</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">88126400</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">04</span><span class="n">c4d0ed</span><span class="o">-</span><span class="n">ba7c</span><span class="o">-</span><span class="mi">456</span><span class="n">f</span><span class="o">-</span><span class="n">ac8c</span><span class="o">-</span><span class="n">a72448f38621</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">65363500</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">876794</span><span class="n">c9</span><span class="o">-</span><span class="n">b3b5</span><span class="o">-</span><span class="mi">4</span><span class="n">cda</span><span class="o">-</span><span class="mi">9</span><span class="n">acd</span><span class="o">-</span><span class="n">dacb4f5a9419</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+----+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">10</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><p>But since they are generated on the fly, they are not an efficient way to select a random row:
+We cannot use Window functions in any interesting context, and using them in a subquery basically forces the database to materialize all the rows before the one we are interested in.
+So this is slow:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">tbl</span><span class="p">.</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="nf">row_number</span><span class="p">()</span><span class="w"> </span><span class="nf">over</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">192383</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ERROR</span><span class="w"> </span><span class="mi">1054</span><span class="w"> </span><span class="p">(</span><span class="mi">42</span><span class="n">S22</span><span class="p">):</span><span class="w"> </span><span class="n">Unknown</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="s1">&#39;r&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s1">&#39;where clause&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">tbl</span><span class="p">.</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="nf">row_number</span><span class="p">()</span><span class="w"> </span><span class="nf">over</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="nf">row_number</span><span class="p">()</span><span class="w"> </span><span class="nf">over</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">192383</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ERROR</span><span class="w"> </span><span class="mi">3593</span><span class="w"> </span><span class="p">(</span><span class="n">HY000</span><span class="p">):</span><span class="w"> </span><span class="n">You</span><span class="w"> </span><span class="n">cannot</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">window</span><span class="w"> </span><span class="n">function</span><span class="w"> </span><span class="s1">&#39;row_number&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">tbl</span><span class="p">.</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="nf">row_number</span><span class="p">()</span><span class="w"> </span><span class="nf">over</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w">  </span><span class="k">having</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">192383</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ERROR</span><span class="w"> </span><span class="mi">3594</span><span class="w"> </span><span class="p">(</span><span class="n">HY000</span><span class="p">):</span><span class="w"> </span><span class="n">You</span><span class="w"> </span><span class="n">cannot</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">alias</span><span class="w"> </span><span class="s1">&#39;r&#39;</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="n">expression</span><span class="w"> </span><span class="n">containing</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">window</span><span class="w"> </span><span class="n">function</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">tbl</span><span class="p">.</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="nf">row_number</span><span class="p">()</span><span class="w"> </span><span class="nf">over</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">192383</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+--------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">d</span><span class="w">                                    </span><span class="o">|</span><span class="w"> </span><span class="n">r</span><span class="w">      </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+--------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">85856500</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">17</span><span class="n">e04a8a</span><span class="o">-</span><span class="mi">95</span><span class="n">e5</span><span class="o">-</span><span class="mi">4</span><span class="n">f5f</span><span class="o">-</span><span class="mi">8</span><span class="n">aa2</span><span class="o">-</span><span class="mi">597</span><span class="n">c2d37dd43</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">192383</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+--------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="p">.</span><span class="mi">58</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><h1 id="selecting-randomly-from-tables-with-gaps">
+    <a href="#selecting-randomly-from-tables-with-gaps">
+	Selecting randomly from tables with gaps
+    </a>
+</h1>
+<p>Without continuous ids, and without a row count we cannot easily select the &ldquo;n-th record&rdquo; from a table.
+So the best we can do is to select all <code>id</code>-values, and shuffle them, then choose the first row from the shuffle:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="nf">rand</span><span class="p">()</span><span class="w"> </span><span class="k">limit</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">       </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">64527400</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">86</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><p>We can turn this into a full row with a join with almost no cost:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">t1</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">join</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">-&gt;</span><span class="w">   </span><span class="k">select</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="nf">rand</span><span class="p">()</span><span class="w"> </span><span class="k">limit</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">t2</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">t1</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t2</span><span class="p">.</span><span class="n">id</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+----------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">d</span><span class="w">                                    </span><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">       </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+----------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">24765800</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dcabd753</span><span class="o">-</span><span class="n">a357</span><span class="o">-</span><span class="mi">4</span><span class="n">f38</span><span class="o">-</span><span class="n">a255</span><span class="o">-</span><span class="n">e81b0675654f</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">24765800</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+----------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">82</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><h1 id="consuming-rows">
+    <a href="#consuming-rows">
+	Consuming rows
+    </a>
+</h1>
+<p>In the previous examples, we have been re-ordering the table randomly for each access (or group of accesses).
+The shuffle has not been made persistent.</p>
+<p>Often, the problem is not to select a random row, but to consume rows in random order.
+We can store a random number with each row, and then use this as an (indexed) ordering key.
+Using the knowledge from
+<a href="/2021/07/13/mysql-a-job-queue-in-python/">the queueing article</a>
+
+,
+we can select the item with the highest ordering value, lock it for consumption, retrieve it and delete it.</p>
+<p>The idea is to add a column <code>ordering</code> to our table, indexed for fast access.
+The <code>ordering</code> value is assigned randomly.
+Here, we are creating the values after the fact in batch for one million entries, but in a system you would probably do that for each item as you write the item.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">ordering</span><span class="w"> </span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">index</span><span class="p">(</span><span class="n">ordering</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="nf">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">20</span><span class="p">.</span><span class="mi">18</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Records</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Duplicates</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="n">ordering</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">rand</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">1000000</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="nf">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="mi">8</span><span class="p">.</span><span class="mi">27</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Rows</span><span class="w"> </span><span class="n">matched</span><span class="p">:</span><span class="w"> </span><span class="mi">1000000</span><span class="w">  </span><span class="n">Changed</span><span class="p">:</span><span class="w"> </span><span class="mi">1000000</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span></span></span></code></pre></div><p>To consume a random row, we start a transaction, select the row we want, using <code>FOR UPDATE</code> and <code>SKIP LOCKED</code>, and then delete it.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="n">START</span><span class="w"> </span><span class="n">TRANSACTION</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">-- Two rows with the same ordering value may exist.
+</span></span></span><span class="line"><span class="cl"><span class="c1">-- We can distinguish them by id, and can process one or both of them.
+</span></span></span><span class="line"><span class="cl"><span class="c1">--
+</span></span></span><span class="line"><span class="cl"><span class="c1">-- If another process has a lock on the topmost row, we will get zero results
+</span></span></span><span class="line"><span class="cl"><span class="c1">-- due to the use of SKIP LOCKED.
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">ordering</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="k">select</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="n">ordering</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">skip</span><span class="w"> </span><span class="n">locked</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+--------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">d</span><span class="w">                                    </span><span class="o">|</span><span class="w"> </span><span class="n">ordering</span><span class="w">           </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+--------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">31106100</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dc12e901</span><span class="o">-</span><span class="mi">64</span><span class="n">a0</span><span class="o">-</span><span class="mi">45</span><span class="n">a1</span><span class="o">-</span><span class="mi">8</span><span class="n">f2e</span><span class="o">-</span><span class="n">dee93e3c8ab9</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">9999995017424221</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+--------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">delete</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">31106100</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="nf">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="n">commit</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="n">actual</span><span class="w"> </span><span class="n">processing</span><span class="w"> </span><span class="n">outside</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">transaction</span><span class="o">&gt;</span><span class="w">
+</span></span></span></code></pre></div><p>Here, the inner query determines the maximum &ldquo;ordering&rdquo; value, which is fast due to the index.
+We make use of that value to fetch &ldquo;a row&rdquo;.
+Nothing prevents multiple rows from matching, so we may get one or more rows.
+We take the first (or all values), process it, and delete the processed rows, then commit.</p>
+<p>Because we use <code>FOR UPDATE</code>, each row we select will also be exclusively locked, so other consumers cannot touch them.
+Because of the <code>SKIP LOCKED</code>, other consumers will not be hanging on locked rows.
+Instead, they will simply not see locked rows, so our query may actually even return zero rows in a concurrent context.</p>
+<p>Alternatively, you do not strictly process items in order, and want to process them &ldquo;roughly&rdquo; in order, but be able to leverage multiple consumers.
+A query such as the one below selects one or more items to process (locking them), so that they can be picked up for processing and deleted.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="n">transaction</span><span class="w"> </span><span class="k">read</span><span class="w"> </span><span class="k">write</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">-- This is the first UNLOCKED row available for processing.
+</span></span></span><span class="line"><span class="cl"><span class="c1">--
+</span></span></span><span class="line"><span class="cl"><span class="c1">-- Another process may have a lock on another row with an even larger ordering value,
+</span></span></span><span class="line"><span class="cl"><span class="c1">-- but thanks to SKIP LOCKED, we will not see that. 
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">ordering</span><span class="w"> </span><span class="k">desc</span><span class="w"> </span><span class="k">limit</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">update</span><span class="w"> </span><span class="n">skip</span><span class="w"> </span><span class="n">locked</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+--------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">d</span><span class="w">                                    </span><span class="o">|</span><span class="w"> </span><span class="n">ordering</span><span class="w">           </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+--------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="mi">68998800</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">bcf7cca2</span><span class="o">-</span><span class="mi">076</span><span class="n">d</span><span class="o">-</span><span class="mi">444</span><span class="n">b</span><span class="o">-</span><span class="mi">922</span><span class="n">b</span><span class="o">-</span><span class="n">ae064a1c49a8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">9999983534216865</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+----------+--------------------------------------+--------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">delete</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tbl</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">68998800</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="nf">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="n">commit</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="n">actual</span><span class="w"> </span><span class="n">processing</span><span class="w"> </span><span class="n">outside</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">transaction</span><span class="o">&gt;</span><span class="w">
+</span></span></span></code></pre></div><p>For scalability, it is important to keep the interval between <code>START TRANSACTION</code> and <code>COMMIT</code> as short as possible.
+Therefore, it is advisable to keep the actual item processing outside the transaction.</p>
+<p>Because we do not need to shuffle things each time when we access things, this is actually much faster than &ldquo;selecting a random row&rdquo;.</p>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+				<a href="/tags/#mysqldev" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysqldev
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2023-03-06-selecting-random-rows/index.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2023/02/20/rotating-accounts-or-passwords/">Rotating Accounts or Passwords?</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Next Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2023/03/14/tracing-python/">Tracing Python</a>
+				</div>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://infosec.exchange/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>
