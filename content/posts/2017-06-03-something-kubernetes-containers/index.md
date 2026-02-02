@@ -16,7 +16,7 @@ Talk given at the Netways Open Source Data Center Conference 2017.
 There is a video of the talk [on Youtube](https://www.youtube.com/watch?v=ggiqbN3xAjs).
 
 
-![](2017/06/something/containers-002.jpg)
+![](containers-002.jpg)
 
 The title of the talk was not final, when I submitted the proposal, so I just set it to "Something Mumble Containers Kubernetes".
 It came out as "Containers at Booking" in the end.
@@ -27,7 +27,7 @@ Things are still changing at Booking.
 
 # What we do
 
-![](2017/06/something/containers-003.jpg)
+![](containers-003.jpg)
 
 What Booking does was selling rooms, and getting commission from the hotel for that.
 That used to be a very simple thing, it seems, but it was already complicated enough, because the business is very different depending on where in the world you are.
@@ -44,7 +44,7 @@ So being boringly reliable is what we aim for.
 
 # Where we are
 
-![](2017/06/something/containers-006.jpg)
+![](containers-006.jpg)
 
 At this point in time production is completely on bare metal.
 We are a colocation customer, we do not have our own data center buildings, but instead make use of multiple rooms in multiple locations.
@@ -81,7 +81,7 @@ In our case the hardware we use is at the low end of the available specification
 
 # Current hardware is too powerful
 
-![](2017/06/something/containers-009.jpg)
+![](containers-009.jpg)
 
 A current bladecenter chassis (HP C7000, Dell M1000e) uses 10 height units of rack space.
 It has room for 16 blades.
@@ -93,7 +93,7 @@ and if we actually ran the machines at full power, only one bladecenter per rack
 
 # Pressures on the data center environment
 
-![](2017/06/something/containers-010.jpg)
+![](containers-010.jpg)
 
 We do not only need to slice and dice the hardware, but the business also wants us to be even more agile and faster.
 
@@ -112,7 +112,7 @@ which helps management to see the entire application and all components and the 
 
 # The Monolith
 
-![](2017/06/something/containers-011.jpg)
+![](containers-011.jpg)
 The software currently is a monolith and needs to be split from being a 6GB process into something smaller.
 This is startup size, then the thing forks and the actual instances share a lot of memory with the parent process.
 So the actual memory consumption per instance is a lot less.
@@ -131,7 +131,7 @@ And also work towards a different business model.
 
 # What are containers?
 
-![](2017/06/something/containers-013.jpg)
+![](containers-013.jpg)
 
 Containers are just UNIX processes with additional fairy dust added between the `fork()` and `exec()` system calls.
 Part of this fairy dust are Linux Namespaces and Linux CGroups.
@@ -139,7 +139,7 @@ Part of this fairy dust are Linux Namespaces and Linux CGroups.
 Namespaces limit what an application inside a container can see, in terms of other processes, other files, and so on.
 CGroups limit the amount of resouces an application inside a container can consume, in terms of memory, CPU, and so on.
 
-![](2017/06/something/containers-014.jpg)
+![](containers-014.jpg)
 
 Containers are for a few years now well understood, and known, in the form of Docker.
 Docker standalone is not useful for production, though. 
@@ -159,7 +159,7 @@ It still not useful for production, because it gives you a SPOF, does not scale 
 
 # Images as a form of wrapping dependencies
 
-![](2017/06/something/containers-015.jpg)
+![](containers-015.jpg)
 
 One of the useful things Docker provides is the concept of an image that collects all the files belonging to an application,
 and all the dependencies it has.
@@ -170,7 +170,7 @@ We get instant applications, just add CPU and memory anywhere in the data center
 Applications become single file, loopmounted images.
 This can also be moved around very quickly, much faster than 100.000s of files.
 
-![](2017/06/something/containers-016.jpg)
+![](containers-016.jpg)
 
 Since we cannot know what is in the image, we need to control what goes into the image.
 We need to be able to build the images from scratch, on our own infrastructure, and be able to scan the receipts in order to understand what's inside.
@@ -178,7 +178,7 @@ We cache the dependencies locally, and we use this to have reproducible builds.
 
 # Mesos: A project that escaped from a hackathon
 
-![](2017/06/something/containers-020.jpg)
+![](containers-020.jpg)
 
 Booking was running Containers using Mesos.
 This was a Hackathon experiment, that accidentally escaped into internal production.
@@ -204,7 +204,7 @@ We wanted to keep that, but run it better.
 When looking around, we found K8s, which has all the stuff we needed.
 The Environment is very cooperative and receptive to suggestions, a lot of momentum and mind-share.
 
-![](2017/06/something/containers-022.jpg)
+![](containers-022.jpg)
 
 This is what you get:
 "I want to run something," and it runs somewhere in the cluster where there is space.
@@ -213,7 +213,7 @@ Like `init`, but for a set of machines.
 
 "Run an application anywhere in my data center, I do not care where exactly"
 
-![](2017/06/something/containers-023.jpg)
+![](containers-023.jpg)
 
 K8s refines the concept of a container, compared to Docker:
 - The Pod: resource barriers (like VM, but is not a VM)
@@ -238,7 +238,7 @@ It is usually better to use specific words instead of the generic word "containe
 
 # Kubernetes, Iteration 1
 
-![](2017/06/something/containers-025.jpg)
+![](containers-025.jpg)
 
 Earlier this year, we started our first tiny deployment, to test things out:
 8 bladecenters are 128 blades, in 8 racks, with 2x 10 Gbit per Blade.
@@ -251,7 +251,7 @@ Also, lots of storage and the option to play with distributed storage.
 
 # A million corecomputer
 
-![](2017/06/something/containers-026.jpg)
+![](containers-026.jpg)
 
 You can try to build the million core computer:
 20.000 machines at 50 cores for a million core computer.
@@ -264,7 +264,7 @@ This needs very strong networking.
 
 # Trying out Openshift
 
-![](2017/06/something/containers-027.jpg)
+![](containers-027.jpg)
 
 For a full production deployment, we considered using OpenShift.
 At that point in time it looked like a good idea to get more familiar with K8s.
@@ -274,7 +274,7 @@ For about two years it was very useful, but in the end it was moving too slow.
 
 # Networking
 
-![](2017/06/something/containers-029.jpg)
+![](containers-029.jpg)
 
 Clusters always need good networking.
 The network we have is using L2 domains per rack, L3 with BGP between the racks.
@@ -285,7 +285,7 @@ The way we built it means we can incrementally grow it as needed.
 We have a lot of east-west-traffic.
 This is expected for such a cluster, and it is unlike before, with monolithic bare-metal systems.
 
-![](2017/06/something/containers-030.jpg)
+![](containers-030.jpg)
 
 Out network looks like this.
 Container machines have 100 Gbit/s, but are part of the same topology as for the bare metal stuff.
@@ -302,7 +302,7 @@ We do not want to give Devs this power, because devs will use this.
 This will be very hard to maintain.
 We want something standardized.
 
-![](2017/06/something/containers-032.jpg)
+![](containers-032.jpg)
 
 It also leads to fragility and upgrade problems at the network level.
 We are not using SDN at the moment, having Midokura on the backburner.
@@ -313,7 +313,7 @@ but we are not doing this right now.
 Instead we use instead sidecars for logging and monitoring.
 Since we are not a hoster it can be okay to share things.
 
-![](2017/06/something/containers-035.jpg)
+![](containers-035.jpg)
 
 Finding things is hard in a cluster.
 IP addresses and host names no longer mean a thing, they are no longer fixed and can shift around as the cluster topology changes.
@@ -323,7 +323,7 @@ Everything is dynamic. How do you find things?
 Enter `etcd` as a consensus system and as a registry for endpoints and services.
 Things that run in the cluster register themselves in the `etcd` and can provide capacity to a service.
 
-![](2017/06/something/containers-036.jpg)
+![](containers-036.jpg)
 
 Kubernetes creates services, which are almost a load balancer.
 The service monitors the available backends in `etcd`, and updates when the list in `etcd` changes.
@@ -337,7 +337,7 @@ Services subscribe to changes in the endpoint list, and cache the list.
 They get a notification when the list changes, update their cached copy.
 Incoming requests are being served from the locally cached copy.
 
-![](2017/06/something/containers-037.jpg)
+![](containers-037.jpg)
 
 In OpenShift, this is being implemented in a very, very large number of `iptables`-rules,
 and that can lead to problems.
@@ -348,7 +348,7 @@ Service meshes solve the same problem with application level proxying, which is 
 
 # Balancing load
 
-![](2017/06/something/containers-038.jpg)
+![](containers-038.jpg)
 
 Kubernetes does not migrate instances, ever,
 because that usually does not work at all.
@@ -362,7 +362,7 @@ This is a problem for things that have state, and use storage.
 Kubernetes has a relatively new and recent feature that is largely untested,
 called Persistent Volume Claims, which handles this in a nice way.
 
-![](2017/06/something/containers-040.jpg)
+![](containers-040.jpg)
 
 When you have a piece of hardware that provides storage in the form of volumes.
 Volumes need to be created in a hardware specific way, and are then served as iSCSI volumes to the cluster.
@@ -376,7 +376,7 @@ This is a partially manual process, and also leads to overprovisioning, because 
 
 # Dynamic Persistent Volume Clains (PVCs)
 
-![](2017/06/something/containers-041.jpg)
+![](containers-041.jpg)
 
 New and automated: PODs can ask for storage, using a persistent volume claim (PVC).
 The cluster intercepts this request, a volume is made to order, and then served out to the requesting pod.
@@ -384,7 +384,7 @@ This often fails: many storages do not like volumes to be created and deleted at
 
 When it works, it looks like this:
 
-![](2017/06/something/containers-042.jpg)
+![](containers-042.jpg)
 
 - PVC is scheduled with the rest of things
 - PVC intercepted, PV made to order
@@ -393,7 +393,7 @@ When it works, it looks like this:
 - Volume is being prepared if needed, and
 - Volume is then available.
 
-![](2017/06/something/containers-043.jpg)
+![](containers-043.jpg)
 
 When the node fails,
 
@@ -406,7 +406,7 @@ When the node fails,
 It requires that Pods have a fixed identity (are available as a fixed size array).
 This is the Kubernetes `PetSet` or `StatefulSet` now.
 
-![](2017/06/something/containers-044.jpg)
+![](containers-044.jpg)
 
 Plenty of limits: In our case, 64 hosts with Solidfire and the Trident API.
 iSCSI has latency issues for some applications.
@@ -416,7 +416,7 @@ We need < 0.5ms commit latency, but do get 4ms with the current setup.
 
 # Stateful Sets
 
-![](2017/06/something/containers-046.jpg)
+![](containers-046.jpg)
 
 Storage is a way to manage state.
 State is unique, instances have names or fixed identities.
@@ -431,7 +431,7 @@ We also test with Elastic, and also our internal Availability Database.
 
 # No IPv6
 
-![](2017/06/something/containers-049.jpg)
+![](containers-049.jpg)
 
 We are using IP per Pod, so we consume a lot of IP addresses.
 With 100 hosts, many Pods per Host.
@@ -447,7 +447,7 @@ Nobody knews why, and it really hurts.
 
 # Getting into the cluster: Gateway routers
 
-![](2017/06/something/containers-050.jpg)
+![](containers-050.jpg)
 
 Ingress Routers exist on Gateway nodes.
 These can act as chokepoints,
@@ -456,7 +456,7 @@ for example external databases.
 
 A way around that:
 
-![](2017/06/something/containers-051.jpg)
+![](containers-051.jpg)
 
 Put legacy databases inside the cluster
 using in our case ovs-switchd.
@@ -468,7 +468,7 @@ This is not specific to our way of networking, it is also a problem in proper SD
 
 # Breaking IP-based security
 
-![](2017/06/something/containers-052.jpg)
+![](containers-052.jpg)
 
 *red = allowed, green, yellow, blue = random other things*
 
@@ -482,7 +482,7 @@ Traditional firewalls are useless; the only way to go is to allow-list the entir
 In our current model, firewall rules are autogenerated from ServerDB data.
 This does not work with Kubernetes at all.
 
-![](2017/06/something/containers-054.jpg)
+![](containers-054.jpg)
 
 A way around this is to TLS all the things, and use client certificates to identity services.
 Connections need to be intercepted and automatically authenticated, then be allowed or disallowed based on their identity.
@@ -495,7 +495,7 @@ It feels weird from where we are coming from, and is a bit scary.
 
 # Sizing the cluster
 
-![](2017/06/something/containers-056.jpg)
+![](containers-056.jpg)
 
 How large can a cluster be?
 It can run on a laptop, or on one or three prod boxes.
@@ -511,7 +511,7 @@ If it works, it will be very useful.
 
 # Local Kubernetes and the Public Cloud
 
-![](2017/06/something/containers-059.jpg)
+![](containers-059.jpg)
 
 We experiment with the public cloud as well.
 But we do like bare-metal:
@@ -527,14 +527,14 @@ Long term contracts are par for the course, so it is mostly a capex to opex shif
 
 # Why Kubernetes on Bare-Metal?
 
-![](2017/06/something/containers-060.jpg)
+![](containers-060.jpg)
 
 Virtual Machines are not helping with any problem we have.
 They would add complexity and jitter, and add no benefit.
 
 # What about the Monolith?
 
-![](2017/06/something/containers-061.jpg)
+![](containers-061.jpg)
 
 What about the Monolith?
 That's another problem, it's a problem being worked on.

@@ -25,7 +25,7 @@ Consider some cats and their owners (or, in Cat, our "tin-openers"):
 | Shelley | Sarah   | San Diego   |
 | Lynn    | Louise  | Los Angeles |
 
-![2022/02/mysqldump_cat.png](mysqldump_cat.png)
+![mysqldump_cat.png](mysqldump_cat.png)
 
 So far, so good. Now another cat strays to Louise:
 
@@ -35,7 +35,7 @@ So far, so good. Now another cat strays to Louise:
 | Shelley    | Sarah | San Diego   |
 | Lynn, Lara | Louise | Los Angeles |
 
-![](2022/02/mysqldump_cat.png)
+![](mysqldump_cat.png)
 
 It's pretty obvious that we'll be in a world of pain once we also wish to store more attributes for each cat (date of
 birth, vaccination, ...). 
@@ -50,7 +50,7 @@ This is awkward, error-prone, and slow, so let's discard the idea while we can:
 | Lara    | Louise | Los Angeles |
 | Lynn    | Louise | Los Angeles |
 
-![](2022/02/mysqldump_cat.png)
+![](mysqldump_cat.png)
 
 Now we stored "Louise" and "Los Angeles" twice. This is somewhat awkward, we'd rather only change one entry if Louise
 moves or changes her name:
@@ -68,7 +68,7 @@ moves or changes her name:
 | Lara    | Louise                                         |
 | Lynn    | Louise                                         |
 
-![](2022/02/mysqldump_cat.png)
+![](mysqldump_cat.png)
 
 We have eliminated the redundant city, but if Louise's name should change, we'll have to update three entries (her name
 in the owners table, and two references to that entry from the cats table).
@@ -88,7 +88,7 @@ We'll make up an arbitrary one that will never change because it does not rely o
 | Lara    | 3        |
 | Lynn    | 3        |
 
-![](2022/02/mysqldump_cat.png)
+![](mysqldump_cat.png)
 
 
 Now a new cat strays to Sarah.
@@ -108,7 +108,7 @@ Like Louise, Sarah fancies the name Lara:
 | Lara    | 3        |
 | Lara    | 2        |
 
-![](2022/02/mysqldump_cat.png)
+![](mysqldump_cat.png)
 
 The cats are still unique — Sarah's Lara is Lara/2 in our cats table, Louise's is Lara/3.
 At this point however, word gets around in cat circles that Louise rocks — Ada escapes from Andrea-world and strays to Louise!
@@ -139,7 +139,7 @@ At this point however, word gets around in cat circles that Louise rocks — Ada
 
 (NULL meaning: still living there, makes looking up current location nice and easy)
 
-![](2022/02/mysqldump_cat.png)
+![](mysqldump_cat.png)
 
 Sarah's Lara heard the news as well, and also strays to Louise:
 
@@ -167,7 +167,7 @@ Sarah's Lara heard the news as well, and also strays to Louise:
 | 5      | 2                   | 2002 | 2002  |
 | 5      | 3                   | 2002 | 2002  |
 
-![](2022/02/mysqldump_cat.png)
+![](mysqldump_cat.png)
 
 Louise is unaware of the newcomer's name and calls her Callisto — apparently, a cat's name is not a constant. 
 Once more, we fix our tables:
@@ -196,7 +196,7 @@ Once more, we fix our tables:
 | 5      | 2                   | 2002 | 2002  | 4 |
 | 5      | 3                   | 2002 | 2002  | 5|
 
-![](2022/02/mysqldump_cat.png)
+![](mysqldump_cat.png)
 
 Now, a cat can have any number of names (one after the other), and each owner can feed any number of cats.
 We can even make overlapping entries in our latest table to account for cats sneakily eating in several places. 
@@ -244,7 +244,7 @@ In some cases, it may be worthwhile to separate a table's history from its statu
 
 In this example, we'll have to insert the relevant line from the current table (using the current date for the until value) before updating the line in the current table.
 
-![](2022/02/mysqldump_cat.png)
+![](mysqldump_cat.png)
 
 If in doubt, use consecutive integers as a (primary) key (`integer primary key auto_increment not null` or similar).
 Do not use strings as keys if you can avoid it, if the above didn't convince you, maybe this will:

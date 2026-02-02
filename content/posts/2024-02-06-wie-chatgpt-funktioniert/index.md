@@ -186,7 +186,7 @@ kommt man am Ende bei einer Näherung des Wunsch-Graphen an, die so aussieht.
 
 *Das von Wolfram gewählte neuronale Netz.*
 
-![2024/02/chatgpt-16.jpg](chatgpt-16.jpg)
+![](chatgpt-16.jpg)
 
 *Das Resultat weicht vom Wunschergebnis ab, ist aber eine gute Näherung.*
 
@@ -195,7 +195,7 @@ wenn man nicht genügend Neuronen hat.
 Das zu modellierende Subjekt ist zu kompliziert, sodaß der mögliche Parameterraum nicht groß genug ist:
 Eine Gerade kann keine Parabel annähern.
 
-![](2024/02/chatgpt-16.jpg)
+![](chatgpt-16.jpg)
 
 *Verschiedene NN und die resultierenden Näherungen.*
 

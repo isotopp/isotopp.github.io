@@ -11,7 +11,7 @@ aliases:
   - /2000/04/01/datenspuren-im-internet.html
 ---
 
-[Datenspuren im Internet](2000/04/CR_Datenspuren_im_Internet.pdf) (PDF)
+[Datenspuren im Internet](CR_Datenspuren_im_Internet.pdf) (PDF)
 
 nach einem Artikel in der Computer und Recht, 4/2000 mit Marit Köhntopp.
 Diese Version wurde am 10-Sep-2000 um einige Anmerkungen ergänzt und aktualisiert.

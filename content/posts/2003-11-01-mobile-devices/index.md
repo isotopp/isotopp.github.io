@@ -16,13 +16,13 @@ aliases:
 
 # Der Feind in meiner Tasche
 
-![](2003/11/mobile-devices/img0.jpg)
+![](img0.jpg)
 
 Firewallkonzepte vs. Mobile Geräte
 
 # Inhalt
 
-![](2003/11/mobile-devices/img1.jpg)
+![](img1.jpg)
 
 - Aufgaben und Positionierung von Firewalls
   - Traditionelle Sicht auf das Netzwerk
@@ -35,7 +35,7 @@ Firewallkonzepte vs. Mobile Geräte
 
 # Aufgaben und Leistungen einer Firewall
 
-![](2003/11/mobile-devices/img2.jpg)
+![](img2.jpg)
 
 - Choke Point
   - Trennt Zonen
@@ -47,7 +47,7 @@ Firewallkonzepte vs. Mobile Geräte
 
 # Trust Boundary
 
-![](2003/11/mobile-devices/img3.jpg)
+![](img3.jpg)
 
 - Feste Grenzlinie
   - "dort hört die Firma auf"
@@ -59,7 +59,7 @@ Firewallkonzepte vs. Mobile Geräte
 
 # Strukturierung der Kommunikation
 
-![](2003/11/mobile-devices/img4.jpg)
+![](img4.jpg)
 
 - Firewall als Strukturbildner
 - Abtrennung von Bereichen unterschiedlicher
@@ -69,7 +69,7 @@ Firewallkonzepte vs. Mobile Geräte
 
 # Die wahre Netzwerktopologie
 
-![](2003/11/mobile-devices/img5.jpg)
+![](img5.jpg)
 
 - Bedürfnis nach Flexibilität
 - Aufweichung der Grenzen
@@ -82,7 +82,7 @@ Firewallkonzepte vs. Mobile Geräte
 
 # Tunnel und andere Löcher I
 
-![](2003/11/mobile-devices/img6.jpg)
+![](img6.jpg)
 
 - VPN Tunnel
   - offizielle Löcher
@@ -94,7 +94,7 @@ Firewallkonzepte vs. Mobile Geräte
 
 # Tunnel und andere Löcher II
 
-![](2003/11/mobile-devices/img7.jpg)
+![](img7.jpg)
 
 - Selbstbau-VPN Tunnel
 - ssh
@@ -105,7 +105,7 @@ Firewallkonzepte vs. Mobile Geräte
 
 # Tunnel und andere Löcher III
 
-![](2003/11/mobile-devices/img8.jpg)
+![](img8.jpg)
 
 - "Protokoll in Protokoll"
 - SOAP
@@ -130,7 +130,7 @@ SOAPMethodName: urn:strings-com:IString#reverse
 
 # Mobile Geräte I
 
-![](2003/11/mobile-devices/img9.jpg)
+![](img9.jpg)
 
 - Typische Probleme:
   - Backup?
@@ -143,14 +143,14 @@ SOAPMethodName: urn:strings-com:IString#reverse
 
 # Mobile Geräte II
 
-![](2003/11/mobile-devices/img10.jpg)
+![](img10.jpg)
 
 - "Der Mitarbeiter hat sich SQL-Slammer auf dem Laptop zu Hause eingefangen und die Infektion nicht bemerkt."
 - "Das Gerät war im Suspend, der SQL-Slammer noch aktiv. Im Firmennetz ist das Gerät aufgewacht, hat eine neue IP per DHCP bekommen, und dann von dort das Firmennetz infiziert."
 
 # Spontane Vernetzung I
 
-![](2003/11/mobile-devices/img11.jpg)
+![](img11.jpg)
 
 - Mobiltelefone sind universell und datenfähig
 - Je restriktiver die Firewall, desto wahrscheinlicher kommt es zu spontaner Vernetzung an der Firewall vorbei.
@@ -158,7 +158,7 @@ SOAPMethodName: urn:strings-com:IString#reverse
 
 # Spontane Vernetzung II
 
-![](2003/11/mobile-devices/img12.jpg)
+![](img12.jpg)
 
 - With a hand-held scanner, researchers were able to pick up information from company wireless networks by simply driving around the streets of London.
 - The research identified that 63 per cent of the networks surveyed were left on default configuration, which clearly identifying the company owning the data and where it was coming from.
@@ -166,7 +166,7 @@ SOAPMethodName: urn:strings-com:IString#reverse
 
 # U-Boote und Trojaner I
 
-![](2003/11/mobile-devices/img13.jpg)
+![](img13.jpg)
 
 - Spyware
   - Unterhaltungs-programme
@@ -178,7 +178,7 @@ SOAPMethodName: urn:strings-com:IString#reverse
 
 # Aktiver Content
 
-![](2003/11/mobile-devices/img14.jpg)
+![](img14.jpg)
 
 - an unerwarteten Stellen:
   - Mail mit Javascript
@@ -189,7 +189,7 @@ SOAPMethodName: urn:strings-com:IString#reverse
 
 # Mobile Sicherheit I
 
-![](2003/11/mobile-devices/img15.jpg)
+![](img15.jpg)
 
 - Inventar- und Aktivitätskontrolle
   - Welche Geräte sind in meinem Netz aktiv?
@@ -198,7 +198,7 @@ SOAPMethodName: urn:strings-com:IString#reverse
 
 # Mobile Sicherheit II
 
-![](2003/11/mobile-devices/img16.jpg)
+![](img16.jpg)
 
 - Überwachung von Geräten, die aus dem Netz entfernbar sind:
   - Anwendungsintegrität
@@ -207,7 +207,7 @@ SOAPMethodName: urn:strings-com:IString#reverse
 
 # Sind Firewalls überflüssig?
 
-![](2003/11/mobile-devices/img17.jpg)
+![](img17.jpg)
 
 - Sind Firewalls überflüssig?
   - Definitiv nein.

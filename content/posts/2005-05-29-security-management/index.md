@@ -16,13 +16,13 @@ aliases:
 
 Der folgende Vortrag stammt einem "Dienstags-Vortrag" in Karlsruhe-Durlach, und versucht zu erklären, was der Kontext für ein Information Security Management System (ISMS) ist.
 
-![](2005/05/security-management/img0.jpg)
+![](img0.jpg)
 
 Der Vortrag will erklären, was "Security Management" ist und erreichen will, was die Aufgaben des Security Managementprozesses sind (also was Security, Management und Prozeß sind), welche Schnittstellen der Prozeß hat und wie man eventuell versuchen kann, Security zu messen.
 
 ## Risk and Compliance
 
-![](2005/05/security-management/img1.jpg)
+![](img1.jpg)
 
 Klar ist, daß Security kein unmittelbares Geschäftsziel ist: Der Erfolg einer Firma mißt sich nicht an ihrer Performance im Bereich "Security".
 Stattdessen ist Security aber ein Non-Functional Requirement, das auf mehr als einem Weg in die Firma hineingetragen wird.
@@ -34,7 +34,7 @@ Das heißt, eine Reihe von externen Einflüssen wirken auf die Firma ein und mac
 - Aus dem Markt und durch Expertenmeinungen wird die Entscheidungsfindung beeinflusst.
 - Schlechte Presse wegen schlechter Sicherheit führt zur Gefährdung des Geschäftsbetriebes.
 
-![](2005/05/security-management/img2.jpg)
+![](img2.jpg)
 
 Allgemeiner gesprochen geht es um Risiken und ihre Absicherung.
 Interne Risiken sind "die Sicherung der Verfügbarkeit, Integrität und Vertrauchlichkeit von geschäftskritischer Infrastruktur" und die "Sicherstellung der Nachhaltigkeit des Geschäftsbetriebes".
@@ -49,7 +49,7 @@ Das hat allerdings auch damit zu tun, daß dieses Thema leichter zu greifen und 
 
 ## Risiken und Maßnahmen: ssh Host Keys
 
-![](2005/05/security-management/img3.jpg)
+![](img3.jpg)
 
 Als Security Fuzzi bei web.de bekomme ich von Freunden und Mitarbeitern oft die Frage (oder den Vorschlag) im Umgang mit ssh eine Liste von Fingerprints von Host-Keys von Maschinen bereit zu stellen.
 Wenn ich mich dann auf Host x einlogge, wird mir der Fingerprint der Maschine angezeigt und ich kann den mit der Liste vergleichen.
@@ -60,7 +60,7 @@ Sollten wir nicht eine Liste der Fingerprints aller Maschinen pflegen und den Ad
 
 Was denkt Ihr?
 
-![](2005/05/security-management/img4.jpg)
+![](img4.jpg)
 
 Dies ist eine *Maßnahme* die unternommen werden soll.
 Eine Maßnahme hat die Aufgabe, ein *Risiko* zu mitigieren, also abzuwehren oder zu entschärfen.
@@ -68,7 +68,7 @@ Laien reden über Security meistens in Form von Maßnahmen und dann kommt man sc
 
 Die Maßnahme ist also "Stelle eine aktuelle Liste aller ssh Host-Keys bereit und fordere die Admins auf, beim ersten Login zu vergleichen"
 
-![](2005/05/security-management/img5.jpg)
+![](img5.jpg)
 
 Schauen wir einmal auf das *Risiko*:
 Wogegen schützt ein solcher ssh Fingerprint?
@@ -95,7 +95,7 @@ Und Dinge die häufiger als "selten" sind, sind keine Sicherheitsereignisse, als
 
 Wenn wir einen Geschäftsprozess haben, in dem "teure" Dinge "häufig" sind, oder schlimmer, dann ist ein geregelter Geschäftsbetrieb mit den vorhandenen Prozessen nicht durchführbar und wir müssen das Geschäftsmodell oder seine Prozesse hinterfragen.
 
-![](2005/05/security-management/img6.jpg)
+![](img6.jpg)
 
 Sicherheitsrisiken treten nicht einfach so auf und nicht jeder Angeifer kann einfach so Dinge tun.
 Wir können Angreifer modellieren, ihnen Fertigkeiten (Capabilities) zuordnen und Risiken katalogisieren:
@@ -105,7 +105,7 @@ Ein Script-Kiddie könnte unsere Server "r00ten", ein interner Angreifer könnte
 
 ## Risikomanagement
 
-![](2005/05/security-management/img7.jpg)
+![](img7.jpg)
 
 Wir bekommen also den folgenden Ablauf:
 
@@ -115,7 +115,7 @@ Wir bekommen also den folgenden Ablauf:
 
 Und danach in einer Schleife von vorn.
 
-![](2005/05/security-management/img8.jpg)
+![](img8.jpg)
 
 Diese Schleife ist das Kennzeichen eines Prozesses im Gegensatz zu einem Projekt:
 Security ist kein einmaliger Vorgang mit einer Deadline und einem Deliverable, sondern eine laufend wiederholte Identifikation, Bestimmung und Abmilderung von Risiken.
@@ -127,18 +127,18 @@ Wir können auch Kosten und Nutzen gegeneinander abwägen.
 Maßnahmen finden ihre Grenze, wenn die Kosten für die Maßnahme den Schaden aus dem Risiko übersteigt.
 Eventuell findet man dann einen Versicherer, der auf den Schadensfall wetten will.
 
-![](2005/05/security-management/img9.jpg)
+![](img9.jpg)
 
 Und damit bekommen wir den Risikomanagementzyklus, die grafische Darstellung dieser Schleife.
 
-![](2005/05/security-management/img10.jpg)
+![](img10.jpg)
 
 Das *Risikomanagement* identifiziert und bewertet allgemeine Risiken für den Geschäftsbetrieb.
 Definiert Maßnahmen (konkrete Projekte) zur Risikobehandlung und kontrollieren deren Wirksamkeit.
 Wie jeder Prozeß hat auch dieser Retroperspektiven, die regelmäßig durchgeführt werden und mit denen sich der Prozeß reguliert und optimiert.
 Das ist der Management-Aspekt an der Sache.
 
-![](2005/05/security-management/img11.jpg)
+![](img11.jpg)
 
 Es gibt viele verschiedene Managementmodelle, aber alle versuchen, die Durchführungsphase eines Prozesses ("Do") von der Planungsphase und der Retroperspektive zu trennen.
 Dadurch wird die Durchführungsebene von der Metaebene getrennt und der Prozeß selbst diskutierbar.
@@ -151,12 +151,12 @@ Der recht neue British Standard 7799 ist ein sehr kurzes Papier (nur 21 Seiten) 
 
 ### Plan
 
-![](2005/05/security-management/img12.jpg)
+![](img12.jpg)
 
 - Plan (establish the ISMS)
   - security policy, objectives,targets,processes and procedures relevant to managing risk and improving information security to deliver results in accordance with an organization’s overall policies and objectives.
 
-![](2005/05/security-management/img13.jpg)
+![](img13.jpg)
 
 In den Termen einer deutschen Verwaltung also:
 
@@ -170,7 +170,7 @@ Wie deutsche Gesetze:
 - "Das bedeutet im Einzelfall" (Bundesgesetz)
 - "So machen wir das" (Durchführungsverordnung zum Gesetz)
 
-![](2005/05/security-management/img14.jpg)
+![](img14.jpg)
 
 Risikoidentifikation und Risikobewertung bilden dann die Matrix, die wir weiter oben schon erwähnt haben.
 
@@ -181,7 +181,7 @@ Indem wir diesen Eintrittswahrscheinlichkeiten und Bewertungen zuordnen bekommen
 Unser Management kann diese Maßnahmen azeptieren, finanzieren und dann durchführen lassen oder das Risiko als Geschäftsrisiko hin nehmen.
 Das Ergebnis dieser Entscheidung wird dokumentiert und dann durchgeführt.
 
-![](2005/05/security-management/img15.jpg)
+![](img15.jpg)
 
 Risiken können wir behandeln indem wir
 
@@ -197,11 +197,11 @@ Die Restrisiken
 
 ### Do ("implement and operate controls, processes and the ISMS")
 
-![](2005/05/security-management/img16.jpg)
+![](img16.jpg)
 
 Wieder im BS 7799: implement and operate the security policy, procedures.
 
-![](2005/05/security-management/img17.jpg)
+![](img17.jpg)
 
 Konkret also:
 - Den organisatorischen und personellen Rahmen schaffen
@@ -212,7 +212,7 @@ Konkret also:
   - die Personen ausbilden
   - und Risiken und Maßnahmen thematisieren ("Awareness")
 
-![](2005/05/security-management/img18.jpg)
+![](img18.jpg)
 
 Steht der organisatorische Rahmen, kann man sich um die Technik kümmern:
 
@@ -224,11 +224,11 @@ Steht der organisatorische Rahmen, kann man sich um die Technik kümmern:
 
 ### Check (monitor and review the ISMS)
 
-![](2005/05/security-management/img19.jpg)
+![](img19.jpg)
 
 "Assess and, where applicable, measure process performance against security policy, objectives and practical experience and report the results to management for review."
 
-![](2005/05/security-management/img20.jpg)
+![](img20.jpg)
 
 Zur Bewertung entfernt man sich sukzessive immer weiter von der Vorgabe und blickt zurück:
 
@@ -239,11 +239,11 @@ Zur Bewertung entfernt man sich sukzessive immer weiter von der Vorgabe und blic
 
 ### Act
 
-![](2005/05/security-management/img21.jpg)
+![](img21.jpg)
 
 "Take corrective and preventive actions, based on the results of the improvement of the ISMS."
 
-![](2005/05/security-management/img22.jpg)
+![](img22.jpg)
 
 Mit den Erkenntnissen aus der "Check"-Phase können wir unsere Prozesse debuggen und gewonnene Erkenntnisse umsetzen.
 Prozesse zu ändern ist dann ein Projekt: Anleitungen werden angepasst und geschult.
@@ -255,7 +255,7 @@ Kurzum: Zur nächsten Umdrehung im PCDA.
 
 ## Themen
 
-![](2005/05/security-management/img23.jpg)
+![](img23.jpg)
 
 BS 7799 definiert foilgende Tätigkeitfelder:
 - Security Policy
@@ -274,7 +274,7 @@ BS 7799 definiert foilgende Tätigkeitfelder:
   - Sicherheitsbereiche
   - Diebstahlschutz, Infrastrukturschutz
 
-![](2005/05/security-management/img24.jpg)
+![](img24.jpg)
 
 - Communications + Operationsmanagement
   - cf ITIL Funktionen
@@ -287,7 +287,7 @@ BS 7799 definiert foilgende Tätigkeitfelder:
   - Media Management
   - Information and Software Exchange
 
-![](2005/05/security-management/img25.jpg)
+![](img25.jpg)
 
 - Access Control
   - Benutzerverwaltung (Identity und Authentication)
@@ -299,7 +299,7 @@ BS 7799 definiert foilgende Tätigkeitfelder:
   - Cryptography (Confidentiality measures)
   - Change control
 
-![](2005/05/security-management/img26.jpg)
+![](img26.jpg)
 
 - Business Continuity Management
 - Compliance
@@ -309,7 +309,7 @@ BS 7799 definiert foilgende Tätigkeitfelder:
 
 ## Security messen
 
-![](2005/05/security-management/img27.jpg)
+![](img27.jpg)
 
 - Compliance: Prüfung der Abdeckung
   - durch Selbstauskunft
@@ -320,7 +320,7 @@ BS 7799 definiert foilgende Tätigkeitfelder:
     - Aufwendig!
     - fünf Reifegrade in verschiedenen Bereichen
 
-![](2005/05/security-management/img28.jpg)
+![](img28.jpg)
 
 CMMI Reifegrade
 - 0 not performed

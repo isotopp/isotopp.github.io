@@ -24,7 +24,7 @@ it is good to be on the same page when it comes to models and vocabulary.
 
 You want a pizza. What is pizza?
 
-![](2020/06/pizza/scooter.png)
+![](scooter.png)
 
 *A deliverable: A defined product delivered at a deadline.*
 
@@ -32,7 +32,7 @@ Pizza is a project.
 Projects have a deliverable (a defined product) that is available at a certain deadline, latest.
 So, "a Margherita within the next 20 minutes" is a project.
 
-![](2020/06/pizza/margherita-project.png)
+![](margherita-project.png)
 
 *Pizza as a project*
 
@@ -47,7 +47,7 @@ They need a Pizza Delivery Process to be able to pull that off repeatedly and re
 We get processes because we have “A regular demand on an organization, 
 and the organization wants the capability to handle the repeated demand in a predictable fashion.”
 
-![](2020/06/pizza/process-demand.png)
+![](process-demand.png)
 
 *Why process?*
 
@@ -59,7 +59,7 @@ You put it on the service catalog, you plan for it, and you create a structure i
 
 In the end, it can look like this:
 
-![](2020/06/pizza/pizza-as-a-service.png)
+![](pizza-as-a-service.png)
 
 *[CMMI for services, Service Delivery](https://www.wibas.com/cmmi/service-establishment-and-delivery-cmmi-svc) (pretty much the same as ITIL SD)*
 
@@ -85,7 +85,7 @@ for supplies, subscriptions, catering for events or individual pizza sales, and 
 
 What we build here could be a single pizzeria, but also a chain that deals with Pizza at a scale.
 
-![](2020/06/pizza/sd-process.png)
+![](sd-process.png)
 
 # PDCA: Plan, Do, Check, Act
 
@@ -97,7 +97,7 @@ but it’s always a planning stage, a doing stage (“a sprint” in Agile),
 and a stage where you look back at how things work and what we can learn (“a retrospective” in Agile, “Check” in PDCA). 
 Then you implement potential improvements (“Act” in [PDCA](https://en.wikipedia.org/wiki/PDCA)).
 
-![](2020/06/pizza/pcda.png)
+![](pcda.png)
 
 *"Continuous Improvement" goes by many names*
 
@@ -105,7 +105,7 @@ No matter what you call these things, these cycles form the bones of a continuou
 
 # Things to look at when improving
 
-![](2020/06/pizza/checking.png)
+![](checking.png)
 
 *From closest to furthest, looking at product and process.*
 
@@ -135,7 +135,7 @@ And we want to have done that by $DEADLINE.
 
 So processes spawn meta-projects to change themselves.
 
-![](2020/06/pizza/acting.png)
+![](acting.png)
 
 *Change is a Meta-Project. It has deliverables, and a deadline.*
 
@@ -163,7 +163,7 @@ So, you make it.
 You just went from 0 to 1: "Not Performed" to "Individual Heroics" – doing a one-off.
 That was a success!
 
-![](2020/06/pizza/noodles-as-a-service.png)
+![](noodles-as-a-service.png)
 
 *Getting Noodles as a Service.*
 
@@ -197,7 +197,7 @@ and has the appropriate controls to make change accessible to management.
 
 So where do we invest when we care about improvement?
 
-![](2020/06/pizza/where-to-improve.png)
+![](where-to-improve.png)
 
 *Where to put money and time for improvement?*
 
@@ -207,7 +207,7 @@ And then we decide how much we can and should spend, and where.
 
 Maybe we give up Pizza production, and outsource ourselves, or just pre-products and reduce our capability to assembly.
 
-![](2020/06/pizza/outsourcing.png)
+![](outsourcing.png)
 
 *Must be at least this tall to successfully outsource.*
 

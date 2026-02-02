@@ -18,12 +18,12 @@ The :-) is just a symbol for an emotion.
 
 It is specifically not a human face, it does not have a hair color, eye color, skin color or other human attributes.
 It is universal.
-Then some cellphone maker turned that into ![2017/11/Screen-Shot-2018-04-13-at-10.01.46.png](Screen-Shot-2018-04-13-at-10.01.46.png), anthropomorphising it.
+Then some cellphone maker turned that into ![inline-emoji](inline-emoji.png), anthropomorphising it.
 
 Come as it must, we soon get color, and it turns into 😀.
 That Simpsons yellow was read by some as white and non-inclusive, and here is where things start to break down. 
 
-Because the logical thing would be to stop here and revert back to ![](2017/11/Screen-Shot-2018-04-13-at-10.01.46.png).
+Because the logical thing would be to stop here and revert back to ![](inline-emoji.png).
 
 But that is not what the Unicode consortium did. They went this way: 
 

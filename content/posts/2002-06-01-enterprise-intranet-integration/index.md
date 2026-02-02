@@ -14,30 +14,30 @@ aliases:
 
 **Vortrag auf der NuBIT, Kiel, 2002**
 
-![](2002/06/enterprise-intranet-integration/img0.jpg)
+![](img0.jpg)
 
-![](2002/06/enterprise-intranet-integration/img1.jpg)
+![](img1.jpg)
 
-![](2002/06/enterprise-intranet-integration/img2.jpg)
+![](img2.jpg)
 
-![](2002/06/enterprise-intranet-integration/img3.jpg)
+![](img3.jpg)
 
-![](2002/06/enterprise-intranet-integration/img4.jpg)
+![](img4.jpg)
 
-![](2002/06/enterprise-intranet-integration/img5.jpg)
+![](img5.jpg)
 
-![](2002/06/enterprise-intranet-integration/img6.jpg)
+![](img6.jpg)
 
-![](2002/06/enterprise-intranet-integration/img6.jpg)
+![](img7.jpg)
 
-![](2002/06/enterprise-intranet-integration/img8.jpg)
+![](img8.jpg)
 
-![](2002/06/enterprise-intranet-integration/img9.jpg)
+![](img9.jpg)
 
-![](2002/06/enterprise-intranet-integration/img10.jpg)
+![](img10.jpg)
 
-![](2002/06/enterprise-intranet-integration/img11.jpg)
+![](img11.jpg)
 
-![](2002/06/enterprise-intranet-integration/img12.jpg)
+![](img12.jpg)
 
-![](2002/06/enterprise-intranet-integration/img13.jpg)
+![](img13.jpg)

@@ -13,7 +13,7 @@ aliases:
 ---
 On Core.Infra day, I was invited to speak. This is my talk. There were many like it, but this was mine.
 
-![](2016/09/obvious/obvious.001.jpg)
+![](obvious.001.jpg)
 
 ## In operations, code is not your friend.
 
@@ -21,17 +21,17 @@ This is about what I did the two years I have not been around here. I first work
 
 SysEleven had about 3000 customers, mostly German eCommerce or news sites. The company had less then 50 employees in 2014 and grew to 70 people now. I joined a newly formed team, whose task was to build the new hosting platform for SysEleven.
 
-![](2016/09/obvious/obvious.004.jpg)
+![](obvious.004.jpg)
 
 Given that we were to build the new platform, there has to be an old one. The old platform was based on single machines with all storage local, and maybe a NetApp or two mounted from external. Hosting was done on OpenVZ based containers, and the Underlay (Hypervisor) was generally managed by puppet. The Overlay (contents of the container), too, mostly. But due to limitations in Puppet, architectural decisions of the past and the nature of the workload imposed by customers that was not done consistently and completely. There was a lot of fuzz around the edges, and some things were completely on manual.
 
-![](2016/09/obvious/obvious.005.jpg)
+![](obvious.005.jpg)
 
 The new platform was based on Openstack, with a software designed storage solution, and a software designed network solution underneath, no local storage on the machine (all bytes always come from the SDS). Underlay and Overlay were to be completely controlled by Puppet, and in fact, the actual installation process was to be done by Puppet as well.
 
 We actually succeeded in doing this.
 
-![](2016/09/obvious/obvious.006.jpg)
+![](obvious.006.jpg)
 
 So you have several racks full of HP DL380s, all powered off and cold. The bootstrap talks to the iLOs, turns on the hardware, inventories everything, zaps fresh ROMs and iLOs onto everything, and then paints a base operating system onto the machines that is just enough to bootstrap Puppet. Puppet then continues to install and personalise the machines and build an Openstack from this, including SDS and SDN cluster builds before the Openstack install.
 
@@ -39,11 +39,11 @@ The total installation time was 30-45 minutes, if everything went well, but usua
 
 I learned that there is a place that can genuinely and rightfully be called Puppet Hell.
 
-![](2016/09/obvious/obvious.007.jpg)
+![](obvious.007.jpg)
 
 We made the decision to not write Puppet modules when we could reuse external work. That turned out to be a not so smart solution. We imported external repositories into our internal Gitlab, and in order to structure things, we set up a bunch of different segregated areas, teams. In the end we had about 200 repos, in six different teams.
 
-![](2016/09/obvious/obvious.008.jpg)
+![](obvious.008.jpg)
 
 
 That led to a lot of problems. We did not set out to have these problems, it just kind of inevitably happened.
@@ -56,7 +56,7 @@ You also can’t make your changes atomically. You may make your change at the s
 
 Finally, if visibility is limited, it may be that two people are producing or importing duplicate solutions for a problem. Worse, it may be that these duplication are actually duplicate external imports, but at different version requirements. That makes it very hard to manage project dependencies and size.
 
-![](2016/09/obvious/obvious.009.jpg)
+![](obvious.009.jpg)
 
 We are doing Puppet, so what is it that we import when we import stuff from Puppetlabs, or github?
 
@@ -72,7 +72,7 @@ When you want to make a config change, you can’t edit a native Apache config f
 
 Then you need to try this out and actually see what config is being generated.
 
-![](2016/09/obvious/obvious.010.jpg)
+![](obvious.010.jpg)
 
 You need a lab. For a config change.
 
@@ -84,7 +84,7 @@ How did we end up in this place?
 
 Let me introduce [The Configuration Complexity Clock](http://mikehadlow.blogspot.com/2012/05/configuration-complexity-clock.html).
 
-![](2016/09/obvious/obvious.011.jpg)
+![](obvious.011.jpg)
 
 You write a piece of actual code, in a proper programming language. Values are pieces of code, constants. They are baked in. It is noon on the config clock.
 
@@ -94,7 +94,7 @@ Somebody needs more than that - there are rules. “Some rooms are only availabl
 
 Of course some things can no longer be expressed as rules. You need a fully blown language with data structures, control structures, loops and include files. You get a config management DSL. Something like puppet. It’s 9 on the config clock.
 
-![](2016/09/obvious/obvious.012.jpg)
+![](obvious.012.jpg)
 
 »The team spend most of their time writing code in the new DSL.
 
@@ -104,7 +104,7 @@ The DSL text files are version controlled and each release goes through regressi
 
 That’s SysEleven, doing puppet. That’s us, doing Puppet - if not now, then it’s going to be us very soon.
 
-![](2016/09/obvious/obvious.013.jpg)
+![](obvious.013.jpg)
 
 That is, because what we are doing is no longer obvious, so we need to check the presence and type of parameters to our Puppet classes.
 
@@ -112,7 +112,7 @@ We need to write tests that check the validity and content of the subconfigs gen
 
 We then need to do integration testing, in order to prevent catastrophic loss of the entire site from centralised config changes.
 
-![](2016/09/obvious/obvious.014.jpg)
+![](obvious.014.jpg)
 
 At SysEleven, when we were at that point, we stopped. We threw away our complete stack of “Setup Openstack from scratch” and started over.
 
@@ -122,7 +122,7 @@ We did choose something else than Puppet, mainly so that we were unable to direc
 
 We did come up with some rules in order to prevent ourselves from descending into Puppet Hell again. Our goal was to enforce simplicity, and obviousness.
 
-![](2016/09/obvious/obvious.015.jpg)
+![](obvious.015.jpg)
 
 We did switch to a Monorepo, at least as much as possible. There were other, external dependencies with other parts of the company that prevented us from going completely Monorepo, but it kind of worked well enough for us.
 
@@ -150,7 +150,7 @@ We did catch ourselves in review in anticipating problems we didn’t have, intr
 
 We did have a few cases were it was in order to write code, remove duplication and generate stuff in a loop or similar things, but these cases were few and far between.
 
-![](2016/09/obvious/obvious.016.jpg)
+![](obvious.016.jpg)
 
 Our new setup was an order of magnitiude smaller and much, much easier to understand.
 
@@ -158,7 +158,7 @@ We did bring in external people and tried to explain to them what we did, and ho
 
 We did not need tests any more, because changes were obvious. Code that is not present does not need to be tested in the first place.
 
-![](2016/09/obvious/obvious.017.jpg)
+![](obvious.017.jpg)
 
 
 So, looking at us here: What’s in it for us?

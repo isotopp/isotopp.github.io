@@ -16,7 +16,7 @@ aliases:
 
 # Filtersysteme, Regionalcodes, Dongles & Co.
 
-![](2001/05/filtersysteme-dongles-und-co/img0.jpg)
+![](img0.jpg)
 
 - Intellectual Property Rights in unserer Kultur
 - Kulturelle Synchronisation
@@ -25,7 +25,7 @@ aliases:
 
 # Intellectual Property Rights
 
-![](2001/05/filtersysteme-dongles-und-co/img1.jpg)
+![](img1.jpg)
 
 
 - Disclaimer: IANAL!
@@ -39,7 +39,7 @@ aliases:
 
 # Urheberrechte
 
-![](2001/05/filtersysteme-dongles-und-co/img2.jpg)
+![](img2.jpg)
 
 - in Massen während der Ausbildung
   - Allgemeinbildung, Fachausbildung 
@@ -54,7 +54,7 @@ aliases:
 
 # andere IP-Rechte
 
-![](2001/05/filtersysteme-dongles-und-co/img3.jpg)
+![](img3.jpg)
 
 - Markenrecht
   - Domainnamen-Recht ist Markenrecht
@@ -70,7 +70,7 @@ aliases:
 
 # IP und Kultur
 
-![](2001/05/filtersysteme-dongles-und-co/img4.jpg)
+![](img4.jpg)
 
 - "Standing on the shoulders of giants"
   - Jede Innovation und jede Kreativität macht zu einem wesentlichen Teil Gebrauch von kulturellen Vorleistungen
@@ -79,7 +79,7 @@ aliases:
 
 # Kulturelle Vorleistungen
 
-![](2001/05/filtersysteme-dongles-und-co/img5.jpg)
+![](img5.jpg)
 
 - "Darmokros" (Implizite Kulturelle Vorleistungen)
   - gemeinsame kulturelle Basis macht Austausch überhaupt erst möglich
@@ -95,7 +95,7 @@ aliases:
 
 # Kulturelle Synchronisation
 
-![](2001/05/filtersysteme-dongles-und-co/img6.jpg)
+![](img6.jpg)
 
 - "Mempropagation"
   - in großem und in kleinem Maßstab
@@ -110,7 +110,7 @@ aliases:
 
 # Tendenz
 
-![](2001/05/filtersysteme-dongles-und-co/img7.jpg)
+![](img7.jpg)
 
 - Diese Nutzungsarten werden durch Formalisierung und technische Sicherungen unzugänglich gemacht
 - Warum dieser Trend?
@@ -123,7 +123,7 @@ aliases:
 
 # Reaktionen auf diese Tendenz
 
-![](2001/05/filtersysteme-dongles-und-co/img8.jpg)
+![](img8.jpg)
 
 - Ansatz am Sender/Empfänger
   - Unerwünschte und illegale Aktionen erschweren oder unmöglich machen.
@@ -137,7 +137,7 @@ aliases:
 
 # Technische Mechanismen
 
-![](2001/05/filtersysteme-dongles-und-co/img9.jpg)
+![](img9.jpg)
 
 - Identifikationsmechanismen
   - Content-Identifikation ("Filetyping", "Watermarking")
@@ -153,7 +153,7 @@ aliases:
 
 # Szenario
 
-![](2001/05/filtersysteme-dongles-und-co/img10.jpg)
+![](img10.jpg)
 
 - Windows XP mit Office XP und Media Player
   - time limited, node locked license
@@ -166,7 +166,7 @@ aliases:
 
 # Szenario II
 
-![](2001/05/filtersysteme-dongles-und-co/img11.jpg)
+![](img11.jpg)
 
 - Windows XP mit Office XP und Media Player
   - Hardwarehersteller will Treiber für Windows veröffentlichen, damit seine Hardware an Windows läuft
@@ -178,7 +178,7 @@ aliases:
 
 # Szenario III
 
-![](2001/05/filtersysteme-dongles-und-co/img12.jpg)
+![](img12.jpg)
 
 - Windows XP mit Office XP und Media Player
   - Content-Hersteller will Content in WMP-Formaten anbieten.
@@ -189,7 +189,7 @@ aliases:
 
 # Szenario IV
 
-![](2001/05/filtersysteme-dongles-und-co/img13.jpg)
+![](img13.jpg)
 
 - Windows XP mit .NET
   - Internet-Dienstanbieter möchte Content über das Internet verteilen:
@@ -204,7 +204,7 @@ aliases:
 
 # Zusammenfassung
 
-![](2001/05/filtersysteme-dongles-und-co/img14.jpg)
+![](img14.jpg)
 
 - Die Bausteine für sicheres DRM sind da.
 - Wollen wir die wirklich haben?
@@ -214,4 +214,3 @@ aliases:
   - Open Source?
   - Privacy?
   - "intellektuellen Wohlstand und Bestand"? 
-

@@ -16,7 +16,7 @@ aliases:
 Der folgende Vortrag stammt einem "Dienstags-Vortrag" in Karlsruhe-Durlach.
 Ich versuche zu erklären, wie man Vorträge plant und hält.
 
-![](2005/05/vortragen/img0.jpg)
+![](img0.jpg)
 
 Vorträge hält man für eine bestimmte Zielgruppe, die man kennen und beschreiben können muß.
 Das heisst, man muss wissen, wofür diese Leute sich interessieren, warum sie im Vortrag sitzen werden und was ihr Kontext und ihr Vorwissen ist.
@@ -29,7 +29,7 @@ Und die Form muß stimmen, damit wir ernst genommen werden.
 
 ## Ziel und Zielgruppe
 
-![](2005/05/vortragen/img1.jpg)
+![](img1.jpg)
 
 Die Leute im Vortrag geben Dir ihr wertvollstes Gut um Dir zuzuhören: Ihre Lebenszeit.
 Du hast ein konkretes Ziel: Du willst in ihren Köpfen was verändern.
@@ -49,7 +49,7 @@ Angenommen, alles läuft wie am Schnürchen: Wie soll das Ergebnis aussehen?
 
 ## Zielgruppe
 
-![](2005/05/vortragen/img2.jpg)
+![](img2.jpg)
 
 Wer sind Deine Zuhörer, wie denken sie? Was ist ihnen wichtig? Welchen Argumentationslinien sind sie zugänglich?
 
@@ -62,7 +62,7 @@ Wie lange kannst Du das Durchhalten?
 
 ## Agenda
 
-![](2005/05/vortragen/img3.jpg)
+![](img3.jpg)
 
 Jeder Vortrag hat eine Agenda, einen argumentativen Ablauf.
 Man kann und soll dabei transparent sein, und diese Agenda vorher oder während der Vortrages mit einem Highlight anzeigen.
@@ -76,7 +76,7 @@ Manche Themen lassen sich auch mehrdimensional ("als Landkarte") darstellen und 
 
 ## Kommunikation kontrollieren
 
-![](2005/05/vortragen/img4.jpg)
+![](img4.jpg)
 
 Alles im Vortrag hat sich dem Kommunikationsziel unterzuordnen.
 Es mag noch andere Themen oder wissenswerte Dinge geben, aber diese haben keinen Platz.
@@ -94,7 +94,7 @@ Betrachte die Situation und das Publikum, dann ordne die Folien, verstecke unwes
 
 ## Die magische Zahl
 
-![](2005/05/vortragen/img5.jpg)
+![](img5.jpg)
 
 **Sieben** (plus oder minus Zwei)
 
@@ -108,7 +108,7 @@ Sie dienen nur der Kontextualisierung des Vortrags und des gesprochenen Wortes.
 
 ## Niveau
 
-![](2005/05/vortragen/img6.jpg)
+![](img6.jpg)
 
 Beim Schreiben gilt: Schreibe für ein Publikum von Achtjährigen. Verwende Hauptsätze, mache keine inhaltlichen Sprünge, setze kein Wissen über die Welt voraus.
 Deine Leser sind nicht dumm, aber sie haben keine Zeit, kein Vorwissen über Dein Thema und sind abgelenkt.
@@ -122,7 +122,7 @@ Nur dann können und wollen sie folgen.
 
 ## Bilder
 
-![](2005/05/vortragen/img7.jpg)
+![](img7.jpg)
 
 Bilder sind gut. Dieser Vortrag hat zu wenige davon!
 
@@ -133,7 +133,7 @@ Manche Begriffe lassen sich jedoch wegen Abstraktion nicht gut visualisieren.
 
 ## Sprache
 
-![](2005/05/vortragen/img8.jpg)
+![](img8.jpg)
 
 Deine Zuhörerinnen können lesen und tun das auch.
 Du brauchst ihnen die Folien nicht vorzulesen.
@@ -144,7 +144,7 @@ Sie gehen den Rahmen und die Erzählung vor, und setzen damit den Kontext, indem
 
 ## Publikum
 
-![](2005/05/vortragen/img9.jpg)
+![](img9.jpg)
 
 Halte den Rapport zum Publikum. Suche Dir einige Personen an verschiedenen Orten im Raum, und wenn Du den Blick durch den Raum schweifen läßt, schaue immer wieder zu diesen Personen.
 Dadurch fühlen sich alle in der Nähe angesprochen, und Du hast Messpunkte, an denen Du sehen kannst, ob Du die Aufmerksamkeit im Raum halten kannst.
@@ -162,7 +162,7 @@ Stimmt der Spannungsbogen?
 
 ## Noch mehr Publikum
 
-![](2005/05/vortragen/img10.jpg)
+![](img10.jpg)
 
 Tempo 120%.
 Auf diese Weise sind alle gezwungen, mit Aufmerksamkeit bei Dir zu bleiben und nicht wegen Langeweile abzuschweifen.
@@ -172,7 +172,7 @@ Bist Du zu langsam, verlierst Du sehr schnell alle.
 
 ## Form
 
-![](2005/05/vortragen/img11.jpg)
+![](img11.jpg)
 
 Was ist Dein Auftritt?
 Ist es ein Vortrag (Du redest und stehst vor den anderen)?
@@ -184,7 +184,7 @@ Arbeite die Unterschiede dieser Formen heraus und wähle die für den Anlaß und
 
 ## Zeit
 
-![](2005/05/vortragen/img12.jpg)
+![](img12.jpg)
 
 Wie lang?
 10-20 Minuten sind ein guter Block für einen thematisch zusammenhängenden Block.
@@ -203,7 +203,7 @@ Er fasst den Tag oder das Thema oft mit Humor zusammen.
 
 ## Murphy
 
-![](2005/05/vortragen/img13.jpg)
+![](img13.jpg)
 
 Rechne damit, dass alles zusammenbricht.
 Kannst Du Deinen Vortrag mit einer Wandtafel und einem Stück Kreide durchziehen? Mit einem Whiteboard und drei Filzstiften?

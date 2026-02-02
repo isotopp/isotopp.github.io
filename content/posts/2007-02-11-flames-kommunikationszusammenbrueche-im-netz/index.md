@@ -18,14 +18,14 @@ Hier sind die Slides und ein
 [Youtube Video](https://www.youtube.com/watch?v=FXD3vk9M7SQ)
 von einer späteren Aufführung des Vortrages.
 
-![](2007/02/flames/img0.png)
+![](img0.png)
 
 Der Vortrag basiert auf den Kommunikationserfahrungen, die ich mit einigen Freunden im USENET in verschiedenen Foren gemacht habe.
 Aber ich denke, daß die Erkenntnisse hier auf mehr als eine Weise auch auf andere Umgebungen übertragbar sind.
 
 # Was ist eine Flame?
 
-![](2007/02/flames/img1.png)
+![](img1.png)
 
 Was ist eine Flame?
 Ein Beitrag in einer Online-Diskussion, der provozierend geschrieben ist.
@@ -33,7 +33,7 @@ Oder ein Beitrag, der auf eine Art und Weise ein unwichtiges oder formales Thema
 
 # Warum?
 
-![](2007/02/flames/img2.png)
+![](img2.png)
 
 Warum schreiben Leute Flames? 
 Wenn man fragt, bekommt man Antworten von der Art
@@ -49,7 +49,7 @@ Dafür ist die Diskussion in Folge gestört und nicht konstruktiv, aber ist dann
 
 # Warum im Netz?
 
-![](2007/02/flames/img3.png)
+![](img3.png)
 
 Das passiert in der Regel im Netz und nicht in der realen Welt.
 Wenn man sich mit Leuten, die für ihr Verhalten im Netz bekannt oder berüchtigt sind unterhält, bei einem Bier abends im Garten, dann sind das meist relativ intelligente und ziemlich nette Leute.
@@ -57,7 +57,7 @@ Aber halt nur, wenn man denen gegenüber sitzt und nicht, wenn man mit denen üb
 
 # Kommunikationsmodell
 
-![](2007/02/flames/img4.png)
+![](img4.png)
 
 Wenn man verstehen will, was dort passiert, dann muss man sich ein wenig mit Kommunikationswissenschaft und Umständen beschäftigen.
 Das Modell von Schulz von Thum und den vier Ebenen der Kommunikation ist dabei hilfreich:
@@ -74,7 +74,7 @@ Das ist dann der Appell in der Nachricht.
 
 # Kommunikationsmodell II
 
-![](2007/02/flames/img5.png)
+![](img5.png)
 
 - "Man kann nicht nicht kommunizieren", Paul Watzlawick, 1969
 
@@ -88,7 +88,7 @@ Wenn man da seinen Instinkten und normalen Verhaltensweisen folgt, dann geht es 
 
 # Kommunikationsmodell III
 
-![](2007/02/flames/img6.png)
+![](img6.png)
 
 Außerhalb des Netzes habe ich ganz viele Kommunikationskanäle.
 Den gesprochenen Text des Vortrages kann ich aufschreiben, aber das ist nicht dasselbe, denn das ist nicht, was hier passiert.
@@ -113,7 +113,7 @@ Ein Leser, der mein aufgeschriebenes gesprochenes Wort viele Monate oder Jahre s
 
 # Foren als soziales System
 
-![](2007/02/flames/img7.png)
+![](img7.png)
 
 Dazu kommt natürlich das Aufeinandertreffen von zwei Personengruppen:
 Wir haben Dauerteilnehmer, die schon lange dabei sind und eine ganze Menge Kontext, Kenntnisse und lokale Subkultur haben.
@@ -125,7 +125,7 @@ Dadurch sind die Regulars schnell genervt, weil sie sich vorkommen als seien sie
 
 # Foren als soziales System II
 
-![](2007/02/flames/img8.png)
+![](img8.png)
 
 In der realen Welt erwarten wir von Personen, daß sie sich in einer bestimmten Situation dem sozialen Kontext entsprechend verhalten.
 Es gibt entsprechend in allen diesen Systemen Methoden zur Erzwingung von Konformität.
@@ -135,7 +135,7 @@ In der realen Welt:
 
 # Foren als soziales System III
 
-![](2007/02/flames/img9.png)
+![](img9.png)
 
 Das geht im Netz so nicht.
 
@@ -153,7 +153,7 @@ Nur die positiven Instrumente sind wirksam, mit denen wir konformes Verhalten be
 
 # Kommunikation im Netz
 
-![](2007/02/flames/img10.png)
+![](img10.png)
 
 Kommunikation im Netz in Foren ist öffentlich:
 Es reden nicht nur der Flamer und der Geflamte miteinander, sondern es lesen auch immer noch weitere Personen mit.
@@ -161,7 +161,7 @@ Die Flame ist also immer auch eine Inszenierung gegenüber den Peers, und gegen�
 
 # Kommunikation im Netz II
 
-![](2007/02/flames/img11.png)
+![](img11.png)
 
 Daraus ergibt sich die Frage für den Umgang mit Trollen und Flames:
 
@@ -171,7 +171,7 @@ Daraus ergibt sich die Frage für den Umgang mit Trollen und Flames:
 Was kann ich tun, wenn ich mich ausschließlich auf positive Feedbackmechanismen beim Erziehen von Leuten verlassen muss?
 
 # Kommunikationsziel
-![](2007/02/flames/img12.png)
+![](img12.png)
 
 Wir reden im Grunde über Krieg.
 Ich möchte eigentlich mit Gewalt - ohne daß ich Gewalt ausüben kann, weil mir die Mittel dazu fehlen - etwas bewirken:
@@ -190,7 +190,7 @@ Ich brauche also überhaupt erst einmal einen Mechanismus, der Erinnerung instit
 
 # Technischer Kontext
 
-![](2007/02/flames/img13.png)
+![](img13.png)
 
 Wir haben keine negativen Feedback-Mechanismen.
 Wir können nicht Strafen, wir haben keine Möglichkeiten, Leute rauszuwerfen, ihre Kommunikation zu unterdrücken oder herauszufiltern.
@@ -202,7 +202,7 @@ Angstbasierte Kommunikation ist damit unglaubwürdig und wirkungslos.
 
 # Experiment dclp
 
-![](2007/02/flames/img14.png)
+![](img14.png)
 
 Am 1. Januar 2000 wurde die Gruppe "de.comp.lang.php" eingerichtet.
 Die Gruppe wurde in relativ kurzer Zeit sehr populär.
@@ -224,7 +224,7 @@ Und weiterhin als Einschränkung:
 
 # Experiment dclp II
 
-![](2007/02/flames/img15.png)
+![](img15.png)
 
 Das ist machbar, denn die Gruppe ist neu.
 Es gibt noch keine Standards, also kann ich Regeln nach Wunsch etablieren.
@@ -253,7 +253,7 @@ In dieser Gruppe bekommen man Aufmerksamkeit und Ansehen, Meinungsführerschaft,
 
 # Experiment dclp III
 
-![](2007/02/flames/img16.png)
+![](img16.png)
 
 - Mittel
   - Website für FAQ
@@ -281,7 +281,7 @@ Ein Archiv der dclp-FAQ ist in [www.php-faq.de](https://www.php-faq.de/) zu find
 
 # Experiment dclp IV
 
-![](2007/02/flames/img17.png)
+![](img17.png)
 
 - Trennung Kultur/Technische Anleitung
 - Dauer: ca. 2 Jahre + 2 Jahre passiv
@@ -313,7 +313,7 @@ Diese Vorgehensweise war auch in der FAQ im Kapitel 0 dokumentiert.
 
 # Experiment dclp V
 
-![](2007/02/flames/img18.png)
+![](img18.png)
 
 - Langes Nachklappern
 - Kaum Flames
@@ -331,7 +331,7 @@ umgewandelt worden.
 
 # Experiment drsrm
 
-![](2007/02/flames/img19.png)
+![](img19.png)
 
 In "de.rec.spiele.rpg.misc" ein ähnliches Projekt von Azundris.
 Kein Hard Science Thema, keine objektive Wahrheit.
@@ -343,7 +343,7 @@ Die drsrm-FAQ ist [hier archiviert](http://azundris.com/output/rp/drsrm/faq/).
 
 # Experiment drsrm II
 
-![](2007/02/flames/img20.png)
+![](img20.png)
 
 Die FAQ ist also mehr ein Protokoll vergangener Diskussionen und Positionen.
 Dabei wird das Protokoll, wo machbar, in Wikipedia-Stil verfasst, also "Neutral Point of View" eingenommen.
@@ -353,7 +353,7 @@ Dabei werden die kontroversen Punkte herausgearbeitet, damit auch klar wird, wor
 
 # Experiment drsrm III
 
-![](2007/02/flames/img21.png)
+![](img21.png)
 
 Das führt zum Abschluss von Themen:
 Das Protokoll sichert bereits abgedecktes Terrain bei Diskussionen und spätere Diskussionen können sich an die Ergebnisse früherer Instanz den der Diskussion erinnern.
@@ -365,7 +365,7 @@ Dennoch gutes Beispiel für nicht-technische Gruppen und was man dort mit einer 
 
 # Experiment dtb
 
-![](2007/02/flames/img22.png)
+![](img22.png)
 
 dtb ist Klamauk, Satire, Wirr, eine Spaßgruppe.
 Ein Testbed für Experimental-Kommunikation beschreibt es recht gut.
@@ -413,7 +413,7 @@ Organisierte, strukturierte Anarchie!
 
 # Experiment dtb II
 
-![](2007/02/flames/img23.png)
+![](img23.png)
 
 Diese Nicht-Organisation ist dann gegenüber de.news.admin mit Forderungen aufgetreten, und hat so Chaos gestiftet:
 dtb hat das Usenet als Kommunikationsmedium an seine Grenzen gebracht

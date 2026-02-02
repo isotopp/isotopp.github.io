@@ -29,7 +29,7 @@ um sinnvoll Energie zu erzeugen.
 
 Aber schauen wir mal nach der Studie.
 Ich habe sie runtergeladen:
-[Link](https://www.strategyand.pwc.com/de/en/industries/energy-utilities-resources/the-fusion-revolution/strategyand-fusion-energy.pdf)[.](2023/09/strategyand-fusion-energy.pdf)
+[Link](https://www.strategyand.pwc.com/de/en/industries/energy-utilities-resources/the-fusion-revolution/strategyand-fusion-energy.pdf)[.](strategyand-fusion-energy.pdf)
 
 Die ist von "Strategy&", einer Unternehmensberatung, die 2008 von Booz, Allen & Hamilton an PwC verkauft wurde.
 Die Studie malt die üblichen IEA Szenarien für die Energieversorgung der Zukunft auf,
