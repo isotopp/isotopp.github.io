@@ -54,7 +54,6 @@ services:
     hostname: "gitlab"
     image: "gitlab/gitlab-ce:latest"
     restart: always
-    hostname: "${GITLAB_DOMAIN}"
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url "https://gitlab.home.koehntopp.de"
