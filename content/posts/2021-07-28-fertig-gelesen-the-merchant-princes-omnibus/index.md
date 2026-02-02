@@ -17,7 +17,7 @@ Charles Stross "[The Merchant Princes](https://www.amazon.de/gp/kindle/series/B0
 The story follows Miriam Beckstein, a woman who thinks she is a tech journalist.
 Miriam falls off a chair while looking at a strange pattern, and finds herself in a medival parallel earth.
 
-[![](2021/07/merchant-princes.jpg)](https://www.amazon.de/gp/kindle/series/B00WKNMLD4)
+[![2021/07/merchant-princes.jpg](merchant-princes.jpg)](https://www.amazon.de/gp/kindle/series/B00WKNMLD4)
 
 *"[The Merchant Princes Omnibus](https://www.amazon.de/gp/kindle/series/B00WKNMLD4)", Charles Stross*
 

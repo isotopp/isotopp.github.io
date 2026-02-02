@@ -16,7 +16,7 @@ Palaeofuture has an
 [interesting article](http://paleofuture.gizmodo.com/how-to-securely-send-snail-mail-the-cia-way-1791501535)
 on sending letters, the CIA way.
 
-![](2017/01/pk8eyjrzhtc0svosziuo.jpg)
+![2017/01/pk8eyjrzhtc0svosziuo.jpg](pk8eyjrzhtc0svosziuo.jpg)
 
 > When you file a Freedom of Information Act (FOIA) request with a federal
 > agency, they’ll often send you physical letters in the mail. When I got my

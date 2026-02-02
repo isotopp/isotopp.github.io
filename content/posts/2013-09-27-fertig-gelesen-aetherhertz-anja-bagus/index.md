@@ -14,7 +14,7 @@ aliases:
 ---
 Steampunk von Anja Bagus.
 
-[![](2013/09/aetherhertz.png)](http://www.amazon.de/Aetherhertz-Annabelle-Rosenherz-ebook/dp/B00CP6V0D8)
+[![2013/09/aetherhertz.png](aetherhertz.png)](http://www.amazon.de/Aetherhertz-Annabelle-Rosenherz-ebook/dp/B00CP6V0D8)
 
 [Aetherhertz](http://www.amazon.de/Aetherhertz-Annabelle-Rosenherz-ebook/dp/B00CP6V0D8)
 

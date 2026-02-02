@@ -13,7 +13,7 @@ aliases:
 ---
 Dieses erste James Bond Buch soll stellvertretend für die ganze Reihe aufgeführt werden, die in Kinde unlimited verfügbar ist. Fleming hat beginnend in 1953 pünktlich zum April so gut wie jedes Jahr einen neuen Agentenroman veröffentlicht.
 
-[![](2017/07/casino-royale.jpg)](https://www.amazon.de/James-Bond-01-Casino-Royale-ebook/dp/B007VCEIT4)
+[![2017/07/casino-royale.jpg](casino-royale.jpg)](https://www.amazon.de/James-Bond-01-Casino-Royale-ebook/dp/B007VCEIT4)
 
 [Casino Royale](https://www.amazon.de/James-Bond-01-Casino-Royale-ebook/dp/B007VCEIT4)
 

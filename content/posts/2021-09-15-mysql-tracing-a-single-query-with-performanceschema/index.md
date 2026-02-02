@@ -63,7 +63,7 @@ And finally, the data collected is put into the in-memory tables of P_S.
 These come in various groups, and are called *consumers*.
 
 
-![](2021/09/performance_schema_filtering.png)
+![2021/09/performance_schema_filtering.png](performance_schema_filtering.png)
 
 *Data is collected from objects using instruments. Instruments can be turned on and off. Their collected data is then filtered by Objects, Actors and Threads, and finally dropped into consumers. Many consumers are aggregates, some collect information specific to one query execution.*
 

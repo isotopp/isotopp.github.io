@@ -216,7 +216,7 @@ We modify the `my.cnf` file as follows:
 - remove the `!includedir` section.
 - put a `skip_grant_tables` into the `[mysqld]` section.
 
-![](2024/07/recover-root-01.png)
+![2024/07/recover-root-01.png](recover-root-01.png)
 
 *Putting `skip_grant_tables` into the `[mysqld]` section of the `my.cnf`.*
 

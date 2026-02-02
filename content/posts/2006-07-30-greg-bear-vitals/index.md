@@ -14,7 +14,7 @@ aliases:
 [Jäger](https://www.amazon.de/gp/product/3453521943) (
 [Vitals](https://www.amazon.de/Vitals-English-Greg-Bear-ebook/dp/B003VIWI1C)): Eine Geschichte über russische Puppen: Bakterien, die in Bakterien leben, und Bakterien, die das Verhalten der Lebewesen, die sie bewohnen von innen heraus steuern. Aber auch Verschwörungen in Verschwörungen und Menschen, die das Verhalten von anderen Menschen von innen heraus steuern. 
 
-[![](2006/07/gregbear-jaeger.jpg)](https://www.amazon.de/Vitals-English-Greg-Bear-ebook/dp/B003VIWI1C)
+[![2006/07/gregbear-jaeger.jpg](gregbear-jaeger.jpg)](https://www.amazon.de/Vitals-English-Greg-Bear-ebook/dp/B003VIWI1C)
 
 In der Anlage der Story folgt Greg Bear den Ideen von Philipp K. Dick: Er beschreibt die Realität aus der Sicht seiner Helden, und wie sich diese Realität unter der Beeinflussung verändert, er beschreibt der Verlust von Fixpunkten, und sich daraus ergebende Orientierungslosigkeit. Wie bei PKD gibt es kein Happy End, sondern am Ende einen vollständigen Verlust des Kontaktes mit der Wirklichkeit, und die Frage, ob es so etwas wie Wirklichkeit überhaupt gibt.
 

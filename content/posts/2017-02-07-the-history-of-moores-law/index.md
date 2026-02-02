@@ -10,7 +10,7 @@ title: The History of Moore's Law
 aliases:
   - /2017/02/07/the-history-of-moores-law.html
 ---
-[![](2017/02/Commodore-64-Computer-768x392.jpg)](https://www.theguardian.com/technology/2017/jan/26/vanishing-point-rise-invisible-computer)
+[![2017/02/Commodore-64-Computer-768x392.jpg](Commodore-64-Computer-768x392.jpg)](https://www.theguardian.com/technology/2017/jan/26/vanishing-point-rise-invisible-computer)
 
 Commodore 64, [Evan-Amos @ Wikipedia](https://en.wikipedia.org/wiki/Commodore_64#/media/File:Commodore-64-Computer.jpg)
 

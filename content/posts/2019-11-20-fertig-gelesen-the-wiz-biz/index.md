@@ -17,7 +17,7 @@ is being transported into a universe with predictable magic in a
 classical fantasy setting and is applying scientic method and
 industrial production methods to the setting.
 
-![](2019/11/the-wiz-biz.jpg)
+![2019/11/the-wiz-biz.jpg](the-wiz-biz.jpg)
 
 In this book, the real-world person is Walter Zumwalt, a
 stereotypical hacker, which as part of a hail-mary summoning

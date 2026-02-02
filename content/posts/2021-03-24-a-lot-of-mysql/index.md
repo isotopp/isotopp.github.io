@@ -16,7 +16,7 @@ Where I work, we are using MySQL a lot. The databases are being organized in rep
 
 We are using MySQL orchestrator to manage the replication topology.
 
-![](2021/03/mysql-many-01.jpg)
+![2021/03/mysql-many-01.jpg](mysql-many-01.jpg)
 
 *MySQL Orchestrator shows a typical replication hierarchy. Each color indicates a different data center/availability zone. Replication is a tree, from the primary to per-AZ intermediate replicas for fan-out to leaf replicas. Clients connect to the primary for writing, and to the leaf replicas for reading. Special instances exist as clone sources and backup instances.*
 
@@ -46,7 +46,7 @@ Zk can also be used to find Primaries, and applications that are Zk aware benefi
 
 Some replication hierarchies can get pretty large.
 
-![](2021/03/mysql-many-02.jpg)
+![2021/03/mysql-many-02.jpg](mysql-many-02.jpg)
 
 *The oldest and largest replication hierarchy as seen in Orchestrator. It is more than 20 years old, and started as a schema on Postgres. But because Postgres could not replicate at all back then the company migrated to MySQL and grew on MySQL replication.*
 
@@ -92,7 +92,7 @@ At this point in time there is a single Python command `dba` with subcommands, w
 
 Of course, the number of replication hierarchies does not shrink.
 
-![](2021/03/mysql-many-03.jpg)
+![2021/03/mysql-many-03.jpg](mysql-many-03.jpg)
 
 *MySQL Orchestrator Replication Overview screen. Each card is a replication hierarchy with a number of instances organized in one of the trees shown above.*
 
@@ -154,7 +154,7 @@ I don't know why that is, but with all the cost pressure I'd have expected more 
 
 ## Yelling at the cloud
 
-![](2021/03/mysql-many-04.png)
+![2021/03/mysql-many-04.png](mysql-many-04.png)
 
 So, yes. The age of bare metal is coming to an end, even where I work. It has served us well for more than two decades. It did, because we have automation for these things – we started that when we had around 100 MySQL instances or so, and we were for a very short time running almost 100 times more than that before we started cleaning up to get cost under control.
 

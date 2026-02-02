@@ -13,7 +13,7 @@ aliases:
 ---
 There is a pretty cool Twitter thread by Sarah Mei, starting at 
 
-![](2017/05/Bildschirmfoto-2017-05-29-um-05.49.22.png)
+![2017/05/Bildschirmfoto-2017-05-29-um-05.49.22.png](Bildschirmfoto-2017-05-29-um-05.49.22.png)
 
 [Thread](https://twitter.com/sarahmei/status/868928631157870592)
 

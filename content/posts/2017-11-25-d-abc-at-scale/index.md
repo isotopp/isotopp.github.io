@@ -12,7 +12,7 @@ title: d = a*b+c at scale
 aliases:
   - /2017/11/25/d-abc-at-scale.html
 ---
-![](2017/11/dabc.png)
+![2017/11/dabc.png](dabc.png)
 
 [Introduction to GPUs](http://haifux.org/lectures/267/Introduction-to-GPUs.pdf) (PDF)
 
@@ -71,7 +71,7 @@ A remarkable takeaway is that they are using 8-bit integers:
 Their design is basically a monster 8-bit matrix multiplier with neural
 network specific postprocessing. 
 
-![](2017/11/tpu-15.png)]
+![2017/11/tpu-15.png](tpu-15.png)]
 
 [A Google Tensorflow Processor](https://cloud.google.com/blog/big-data/2017/05/an-in-depth-look-at-googles-first-tensor-processing-unit-tpu)
 

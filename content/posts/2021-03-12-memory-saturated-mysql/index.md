@@ -25,7 +25,7 @@ We do care, because memory is fast. How fast is fast?
 
 Images from [Some Latency Numbers Illustrated]({{< relref "2020-02-28-some-latency-numbers-illustrated.md" >}})
 
-![](2020/02/latency-top.gif)
+![2020/02/latency-top.gif](latency-top.gif)
 
 *One Pixel is One Nanosecond*
 
@@ -37,7 +37,7 @@ Now, in the above graphics we visualize a L1 cache access, a L2 cache access, an
 
 This is a single disk seek:
 
-![](2020/02/latency.gif)
+![2020/02/latency.gif](latency.gif)
 
 *Right click, and "Open Image in New Tab", then click again to zoom in. The memory access and cache accesses are at the top left.*
 
@@ -51,7 +51,7 @@ SSD is up to 100x better: we get up to 20.000 disk accesses per second (we get 5
 
 The memory we care for is “16 KB data pages” that are kept in a memory structure called the “InnoDB Buffer Pool”. It’s the thing that makes MySQL processes large in memory. MySQL does not use the File System Buffer Cache much (Postgres does), but does things a lot more efficiently and with application level knowledge in userland, in the Buffer Pool.
 
-![](2021/03/memory-saturated-01.png)
+![2021/03/memory-saturated-01.png](memory-saturated-01.png)
 
 *The largest process in this instance is mysqld. The VIRT size is 84.8G, the RES size is 73.7G.*
 

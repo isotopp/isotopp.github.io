@@ -65,7 +65,7 @@ Disks are a problem: While linear writes perform well, seeks are slow and are no
 
 So they propose never overwriting any data, but always appending changed blocks to the end of a log.
 
-![](2023/05/log-adoption.png)
+![2023/05/log-adoption.png](log-adoption.png)
 *“Ah you think the log is your ally? You merely adopted the log. I was born with it, designed for it.”*
 
 ## Garbage collection
@@ -119,7 +119,7 @@ This means the block containing the changed inode needs to be written out again,
 LFS needs to keep track of inodes in an *inode map*, and this now also needs to be updated and written out:
 even if it is small enough to be cached in memory, it needs to be persisted.
 
-![](2023/05/lfs-structures.png)
+![2023/05/lfs-structures.png](lfs-structures.png)
 *LFS does indeed do limited in-place updates: The superblock and checkpoint region are written in fixed locations.*
 
 LFS stops short of also appending new copies of the inode map and ultimately the superblock for each disk write,
@@ -143,7 +143,7 @@ and it can [eliminate almost all synchronous metadata updates](https://www.useni
 The BSD FFS crew, also at UCB, was very aware of Ousterhout's work, and picks it up the year after he publishes.
 They port the filesystem to BSD and [write a 1993 paper about it](https://www.usenix.org/legacy/publications/library/proceedings/sd93/seltzer.pdf)
 
-![](2023/05/lfs-ffs-feature-comparison.png)
+![2023/05/lfs-ffs-feature-comparison.png](lfs-ffs-feature-comparison.png)
 
 *Features and subsystems of BSD FFS are matched with the equivalent structures and concepts on the BSD LFS side.*
 

@@ -37,7 +37,7 @@ So
 - Start a new project, watch it download and install the development environment remotely.
 - Enter the project and edit away.
 
-![](2022/06/jetbrains-gateway1.png)
+![2022/06/jetbrains-gateway1.png](jetbrains-gateway1.png)
 
 *Yup, it's beta.*
 
@@ -60,7 +60,7 @@ Facinatingly, the remote session stays if you kill the local client, and on reco
 
 All in all, I think this is going to change the way it work. At least when the remaining problems are fixed.
 
-![](2022/06/jetbrains-gateway2.png)
+![2022/06/jetbrains-gateway2.png](jetbrains-gateway2.png)
 
 *Connecting to the Blog.*
 

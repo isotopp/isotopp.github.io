@@ -21,7 +21,7 @@ A friend asks me on IRC:
 The TL;DR is that this specific person has disabled the FTP/SFTP/Webdav Plugin in an attempt to configure PyCharm 
 in a way that it doesn't upload development data to Jetbrains Servers or similar.
 
-![](2024/03/pycharm-01.jpg)
+![2024/03/pycharm-01.jpg](pycharm-01.jpg)
 
 *The bundled FTP/SFTP/Webdav Plugin in Pycharm is required for the preferred deployment method.*
 
@@ -37,19 +37,19 @@ Jetbrains has several options for editing code locally, but deploying and runnin
 
 1. Create a new project locally, using a local interpreter of your choice.
 
-![](2024/03/pycharm-02.jpg)
+![2024/03/pycharm-02.jpg](pycharm-02.jpg)
 
 *Create a normal local project, not caring about remote edit.*
 
 2. Convert the project to a new interpreter, using "Add Interpreter" in Settings→Project→Python Interpreter.
 
-![](2024/03/pycharm-03.jpg)
+![2024/03/pycharm-03.jpg](pycharm-03.jpg)
 
 *Click on 'Add Interpreter...', select 'On SSH...'*
 
 3. Choose an existing SSH Server (or add a new one)
 
-![](2024/03/pycharm-04.jpg)
+![2024/03/pycharm-04.jpg](pycharm-04.jpg)
 
 *Here we select the remote box to work on. In our case, we are running on `server.local` as the user `kris`, 
 using SSH agent authentication.
@@ -57,13 +57,13 @@ If the configuration we want were not present, we'd select 'SSH Connection: [ ]
 
 4. Let the probe complete.
 
-![](2024/03/pycharm-05.jpg)
+![2024/03/pycharm-05.jpg](pycharm-05.jpg)
 
 *Selecting a SSH interpreter will spawn a remote Python version probe. We need to let this run and complete.*
 
 5. Trying to set a remote work directory is useless at this stage.
 
-![](2024/03/pycharm-06.jpg)
+![2024/03/pycharm-06.jpg](pycharm-06.jpg)
 
 *In my version of PyCharm (PyCharm 2023.3.4), trying to edit the remote sync folder in the final set is possible, 
 but is being ignored later.
@@ -72,14 +72,14 @@ This is likely a bug.*
 
 6. Review Remote Interpreter Setup 
 
-![](2024/03/pycharm-07.jpg)
+![2024/03/pycharm-07.jpg](pycharm-07.jpg)
 
 *Review the chosen interpreter. It should now say something about "Remote Python", 
 and show the version number as detected for the remote box.*
 
 7. Fix the Mappings
 
-![](2024/03/pycharm-08.jpg)
+![2024/03/pycharm-08.jpg](pycharm-08.jpg)
 
 *Go to Settings→Build, Execution, Deployment→Deployment, select your configuration, select the tab "Mappings" and
 check the "Deployment Path".
@@ -88,7 +88,7 @@ I correct this to the directory I want this deployed in, here `/home/kris/Source
 
 8. Verify that it works
 
-![](2024/03/pycharm-09.jpg)
+![2024/03/pycharm-09.jpg](pycharm-09.jpg)
 
 *Printing `sys.version_info` shows us that we are indeed running on the Python Version of the remote host.
 We could also call `sys_info = os.uname()`, and print `sys_info.nodename` to check the name of the box.*
@@ -106,7 +106,7 @@ In doing that, they also inadvertantly disabled the "SSH/SFTP/Webdav" bundled pl
 This will offer the creation of new local projects, and also access to "SSH" projects, 
 "Jetbrains Space" projects, "Dev Containers".
 
-![](2024/03/pycharm-10.jpg)
+![2024/03/pycharm-10.jpg](pycharm-10.jpg)
 
 *PyCharms project selection screen, "Welcome to PyCharm".
 Choosing "SSH" sllows you to create remote projects directly.
@@ -114,14 +114,14 @@ This will not use the synchronisation method above, but start a remote headless 
 
 2. Provide SSH connection information.
 
-![](2024/03/pycharm-11.jpg)
+![2024/03/pycharm-11.jpg](pycharm-11.jpg)
 
 *We are then being asked to provide SSH connection information, and can again choose from our default targets.
 Again, we use `kris@server.local` with agent authentication.*
 
 3. Select IDE version and directory.
 
-![](2024/03/pycharm-12.jpg)
+![2024/03/pycharm-12.jpg](pycharm-12.jpg)
 
 *We are then being asked to choose an IDE version, and a directory.
 The directory must exist (and is ideally empty).*
@@ -137,14 +137,14 @@ In older versions of Gateway, it was also prone to losing synchronization – th
 
 4. Validate functionality and hostname
 
-![](2024/03/pycharm-13.jpg)
+![2024/03/pycharm-13.jpg](pycharm-13.jpg)
 
 *Writing a short test program and running it quickly validates that we are on the correct version of Python
 and on the correct host.*
 
 5. Check processlist
 
-[![](2024/03/pycharm-14.jpg)](/uploads/2024/03/pycharm-14.jpg)
+[![2024/03/pycharm-14.jpg](pycharm-14.jpg)](/uploads/2024/03/pycharm-14.jpg)
 
 *A quick glance at the processlist of the remote hosts shows us what is going on:
 A headless version of Pycharm has been downloaded to $HOME/.cache/JetBrains and is doing the work.
@@ -152,14 +152,14 @@ Locally, Jetbrains Gateway is the display for the remote instance.*
 
 6. Check connection and ressources
 
-![](2024/03/pycharm-15.jpg)
+![2024/03/pycharm-15.jpg](pycharm-15.jpg)
 
 *Cloud development instances are sometimes optimized for cost, not for comfort.
 Gateway offers a way to check remote resources, including Ping and Memory.*
 
 7. Other Providers
 
-![](2024/03/pycharm-16.jpg)
+![2024/03/pycharm-16.jpg](pycharm-16.jpg)
 
 *Gateway also offers additional providers for remote development, which can be installed and configured.*
 

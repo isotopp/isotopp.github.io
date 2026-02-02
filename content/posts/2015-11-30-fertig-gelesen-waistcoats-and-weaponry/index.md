@@ -14,7 +14,7 @@ aliases:
 ---
 Siehe auch [Finishing School Series]({{< relref "2014-01-19-fertig-gelesen-finishing-school-series.md" >}}) für #1 und #2 der Serie.
 
-[![](2015/11/waistcoats.jpg)](https://www.amazon.de/dp/B00LTUCAKS)
+[![2015/11/waistcoats.jpg](waistcoats.jpg)](https://www.amazon.de/dp/B00LTUCAKS)
 
 [Waistcoats and Weaponry](https://www.amazon.de/dp/B00LTUCAKS)
 

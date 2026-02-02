@@ -14,7 +14,7 @@ aliases:
 ---
 Hope Arden ist wenig bemerkenswert. Wer immer sie trifft, vergißt sie nach wenigen Minuten, sobald er sie nicht mehr sieht. Vergißt auch, daß es sie gegeben hat, daß er mit ihr gesprochen hat oder daß sie je existiert hat. Seit ihrem sechzehnten Lebensjahr geht es ihr so, und sie schlägt sich deshalb mit Diebstählen durch. Was einfach ist, weil man sie ja sofort vergißt.
 
-[![](2018/09/hope.jpg)](https://www.amazon.de/Tag-dem-Hope-verschwand-Roman-ebook/dp/B072BMKGVH)
+[![2018/09/hope.jpg](hope.jpg)](https://www.amazon.de/Tag-dem-Hope-verschwand-Roman-ebook/dp/B072BMKGVH)
 
 [Der Tag, an dem Hope verschwand](https://www.amazon.de/Tag-dem-Hope-verschwand-Roman-ebook/dp/B072BMKGVH)
 

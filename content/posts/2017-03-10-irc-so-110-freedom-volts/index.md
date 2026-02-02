@@ -19,7 +19,7 @@ aliases:
 Let's see. 
 [Volt in SI units](https://www.google.nl/webhp#q=volt+in+si+units):
 
-[![](2017/03/Screen-Shot-2017-03-10-at-15.38.39.png)](https://www.google.nl/webhp#q=volt+in+si+units)
+[![2017/03/Screen-Shot-2017-03-10-at-15.38.39.png](Screen-Shot-2017-03-10-at-15.38.39.png)](https://www.google.nl/webhp#q=volt+in+si+units)
 
 That gives us 
 $$
@@ -29,11 +29,11 @@ $$
 We can turn the kg into pounds and the square meters into square feet, but
 we can't easily imperialize the seconds and Amperes. That leaves us with
 
-[![](2017/03/Screen-Shot-2017-03-10-at-15.41.49.png)](https://www.google.nl/search#q=1+pound+(sq+ft)+(s^-3)+(A^-1)+in+volt)
+[![2017/03/Screen-Shot-2017-03-10-at-15.41.49.png](Screen-Shot-2017-03-10-at-15.41.49.png)](https://www.google.nl/search#q=1+pound+(sq+ft)+(s^-3)+(A^-1)+in+volt)
 
 That's 2613 freedom volts (or George Bushes) to the 110 SI volts.
 
-[![](2017/03/Screen-Shot-2017-03-10-at-15.44.20.png)](https://www.google.nl/webhp#q=110+volt+/+0.0421)
+[![2017/03/Screen-Shot-2017-03-10-at-15.44.20.png](Screen-Shot-2017-03-10-at-15.44.20.png)](https://www.google.nl/webhp#q=110+volt+/+0.0421)
 
 And it can be done with Google Math queries only, which is somewhat
 impressive.

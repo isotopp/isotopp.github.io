@@ -24,7 +24,7 @@ the child. It usually performs a number of operations within the
 context of the new child, preparing the environment for the new
 program, from within. 
 
-![](2017/02/fork.png)
+![2017/02/fork.png](fork.png)
 
 PID 17 forks, and creates a new process with PID 18. This
 process executes a copy of the original program.
@@ -35,7 +35,7 @@ within the child processes context replaces itself by calling
 process and reuses the process to load a new program into
 it.
 
-![](2017/02/execve.png)
+![2017/02/execve.png](execve.png)
 
 After bash in PID 18 has setup the environment correctly, it
 replaces itself with the actual command to run, `/bin/ls`. The
@@ -50,7 +50,7 @@ a `wait()` system call. When the child exits, the parents
 `wait()` call returns, and delivers the status code of the child's
 `exit()` invokation to the parent.
 
-![](2017/02/wait.png)
+![2017/02/wait.png](wait.png)
 
 Child PID 18 terminates by calling `exit()` with a status code.
 Parent PID waits for the termination of the child, returning the
@@ -196,7 +196,7 @@ multihost cluster without installing additional software.
 So the following can becomes possible:
 
 
-![](2017/02/cluster-1.png)
+![2017/02/cluster-1.png](cluster-1.png)
 
 A cluster with a number of kubernetes nodes, and three
 kubernetes master instances. One has been elected
@@ -207,7 +207,7 @@ are capable of retrieving images and launching containers.
 Multiple cluster masters exist, one of which has been elected
 leader and executes the actual scheduling function. 
 
-![](2017/02/cluster-2.png)
+![2017/02/cluster-2.png](cluster-2.png)
 
 A scheduling request arrives, basically asking us to start this
 image on a host.
@@ -220,7 +220,7 @@ asks the cluster node to do just that: Set up a pod, download
 and assemble the image and then launch the process with the
 image inside that Pod. 
 
-![](2017/02/cluster-3.png)
+![2017/02/cluster-3.png](cluster-3.png)
 
 The worker will now download the image layers, assemble the
 final image, create a Pod and launch a process from that image
@@ -231,7 +231,7 @@ network interface and runs inside a set of Resource Barriers
 that form the Pod. The program code for the process as well as
 all libraries or other data is container inside the image.
 
-![](2017/02/cluster-4.png)
+![2017/02/cluster-4.png](cluster-4.png)
 
 Code from the image is running inside the resource barriers
 create by the Pod.

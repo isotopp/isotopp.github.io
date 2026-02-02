@@ -19,7 +19,7 @@ We are using the latter for heating and warm water, but we are already cooking w
 The house has a decent energy rating and a heat exchanger in the forced ventilation system.
 That is to keep the warmth in when getting fresh air in.
 
-![](2022/05/solar-01.jpg)
+![2022/05/solar-01.jpg](solar-01.jpg)
 
 *Energy cost of 2021. Electricity remains largely unchanged in 2022, but gas cost rose a lot.*
 
@@ -33,7 +33,7 @@ The house has a rather steep roof.
 One solar installation service, recommended to us via a colleague, declined to make an offer for installation because they were not equipped to handle the roof steepness.
 In the end, we went with Zonneplan, who did not have any objections to the general situation at all, and were able to handle it.
 
-![](2022/05/solar-03.png)
+![2022/05/solar-03.png](solar-03.png)
 
 *Roof steepness, as seen from the south.*
 
@@ -41,7 +41,7 @@ The roof itself is oriented at 155 deg, pointing the roof ridge line to south/so
 The west side is getting better light, but the first half of the day lights up the eastern roof as well.
 According to [basic astronomy tooling](https://apps.apple.com/us/app/ephemeris-moon-and-sun-seeker/id1488277219), the sun crosses the houses ridge line at 11:45 CEST, and solar noon (sun at 180 deg) is at 13:45.
 
-![](2022/05/solar-04.png)
+![2022/05/solar-04.png](solar-04.png)
 
 *Ridge line of the house, and the solar panel configuration.*
 
@@ -50,7 +50,7 @@ The east side of the house got a 3x3 configuration, the west side a 4x4.
 The lower two rows on the western side can get shadow from the neighbor and from the house wings (see the shadow on the image above), so they need "optimizers" to handle shade.
 This is what it looks like on the west side:
 
-![](2022/05/solar-05.jpg)
+![2022/05/solar-05.jpg](solar-05.jpg)
 
 *Panels on the west side of the roof.*
 
@@ -58,7 +58,7 @@ The installed panel type has a size of 1.75m x 1.03m, and a Wp rating of 370W, s
 This is good for 3330Wp on the eastern side and 5920Wp on the western side, for a theoretical total of 9250Wp.
 In practice the configuration will never reach that level of output, because both sides of the roof cannot receive direct lighting at the same time.
 
-![](2022/05/solar-06.jpg)
+![2022/05/solar-06.jpg](solar-06.jpg)
 
 *The type sticker of one of the panels.*
 
@@ -66,14 +66,14 @@ The inverter is a three-phase Huawei SUN2000-10KTL.
 It weighs 16kg and measures 52.5cm x 47.0cm x 16.6 cm, is rated IP65 and could in theory work from -25 to +60 degC.
 It still likes to sit inside, dry and warm.
 
-![](2022/05/solar-07.jpg)
+![2022/05/solar-07.jpg](solar-07.jpg)
 
 *Huawei SUN 2000 inverter.*
 
 The device makes no perceptible sound, even under load.
 When producing 4500 Watt, it gets a bit warm, but not so much that it will feel painful to the touch.
 
-![](2022/05/solar-08.jpg)
+![2022/05/solar-08.jpg](solar-08.jpg)
 
 *FLIR image of the inverter while transforming 4500W from the roof.*
 
@@ -82,7 +82,7 @@ The rooms directly under the roof are now about 1.5C cooler, a great improvement
 
 The panels themselves, even when in full sunlight, do not get particularly warm.
 
-![](2022/05/solar-09.jpg)
+![2022/05/solar-09.jpg](solar-09.jpg)
 
 *FLIR images of the solar panels while in full sunlight.*
 
@@ -98,7 +98,7 @@ Total production is 44.5 kWh over the day.
 Around 10 kWh can be attributed to the modules on the eastern side, and their power comes in early when we need it for breakfast.
 They help a great deal to even out production over the day.
 
-![](2022/05/solar-10.jpg)
+![2022/05/solar-10.jpg](solar-10.jpg)
 
 The inverter has a GSM module and feeds into the systems of Zonneplan.
 That also means I get no direct access to the Modbus in the Inverter without interfering with their warranty.
@@ -109,7 +109,7 @@ The data is put onto the [house MQTT bus]({{< relref "2020-11-15-my-home-sensor-
 
 Reading the counters, I get a good overview of what happens during the day:
 
-![](2022/05/solar-11.png)
+![2022/05/solar-11.png](solar-11.png)
 
 *Red line: Power drawn from the grid. Green line: Power sent into the grid. You can see how between 6:00 and 20:00 we are sending power to the grid at almost all times. The "Range" data shows we have drawn 6.25 kWh from the grid over the day, and sent around 30.1 kWh into the grid over the day.*
 
@@ -125,7 +125,7 @@ Using the current counters, I can get a more detailed graph over the day.
 You can see a base load in the house of around 300W -- around 100W can be attributed to one server, the rest is various other electronics that is always on.
 Great spikes show household appliances doing things: Dishwasher, washing machine, espresso maker, microwave, cooking plates and ovens all draw around 2kW to 3kW, mostly to heat up water.
 
-![](2022/05/solar-12.png)
+![2022/05/solar-12.png](solar-12.png)
 
 *Up: drawing power from grid. Down: Sending power into the grid. You can see how clouds and internal consumption take their bites of the "perfect" production curve.*
 

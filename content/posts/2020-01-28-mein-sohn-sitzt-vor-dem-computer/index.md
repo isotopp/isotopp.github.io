@@ -12,7 +12,7 @@ aliases:
 ---
 Oliver Rautenberg berichtet auf [Twitter](https://twitter.com/AnthroBlogger/status/1222112157787131905) von "Elternvereinbarungen zur Smartphone- und Mediennutzung" an Waldorfschulen in Deutschland.
 
-[![](2020/01/kind-waldorf.png)](https://twitter.com/AnthroBlogger/status/1222112157787131905)
+[![2020/01/kind-waldorf.png](kind-waldorf.png)](https://twitter.com/AnthroBlogger/status/1222112157787131905)
 
 *»Medienvertrag einer "Freien Schule" der Waldorfpädagogik. Ist diese Einmischung noch vertretbar? Keine Handys in der Schule, ok. Aber auch zuhause will die Schule Handys, Computer, Filme und sogar Hörspiele vertraglich verbieten. "Risiken und Gefahren" drohen!«*
 

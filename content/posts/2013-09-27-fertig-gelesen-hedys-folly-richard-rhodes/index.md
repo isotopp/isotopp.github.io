@@ -13,7 +13,7 @@ aliases:
 ---
 Hedy Lamarr (1914-2000), das Gesicht von der CorelDraw-Packung, war zu ihrer Zeit eine der schönsten Frauen der Welt und ein großer Hollywood Star. Sie war außerdem mathematisch begabt, hatte gute Kontake zur Rüstungsindustrie und zur Avantgarde-Kunstszene.
 
-[![](2013/09/hedy.png)](https://www.amazon.de/Hedys-Folly-Breakthrough-Inventions-Beautiful/dp/0307742954)
+[![2013/09/hedy.png](hedy.png)](https://www.amazon.de/Hedys-Folly-Breakthrough-Inventions-Beautiful/dp/0307742954)
 
 [Hedy's Folly](https://www.amazon.de/Hedys-Folly-Breakthrough-Inventions-Beautiful/dp/0307742954)
 

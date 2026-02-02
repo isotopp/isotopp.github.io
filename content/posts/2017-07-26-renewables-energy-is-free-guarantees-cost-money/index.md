@@ -36,7 +36,7 @@ cost money.
 - Bloomberg: [Solar Power Will Kill Coal Faster Than You Think](https://www.bloomberg.com/news/articles/2017-06-15/solar-power-will-kill-coal-sooner-than-you-think)
   The tipping point will be 2021 for China, Germany is already past
   it.
-  ![](2017/07/china-tipping-point.png)
+  ![2017/07/china-tipping-point.png](china-tipping-point.png)
 - Forbes: [The Cost Of Wind And Solar Intermittency](https://www.forbes.com/sites/uhenergy/2017/01/24/the-cost-of-wind-and-solar-intermittency/amp/)
   »What is the integration threshold? There is no threshold, per se. The
   cost of managing intermittency is nonlinear and depends upon the mix and
@@ -86,8 +86,8 @@ cost money.
   recently made this simply plot showing the solar flux at various
   longitudes on Mercury's equator. The blue line shows the value at
   Earth.
-  ![](2017/07/mercury-solar.png)
+  ![2017/07/mercury-solar.png](mercury-solar.png)
 - Bloomberg: [Bird Radar May Help Reduce Wind Turbine Deaths](https://www.bloomberg.com/news/articles/2017-05-17/gulf-of-suez-wind-farm-seeks-to-save-pelicans-storks-with-radar)
   Shared for this
   graph:
-  ![](2017/07/bird-death.png)
+  ![2017/07/bird-death.png](bird-death.png)

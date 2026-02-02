@@ -16,7 +16,7 @@ This is an old book, from 1998, and much of the technology referred to directly 
 But, as this a book that deals with basics, in terms of metaphor and analogy, it is still valuable.
 It explains how computers work, and how we make the tech that powers them.
 
-![](2022/05/pattern.jpg)
+![2022/05/pattern.jpg](pattern.jpg)
 
 *[The Pattern on the Stone](https://www.amazon.de/-/en/W-Daniel-Hillis-ebook/dp/B06XC774TQ), W. Daniel Hillis*
 

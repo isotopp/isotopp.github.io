@@ -13,7 +13,7 @@ aliases:
 ---
 danah boyd ist eine sehr praktisch orientierte Soziologin, die sich unter anderem mit dem Kommunikationsverhalten von Kindern und Jugendlichen auseinandersetzt, insbesondere im Zusammenhang mit sogenannten "neuen Medien". Ihr Buch "It's complicated" ist eine Fortsetzung und Erweiterung der Aufsätze zu dem Thema, die man in [ihrem Blog](http://www.zephoria.org/thoughts/) finden kann, und sollte insbesondere für gewisse "ZOMG, die Kinder!"-Aktivisten in der Politik Pflichtlektüre sein.
 
-[![](2014/02/complicated.jpg)](http://www.amazon.de/Its-Complicated-Social-Lives-Networked-ebook/dp/B00HUYT8TS)
+[![2014/02/complicated.jpg](complicated.jpg)](http://www.amazon.de/Its-Complicated-Social-Lives-Networked-ebook/dp/B00HUYT8TS)
 
 [It's complicated](http://www.amazon.de/Its-Complicated-Social-Lives-Networked-ebook/dp/B00HUYT8TS)
 

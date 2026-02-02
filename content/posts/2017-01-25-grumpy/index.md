@@ -25,8 +25,8 @@ Read more about it
 [in their blog](https://opensource.googleblog.com/2017/01/grumpy-go-running-python.html).
 In rigged benchmarks it looks awesome, and under real world load it supposedly performs quite well.
 
-![](2017/01/gil-at-work.png)
+![2017/01/gil-at-work.png](gil-at-work.png)
 
 But the best part is the Logo. Which looks like this:
 
-![](2017/01/grumpy.png)
+![2017/01/grumpy.png](grumpy.png)

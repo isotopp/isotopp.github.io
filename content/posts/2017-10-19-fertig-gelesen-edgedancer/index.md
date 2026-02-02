@@ -12,7 +12,7 @@ title: 'Fertig gelesen: Edgedancer'
 aliases:
   - /2017/10/19/fertig-gelesen-edgedancer.html
 ---
-[![](2017/10/edgedancer.jpg)](https://www.amazon.de/Edgedancer-Stormlight-Archive-Brandon-Sanderson/dp/1250166543)
+[![2017/10/edgedancer.jpg](edgedancer.jpg)](https://www.amazon.de/Edgedancer-Stormlight-Archive-Brandon-Sanderson/dp/1250166543)
 
 [Edgedancer](https://www.amazon.de/Edgedancer-Stormlight-Archive-Brandon-Sanderson/dp/1250166543)
 

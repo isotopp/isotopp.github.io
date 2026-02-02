@@ -14,7 +14,7 @@ aliases:
 ---
 Kai ist der Herrscher der Welt, Bezwinger der Aufständischen und aller Monster. Er ist außerdem das einzige lebende Wesen in einer VR-Traumwelt - wie alle seine Zeitgenossen, von denen jeder in seiner eigenen Welt lebt. Echte Menschen begegnen einander lediglich noch in Gemeinschaftswelten um sich fortzupflanzen - und Kai muß aus Gründen in genau eine solche Welt. Ein alter Konflikt mit einer Nachbarwelt und deren Beherrscher eskaliert und motiviert Kai, sich erstmals mit anderen echten Menschen statt mit Konstrukten auseinanderzusetzen.
 
-[![](2015/11/perfect-state.jpg)](https://www.amazon.de/Perfect-State-Kindle-Single-English-ebook/dp/B00UZSTXL4)
+[![2015/11/perfect-state.jpg](perfect-state.jpg)](https://www.amazon.de/Perfect-State-Kindle-Single-English-ebook/dp/B00UZSTXL4)
 
 [Perfect State](https://www.amazon.de/Perfect-State-Kindle-Single-English-ebook/dp/B00UZSTXL4)
 

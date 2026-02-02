@@ -14,7 +14,7 @@ aliases:
 When you are looking for a better *Remote First* culture, you are looking for better meetings.
 If you go for better meetings, you will also have fewer of them.
 
-[![](2022/10/pan-narrans-01.png)](https://www.goodreads.com/quotes/362504-the-anthropologists-got-it-wrong-when-they-named-our-species)
+[![2022/10/pan-narrans-01.png](pan-narrans-01.png)](https://www.goodreads.com/quotes/362504-the-anthropologists-got-it-wrong-when-they-named-our-species)
 
 *“The anthropologists got it wrong when they named our species Homo sapiens ('wise man'). In any case it's an arrogant and bigheaded thing to say, wisdom being one of our least evident features. In reality, we are Pan narrans, the storytelling chimpanzee.”*
 

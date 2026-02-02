@@ -206,11 +206,11 @@ Die Frage hat "23 Token" belegt, die mit 75 Token/s analysiert worden sind.
 Die Generierung der Ausgabe hat 41 Token erzeugt, 1.25s gedauert und ist mit 33 Token/s gelaufen.
 Der Rechner hat dabei ca. 50 Watt gezogen. Normal verbraucht er circa 7 Watt, also werden 43 Watt mehr verbraucht.
 
-![](2024/05/ollama-3.png)
+![2024/05/ollama-3.png](ollama-3.png)
 
 *Ausgabe der MacOS App Stats (`brew install stats`), der Rechner verbraucht normal ca. 7 Watt, mit dem LLM aktiv 50 Watt.*
 
-![](2024/05/ollama-1.png)
+![2024/05/ollama-1.png](ollama-1.png)
 
 *Ausgabe der MacOS App Stats, hier: GPU Auslastung. Dies ist die einzige Anwendung, die die Mac mini GPU an den Anschlag bringt.*
 

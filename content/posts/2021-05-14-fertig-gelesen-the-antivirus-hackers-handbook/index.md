@@ -14,7 +14,7 @@ aliases:
 
 [The Antivirus Hackers Handbook](https://www.amazon.de/Antivirus-Hackers-Handbook-English-ebook/dp/B014MJ6AKS/) by [Jaxeon Koret](https://twitter.com/joxeankoret) and Elias Bachaalany is part book, part a research report, detailing the findings of Jaxeon Koret and Elias Bachaalany in how Antivirus programs work, try to protect themselves and can be attacked and exploited.
 
-[![](2021/05/avhh.jpg)](https://www.amazon.de/Antivirus-Hackers-Handbook-English-ebook/dp/B014MJ6AKS/)
+[![2021/05/avhh.jpg](avhh.jpg)](https://www.amazon.de/Antivirus-Hackers-Handbook-English-ebook/dp/B014MJ6AKS/)
 
 *[The Antivirus Hackers Handbook](https://www.amazon.de/Antivirus-Hackers-Handbook-English-ebook/dp/B014MJ6AKS/)*
 

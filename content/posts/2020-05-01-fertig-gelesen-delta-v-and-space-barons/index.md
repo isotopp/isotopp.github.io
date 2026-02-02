@@ -13,7 +13,7 @@ aliases:
 ---
 A lot of super rich people are currently busy blowing their money into space. Who are these people, and what drives them?
 
-[![](2020/05/space-barons.png)](https://www.amazon.de/-/en/Space-Barons-Colonize-Cosmos-English-ebook/dp/B075D745GS)
+[![2020/05/space-barons.png](space-barons.png)](https://www.amazon.de/-/en/Space-Barons-Colonize-Cosmos-English-ebook/dp/B075D745GS)
 
 *[Space Barons](https://www.amazon.de/-/en/Space-Barons-Colonize-Cosmos-English-ebook/dp/B075D745GS), Christian Davenport, 10.99 Eur (Kindle)*
 
@@ -23,7 +23,7 @@ We follow Richard Branson and Paul Allen, but specifically we follow Elon Musk a
 
 And exactly this is being told once more by Daniel Suarez in
 
-[![](2020/05/delta-v.png)](https://www.amazon.de/-/en/Delta-v-English-Daniel-Suarez-ebook/dp/B07FLX8V84)
+[![2020/05/delta-v.png](delta-v.png)](https://www.amazon.de/-/en/Delta-v-English-Daniel-Suarez-ebook/dp/B07FLX8V84)
 
 *[Delta-V](https://www.amazon.de/-/en/Delta-v-English-Daniel-Suarez-ebook/dp/B07FLX8V84), Daniel Suarez, 9.55 Eur (Kindle)*
 

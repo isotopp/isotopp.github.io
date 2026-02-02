@@ -146,7 +146,7 @@ It is useful to index free space by `startblock` for closeness, but also by `len
 
 ### Breaking the single-writer inode lock 
 
-![](2023/05/overlapping-write.png)
+![2023/05/overlapping-write.png](overlapping-write.png)
 *Posix locks the in-memory inode to guarantee [atomic writes]({{< relref "2018-11-29-but-is-it-atomic.md" >}}).
 This makes sure any two large multiple-block writes always happen one-before-the-other.*
 
@@ -275,7 +275,7 @@ They boast "We can have directories with millions of entries", something that wa
 
 # A lot of code
 
-![](2023/05/xfs-scaling.png)
+![2023/05/xfs-scaling.png](xfs-scaling.png)
 *XFS Benchmarks in 1994 show nice and welcome linear scaling behavior that utilizes the hardware offered well.
 It handles well on large boxes with (for 1994) high core-counts.*
 

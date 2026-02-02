@@ -13,7 +13,7 @@ aliases:
   - /2017/02/13/fertig-gelesen-die-krone-der-sterne.html
 ---
 
-[![](2017/02/krone-der-sterne.jpg)](https://www.amazon.de/Die-Krone-Sterne-Kai-Meyer-ebook/dp/B01EVZNXOO)
+[![2017/02/krone-der-sterne.jpg](krone-der-sterne.jpg)](https://www.amazon.de/Die-Krone-Sterne-Kai-Meyer-ebook/dp/B01EVZNXOO)
 
 [Die Krone der Sterne](https://www.amazon.de/Die-Krone-Sterne-Kai-Meyer-ebook/dp/B01EVZNXOO)
 (German Edition), Kai Meyer, 12.99 EUR (Kindle)

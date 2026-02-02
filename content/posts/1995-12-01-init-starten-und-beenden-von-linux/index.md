@@ -61,7 +61,7 @@ Startet man Linux im <i>single user mode</i> oder gerät man auf andere Weise au
 
 `/etc/rc.d/rc.M` kümmert sich dann um die Vorbereitung des Systems auf den Mehrbenutzerbetrieb. Dieses Script kann davon ausgehen, daß alle lokalen Platten schon verfügbar sind und daß ausreichend Swapspace zur Verfügung steht. Hostnamen und andere das Netzwerk betreffende Dinge sind aber noch undefiniert. `rc.M` konfiguriert einen Screenblanker, startet den `cron`, setzt den Hostnamen und verzweigt dann vorübergehend in die Scripte `rc.inet1` und `rc.inet2`. Ersteres dient dazu, den Kernelteil des Netzwerkes zu konfigurieren: Die Interfaces erhalten ihre IP-Nummern und werden gestartet, danach setzt sich der Kernel Routingtabellen. Das gesamte Script besteht im Prinzip nur aus glorifizierten Aufrufen von `ifconfig` und `route`. Die zweite Datei konfiguriert dann den Anwendungsteil des Netzes, indem dort die entsprechenden Serverprozesse gestartet werden. Die folgenden Arbeiten in `rc.M` erledigen dann einige Aufräumarbeiten, die zu verschiedenen Subsystemen gehören. Wichtig ist hier vor allen Dingen der Aufruf von `ldconfig`, der Links auf die aktuellen Versionen der shared libraries auf den neuesten Stand bringt. Am Ende von `rc.M` wird dann noch auf `rc.local` verzweigt, in der der Systemverwalter lokale Modifikationen des Systemstarts unterbringen kann. Einige Versionen der Slackware verzweigen bei Bedarf noch in andere, spezialisierte rc-Dateien zum Verstellen des Zeichensatzes oder der Tastaturbelegung.
 
-![](1995/12/init-files.gif)
+![1995/12/init-files.gif](init-files.gif)
 
 ## Erweiterungen der rc-Dateien
 

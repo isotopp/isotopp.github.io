@@ -19,7 +19,7 @@ With this in mind, and the announcement from Apple to move to ARM CPUs plus nail
 
 I knew I wanted a device with Touchscreen, a 2-in-1 or detachable, and I have been looking at a number of devices. The Surface Book 3 was my favorite, because you can detach the screen and use it as a tablet, plus it is available with a discrete NVidia graphics card in the keyboard base if you buy the right model. The various Lenovo Yoga variants looked well made and pretty, too.
 
-![](2020/07/yoga1.jpg)
+![2020/07/yoga1.jpg](yoga1.jpg)
 
 *What is in the box? Machine, USB-C Dongle (HDMI, VGA, USB-A 3.0), Power Supply*
 
@@ -43,7 +43,7 @@ On the other hand, working with this piece of hardware and with Windows 10 when 
 
 Python, git and other things are available natively and in WSL just fine, I have PyCharm, Sublime and VScode, and they just work. I got Hugo and Jekyll running in WSL, too. So that part of the system is covered just fine.
 
-![](2020/07/yoga2.jpg)
+![2020/07/yoga2.jpg](yoga2.jpg)
 
 *5 seconds to the logo, 15 seconds until ready, from a complete cold start*
 

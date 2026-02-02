@@ -11,7 +11,7 @@ title: node.js idea of an inode is approximately broken
 aliases:
   - /2017/04/19/node-js-idea-of-an-inode-is-approximately-broken.html
 ---
-[![](2017/04/Screen-Shot-2017-04-19-at-09.21.21.png)](https://twitter.com/RichFelker/status/854421890135461890)
+[![2017/04/Screen-Shot-2017-04-19-at-09.21.21.png](Screen-Shot-2017-04-19-at-09.21.21.png)](https://twitter.com/RichFelker/status/854421890135461890)
 
 The [Tweet](https://twitter.com/RichFelker/status/854421890135461890) points
 to the [bug report](https://github.com/nodejs/node/issues/12115). After the

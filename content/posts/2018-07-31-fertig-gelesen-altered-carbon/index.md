@@ -14,7 +14,7 @@ aliases:
 ---
 Die Menschen haben es bis zum Mars geschafft und dort die Überreste einer interstellaren Zivilisation gefunden. Mit Hilfe der dort gefundenen Technologien haben sie sich in der Galaxis begrenzt ausgebreitet - begrenzt, denn Überlicht-Reisen funktionieren nicht, nur überlichtschnelle Kommunikation. Doch menschliche Bewußtseine lassen sich aufzeichnen, übertragen und in Gastkörper übertragen und das ist die Grundlage der Geschichte von Altered Carbon.
 
-[![](2017/07/altered-carbon.jpg)](https://www.amazon.de/Altered-Carbon-Netflix-Takeshi-Kovacs-ebook/dp/B002U3CBZM)
+[![2017/07/altered-carbon.jpg](altered-carbon.jpg)](https://www.amazon.de/Altered-Carbon-Netflix-Takeshi-Kovacs-ebook/dp/B002U3CBZM)
 
 [Altered Carbon](https://www.amazon.de/Altered-Carbon-Netflix-Takeshi-Kovacs-ebook/dp/B002U3CBZM)
 

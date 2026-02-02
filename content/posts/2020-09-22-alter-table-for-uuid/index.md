@@ -175,13 +175,13 @@ Consider table designs that assign a primary key in a random way. This would be 
 
 Using an `integer auto_increment primary key`, we are likely to get hot data at the right-hand side, cold data at the left-hand side of the tree. We load hot pages, minimising the cache footprint:
 
-![](2020/09/pk-order.png)
+![2020/09/pk-order.png](pk-order.png)
 
 *AUTO_INCREMENT integer primary key controlling data order. Hot data in few pages to the "right" side of the tree, minimal cache footprint*
 
 But with a random distribution of primary keys over the keyspace, there is no set of pages that is relatively cold. As soon as we hit a key on a page (and for hot keys, we hit them often), we have to load the entire page into memory and keep it there (because there is a hot key in it, and we are likely to hit it again, soon):
 
-![](2020/09/random-order.png)
+![2020/09/random-order.png](random-order.png)
 
 *Primary Key values are randomly chosen: Any page contains a primary key that is hot. As soon as it is being accessed, the entire 16 KB page is loaded.*
 

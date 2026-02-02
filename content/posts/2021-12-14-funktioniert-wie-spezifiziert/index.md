@@ -26,7 +26,7 @@ Jindi al Dap ist der Name eines alten arabischen Philosophen und Mathematik-Pion
 Dieses System lädt irgendwie Code aus dem Internet nach.
 Aber selbst, wenn man länger auf das Systemdiagramm starrt, erkennt man nicht unbedingt sofort, an welcher Stelle sich der Java CLASSPATH so erweitert, dass er das gesamte Internet umfasst:
 
-![](2021/12/spezifiziert1.png)
+![2021/12/spezifiziert1.png](spezifiziert1.png)
 *Systemdiagramm des JNDI Subsystems von Java, aus der [Dokumentation](https://docs.oracle.com/javase/tutorial/jndi/overview/index.html).*
 
 ## Nichts ist jemals simpel.
@@ -54,7 +54,7 @@ Aber wir können das noch einen Schritt weiterspielen:
 Der Code, der den Directory Lookup vornimmt, ist auch nicht da, nur ein Bootstrap: 
 [Event and Service Provider Packages](https://docs.oracle.com/javase/tutorial/jndi/overview/event).
 
-![](2021/12/spezifiziert2.png)
+![2021/12/spezifiziert2.png](spezifiziert2.png)
 
 *Laut [Dokumentation](https://docs.oracle.com/javase/tutorial/jndi/overview/event) können wir Objekte aus der Nameing API bekommen und dort hinein serialisieren. Wir bekommen also Printer-Objekte mit Printer-Methoden aus dieser API, wenn wir danach fragen.*
 
@@ -87,7 +87,7 @@ JSON nach stderr drucken.
 Das ist einfach.
 Aber Firmen stellen seit etwa einer Dekade Leute ein, die nicht wissen, was stdout und stderr sind und das ist irgendwie okay, weil inzwischen ja sowieso alles ein Webservices ist
 
-![](2021/12/spezifiziert4.png)
+![2021/12/spezifiziert4.png](spezifiziert4.png)
 
 *Ein totales log4shell Nonmention von [apenwarr](https://twitter.com/apenwarr/status/1469183890749558784).*
 
@@ -102,7 +102,7 @@ SM bringt die notwendigen Verträge und die Disziplin, die eine Codebase braucht
 Aber die meisten Anwender stehen nicht auf SM, und lehnen die Idee ab.
 Also wird die Funktionalität in Java 17 als deprecated (veraltet) gekennzeichnet und später entfernt werden ([JEP 411: Deprecate the Security Manager for Removal](https://openjdk.java.net/jeps/411)).
 
-![](2021/12/spezifiziert3.jpg)
+![2021/12/spezifiziert3.jpg](spezifiziert3.jpg)
 
 ## Wie ein Dreijähriger
 

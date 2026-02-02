@@ -106,7 +106,7 @@ Each would amount to rebuilding a Region, automatically, from nothing, without l
 
 # This is not a Sprint
 
-![](2023/02/not-a-drill.png)
+![2023/02/not-a-drill.png](not-a-drill.png)
 
 The key to success for the MoD was the change from Project to Process.
 Do small things with individual teams, first with cooperative teams, then reaching out and making the process mandatory for all teams.

@@ -11,7 +11,7 @@ tags:
 aliases:
   - /2017/02/01/nobody-wants-backup-everybody-wants-restore.html
 ---
-![](2017/02/mysql-backup-and-recovery-15-638.jpg)
+![2017/02/mysql-backup-and-recovery-15-638.jpg](mysql-backup-and-recovery-15-638.jpg)
 
 Operations matter. I know the Hipster crowd does not like to
 hear that, cloud or not. But reality has a way of making itself
@@ -53,7 +53,7 @@ not. Operations do matter, even (especially) in the cloud.
 > Some thoughts for GitLab: What is WAL shipping? What is pgbouncer? Why
 > does everyone hate Slony? Why is EC2 so slow?
 
-[![](2017/02/Screen-Shot-2017-02-01-at-10.45.07.png)](https://twitter.com/terrorobe/status/826706562563588098)
+[![2017/02/Screen-Shot-2017-02-01-at-10.45.07.png](Screen-Shot-2017-02-01-at-10.45.07.png)](https://twitter.com/terrorobe/status/826706562563588098)
 
 Tweet: [@Terrorobe](https://twitter.com/terrorobe/status/826706562563588098)
 
@@ -69,6 +69,6 @@ ain't gonna change that.
 
 **EDIT:** Dedicating 1st of February as "Check your Backups Day"
 
-[![](2017/02/Screen-Shot-2017-02-01-at-12.53.14.png)](http://checkyourbackups.work/)
+[![2017/02/Screen-Shot-2017-02-01-at-12.53.14.png](Screen-Shot-2017-02-01-at-12.53.14.png)](http://checkyourbackups.work/)
 
 [Check your Backups Day](http://checkyourbackups.work/)

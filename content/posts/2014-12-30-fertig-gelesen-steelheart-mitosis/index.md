@@ -14,7 +14,7 @@ aliases:
 ---
 Nach Rafael Chandler s "Astounding Antagonists" nun ein zweites Buch, das sich mit dem Konzept der Superhelden auseinandersetzt.
 
-[![](2014/12/steelheart.jpg)](https://www.amazon.de/Steelheart-Reckoners-Book-1-English-ebook/dp/B00ARHAAZ6)
+[![2014/12/steelheart.jpg](steelheart.jpg)](https://www.amazon.de/Steelheart-Reckoners-Book-1-English-ebook/dp/B00ARHAAZ6)
 
 In Sandersons Welt bekommen gewöhnliche Menschen plötzlich Superhelden-Fähigkeiten, werden aber zu machthungrigen unmenschlichen Superschurken - "Epics", wenn sie diese benutzen. Und so kommt es, daß die Menschheit binnen kürzester Zeit in eine Reihe von von Epics dominierten Diktaturen zerfällt.
 

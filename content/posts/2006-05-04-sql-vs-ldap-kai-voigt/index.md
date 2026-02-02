@@ -18,7 +18,7 @@ and additional experience we had, based on our work with directory services.
 
 # SQL vs. LDAP
 
-![](2006/05/sql-vs-ldap-01.png)
+![2006/05/sql-vs-ldap-01.png](sql-vs-ldap-01.png)
 
 Both SQL and LDAP are infrastructures to store, retrieve and modify data.
 Various implementations are available, either free or commercial software.
@@ -39,14 +39,14 @@ either by lack of knowlegde or by following some hype.
 
 ## Kai Voigt
 
-![](2006/05/sql-vs-ldap-02.png)
+![2006/05/sql-vs-ldap-02.png](sql-vs-ldap-02.png)
 
 Kai Voigt works as an Instructor and Consultant for MySQL and used to implement LDAP based systems and applications in former engagements.
 He was invited as a speaker at various conferences, including Roxen User Conference and Open Source Database Conference.
 
 ## Goals
 
-![](2006/05/sql-vs-ldap-03.png)
+![2006/05/sql-vs-ldap-03.png](sql-vs-ldap-03.png)
 
 - Understand different data structures
 - Know about operations on data
@@ -56,7 +56,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 ## Implementations
 
-![](2006/05/sql-vs-ldap-04.png)
+![2006/05/sql-vs-ldap-04.png](sql-vs-ldap-04.png)
 
 - SQL
   - MySQL
@@ -73,11 +73,11 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 # Data Structures
 
-![](2006/05/sql-vs-ldap-05.png)
+![2006/05/sql-vs-ldap-05.png](sql-vs-ldap-05.png)
 
 ## SQL Structures
 
-![](2006/05/sql-vs-ldap-06.png)
+![2006/05/sql-vs-ldap-06.png](sql-vs-ldap-06.png)
 
 - Catalogs, Databases, Tabkles, Rows, Columns
 - Columns hold single values (or NULL)
@@ -85,13 +85,13 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 - Indexes on table level
 - Foreign key constraints between tables
 
-![](2006/05/sql-vs-ldap-07.png)
+![2006/05/sql-vs-ldap-07.png](sql-vs-ldap-07.png)
 
 - Foreign Keys, Constraints
 
 ## LDAP Structures
 
-![](2006/05/sql-vs-ldap-08.png)
+![2006/05/sql-vs-ldap-08.png](sql-vs-ldap-08.png)
 
 - Data Objects in Hierarchy
 - Attributes and data types defined by Objectclasses (may/must exist)
@@ -99,13 +99,13 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 - Indexing on data type
 - No foreign key constraints 
 
-![](2006/05/sql-vs-ldap-09.png)
+![2006/05/sql-vs-ldap-09.png](sql-vs-ldap-09.png)
 
 - LDAP tree, dn
 
 ## An LDAP node
 
-![](2006/05/sql-vs-ldap-10.png)
+![2006/05/sql-vs-ldap-10.png](sql-vs-ldap-10.png)
 
 - DN: city=1,cont=asia,o=myworld
 - Set of attributes
@@ -117,7 +117,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 ## Hierarchies in SQL
 
-![](2006/05/sql-vs-ldap-11.png)
+![2006/05/sql-vs-ldap-11.png](sql-vs-ldap-11.png)
 
 - Storing
   - Primary Key of parent as column
@@ -127,7 +127,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 ## Data sizes
 
-![](2006/05/sql-vs-ldap-12.png)
+![2006/05/sql-vs-ldap-12.png](sql-vs-ldap-12.png)
 
 - SQL
   - Larger data, higher latency
@@ -136,11 +136,11 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 # Operations
 
-![](2006/05/sql-vs-ldap-13.png)
+![2006/05/sql-vs-ldap-13.png](sql-vs-ldap-13.png)
 
 ## SQL Operations
 
-![](2006/05/sql-vs-ldap-14.png)
+![2006/05/sql-vs-ldap-14.png](sql-vs-ldap-14.png)
 
 - Selection: WHERE clauses
 - Projection: SELECT plus Columns List
@@ -150,7 +150,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 ## LDAP Operations
 
-![](2006/05/sql-vs-ldap-15.png)
+![2006/05/sql-vs-ldap-15.png](sql-vs-ldap-15.png)
 
 - Selection on attribute values
 - Projection on attributes (no synthetic values
@@ -159,7 +159,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 ## SQL Usage
 
-![](2006/05/sql-vs-ldap-16.png)
+![2006/05/sql-vs-ldap-16.png](sql-vs-ldap-16.png)
 
 - Storage for large scale data
 - Business Logic
@@ -168,7 +168,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 ## LDAP Usage
 
-![](2006/05/sql-vs-ldap-17.png)
+![2006/05/sql-vs-ldap-17.png](sql-vs-ldap-17.png)
 
 - Authentication
 - Configuration Files
@@ -178,11 +178,11 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 # Common Problems
 
-![](2006/05/sql-vs-ldap-18.png)
+![2006/05/sql-vs-ldap-18.png](sql-vs-ldap-18.png)
 
 ## Top 5
 
-![](2006/05/sql-vs-ldap-19.png)
+![2006/05/sql-vs-ldap-19.png](sql-vs-ldap-19.png)
 
 - Using only LDAP
 - Using LDAP for massive write requests
@@ -192,7 +192,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 ## Using LDAP only
 
-![](2006/05/sql-vs-ldap-20.png)
+![2006/05/sql-vs-ldap-20.png](sql-vs-ldap-20.png)
 
 - Data Types, Objectclasses
   - Need to be extended in most cases
@@ -202,7 +202,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 - DNs unstable
 
 ## Write Requests
-![](2006/05/sql-vs-ldap-21.png)
+![2006/05/sql-vs-ldap-21.png](sql-vs-ldap-21.png)
 
 - No transactions
   - "add" and "modify" are atomic
@@ -212,7 +212,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 ## Changing Structure
 
-![](2006/05/sql-vs-ldap-22.png)
+![2006/05/sql-vs-ldap-22.png](sql-vs-ldap-22.png)
 
 - Schema definition out-of-band
 - MAY inflation
@@ -220,7 +220,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 ## Complex Queries
 
-![](2006/05/sql-vs-ldap-23.png)
+![2006/05/sql-vs-ldap-23.png](sql-vs-ldap-23.png)
 
 - DN is primary key
   - DN contains structural information
@@ -230,7 +230,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 ## Data Design
 
-![](2006/05/sql-vs-ldap-24.png)
+![2006/05/sql-vs-ldap-24.png](sql-vs-ldap-24.png)
 
 - Organisational hierarchies into LDAP trees
 - DN not opaque
@@ -239,7 +239,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 ## Other Problems
 
-![](2006/05/sql-vs-ldap-25.png)
+![2006/05/sql-vs-ldap-25.png](sql-vs-ldap-25.png)
 
 - No simple server-side functions
 - No normalization
@@ -248,11 +248,11 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 # LDAP Benefits
 
-![](2006/05/sql-vs-ldap-26.png)
+![2006/05/sql-vs-ldap-26.png](sql-vs-ldap-26.png)
 
 ## Speed
 
-![](2006/05/sql-vs-ldap-27.png)
+![2006/05/sql-vs-ldap-27.png](sql-vs-ldap-27.png)
 
 - Low Connection Overhead
 - Simple Queries
@@ -263,7 +263,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 ## Compatibility
 
-![](2006/05/sql-vs-ldap-28.png)
+![2006/05/sql-vs-ldap-28.png](sql-vs-ldap-28.png)
 
 - Standards
   - Wire Protocol
@@ -273,11 +273,11 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 # The right decision
 
-![](2006/05/sql-vs-ldap-29.png)
+![2006/05/sql-vs-ldap-29.png](sql-vs-ldap-29.png)
 
 ## No rule of thumb
 
-![](2006/05/sql-vs-ldap-30.png)
+![2006/05/sql-vs-ldap-30.png](sql-vs-ldap-30.png)
 
 - Analyze data structures and operations
 - Run benchmarks
@@ -287,7 +287,7 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 ## Best Practice
 
-![](2006/05/sql-vs-ldap-31.png)
+![2006/05/sql-vs-ldap-31.png](sql-vs-ldap-31.png)
 
 - SQL as leading system
 - periodic or triggered exports to LDAP
@@ -296,4 +296,4 @@ He was invited as a speaker at various conferences, including Roxen User Confere
 
 # Thank you!
 
-![](2006/05/sql-vs-ldap-32.png)
+![2006/05/sql-vs-ldap-32.png](sql-vs-ldap-32.png)

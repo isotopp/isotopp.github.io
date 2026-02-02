@@ -30,7 +30,7 @@ To this end, OWASP publishes a top 10 list of application security problems that
 
 For 2021, compared to 2017, there have been the following changes:
 
-![](2021/11/owasp-mapping.png)
+![2021/11/owasp-mapping.png](owasp-mapping.png)
 
 *Broken Access Control was #5 in 2017 and is now problem #1. 94% of the applications tested had some form of broken access control. The former #1 perennial problem Injection is now only #3.*
 

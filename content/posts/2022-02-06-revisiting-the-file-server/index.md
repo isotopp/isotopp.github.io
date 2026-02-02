@@ -14,7 +14,7 @@ aliases:
 
 The new disks in the file server had synchronized nicely, and that resulted in an interesting graph:
 
-![](2022/02/disk-sync.jpg)
+![2022/02/disk-sync.jpg](disk-sync.jpg)
 
 *Sectors on the outer part of a hard disk are transferred faster than inner sectors. You can see how the disk speed halves between the outermost and the innermost part.*
 

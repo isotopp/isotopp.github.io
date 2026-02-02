@@ -10,7 +10,7 @@ title: We learned a few things about Cycle Path design in the last 25 years
 aliases:
   - /2017/03/13/we-learned-a-few-things-about-cycle-path-design-in-the-last-25-years.html
 ---
-![](2017/03/Screen-Shot-2017-03-13-at-14.37.54.png)
+![2017/03/Screen-Shot-2017-03-13-at-14.37.54.png](Screen-Shot-2017-03-13-at-14.37.54.png)
 
 In any discussion about cycling in Germany, sooner or later some geek who
 has been exposed to USENET shows up and then the ADFC #173
@@ -23,7 +23,7 @@ into "Cycle Paths are stupid" and then linked over to the ADFC #173.
 
 Here is a bunch of more recent material and links.
 
-![](2017/03/side-by-side-cycling.jpg)
+![2017/03/side-by-side-cycling.jpg](side-by-side-cycling.jpg)
 
 The TL;DR is: When there is no proper traffic separation or traffic
 separation is impossible, then an on-the-road cycle path, is usually better
@@ -64,7 +64,7 @@ seen
 [on Google Maps close to Hoofddorp Station](https://www.google.nl/maps/dir/Graan+voor+Visch+14402,+Hoofddorp/Hoofddorp,+Station,+2132+HA+Hoofddorp/@52.2929719,4.6950909,210m/data=!3m1!1e3!4m13!4m12!1m5!1m1!1s0x47c5e7a6b423096d:0xc6352d61ad3008ff!2m2!1d4.6914988!2d52.2952505!1m5!1m1!1s0x47c5e70a44c2d41f:0x34a4aa65b173485d!2m2!1d4.6985328!2d52.2927456?hl=en)
 and in many other places.
 
-![](2017/03/Screen-Shot-2017-03-13-at-15.00.44-300x195.png)
+![2017/03/Screen-Shot-2017-03-13-at-15.00.44-300x195.png](Screen-Shot-2017-03-13-at-15.00.44-300x195.png)
 
 Another article explains 
 [safe roundabouts](http://www.aviewfromthecyclepath.com/2014/05/the-best-roundabout-design-for-cyclists.html)

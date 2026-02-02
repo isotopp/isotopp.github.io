@@ -16,7 +16,7 @@ aliases:
 "[Outland](https://www.amazon.de/Outland-Dennis-Taylor-ebook/dp/B07TP6TKP1)" is the first book by Dennis E. Taylor, preceding the Bobiverse and also "The Singularity Trap".
 It is a "[Sliders](https://en.wikipedia.org/wiki/Sliders)" storyline, much like [Pratchett's and Baxter's "Long Earth"]({{< relref "2016-02-28-fertig-gelesen-the-long-earth.md" >}}), in which our heroes discover a parallel dimension with a seemingly uninhabited earth, and then need to colonize it.
 
-[![](2021/07/outland.jpg)](https://www.amazon.de/Outland-Dennis-Taylor-ebook/dp/B07TP6TKP1)
+[![2021/07/outland.jpg](outland.jpg)](https://www.amazon.de/Outland-Dennis-Taylor-ebook/dp/B07TP6TKP1)
 
 *[Outland](https://www.amazon.de/Outland-Dennis-Taylor-ebook/dp/B07TP6TKP1), Dennis E. Taylor*
 

@@ -125,7 +125,7 @@ The 5.5 instance would then be connected to the replication tree, and had opport
 We would make it an intermediate primary eating 5.1 binlog, and emitting 5.5 binlog to further 5.5 instances we cloned out of the initial one.
 At the same time we would reap production 5.1 instances to match the growth of the 5.5 population.
 
-![](2022/06/mysql-upgrade.png)
+![2022/06/mysql-upgrade.png](mysql-upgrade.png)
 
 Eventually we would move writes down from the 5.1 primary, promoting the 5.5 intermediate primary to try primary, "beheading" the replication hierarchy.
 Back then we already had a three-digit number of MySQL replication hierarchies, and even back then a replication hierarchy typically had a disk footprint of 1-2 TB (ie 2-4h at 200 MB/s).

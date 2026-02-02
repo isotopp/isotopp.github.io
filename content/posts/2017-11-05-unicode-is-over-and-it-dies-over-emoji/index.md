@@ -18,7 +18,7 @@ The :-) is just a symbol for an emotion.
 
 It is specifically not a human face, it does not have a hair color, eye color, skin color or other human attributes.
 It is universal.
-Then some cellphone maker turned that into ![](2017/11/Screen-Shot-2018-04-13-at-10.01.46.png), anthropomorphising it.
+Then some cellphone maker turned that into ![2017/11/Screen-Shot-2018-04-13-at-10.01.46.png](Screen-Shot-2018-04-13-at-10.01.46.png), anthropomorphising it.
 
 Come as it must, we soon get color, and it turns into 😀.
 That Simpsons yellow was read by some as white and non-inclusive, and here is where things start to break down. 
@@ -27,7 +27,7 @@ Because the logical thing would be to stop here and revert back to ![](2017/11/S
 
 But that is not what the Unicode consortium did. They went this way: 
 
-![](2017/11/emoji-of-color.png)
+![2017/11/emoji-of-color.png](emoji-of-color.png)
 
 *The Fitzpatrick Scale of skin colors inspired the U+1F3FB - U1F3FF suffixes
 for skin toned Emoji.*
@@ -40,7 +40,7 @@ We are considering a full modification system for Emoji, in the (withdrawn) [TR5
 
 Taking this to the logical conclusion, what we get is this:
 
-![](2017/11/skyrim-character-editor-640x350.jpg)
+![2017/11/skyrim-character-editor-640x350.jpg](skyrim-character-editor-640x350.jpg)
 
 *Skyrim Character Editor (modded)*
 
@@ -48,7 +48,7 @@ That is, someone is taking the point of writing out of writing and is trying to 
 
 Coming back to the withdrawn TR52: we just got FROWNING PILE OF POO: 
 
-![](2017/11/frowning-pile-of-poo.png)
+![2017/11/frowning-pile-of-poo.png](frowning-pile-of-poo.png)
 
 *[Frowning pile of poo](https://emojipedia.org/frowning-pile-of-poo/) clearly has race issues.*
 

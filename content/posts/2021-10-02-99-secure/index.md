@@ -110,7 +110,7 @@ Ein kompromittiertes System ist ja nicht 43 % gehackt, sondern 100 % im Eimer.
 
 Ein besseres Bild: Raising the bar.
 
-![](2021/10/this-tall.jpg)
+![2021/10/this-tall.jpg](this-tall.jpg)
 
 "Raising the bar" im Security-Sinne bedeutet üblicherweise, daß man den Personenkreis möglicher Angreifer verkleinern will, indem man versucht die Anforderungen höher zu schrauben, die ein erfolgreicher Angreifer an Ausbildung, finanzieller Ausstattung und Zeitaufwand mitbringen muss.
 
@@ -143,19 +143,19 @@ Und ganz wichtig:
 Denn es wird doch schief gehen - das sind dann die von Prof. Pohlmann angesprochenen Restrisiken.
 [Hier](https://www.slideshare.net/isotopp/security-management-sys11-version-harald-wagener) sind ein paar Slides von [Harald Wagener](https://twitter.com/mausdompteur), basierend auf Ideen von Harald und ein paar noch älteren Slides von mir.
 
-![](2021/10/this-tall2.jpg)
+![2021/10/this-tall2.jpg](this-tall2.jpg)
 
 Ein Risiko Management Prozess ist wie jeder Prozess eine Schleife, bei denen man Angreifer und Angriffe identifiziert, Risiken bewertet, Maßnahmen gegen die Risiken definiert und umsetzt, und dann wiederholt.
 Die Maßnahmen können wir nicht beliebig weit treiben, denn betriebliche Notwendigkeiten setzen uns Grenzen: "Die Server abschalten und im Marianengraben versenken" ist keine Option.
 Damit bleiben uns Restrisiken, die eventuell versicherbar sind.
 
-![](2021/10/this-tall3.jpg)
+![2021/10/this-tall3.jpg](this-tall3.jpg)
 
 Der Risiko-Managementprozess ist ein Prozess.
 Er unterliegt einer Evaluierung in der Retrospektive, und dann Anpassungen.
 Ich habe das [am Beispiel einer Pizzeria]({{< relref "2020-06-15-pizza-people-projects-and-processes.md" >}}) anderswo schon einmal ausführlicher diskutiert.
 
-![](2021/10/this-tall4.jpg)
+![2021/10/this-tall4.jpg](this-tall4.jpg)
 
 Und während es super schwer ist, Security zu messen, gibt es immerhin Maße für Prozessreife, etwa das Capability Maturity Modell, über das wir auch im obigen Pizzeria-Beispiel reden.
 
@@ -190,7 +190,7 @@ Das deutet darauf hin, daß auch eine HTCCV für dieses Projekt eher nicht besta
 Der Satz "Hundertprozentige Sicherheit gibt es nicht" wird gerne als erster Halbsatz der Aussage verwendet, die mit "und darum brauchen wir uns gar nicht anzustrengen." endet.
 Das ist auch der Tenor von Prof. Pohlmann oben.
 
-![](2021/10/this-tall5.jpg)
+![2021/10/this-tall5.jpg](this-tall5.jpg)
 
 "[Hope is not a strategy](https://quotes.yourdictionary.com/articles/who-said-hope-is-not-strategy.html)" ist nicht nur ein beliebtes Zitat, sondern auch ein gerne von Google SREs verwendetes Motto.
 

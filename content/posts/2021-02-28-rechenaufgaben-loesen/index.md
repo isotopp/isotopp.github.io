@@ -14,7 +14,7 @@ aliases:
 
 Das Kind möchte ein Programm zum Üben von Rechenaufgaben sehen. Nun gut. Hier ist eine Version in PyQt5.
 
-![](2021/02/aufgaben-01.png)
+![2021/02/aufgaben-01.png](aufgaben-01.png)
 
 *Unsere Oberfläche soll so aussehen.*
 
@@ -26,7 +26,7 @@ In der Statuszeile und in den Fortschrittbalken wird ein laufender Score mitgef�
 
 Wir brauchen Qt Designer, und erzeugen dort ein MainWindow.
 
-![](2021/02/aufgaben-02.png)
+![2021/02/aufgaben-02.png](aufgaben-02.png)
 
 *MainWindow erzeugen.*
 
@@ -34,13 +34,13 @@ Mit einem Rechtsklick auf die Menubar und "Remove Menubar" können wir die nicht
 
 Wir sehen rechts die im Programm vorhandene Bedienelemente-Hierarchie im Qt Designer. Das automatisch erzeugte "Centralwidget" ist leer, und hat einen Fehler (es ist mit einem roten Kuller markiert): Es hat noch kein Layout. Das Layout ordnet die im Centralwidget vorhandenen Unterelemente an.
 
-![](2021/02/aufgaben-03.png)
+![2021/02/aufgaben-03.png](aufgaben-03.png)
 
 *Das Centralwidget ist mit einem roten Kuller als "ohne Layout" markiert.*
 
 Wir ziehen einen QPushbutton in das Fenster, und drücken im gepunkteten Hintergrund die rechte Maustaste, wählen dann ein VerticalLayout aus.
 
-![](2021/02/aufgaben-04.png)
+![2021/02/aufgaben-04.png](aufgaben-04.png)
 
 *Nachdem mindestens ein Bedienelement im Centralwidget vorhanden ist, kann man mit der rechten Maustaste im Layout-Submenü ganz unten ein Layout auswählen.*
 
@@ -48,13 +48,13 @@ Nach dem Zuweisen eines Layouts verschwindet der rote Kuller und die Elemente im
 
 Wir setzen oberhalb des Buttons ein weiteres Element ein: Eine groupBox. Auch diese hat ein Layoutproblem: Wir setzen einen weiteren Button ein und wählen ebenso durch Rechtsklick ins Leere der Groupbox ein HorizontalLayout aus.
 
-![](2021/02/aufgaben-05.png)
+![2021/02/aufgaben-05.png](aufgaben-05.png)
 
 *Wir haben oberhalb des ersten Buttons eine Groupbox positioniert, und sie passt sich automatisch an das Fenster an - das ist das VerticalLayout vom Centralwidget bei der Arbeit. Legen wir in die Groupbox einen weiteren QPushbutton, können wir der Groupbox ebenfalls ein Layout zuweisen. Hier wollen wir ein HorizontalLayout verwenden.*
 
 Nachdem wir diese Grundstruktur haben, können wir die anderen fehlenden Elemente schnell nachziehen. Dabei ist wichtig, daß wir für jedes Element den passenden Namen festlegen, unter dem es später im Programm aufgerufen werden soll.
 
-![](2021/02/aufgaben-06.png)
+![2021/02/aufgaben-06.png](aufgaben-06.png)
 
 *Jedes Element hat einen Namen - rechts kann man die Widgethierarchie sehen, und die Namen, die wir den Elementen zugewiesen haben.*
 
@@ -64,7 +64,7 @@ Weiterhin kann man in den Widget-Eigenschaften bei einigen Elementen die Schrift
 
 Am Ende wird die Datei als "aufgaben.ui" abgespeichert. Ich habe sie direkt dem PyCharm Projekt hinzugefügt.
 
-![](2021/02/aufgaben-07.png)
+![2021/02/aufgaben-07.png](aufgaben-07.png)
 
 *Die Qt Designer Ausgabe "aufgaben.ui" wird Bestandteil des PyCharm Projektes.*
 
@@ -72,7 +72,7 @@ Am Ende wird die Datei als "aufgaben.ui" abgespeichert. Ich habe sie direkt dem 
 
 Wir setzen ein Basisprogram mit Python 3.8 in PyCharm auf, und fügen die "aufgaben.ui" unserem Projekt hinzu. Unser Programm soll "aufgaben.py" heißen. Es wird PyQt5 verwenden, also schreiben wir das in unsere "requirements.txt". PyCharm installiert uns das dann in unser venv.
 
-![](2021/02/aufgaben-08.png)
+![2021/02/aufgaben-08.png](aufgaben-08.png)
 
 *Wenn die Requirements korrekt installiert sind, funktioniert das Importieren der QtWidgets in der Python Console einwandfrei und ohne Fehler.*
 

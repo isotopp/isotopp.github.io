@@ -22,7 +22,7 @@ Diese Woche war "Kaputte Security Software Werbewoche".
 
 Zunächst einmal war **heute** Fortigate Patchday:
 
-![](2024/02/schlangenoel-01.jpg)
+![2024/02/schlangenoel-01.jpg](schlangenoel-01.jpg)
 
 *CVE-2024-23113, CVSSV3 Score 9.8, Unauthorized Code Execution, "Format String Bug"*
 
@@ -46,7 +46,7 @@ Will sagen, dieser Fehler tritt in einer zeitgemäßen Development-Umgebung nich
 
 **Auch gestern** war Fortigate Patchday:
 
-![](2024/02/schlangenoel-02.jpg)
+![2024/02/schlangenoel-02.jpg](schlangenoel-02.jpg)
 
 *CVE-2024-21762, CVSSV3 Score 9.6, Unauthorized Code Execution, "Out of Bounds Write"*
 
@@ -77,7 +77,7 @@ Fortinet kam mit den CVE-Nummern durcheinander, weil gerade so viele davon offen
 Unterdessen fordert die US CISA (Cybersecurity and Infrastructure Security Agency) von allen US-Institutionen das 
 Abschalten von Ivanti VPN (vormals Juniper Pulse Secure):
 
-![](2024/02/schlangenoel-03.jpg)
+![2024/02/schlangenoel-03.jpg](schlangenoel-03.jpg)
 
 *"CISA is requiring all Federal agencies to disconnect Ivanti products by Friday at midnight 
 (Ivanti Connect Secure & Ivanti Policy Secure).
@@ -95,7 +95,7 @@ Die Patches, von denen dort die Rede ist, sind nicht geeignet, den Fehler zu beh
 
 Unterdessen hat jemand das Ivanti Image mal aufgemacht und reingesehen.
 
-![](2024/02/schlangenoel-04.jpg)
+![2024/02/schlangenoel-04.jpg](schlangenoel-04.jpg)
 
 *Versionen von Software, die routinemäßig seit mehr als einer Dekade veraltet sind in einem aktuellen Image.*
 
@@ -155,7 +155,7 @@ sondern nur ein Amateur mit Reverse-Engineering Erfahrung aus dem C64-Zeitalter.
 Es ist diese Software, die angeblich schützen soll, die am Ende dazu führt, daß der Rechner angreifbar wird.
 Wenn jemand wie Fefe von [Schlangenöl](https://blog.fefe.de/?q=Schlangen) redet, dann ist das wortwörtlich zu verstehen.
 
-![](2024/02/schlangenoel-05.jpg)
+![2024/02/schlangenoel-05.jpg](schlangenoel-05.jpg)
 *[Snake-Oil](https://en.wikipedia.org/wiki/Snake_oil) is a term used to describe deceptive marketing,
 health care fraud, or a scam.
 Similarly, snake oil salesman is a common label used to describe someone who sells, promotes,
@@ -261,6 +261,6 @@ und an den CVE-Anzahlen und CVSS-Scores erkennen, ob eine Firma ihre Posture ver
 Wenn das erkennbar über Jahre nicht der Fall ist, wie kann dann eine Kaufentscheidung positiv beschieden werden?
 Denkt mal darüber nach.
 
-![](2024/02/meerschweinchen-anne.jpg)
+![2024/02/meerschweinchen-anne.jpg](meerschweinchen-anne.jpg)
 
 *Manche Dinge sind nur durch niedliche Meerschweinchenfotos erträglich zu machen.*

@@ -14,7 +14,7 @@ aliases:
 ---
 Codex born ist der zweite Teil von Libriomancer und konzentriert sich mehr auf die Hintergrundgeschichte von Lena Greenwood, der Dryade aus der fiktionalen Softcore-Romance "Nymphs of Neptune".
 
-[![](2013/09/codex-born.png)](http://www.amazon.de/Libriomancer-ebook/dp/B00DIK7STK)
+[![2013/09/codex-born.png](codex-born.png)](http://www.amazon.de/Libriomancer-ebook/dp/B00DIK7STK)
 
 [Codex Born](http://www.amazon.de/Libriomancer-ebook/dp/B00DIK7STK)
 

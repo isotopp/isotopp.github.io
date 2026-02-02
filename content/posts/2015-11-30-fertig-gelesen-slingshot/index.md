@@ -14,7 +14,7 @@ aliases:
 ---
 Tobias Klausmann schiebt uns in ein fremdes Universum und erklärt nichts: Jemand stiehlt ein Raumschiff und der Schiffscomputer kann reden. Das Schiff scheint ein Prototyp zu sein, und schneller oder besser als andere Schiffe zu sein, und offenbar ist es was besonderes, daß der Schiffscomputer eine allgemeine künstliche Intelligenz ist.
 
-[![](2015/11/slingshot.jpg)](https://www.amazon.de/dp/B00WBZFHTG)
+[![2015/11/slingshot.jpg](slingshot.jpg)](https://www.amazon.de/dp/B00WBZFHTG)
 
 [Slingshot](https://www.amazon.de/dp/B00WBZFHTG)
 

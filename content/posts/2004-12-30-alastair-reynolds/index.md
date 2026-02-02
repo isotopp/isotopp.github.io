@@ -15,7 +15,7 @@ In
 [Unendlichkeit](https://www.amazon.de/Unendlichkeit-Roman-Inhibitor-Zyklus-Alastair-Reynolds-ebook/dp/B004P1J5UQ) (Revelation Space) treffen wir auf ein Universum, in dem die Menschen über eine Menge beeindruckender Technik gebieten - kilometerlange Raumschiffe, Smart Materials und Nanotechnik, AIs und cybernetische Bewußtseinsaufrüstung und was es an Spielzeug direkt aus einem 
 [GURPS Transhuman](http://www.sjgames.com/gurps/transhuman/) Sourcebook mehr gibt. 
 
-[![](2004/12/reynolds_unendlichkeit.jpg)](https://www.amazon.de/Unendlichkeit-Roman-Inhibitor-Zyklus-Alastair-Reynolds-ebook/dp/B004P1J5UQ)
+[![2004/12/reynolds_unendlichkeit.jpg](reynolds_unendlichkeit.jpg)](https://www.amazon.de/Unendlichkeit-Roman-Inhibitor-Zyklus-Alastair-Reynolds-ebook/dp/B004P1J5UQ)
 
 *[Unendlichkeit (Revelation Space)](https://www.amazon.de/Unendlichkeit-Roman-Inhibitor-Zyklus-Alastair-Reynolds-ebook/dp/B004P1J5UQ)*
 
@@ -25,7 +25,7 @@ In *Unendlichkeit* geht es um zunächst einmal um Dan Sylveste, der auf der Fors
 
 Die Menschen in *Unendlichkeit* sind die Mitglieder einer über Lichtjahre verstreuten und durch Raum und Zeit getrennten Menschheit - sie sind einander fremd und können die Distanzen, die nicht nur räumlich, sondern auch menschlich zwischen ihnen liegen, nicht mehr wirklich überwinden. Reynolds versteht es, diese Entfremdung auch dem Leser nahezubringen: Er führt seine Charactere als teilweise kaum noch menschenähnliche Symbionten aus organischen und mechanischen Teilen ein, und zeichnet sie dann gleichzeitig als Figuren mit menschlichen Gefühlen und Zielen und einer Psyche, die manchmal fremdartiger als die eines Aliens ist.
 
-*[![](2004/12/reynolds_chasm_city.jpg)](https://www.amazon.de/Chasm-City-Roman-Inhibitor-Zyklus-4-ebook/dp/B00LIU2YKU)*
+*[![2004/12/reynolds_chasm_city.jpg](reynolds_chasm_city.jpg)](https://www.amazon.de/Chasm-City-Roman-Inhibitor-Zyklus-4-ebook/dp/B00LIU2YKU)*
 
 *[Chasm City](https://www.amazon.de/Chasm-City-Roman-Inhibitor-Zyklus-4-ebook/dp/B00LIU2YKU)*
 
@@ -36,7 +36,7 @@ In
 
 Während *Unendlichkeit* Anleihen bei der Space Opera und dem Horror macht, ist *Chasm City* eher ein Detektivroman mit Anleihen beim Film Noir und dem Cyberpunk, aber vor dem gleichen großartigen und düsteren Hintergrund wie Reynolds erster Roman.
 
-[![](2004/12/reynolds_arche.jpg)](https://www.amazon.de/Die-Arche-Roman-Inhibitor-Zyklus-2-ebook/dp/B00LIU50M4)
+[![2004/12/reynolds_arche.jpg](reynolds_arche.jpg)](https://www.amazon.de/Die-Arche-Roman-Inhibitor-Zyklus-2-ebook/dp/B00LIU50M4)
 
 *[Arche](https://www.amazon.de/Die-Arche-Roman-Inhibitor-Zyklus-2-ebook/dp/B00LIU50M4)*
 
@@ -44,7 +44,7 @@ Während *Unendlichkeit* Anleihen bei der Space Opera und dem Horror macht, ist 
 
 In diesem Buch lernen wir mehr über die Synthetiker, bisher die mysteriöseste und fremdeste Gruppe der Menschen in Reynolds *Noir*-Universum - eine Gruppe von Menschen, die borg-gleich mit Maschinenunterstützung einen Hive-Mind erschafft und an der Grenze zur Entkörperlichung operiert. Es ist diese Gruppe, die Ursprung der am weitesten fortgeschrittenen Technik im Universum von Reynolds ist, und sie befaßt sich intern mit noch fremdartigeren Dingen. Reynolds legt außerdem mehr über den Ursprung und die Ziele der Wölfe offen und es wird deutlich, daß die Menschen so wie bisher nicht mehr dort existieren können, wo die Wölfe aus die aufmerksam geworden sind.
 
-[![](2004/12/reynolds_absolution.jpg)](https://www.amazon.de/Absolution-Revelation-Space-Sequence-English-ebook/dp/B0047COPEO)
+[![2004/12/reynolds_absolution.jpg](reynolds_absolution.jpg)](https://www.amazon.de/Absolution-Revelation-Space-Sequence-English-ebook/dp/B0047COPEO)
 
 *[Absolution Gap](https://www.amazon.de/Absolution-Revelation-Space-Sequence-English-ebook/dp/B0047COPEO)*
 

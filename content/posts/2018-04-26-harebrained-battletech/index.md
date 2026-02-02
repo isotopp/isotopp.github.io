@@ -11,7 +11,7 @@ tags:
 aliases:
   - /2018/04/26/harebrained-battletech.html
 ---
-![](2018/04/battletech1.jpg)
+![2018/04/battletech1.jpg](battletech1.jpg)
 
 So [two days ago](https://store.steampowered.com/app/637090/BATTLETECH/)
 Harebrained Schemes' [Battletech](http://battletechgame.com/) came out.
@@ -31,7 +31,7 @@ the campaign take care about tracking and portraying the
 factions appropriately. There is betrayal and loyalty, and there
 are plot twists and reveals.
 
-![](2018/04/battletech2.jpg) 
+![2018/04/battletech2.jpg](battletech2.jpg) 
 
 But of course the game centers around the crunchy bits. I mean
 even the Battetech Books have been Military Scifi in which the

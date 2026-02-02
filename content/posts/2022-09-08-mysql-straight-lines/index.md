@@ -12,7 +12,7 @@ aliases:
 
 A database is showing replication delay, and so are all the other instances of the same replication hierarchy, all of which reside in Openstack.
 
-![](2022/09/straight-01.png)
+![2022/09/straight-01.png](straight-01.png)
 
 *Shortly before 21:30 the database begins to lag, until around 23:45, when it starts to catch up, slowly. After 00:30, we gain delay again, plateau and then around 01:45, we catch up.*
 
@@ -102,14 +102,14 @@ Replication delay interval:
 
 At the same time:
 
-![](2022/09/straight-02.png)
+![2022/09/straight-02.png](straight-02.png)
 
 When we have replication delay, we see a straight line in the sum of dm-reads for 70-ish MB/s.
 This is well below quota.
 
 Looking at the IOPS:
 
-![](2022/09/straight-03.png)
+![2022/09/straight-03.png](straight-03.png)
 
 This is the sum of all dm-Reads, and we only are interested in the reads for our device.
 But we do see a straight line, and that suggests some kind of limit or resource exhaustion.
@@ -118,7 +118,7 @@ Together that suggest we run into resource depletion in the IOPS dept here.
 
 Is that bad?
 
-![](2022/09/straight-04.png)
+![2022/09/straight-04.png](straight-04.png)
 
 The observed statement latency for the production user goes up from a minimum 348 ms to a max of 37100 ms (37.1s).
 That is approximately 100x worse than normal.

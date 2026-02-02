@@ -11,7 +11,7 @@ aliases:
 ---
 In an earlier episode I asked for [Plugs with Wi-Fi]({{< relref "2020-05-12-plugs-with-wifi.md" >}}) and ended up with [Gosund and Tasmota]({{< relref "2020-05-20-gosund-and-tasmota.md" >}}). Considering this to be a success, I asked the Twitters for Temperature and Humidity Sensors. Of course, this got complicated.
 
-[![](2020/05/temp-question.png)](https://twitter.com/isotopp/status/1264943546085322754)
+[![2020/05/temp-question.png](temp-question.png)](https://twitter.com/isotopp/status/1264943546085322754)
 *Now that I have Powermeter Plugs everywhere: What are good sensors for temperature, humidity and CO2 that can be tasmotified? Wi-Fi, http or mqtt?*
 
 I was pointed to [Xiaomi Aqara](https://www.amazon.de/gp/product/B07SB2C327), but these do not do Wi-Fi, but Zigbee - whatever that is, it is spoken by [Zigbee USB Gateway Sticks](https://www.amazon.de/gp/product/B07PZ7ZHG5) and works with Raspi. We'll see.

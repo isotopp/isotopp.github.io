@@ -17,7 +17,7 @@ the upstream (development) branch of Red Hat Enterprise Linux.
 
 And a lot of people react like this:
 
-[![](2020/12/stream-migrate-now.png)](https://twitter.com/nixcraft/status/1336348208184741888)
+[![2020/12/stream-migrate-now.png](stream-migrate-now.png)](https://twitter.com/nixcraft/status/1336348208184741888)
 
 *Oracle buys Sun: Solaris Unix, Sun servers/workstation, and MySQL went to /dev/null. IBM buys Red Hat: CentOS is going to >/dev/null. Note to self: If a big vendor such as Oracle, IBM, MS, and others buys your fav software, start the migration procedure ASAP. ([Tweet](https://twitter.com/nixcraft/status/1336348208184741888))*
 

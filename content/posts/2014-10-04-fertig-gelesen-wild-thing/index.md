@@ -21,7 +21,7 @@ aliases:
 
 Wild Thing ist ein Buch über Wissenschaft und unser Verhältnis zum Mysteriösen und Unbekannten, zu unserer Bereitschaft, zu Glauben statt die Wahrheit zu suchen.
 
-[![](2014/10/wild-thing.jpg)](https://www.amazon.com/Wild-Thing-Novel-Peter-Brown-ebook/dp/B004QZ9PNI)
+[![2014/10/wild-thing.jpg](wild-thing.jpg)](https://www.amazon.com/Wild-Thing-Novel-Peter-Brown-ebook/dp/B004QZ9PNI)
 
 Dr. Pietro Brnwa ist auf der Flucht vor der Mafia, und in einem Zeugenschutzprogramm. Er gerät an einen Multimilliardär, der ihn als Leibwächter an die Seite einer Paläolontologin stellt, die für ihn ein prähistorisches Monster in einem See irgendwo im Norden der Vereinigten Staaten finden soll. Die beiden geraten in eine verfallene und verzweifelte Stadt, in eine Verschwörung, und in eine Scooby Geschichte.
 

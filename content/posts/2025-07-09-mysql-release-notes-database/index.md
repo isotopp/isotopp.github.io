@@ -27,7 +27,7 @@ and fills it with all the release notes we have.
 
 The schema is a simple star.
 
-![](2025/07/mysql_releases.png)
+![2025/07/mysql_releases.png](mysql_releases.png)
 
 For each release, we have many issues,
 and for each issue we store a number of properties.

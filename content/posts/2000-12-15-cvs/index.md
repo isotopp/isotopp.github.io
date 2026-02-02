@@ -13,7 +13,7 @@ aliases:
 
 # CVS - Was ist das?
 
-![](2000/12/cvs-001.gif)
+![2000/12/cvs-001.gif](cvs-001.gif)
 
 - Concurrent Versioning System
   - System zur Versionsverwaltung von Dateien
@@ -32,7 +32,7 @@ aliases:
 
 # CVS - Begriffe
 
-![](2000/12/cvs-002.gif)
+![2000/12/cvs-002.gif](cvs-002.gif)
 
 - Repository
   - Referenzkopie eines Quelltextes auf dem zentralen Server.
@@ -47,7 +47,7 @@ aliases:
 - Update
   - Diff eines Repository gegen eine ältere Repository-Version, der in den Workspace eingearbeitet wird.
 
-![](2000/12/cvs-003.gif)
+![2000/12/cvs-003.gif](cvs-003.gif)
 
 - Merge
   - Einspielen eines Updates in eine geänderte Workspace-Version ohne Konflikt.
@@ -62,7 +62,7 @@ aliases:
 
 # Diff und Patch
 
-![](2000/12/cvs-004.gif)
+![2000/12/cvs-004.gif](cvs-004.gif)
 
 - CVS weiß, welche Version im zentralen Repository aktuell ist.
 - CVS weiß, welche Version in den Workspace geladen wurde.
@@ -78,7 +78,7 @@ aliases:
 
 # CVS - Wie funktioniert es?
 
-![](2000/12/cvs-005.gif)
+![2000/12/cvs-005.gif](cvs-005.gif)
 
 - Jan checkt eine Kopie von modlogan (main.c, 1.4; parse.c, 1.2) aus.
 - Jan sieht fern.
@@ -95,7 +95,7 @@ aliases:
 
 # Everyday CVS
 
-![](2000/12/cvs-006.gif)
+![2000/12/cvs-006.gif](cvs-006.gif)
 
 - Initales Checkout
 ```console
@@ -137,7 +137,7 @@ $ cvs annotate <datei> | less
 
 # CVS - Paßworte und Optionen
 
-![](2000/12/cvs-007.gif)
+![2000/12/cvs-007.gif](cvs-007.gif)
 
 - Paßworte werden in der Datei .cvspass abgelegt
   - Verschlüsselung nur schwach
@@ -163,7 +163,7 @@ status -v
 
 # CVS - Repository anlegen
 
-![](2000/12/cvs-008.gif)
+![2000/12/cvs-008.gif](cvs-008.gif)
 
 - Anlegen:
 ```console
@@ -187,7 +187,7 @@ $ cvs init
 
 # CVS - User zu Repository zufügen
 
-![](2000/12/cvs-009.gif)
+![2000/12/cvs-009.gif](cvs-009.gif)
 
 - `CVSROOT/config`
   - `SystemAuth="no"`
@@ -207,7 +207,7 @@ $ cvs init
 
 # CVS - Neues Projekt anlegen
 
-![](2000/12/cvs-010.gif)
+![2000/12/cvs-010.gif](cvs-010.gif)
 
 - Source muss in einem Verzeichnisbaum vorliegen.
 - Source darf keine Verzeichnisse "CVS" enthalten.
@@ -221,7 +221,7 @@ $ cvs init
 
 # CVS - Aktualisieren und Commit
 
-![](2000/12/cvs-011.gif)
+![2000/12/cvs-011.gif](cvs-011.gif)
 
 - Aktualisieren des CVS:
   - `cvs update`
@@ -234,7 +234,7 @@ $ cvs init
 
 # CVS - Keywords
 
-![](2000/12/cvs-012.gif)
+![2000/12/cvs-012.gif](cvs-012.gif)
 
 - Dateien können Keywords enthalten.
   - Diese werden in `$ $` eingeschlossen.
@@ -249,7 +249,7 @@ $ cvs init
 
 # CVS - Was haben die anderen getan?
 
-![](2000/12/cvs-013.gif)
+![2000/12/cvs-013.gif](cvs-013.gif)
 
 - Änderungen der anderen als Diff:
   - `cvs diff -u`
@@ -267,7 +267,7 @@ $ cvs init
 
 # CVS - Dateien zufügen und lôschen
 
-![](2000/12/cvs-014.gif)
+![2000/12/cvs-014.gif](cvs-014.gif)
 
 - Dateien zufühen mit add
   - `cvs add datei.c`
@@ -288,7 +288,7 @@ $ cvs init
 
 # CVS - Releases erzeugen und holen
 
-![](2000/12/cvs-015.gif)
+![2000/12/cvs-015.gif](cvs-015.gif)
 
 - Alle Dateien eines Worksapce können einen gemeinsamen symbolischen Namen bekommen
   - cvs tag NAME

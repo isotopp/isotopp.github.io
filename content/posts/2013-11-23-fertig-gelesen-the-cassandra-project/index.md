@@ -13,7 +13,7 @@ aliases:
 ---
 Was Watergate mit der neunten und zehnten Apollo Mission zu tun hat, und wieso das auch 50 Jahre später noch ein Problem ist, erklären McDevitt und Resnick hier, in einer Geschichte, die für McDevitt durchaus alle typischen Elemente enthält.
 
-[![](2013/11/cassandra-project.png)](http://www.amazon.de/gp/aw/d/B008EXK2OE)
+[![2013/11/cassandra-project.png](cassandra-project.png)](http://www.amazon.de/gp/aw/d/B008EXK2OE)
 
 [The Cassandra Project](http://www.amazon.de/gp/aw/d/B008EXK2OE)
 

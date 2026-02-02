@@ -16,7 +16,7 @@ Als ich noch ein ganz kleiner Kris war, habe ich die Schülerbüchereien von meh
 
 Groß geworden bin ich unter anderem mit den Büchern von [Rolf Ulrici](https://de.wikipedia.org/wiki/Rolf_Ulrici#Raumschiff_Monitor), Raumschiff Monitor und Erdschiff Giganto.
 
-![](2020/06/ulrici-monitor.png)
+![2020/06/ulrici-monitor.png](ulrici-monitor.png)
 
 *Steinalte deutsche Klischee-Scifi, eigentlich mehr eine Kinder-Abenteuerserie mit Weltraum-Hintergrund.*
 

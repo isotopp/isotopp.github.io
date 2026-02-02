@@ -16,7 +16,7 @@ Heute lernte ich, daß das Utility `sshpass` existiert.
 Ich habe das beim Lesen eines `.gitlab.ci.yml` Files gelernt.
 Und ihr wundert Euch, wieso Sysadmins alle Schwarz tragen und an Whisky interessiert sind.
 
-![](2023/09/sshpass-01.png)
+![2023/09/sshpass-01.png](sshpass-01.png)
 
 Was ist `sshpass` werdet ihr jetzt fragen?
 

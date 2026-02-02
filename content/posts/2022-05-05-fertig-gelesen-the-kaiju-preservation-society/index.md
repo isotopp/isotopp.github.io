@@ -16,7 +16,7 @@ On an alternate earth alternate biology produces beings that can grow up to 150 
 Whenever anything, humans or Kaiju, uses nuclear energy, the boundary between the alternate realities is weakened and things can cross over.
 That happened the first time late in the second world war, and that is how the legend of Godzilla came into the world.
 
-[![](2022/05/kps.jpg)](https://www.amazon.de/-/en/John-Scalzi-ebook/dp/B09DD2DK5Z)
+[![2022/05/kps.jpg](kps.jpg)](https://www.amazon.de/-/en/John-Scalzi-ebook/dp/B09DD2DK5Z)
 
 *[The Kaiju Preservation Society](https://www.amazon.de/-/en/John-Scalzi-ebook/dp/B09DD2DK5Z), John Scalzi*
 

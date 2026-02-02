@@ -21,7 +21,7 @@ Er erklärt wie ChatGPT intern funktioniert, warum das so viel Ressourcen kostet
 und er erklärt auch, daß wir keine Ahnung haben, wieso das "funktioniert".
 Er zeigt aber auch, was ChatGPT alles prinzipbedingt niemals erreichen kann, und auch nicht lernen wird.
 
-[![](2024/02/chatgpt-01.jpg)](https://writings.stephenwolfram.com/2023/02/what-is-chatgpt-doing-and-why-does-it-work/)
+[![2024/02/chatgpt-01.jpg](chatgpt-01.jpg)](https://writings.stephenwolfram.com/2023/02/what-is-chatgpt-doing-and-why-does-it-work/)
 
 *[What is ChatGPT doing…](https://writings.stephenwolfram.com/2023/02/what-is-chatgpt-doing-and-why-does-it-work/) 
 von Stephen Wolfram vom 14. Februar 2023.*
@@ -45,12 +45,12 @@ weil es so einen Heidenspaß macht mit dem Ding zu arbeiten und Sachen auszuprob
 Rein optisch und von der Arbeitsweise ist Jupyter ein gnadenloser Mathematica-Clone,
 aber in Mathematica steckt eine komplett andere Sprache (etwas, das mal ein Prolog war) und eine viel, viel größere Bibliothek.
 
-![](2024/02/chatgpt-02.jpg)
+![2024/02/chatgpt-02.jpg](chatgpt-02.jpg)
 
 *Ein Mathematica Arbeitsblatt, das die Approximation von Rechteckwellen durch Fouriersynthese zeigt, 
 indem es eine Formelschar generiert und plotted.*
 
-![](2024/02/chatgpt-03.jpg)
+![2024/02/chatgpt-03.jpg](chatgpt-03.jpg)
 
 *Wir generieren daraus Audio, stellen das Audio dar, und spielen es ab.*
 
@@ -63,7 +63,7 @@ aber daß beide für Englisch charakteristische Buchstabenhäufigkeiten haben.
 Er greift sich dann die Häufigkeiten von Buchstabenpaaren (Bi-Grammen) und zeigt an der Spalte für den Buchstaben "q",
 daß "q" quasi immer von "u" gefolgt wird, und man kann das sehen.
 
-![](2024/02/chatgpt-04.jpg)
+![2024/02/chatgpt-04.jpg](chatgpt-04.jpg)
 
 *Entlang der X-Achse die ersten Buchstaben von Paaren, 
 entlang der Y-Achse die zweiten Buchstaben.
@@ -75,7 +75,7 @@ dann bekommt man irgendwann fast aussprechbare oder reale englische Worte.
 Schon 4-Gramme produzieren gute Worte. 
 Englisch hat also einen Buchstabenkontext von circa 4-5.
 
-![](2024/02/chatgpt-05.jpg)
+![2024/02/chatgpt-05.jpg](chatgpt-05.jpg)
 
 *Eine Reihe von Worten, die aus Nachfolgewahrscheinlichkeiten von Bi-, Tri- und n-Grammen erzeugt worden ist.
 Ab einer Länge von etwa 4 entstehen oft gültige Worte der englischen Sprache.*
@@ -92,7 +92,7 @@ Davon sind viele Begriffe Ein-Token und einige Mehr-Token.
 
 Bigramme auf Token produzieren Dinge wie dies hier: Wortsalat.
 
-![](2024/02/chatgpt-06.jpg)
+![2024/02/chatgpt-06.jpg](chatgpt-06.jpg)
 
 *Eine Reihe von Wortfolgen, die alle zufällig generiert wurden, auf der Basis von Wortfolgewahrscheinlichkeiten,
 die über Bi-Grammen, also Wortpaaren, errechnet worden sind.
@@ -117,7 +117,7 @@ Er nutzt dieses Beispiel, um viele Dinge um den Modellbegriff zu erklären:
 Einmal gibt es verschiedene Wege, um den Fehler zu messen, 
 also die Abweichung der interpolierten Linie von den Messwerten zu beschreiben.
 
-![](2024/02/chatgpt-07.jpg)
+![2024/02/chatgpt-07.jpg](chatgpt-07.jpg)
 
 *Die Messwerte eines Ballwurfes, und die verschiedenen hindurch interpolierten Kurven.
 Eine Gerade, eine Parabel und "was Kompliziertes".*
@@ -136,7 +136,7 @@ und welche Mathematik da drin steckt und wofür man sie einsetzen kann.
 Es sind Geradengleichungen, mx+b, und Summen, aber sehr, sehr viele.
 Sein Beispiel ist die Schrifterkennung.
 
-![](2024/02/chatgpt-08.jpg)
+![2024/02/chatgpt-08.jpg](chatgpt-08.jpg)
 
 *Ein Datentyp in Mathematica sind zweidimensionale Bitmaps – Bilder.
 Hier sind es handgeschriebene Ziffern.
@@ -144,7 +144,7 @@ Man kann diese in eine Menge (einen weiteren Datentyp) tun, und dann einem NetMo
 Dieses spezielle NetModel gibt dann als Ausgabe die erkannten Ziffern.
 Dies ist eine Anwendung eines NN als Classifier, also als ein Ding, das erkennen und gruppieren kann.*
 
-![](2024/02/chatgpt-09.jpg)
+![2024/02/chatgpt-09.jpg](chatgpt-09.jpg)
 
 *Auf ein Bitmuster einer gut lesbaren 2 wird sukzessive ein immer stärkerer Gaussian Blur angewendet.
 Die resultierende Eingabemenge wird in das NetModel-Objekt verfüttert und man bekommt "2, 2, 2, 1, 1, 1, 1, 1, 1" als Ausgabe.
@@ -157,22 +157,22 @@ zu "lernen" und durch ein neuronales Netz zu produzieren.
 Er benutzt das, um zu zeigen, wie man Koeffizienten einer Näherungsfunktion findet,
 indem man simple Geradengleichungsrechner (Neuronen) verknüpft.
 
-![](2024/02/chatgpt-10.jpg)
+![2024/02/chatgpt-10.jpg](chatgpt-10.jpg)
 
 *Von einem NN erkannte handgeschriebene Ziffern nach Ähnlichkeit sortiert und angeordnet.*
 
-![](2024/02/chatgpt-11.jpg)
+![2024/02/chatgpt-11.jpg](chatgpt-11.jpg)
 
 *Eine Reihe von zufällig auf einer Ebene verteilte Punkte und die von ihnen "beherrschten" Gebiete:
 Jeder Punkt der Ebene wird dem orangen Punkt zugeordnet, der ihm nach irgendeiner Distanzmetrik am nächsten ist.
 Es entsteht eine Partition, eine Aufteilung, der Karte in Zonen um die Punkte.
 Es sieht aus wie Seifenblasen, die aneinander kleben und gerade Schnittflächen bilden.*
 
-![](2024/02/chatgpt-12.jpg)
+![2024/02/chatgpt-12.jpg](chatgpt-12.jpg)
 
 *Die Aufgabe: Ein simples Voronoi, das drei Punkte mit den Werten +1, 0 und -1 auf einer Ebene verteilt.*
 
-![](2024/02/chatgpt-13.jpg)
+![2024/02/chatgpt-13.jpg](chatgpt-13.jpg)
 
 *Die 3D-Darstellung desselben Diagramms.*
 
@@ -182,11 +182,11 @@ und diskutiert verschiedene mögliche Abstandsberechnungsfunktionen (Fehler-Meß
 Wenn man die Mathematik und den Prozess der Suche nach den passenden Koeffizienten mal wegläßt,
 kommt man am Ende bei einer Näherung des Wunsch-Graphen an, die so aussieht.
 
-![](2024/02/chatgpt-14.jpg)
+![2024/02/chatgpt-14.jpg](chatgpt-14.jpg)
 
 *Das von Wolfram gewählte neuronale Netz.*
 
-![](2024/02/chatgpt-16.jpg)
+![2024/02/chatgpt-16.jpg](chatgpt-16.jpg)
 
 *Das Resultat weicht vom Wunschergebnis ab, ist aber eine gute Näherung.*
 
@@ -215,7 +215,7 @@ Fast alles am Bau von NN ist "Erfahrung" und "Empirik" ohne viel Theorie dahinte
 Wir können Daten aus Schichten von NN herausziehen und sie nach einer Abstandsfunktion sortieren lassen,
 und die Anordnung ergibt für unsere menschlichen Hirne irgendwie Sinn.
 
-![](2024/02/chatgpt-18.jpg)
+![2024/02/chatgpt-18.jpg](chatgpt-18.jpg)
 
 *Hunde und Katzenbilder nach einer Abstandsfunktion eines NN sortiert.*
 
@@ -224,7 +224,7 @@ und bekommen vereinfachte Bilder von den Dingen, die da gespeichert oder erkannt
 
 Aber wir haben keine Funktionstheorie oder Mathematik von NN und Kognition.
 
-![](2024/02/chatgpt-19.jpg)
+![2024/02/chatgpt-19.jpg](chatgpt-19.jpg)
 
 *Aus einer Schicht aus dem NN eines Katzen-Hunde-Sortierers herausgezogene Daten ergeben Katzenbilder.*
 
@@ -240,7 +240,7 @@ und wandert dann in der so entstehenden Fehlerlandschaft auf einem zufälligen P
 
 Das findet lokale Minima und man hofft, aus "lokalen Löchern" zu entkommen, indem man zufällige Schritte zufälliger Größen macht.
 
-![](2024/02/chatgpt-20.jpg)
+![2024/02/chatgpt-20.jpg](chatgpt-20.jpg)
 
 *Die Berg- und Tallandschaft des Fehlergraphen und der Weg des Modells zum lokalen Minimum.*
 
@@ -250,7 +250,7 @@ Bestimmte Formen haben sich als besser lernfähig erwiesen:
 Ein schmaler Layer der zwischen zwei breite Layers eingefügt wird scheint Ergebnisse stark zu verbessern.
 Niemand weiß, warum das so ist oder hat ein Modell, das dies erklärt.
 
-![](2024/02/chatgpt-21.jpg)
+![2024/02/chatgpt-21.jpg](chatgpt-21.jpg)
 
 *Verschiedene Formen von NN und die Ergebnisse, die sie produzieren.*
 
@@ -259,7 +259,7 @@ Training von LLMs ist sehr, sehr einfach, weil sie einfach Text essen:
 Man nimmt beliebigen Text, lässt das Modell das folgende Wort generieren und vergleicht es mit dem Wort, das hätte kommen müssen.
 Daraus kann man Trainingsfeedback erzeugen.
 
-![](2024/02/chatgpt-22.jpg)
+![2024/02/chatgpt-22.jpg](chatgpt-22.jpg)
 
 *Eine Karte, auf der englische Worte nach Ähnlichkeit angeordnet sind.
 Säugetiere sind links oben, links unten sind "alligator" und "crocodile" dicht beieinander, "ant" und "bee" sind es auch.
@@ -277,7 +277,7 @@ oder zu irgendeiner Theorie, die die Funktionsweise von LLMs und NNs planbar und
 Er macht dies mit verschiedenen Visualisierungen von Koeffizienten auf die unterschiedlichsten Weisen,
 aber er findet nur quälende Muster, die wie Inhalt wirken und nichts enthüllen.
 
-![](2024/02/chatgpt-23.jpg)
+![2024/02/chatgpt-23.jpg](chatgpt-23.jpg)
 
 *Eine Vergröberung einer ChatGPT Koeffizientenmatrix und Einfärbung nach bestimmten Werten erzeugt eine interessante Teal-and-Orange Batik,
 die nichts bedeutet.*

@@ -25,7 +25,7 @@ No explanation is given, and no preference is stated.
 Are they not the same?
 They seem to be from the same company, though.
 
-![](2024/02/element-01.jpg)
+![2024/02/element-01.jpg](element-01.jpg)
 
 *Element and Element X in the app store. Which one to use?*
 
@@ -38,13 +38,13 @@ Why is it not labeled as a Beta?
 On the desktop, going to [Matrix.org](https://matrix.org) plus two additional clicks take you to
 [the client page](https://matrix.org/ecosystem/clients/), which offers
 
-![](2024/02/element-02.jpg)
+![2024/02/element-02.jpg](element-02.jpg)
 
 *The client page offers you, among others, both clients and also states which is available on what platform.*
 
 So apparently "Element X" is beta and not yet available on all platforms. I open the macOS App Store and...
 
-![](2024/02/element-03.jpg)
+![2024/02/element-03.jpg](element-03.jpg)
 
 *macOS does not offer Element, only Element X.*
 
@@ -53,7 +53,7 @@ Element X is available on iOS and macOS, Element is not.
 
 Ok, let's install Element X and try:
 
-![](2024/02/element-04.jpg)
+![2024/02/element-04.jpg](element-04.jpg)
 
 *Element X wants me to sign in to matrix.org. There is no 'sign up' Button. There is no sign-up menu.*
 
@@ -62,7 +62,7 @@ There is zero onboarding for new users.
 
 Ok, let's go to matrix.org again, and see.
 
-![](2024/02/element-05.jpg)
+![2024/02/element-05.jpg](element-05.jpg)
 
 *The matrix.org Website is not very helpful. But when you notice the burger menu, there is actually a "Try Matrix" button.*
 
@@ -73,7 +73,7 @@ or install a server,
 or choose a public server.
 If you opt for Public Servers, you land here:
 
-![](2024/02/element-06.jpg)
+![2024/02/element-06.jpg](element-06.jpg)
 
 *matrix.org server instances, alphabetically sorted, with little additional information.*
 
@@ -90,7 +90,7 @@ I can dig through their privacy policies and rules, except that some don't provi
 
 Scrolling down, I end up with the option to onboard to this:
 
-![](2024/02/element-07.jpg)
+![2024/02/element-07.jpg](element-07.jpg)
 
 *Servers marked as vulnerable, unavailable and with profanity in their name.*
 
@@ -112,7 +112,7 @@ The server says I am validated.
 I try to login, using Bitwarden.
 The login is rejected.
 
-![](2024/02/element-09.jpg)
+![2024/02/element-09.jpg](element-09.jpg)
 
 *I am trying to recover the password for the account which I just validated, using the email from the verification mail.
 The account is unknown.*
@@ -122,7 +122,7 @@ I click on "forgotten password", and supply the mail adress the validation mail 
 
 Okay, since my account does not exist, I create it again:
 
-![](2024/02/element-10.jpg)
+![2024/02/element-10.jpg](element-10.jpg)
 
 *I recreate my account, using the same mail address. As you can see, the first registration mail still is in the account.
 I take the validation URL, which is longer than 80 characters, and use it to successfully validate, again.*
@@ -143,7 +143,7 @@ I log out and log in again.
 
 I get this:
 
-![](2024/02/element-11.jpg)
+![2024/02/element-11.jpg](element-11.jpg)
 
 * **Unable to verify this device**
 It looks like you don't have a Security Key or any other devices you can verify against.
@@ -159,18 +159,18 @@ I select "Change Server", and get a form field where it says "matrix.org".
 I am overwriting it with "chat.tchncs.de", which supposedly is my server.
 At least that is what it says in the web client.
 
-![](2024/02/element-12.jpg)
+![2024/02/element-12.jpg](element-12.jpg)
 
 That is not accepted.
 
 I take the URL from the browser and paste that instead.
 
-![](2024/02/element-13.jpg)
+![2024/02/element-13.jpg](element-13.jpg)
 
 That is also not accepted, but I can learn more.
 I click.
 
-![](2024/02/element-14.jpg)
+![2024/02/element-14.jpg](element-14.jpg)
 
 The what?
 
@@ -178,12 +178,12 @@ Turns out, while the Chat is running on "chat.tchncs.de", this is not the "Ident
 That one is called "tchncs.de".
 You only learn this when you open your config menu in the web chat and look at Identifer shown there.
 
-![](2024/02/element-15.jpg)
+![2024/02/element-15.jpg](element-15.jpg)
 
 Once you enter this, Element X and the web chat get hectic.
 There is a new client, and both clients want to authenticate that the new device is legit.
 
-![](2024/02/element-16.jpg)
+![2024/02/element-16.jpg](element-16.jpg)
 
 For that purpose, they display a set of Emojis, which look differently in the web client and the application,
 and ask me if they are the same.
@@ -199,7 +199,7 @@ When I close any client, I have to re-login, re-compare the Emojis, and all chat
 
 Why have I been trying this?
 
-![](2024/02/element-08.jpg)
+![2024/02/element-08.jpg](element-08.jpg)
 
 *A friend was trying to use a Matrix messenger on their phone, and waited 9 hours for this to complete.*
 
@@ -242,7 +242,7 @@ So far, no responses from Element.
 
 [Matrix writes](https://mastodon.matrix.org/@matrix/111924190165706931):
 
-![](2024/02/element-17.jpg)
+![2024/02/element-17.jpg](element-17.jpg)
 
 > well, this is a trashfire indeed.
 > Thanks for writing this up.
@@ -255,7 +255,7 @@ So far, no responses from Element.
 
 [The continue](https://mastodon.matrix.org/@matrix/111924227099676114)
 
-![](2024/02/element-18.jpg)
+![2024/02/element-18.jpg](element-18.jpg)
 
 > - Verification UX in Element is a disaster, and being reworked in EX:
 >   [Github link](https://github.com/element-hq/element-meta/blob/develop/docs/FTUE.md)
@@ -270,7 +270,7 @@ So far, no responses from Element.
 
 Matrix Director of Program Development [Thibault A. Martin responds](https://mamot.fr/@thibaultamartin/111924256997285624)
 
-![](2024/02/element-19.jpg)
+![2024/02/element-19.jpg](element-19.jpg)
 
 > Hej @isotopp I'm one of the maintainers of the matrix.org website.
 > 

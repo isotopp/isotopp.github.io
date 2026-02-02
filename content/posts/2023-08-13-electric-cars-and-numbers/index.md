@@ -49,7 +49,7 @@ Back in the day, we had incandescent light bulbs, and the standard thing everybo
 It was as bright as a modern 14W LED light today.
 Running the 100 W lamp for one hour uses 100 Wh of energy, running it for 10 hours is 1000 Wh, or 1 kWh.
 
-![](2023/08/100W.jpg)
+![2023/08/100W.jpg](100W.jpg)
 
 *A 100 W incandescent bulk, [as shown in Wikipedia](https://en.wikipedia.org/wiki/File:Gluehlampe_01_KMJ.png).*
 
@@ -148,7 +148,7 @@ This is the rhythm of the electric long distance drive:
 
 ## At home, and charging
 
-![](2023/08/ladepunkt.jpg)
+![2023/08/ladepunkt.jpg](ladepunkt.jpg)
 
 *11 KW charge point as it is installed in public spaces all over the country in the Netherlands 
 ([Wikipedia](https://nl.wikipedia.org/wiki/Oplaadpunt#/media/Bestand:Oplaadpaal_Utrecht.jpg)).*
@@ -210,7 +210,7 @@ That's the energy content of 30l Diesel, for a train of 60m length and 180 seats
 Or in other words, 5 times the energy use of a Diesel car, 
 so if 6 seats are occupied, it breaks even with a car (at an average occupancy of 1.2 people/car).
 
-![](2023/08/flirt-energy-use.jpg)
+![2023/08/flirt-energy-use.jpg](flirt-energy-use.jpg)
 
 *A Flirt has drawn 1408 kWh from the overhead line, and recuperated 748 kWh, for a net energy use of 660 kWh. 
 At the Konstanz-Stuttgart Line (200 km), this equals 330 kWh/100 km, or around 39l of Benzine (or 34l of Diesel) in energy content.* 

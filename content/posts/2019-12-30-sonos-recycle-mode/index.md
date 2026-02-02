@@ -51,7 +51,7 @@ In terms of long-term value, owners of the first gen Play One are probably curre
 
 The Trade-Up is advertised as follows:
 
-![](2019/12/sonos-trade-up.png)
+![2019/12/sonos-trade-up.png](sonos-trade-up.png)
 
 You select a device for Trade-Up, and receive a voucher for a 30% rebate on the purchase of a new device.
 You then have 21 days left to use the old device, after which time it will permanently cease to function.

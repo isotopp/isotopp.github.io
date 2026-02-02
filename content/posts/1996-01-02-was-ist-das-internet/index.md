@@ -304,7 +304,7 @@ ein spezielles Format umgewandelt, aber dies geschicht automatisch
 und ohne daß Sender oder Empfänger etwas davon merken. Die folgende 
 Abbildung zeigt eine solche Nachricht.
 
-![](1996/01/mailwindow.gif)
+![1996/01/mailwindow.gif](mailwindow.gif)
 
 *MIME-fähiges Mailprogramm unter Nextstep. Die gezeigte Nachricht enthält beigefügt das dritte Kapitel eines Buches und eine Sounddatei, die beide als Icon dargestellt werden können. Die Dateien können durch Mausklick geöffnet werden oder mit der Maus in einen Ordner auf der Festplatte fallengelassen werden.*
 
@@ -601,7 +601,7 @@ Abbildung erkennt man, wie aus der ungelenken Seitenbeschreibung, die
 der Server verwaltet, durch den Browser eine ansprechend aussehende
 Seite erzeugt wird.
 
-![](1996/01/webworks.gif)
+![1996/01/webworks.gif](webworks.gif)
 
 *Der Serverrechner stellt mit dem Programm httpd Daten im Netz bereit. Diese Daten liegen entweder als vorbereitete Dateien auf der Festplatte oder werden als Antwort auf eine Anfrage aus einer Datenbank berechnet. Die Darstellung der Daten übernimmt das Clientprogramm netscape. Es wandelt die Steueranweisungen der Seitenbeschreibungssprache HTML (links) in graphische Attribute und Querverbindungen (rechts) um.*
 

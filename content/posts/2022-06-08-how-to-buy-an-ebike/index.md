@@ -13,7 +13,7 @@ aliases:
 
 I [have been asked](https://twitter.com/isotopp/status/1534158787891843073) what kind of bike I ride and how to choose one.
 
-![](2022/06/grenoble.jpg)
+![2022/06/grenoble.jpg](grenoble.jpg)
 
 *Gazelle Grenoble 2017, with vaude Aquaback plus.*
 
@@ -59,7 +59,7 @@ Also, the bike is entirely unconnected -- it will work with the cellphone at hom
 
 I mention this, because I am living in Hipster Ground Zero, and a lot of people look at VanMoof:
 
-![](2022/06/vanmoof.jpg)
+![2022/06/vanmoof.jpg](vanmoof.jpg)
 
 *Awesome design, seriously bad ergonomic choices and a lot of quality issues.*
 

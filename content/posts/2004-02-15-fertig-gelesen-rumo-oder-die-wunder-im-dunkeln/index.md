@@ -13,7 +13,7 @@ aliases:
 ---
 [Rumo](http://www.amazon.de/exec/obidos/ASIN/3492045480/kristiankohntopp) ist ein kleiner Wolpertingerwelpe, der auf einem idyllischen Fhernhachenbauernhof auf Walter Moers Kontinent Zamonien aufwächst. Und wer immer noch geglaubt hat, daß Walter Moers' Bücher Kinderbücher seien, der wird schon auf den ersten paar Seiten eines Besseren belehrt.
 
-![](2004/02/rumo.jpg)
+![2004/02/rumo.jpg](rumo.jpg)
 
 Rumo wird, wie die Fernhachenbauern und alle anderen Lebewesen auf dem Bauernhof, von den bösen Teufelszyklopen verschleppt, die ihre Opfer lebendig verspeisen. Und während um ihn herum einer seiner Freunde nach dem Anderen von den Zyklopen gefressen werden, wächst Rumo zu so einer Art zamonischem Bruce Lee heran - wortkarg, blitzschnell im Kampf, und sich einmal blutig durch die Fauna und Flora Zamoniens prügelnd.
 

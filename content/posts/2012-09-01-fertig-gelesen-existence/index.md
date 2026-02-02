@@ -39,9 +39,8 @@ Ziel-Intelligenz aufzubauen.  Plus, wenn noch keine solche vorhanden ist,
 können sie auch gerne eine lange Zeit warten, bis die Ziel-Welt soweit ist. 
 Und die Erde ist nun so weit.
 
-Ab hier wird die Geschichte auf eine unglaublich stringente und logische
-Weise vollkommen absurd.  Denn was kann eine in einem Kristall hochgeladene
-Avatar-Intelligenz denn wollen und anbieten?  Zurück in die Heimat kann sie
-nicht, denn ihre Ursprungswelt ist fast sicher tot, die Zivilisation dort
-vergangen...  Die Antwort auf diese Frage ähnelt auf überraschende Weise
-meiner Inbox.  Brin delivers.
+Ab hier wird die Geschichte auf eine unglaublich stringente und logische Weise vollkommen absurd.
+Denn was kann eine in einem Kristall hochgeladene Avatar-Intelligenz denn wollen und anbieten?
+Zurück in die Heimat kann sie nicht, denn ihre Ursprungswelt ist fast sicher tot, die Zivilisation dort vergangen...
+Die Antwort auf diese Frage ähnelt auf überraschende Weise meiner Inbox.
+Brin delivers.

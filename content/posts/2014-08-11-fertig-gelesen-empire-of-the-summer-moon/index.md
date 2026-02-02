@@ -13,7 +13,7 @@ aliases:
 ---
 Comanche. Das ist das Ute-Wort für "Feind".
 
-[![](2014/08/empire-summer-moon.jpg)](https://www.amazon.de/Empire-Summer-Moon-Comanches-Powerful-ebook/dp/B003KN3MDG)
+[![2014/08/empire-summer-moon.jpg](empire-summer-moon.jpg)](https://www.amazon.de/Empire-Summer-Moon-Comanches-Powerful-ebook/dp/B003KN3MDG)
 
 [Empire of the Summer Moon](https://www.amazon.de/Empire-Summer-Moon-Comanches-Powerful-ebook/dp/B003KN3MDG)
 

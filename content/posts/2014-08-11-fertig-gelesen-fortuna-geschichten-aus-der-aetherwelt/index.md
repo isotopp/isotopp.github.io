@@ -14,7 +14,7 @@ aliases:
 ---
 Das Amt für Aetherangelegenheiten muß eine Serie von Mordfällen an Bord des fliegenden Spielcasinos Fortuna aufklären. Die Aufgabe fällt dem aethersensitiven, blinden Adligen Claudius zu, doch statt sich an die Fakten zu halten verstrickt er sich mehr und mehr in die ganze Geschichte.
 
-[![](2014/08/fortuna.jpg)](https://www.amazon.de/Fortuna-Geschichten-Aetherwelt-Anja-Bagus-ebook/dp/B00KWE1YTK)
+[![2014/08/fortuna.jpg](fortuna.jpg)](https://www.amazon.de/Fortuna-Geschichten-Aetherwelt-Anja-Bagus-ebook/dp/B00KWE1YTK)
 
 [Fortuna: Geschichten aus der Aetherwelt](https://www.amazon.de/Fortuna-Geschichten-Aetherwelt-Anja-Bagus-ebook/dp/B00KWE1YTK)
 

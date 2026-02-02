@@ -12,7 +12,7 @@ aliases:
 Welcome to the Netherlands.
 I am living at the bottom of a lake, 3.50 meters below the sea level, and there are sea shells in my garden.
 
-![](2020/02/haarlemmermeer-muschel.jpg)
+![2020/02/haarlemmermeer-muschel.jpg](haarlemmermeer-muschel.jpg)
 
 *When I dig in my garden, it looks like this.*
 
@@ -22,7 +22,7 @@ This is an estuary delta (tidal delta), which means it is formed as much by eros
 The erosion is a strong power, and was often seen as a living evil force working against the works of men -- the [Waterwolf](https://en.wikipedia.org/wiki/Waterwolf), devouring the land.
 The waterwolf often refers specifically to the effect of peaty bogs and costal lake swamps growing and merging lakes.
 
-![](2020/02/haarlemmermeer-oldmap.jpg)
+![2020/02/haarlemmermeer-oldmap.jpg](haarlemmermeer-oldmap.jpg)
 
 *The situation before the lakes merge.*
 
@@ -37,14 +37,14 @@ He appointed a royal commission and tasked it with making plans to drain the lak
 
 In early 1840 work was begun.
 
-[![](2020/02/haarlemmermeer-map.jpg)](https://www.google.com/maps/place/Haarlemmermeer/@52.3239983,4.6148638,12z/data=!3m1!4b1!4m5!3m4!1s0x47c5e0cde9ceff8f:0x3bbab97e58eb764b!8m2!3d52.3003784!4d4.6743594)
+[![2020/02/haarlemmermeer-map.jpg](haarlemmermeer-map.jpg)](https://www.google.com/maps/place/Haarlemmermeer/@52.3239983,4.6148638,12z/data=!3m1!4b1!4m5!3m4!1s0x47c5e0cde9ceff8f:0x3bbab97e58eb764b!8m2!3d52.3003784!4d4.6743594)
 
 *Haarlemmermeer is the area of the former lake, as defined by the Ringvaart, plus the area in the north extending it to the Ij*
 
 The [Ringvaart](https://en.wikipedia.org/wiki/Ringvaart) is a 61 kilometer long ring canal that was being dug with manual labour, defining the shore of the Haarlemmermeer.
 Today it defines the border of the Gemeente, mostly, plus some area in the north extending the Gemeente towards the Ij.
 
-![](2020/02/haarlemmermeer-ringvaart.jpg)
+![2020/02/haarlemmermeer-ringvaart.jpg](haarlemmermeer-ringvaart.jpg)
 
 *The Ringvaart today, between Cruquius and Vijfhuizen.*
 
@@ -53,7 +53,7 @@ The canal was completed in 1845, and three large steam pump stations were built 
 Leeghwater aan de Kaag (1845), Lijnden (1848) and Cruquius (1849).
 Until 1852, 800 billion litres of water have been pumped away and "the fish could be collected by hand". 
 
-![](2020/02/haarlemmermeer-cruquius.jpg)
+![2020/02/haarlemmermeer-cruquius.jpg](haarlemmermeer-cruquius.jpg)
 
 *Steam Pump in Cruquius (1849) with a James Watt Steam Engine.*
 
@@ -62,7 +62,7 @@ Entry is 7 EUR (or free, if you have a [museumkaart](https://www.museumkaart.nl/
 
 But of course land that is up to 3.50 below sea level and is in former a peat bog right next to the North Sea is not stable, and needs pumps and active water management around the clock to keep dry.
 
-![](2020/02/haarlemmermeer-willemi.jpg)
+![2020/02/haarlemmermeer-willemi.jpg](haarlemmermeer-willemi.jpg)
 
 *Gemaal Koning Willem I*
 

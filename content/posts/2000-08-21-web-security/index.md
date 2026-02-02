@@ -12,7 +12,7 @@ aliases:
   - /2000/08/21/web-security.html
 ---
 
-![](2000/08/web-security.001.jpg)
+![2000/08/web-security.001.jpg](web-security.001.jpg)
 
 NetUSE AG, http://www.netuse.de, ist ein Internet Systemhaus in Kiel.
 
@@ -24,7 +24,7 @@ Zu den Kunden gehören viele größere Konzerne, etwa Deutsche Telekom, Mobilcom
 
 # Gehackt
 
-![](2000/08/web-security.002.jpg)
+![2000/08/web-security.002.jpg](web-security.002.jpg)
 
 "Hacken" einer Website ist ein Angriff auf Verfügbarkeit, Integrität oder Vertraulichkeit.
 
@@ -38,7 +38,7 @@ Dies ist nicht mehr zu ändern.
 
 # Wer greift an?
 
-![](2000/08/web-security.003.jpg)
+![2000/08/web-security.003.jpg](web-security.003.jpg)
 
 Zwei große Gruppen:
 - "Script Kiddies", Angreifer ohne Insiderwissen und ohne tiefergehende Ausbildung, verwenden meist vorgefertigte Angriffswerkzeuge. Greifen ungerichtet an (Scanning) und brechen in eine große Zahl von Systemen ein.
@@ -55,7 +55,7 @@ Insider sind ein wesentlich schwierigeres Problem und nur durch ein durchgehende
 
 # Welche Ziele verfolgen Angreifer?
 
-![](2000/08/web-security.004.jpg)
+![2000/08/web-security.004.jpg](web-security.004.jpg)
 
 - "Script Kiddies": Warez-Site, IRC "Trading-Bots", Bandbreite, Paßworte als Handelsware
 - "Insider": Rache, spezifische Informationen aus dem Intranetwork, Kundenstammdaten, Kundenverkehrsdaten
@@ -71,7 +71,7 @@ Insider gehen dagegen meist gegen einen bestimmten Rechner im Netz vor, von dem 
 
 # Was wird angegriffen?
 
-![](2000/08/web-security.005.jpg)
+![2000/08/web-security.005.jpg](web-security.005.jpg)
 
 - Netzwerkkomponenten: Router, Firewalls, Switches
 - Ziel: Angriffsquelle verschleiern, Stepping Stone, Netzwerktopologie ermitteln, Netzwerkverkehr belauschen
@@ -88,7 +88,7 @@ Auf dem Server können Angriffe dem Serverbetriebssystem, dem installierten Webs
 
 # Was ist die Folge eines Angriffs?
 
-![](2000/08/web-security.006.jpg)
+![2000/08/web-security.006.jpg](web-security.006.jpg)
 
 - Kompromittierte Netzwerkkomponente:
   - Angreifer hat detaillierte Information über die Topologie.
@@ -118,7 +118,7 @@ Aufräumen und Validierung bringt enorme Kosten!
 
 # Server: Die Drei Kardinalfehler
 
-![](2000/08/web-security.007.jpg)
+![2000/08/web-security.007.jpg](web-security.007.jpg)
 
 - Betriebssystem: Der Server bietet Dienste an, die er nicht anbieten muß/sollte.
 - Webserver: Der Server liefert Daten im Web, die dort nicht stehen müssen/sollten.
@@ -147,7 +147,7 @@ Angriffe auf einen Webserver lassen sich in drei Problemklassen einteilen:
 
 # Problem 1: Ein Server bietet zuviele Dienste an
 
-![](2000/08/web-security.008.jpg)
+![2000/08/web-security.008.jpg](web-security.008.jpg)
 
 - Warum?
   - Standardinstallation des Herstellers.
@@ -182,7 +182,7 @@ Derartige "offene" Extranet-Kontakte sind ein beliebtes Einfallstor in Produktio
 
 # Überflüssige Dienste
 
-![](2000/08/web-security.009.jpg)
+![2000/08/web-security.009.jpg](web-security.009.jpg)
 
 Standardinstallation (UNIX):
 - Webserver für Manualpages (mehrere)
@@ -231,7 +231,7 @@ Nmap run completed -- 1 IP address (1 host up) scanned in 4 seconds
 
 # Notwendige Dienste
 
-![](2000/08/web-security.010.jpg)
+![2000/08/web-security.010.jpg](web-security.010.jpg)
 
 Notwendig sind meist nur zwei Dienste:
 - Domain Name System, aber nur outgoing?
@@ -263,7 +263,7 @@ Letzterer Punkt setzt voraus: Ein Betriebskonzept.
 
 # Die Realität
 
-![](2000/08/web-security.011.jpg)
+![2000/08/web-security.011.jpg](web-security.011.jpg)
 
 ```console
 Windows 2000, IIS
@@ -326,7 +326,7 @@ NFS ist sowieso ein Sicherheitsrisiko und sollte von außen nicht erreichbar sei
 
 # Abhilfe
 
-![](2000/08/web-security.012.jpg)
+![2000/08/web-security.012.jpg](web-security.012.jpg)
 
 - Kein Kontakt zum Internet ohne Firewall:
   - Keine Ausnahmen während der Installation
@@ -358,7 +358,7 @@ Noch einmal:
 
 # Problem 2: Ein Server liefert sensible Dateien
 
-![](2000/08/web-security.013.jpg)
+![2000/08/web-security.013.jpg](web-security.013.jpg)
 
 - Webserver als Transformationsmaschine für Pfadnamen
   - Regelsatz:
@@ -379,7 +379,7 @@ Noch einmal:
 
 # Abhilfe
 
-![](2000/08/web-security.014.jpg)
+![2000/08/web-security.014.jpg](web-security.014.jpg)
 
 Verzeichnisse außerhalb DocumentRoot:
 ```console
@@ -399,7 +399,7 @@ Leider nicht sehr übliche Konfiguration
 
 # Nebenkriegsschauplatz Webhosting
 
-![](2000/08/web-security.015.jpg)
+![2000/08/web-security.015.jpg](web-security.015.jpg)
 
 - Zugriff durch CGI-Programme aus Hostingumgebungen:
   - Kunde rät aus eigenen Verzeichnisnamen fremde Verzeichnisnamen
@@ -416,7 +416,7 @@ Leider nicht sehr übliche Konfiguration
 
 # Problem 3: Ein Server glaubt nicht vertrauenswürdige Daten
 
-![](2000/08/web-security.016.jpg)
+![2000/08/web-security.016.jpg](web-security.016.jpg)
 
 - Bedeutung einer Firewall im Datenfluß:
   - Protokollbegrenzer
@@ -449,7 +449,7 @@ Anwendungen müssen alle Daten "von außen nach innen" prüfen und dann "drinnen
 
 # Trust Boundary
 
-![](2000/08/web-security.017.jpg)
+![2000/08/web-security.017.jpg](web-security.017.jpg)
 
 Typische Fehler:
 - Anwenderdaten werden durch HIDDEN-Parameter oder per GET/POST/COOKIE weitergereicht.
@@ -469,7 +469,7 @@ Abhilfe:
 
 # Ursache
 
-![](2000/08/web-security.018.jpg)
+![2000/08/web-security.018.jpg](web-security.018.jpg)
 
 - Der 3. Kardinalfehler ist sehr häufig. Warum?
   - HTTP ist ein zustands-loses Protokoll.
@@ -492,7 +492,7 @@ Warum Sessions?
 
 # Weitere Ursachen
 
-![](2000/08/web-security.019.jpg)
+![2000/08/web-security.019.jpg](web-security.019.jpg)
 
 Andere Gründe:
 - Aus Zeitdruck Prototypen in Produktion geben.
@@ -514,7 +514,7 @@ Hemmungslose Kaufempfehlung:
 
 # Abhilfe
 
-![](2000/08/web-security.020.jpg)
+![2000/08/web-security.020.jpg](web-security.020.jpg)
 
 - Statekeeping durch Application Server managen lassen.
 - Anwendung als Automaten strukturieren.

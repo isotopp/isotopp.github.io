@@ -29,7 +29,7 @@ Some things to remember:
 
 The encoded file is stored and played on demand for each viewer. In effect this turns watching a video on a streaming service basically into a normal file download with a "fancy" download protocol.
 
-![](2019/12/google-chunked.png)
+![2019/12/google-chunked.png](google-chunked.png)
 
 via [Netmanias: Youtube Chunking, 2013](https://www.netmanias.com/en/post/blog/5923/google-http-adaptive-streaming-iptv-video-streaming-youtube/youtube-changing-the-way-of-delivering-videos-chunking-and-adaptive-streaming-are-in-progressive-download-is-out)
 
@@ -37,7 +37,7 @@ Define "fancy": The file is being chopped into chunks of around a few seconds pl
 
 **A video is not shipped across the Atlantic Ocean for each viewer.** Most likely (and especially for popular videos), an edge cache is holding a copy of the file locally and serving it to the customer. Google documents this in [their peering and caching documentation](https://peering.google.com/#/infrastructure).
 
-![](2019/12/google-edge.png)
+![2019/12/google-edge.png](google-edge.png)
 
 Google provides a map of their Google Global Cache nodes. There is at least one in every metropolitan area. These nodes also cache popular Youtube videos. The cache is quite effective, an older 2012 paper ([PDF](https://www.net.in.tum.de/fileadmin/bibtex/publications/papers/braun_noms2012_youtube_caching.pdf)) discusses that.
 

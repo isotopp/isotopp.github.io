@@ -19,7 +19,7 @@ when Crowdstrike took out a good 1% of all Windows machines worldwide with a bot
 
 # Some Takes
 
-![](2024/07/crowdstroke-01.png)
+![2024/07/crowdstroke-01.png](crowdstroke-01.png)
 
 ## Crowdstrike
 The company did release a statement with 

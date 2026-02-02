@@ -13,7 +13,7 @@ aliases:
 ---
 »"What Do You Care What Other People Think?": Further Adventures of a Curious Character. Biographie von Richard P. Feynman, Nobelpreisträger und Mitglied der Untersuchungskommision zur Explosion des Space Shuttle "Challenger" vor genau 30 Jahren.
 
-[![](2016/01/feynman.jpg)](https://www.amazon.de/What-Care-Other-People-Think-ebook/dp/B004OA6KIS)
+[![2016/01/feynman.jpg](feynman.jpg)](https://www.amazon.de/What-Care-Other-People-Think-ebook/dp/B004OA6KIS)
 
 [What Do You Care What Other People Think?](https://www.amazon.de/What-Care-Other-People-Think-ebook/dp/B004OA6KIS)
 

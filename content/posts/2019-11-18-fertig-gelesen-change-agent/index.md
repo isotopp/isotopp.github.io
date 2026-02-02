@@ -14,7 +14,7 @@ aliases:
 [Change Agent](https://www.amazon.de/dp/110198466X) is Daniel
 Suarez fifth book.
 
-[![](2019/11/change-agent.jpg)](https://www.amazon.de/dp/110198466X)
+[![2019/11/change-agent.jpg](change-agent.jpg)](https://www.amazon.de/dp/110198466X)
 
 As usual, he builds his stories around one
 technology or technological change and constructs an action-rich

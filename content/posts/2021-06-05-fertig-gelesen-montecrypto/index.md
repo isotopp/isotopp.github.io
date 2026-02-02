@@ -19,7 +19,7 @@ schon eine ganze Menge Tom Hillenbrand: [Drachenväter]({{< relref "2014-08-11-f
 
 Das aktuelle Buch von Tom Hillenbrand ist [Montecrypto](https://www.amazon.de/dp/3462001574), das sich mit dem Hype um Cryptocurrencies beschäftigt und eine Art "Der Graf von Monte Cristo"-Geschichte erzählt.
 
-[![](2021/06/montecrypto.jpg)](https://www.amazon.de/dp/3462001574)
+[![2021/06/montecrypto.jpg](montecrypto.jpg)](https://www.amazon.de/dp/3462001574)
 
 *[Montecrypto](https://www.amazon.de/dp/3462001574), von Tom Hillenbrand*
 

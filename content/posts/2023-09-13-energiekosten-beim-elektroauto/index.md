@@ -30,7 +30,7 @@ Ersetzt werden müssen
 ```
 und das dauert circa 30 Min. bis 35 Min. an einem Schnell-Lader, zum Beispiel von Fastned.
 
-![](2023/09/energiekosten-01.jpg)
+![2023/09/energiekosten-01.jpg](energiekosten-01.jpg)
 
 *Ladekurve für den Renault Megane 60 kWh an einem Schnell-Lader von Fastned.
 Man erkennt, wie die Ladeleistung mit zunehmendem Akku-Füllstand sinkt und gegen Ende sogar
@@ -50,7 +50,7 @@ und wir fett Guthaben haben.
 
 Daheim fährt das Auto also gratis.
 
-![](2023/09/energiekosten-02.png)
+![2023/09/energiekosten-02.png](energiekosten-02.png)
 
 *Unsere Solaranlage in O/W-Lage produziert ihr Maximum am späten Nachmittag, um circa 17:00 Uhr. Auch dann werden 5 kW nicht überschritten.
 Das Laden des Autos zieht jedoch 11 kW, sodaß ein reines Überschußladen ohne spezielle Steuerung nicht möglich ist.
@@ -72,7 +72,7 @@ Ohne den heimischen Ladepunkt hätten wir an einen öffentlichen Ladepfahl gegen
 Der nächstgelegene Ladepunkt ist eine Querstraße weiter und auch nicht teurer:
 Wir zahlen 0.34 Euro/kWh.
 
-![](2023/09/energiekosten-03.jpg)
+![2023/09/energiekosten-03.jpg](energiekosten-03.jpg)
 
 *Öffentlicher Ladepunkt von Vattenfall bei Nutzung mit einer Vattenfall InCharge oder Eneco Karte.
 Die Energiekosten liegen bei 0.34 Euro/kWh.*

@@ -58,7 +58,7 @@ it's company wide" or "We know this, and for us this workaround is helpful".
 
 Moving support from Slack to Jira cut that off.
 
-[![](2024/04/support-01.png)](https://en.wikipedia.org/wiki/Capability_Maturity_Model_Integration)
+[![2024/04/support-01.png](support-01.png)](https://en.wikipedia.org/wiki/Capability_Maturity_Model_Integration)
 
 *Is that bad?
 No, this was not a mature process, it was individual heroics, a 0 or 1 on the

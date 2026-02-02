@@ -29,7 +29,7 @@ und
 Hier ist ein Video von einem Vorläufer dieses Modells, von 2020.
 Der Soundtrack ist wichtig:
 
-[![](2023/09/flugtaxi-01.jpg)](https://www.youtube.com/watch?v=4Yc2L5koWZY)
+[![2023/09/flugtaxi-01.jpg](flugtaxi-01.jpg)](https://www.youtube.com/watch?v=4Yc2L5koWZY)
 
 *Skydrive Piloted Flight Demo.
 SkyDrive performed the first public flight demonstration of its SD-03 eVTOL on Aug. 25, 2020
@@ -52,7 +52,7 @@ Ein anderer Effekt von Rotorflüglern jeder Art ist Newtons Gesetz:
 Jede Kraft erzeugt eine gleiche, entgegengesetzte Gegenkraft. 
 Wenn ein Flugtaxi also bei Erdanziehung 1250 kg Schub aufwärts erzeugt, dann muß es auch einen 1250 kg Downwash geben.
 
-[![](2023/09/flugtaxi-02.jpg)](https://wiki.ivao.aero/en/home/training/documentation/Ground_effect)
+[![2023/09/flugtaxi-02.jpg](flugtaxi-02.jpg)](https://wiki.ivao.aero/en/home/training/documentation/Ground_effect)
 
 *Luftströme am Rotorflügler, in der Luft ("out of ground effect") und in Bodennähe ("in ground effect").
 ([ausführliche Erläuterungen](https://wiki.ivao.aero/en/home/training/documentation/Ground_effect))*
@@ -64,7 +64,7 @@ In
 [Helicopter Rotor Downwash – Excessive wind, FOD and brownouts, what are the risks?](https://jjryan.com.au/index.php/helicopter-rotor-downwash-excessive-wind-fod-and-brownouts-what-are-the-risks/) 
 haben wir eine bildliche Darstellung von Downwash und auch eine Tabelle von Mindestabständen.
 
-![](2023/09/flugtaxi-03.jpg)
+![2023/09/flugtaxi-03.jpg](flugtaxi-03.jpg)
 
 *Beispiele für Helicopter Rotor Downwash.*
 
@@ -79,11 +79,11 @@ Hier zwei Starts:
 der Hubschrauber kann relativ schnell an Höhe gewinnen, weil er nicht in seinen eigenen Downwash fliegt.
 Landungen sind wesentlich gemächlicher.
 
-[![](2023/09/flugtaxi-04.jpg)](https://www.youtube.com/watch?v=ZJD1xvVC4cA)
+[![2023/09/flugtaxi-04.jpg](flugtaxi-04.jpg)](https://www.youtube.com/watch?v=ZJD1xvVC4cA)
 *Start von D-HBLN vom Metzplatz, Berlin vor dem Wenckebach-Krankenhaus. Die Bäume sind unbelaubt.
 ([Video](https://www.youtube.com/watch?v=ZJD1xvVC4cA))* 
 
-[![](2023/09/flugtaxi-05.jpg)](https://www.youtube.com/watch?v=Ur4z1woV0ak)
+[![2023/09/flugtaxi-05.jpg](flugtaxi-05.jpg)](https://www.youtube.com/watch?v=Ur4z1woV0ak)
 *Start eines Rettungshubschraubers von einem Spielplatz in Vijfhuizen, NL.
 Die Polizei hat das Gelände abgesperrt, etwa 50-70m Sicherheitsabstand. 
 Der Downwash schüttelt die belaubten Bäume.
@@ -102,8 +102,8 @@ Dies setzt auch der Reichweite und Flugzeit enge und absolute Grenzen als Funkti
 
 ## Bonuscontent: Downwash
 
-[![](2023/09/flugtaxi-06.jpg)](https://www.youtube.com/watch?v=HjeRSDsy-nE#t=2m14s)
+[![2023/09/flugtaxi-06.jpg](flugtaxi-06.jpg)](https://www.youtube.com/watch?v=HjeRSDsy-nE#t=2m14s)
 *[Vuichard Recovery Technique - How to escape a Vortex Ring State](https://www.youtube.com/watch?v=HjeRSDsy-nE#t=2m14s)*
 
-[![](2023/09/flugtaxi-07.jpg)](https://youtu.be/dfY5ZQDzC5s?t=336)
+[![2023/09/flugtaxi-07.jpg](flugtaxi-07.jpg)](https://youtu.be/dfY5ZQDzC5s?t=336)
 *[Planes clouds and vortices](https://youtu.be/dfY5ZQDzC5s?t=336)*

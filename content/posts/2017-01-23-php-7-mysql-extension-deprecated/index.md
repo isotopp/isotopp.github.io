@@ -39,7 +39,7 @@ exploits.
 
 So currently the situation is as follows:
 
-![](2017/01/mysql_protokolle-1.png)
+![2017/01/mysql_protokolle-1.png](mysql_protokolle-1.png)
 
 There are three extensions at the PHP level, one of which is deprecated and
 disabled in PHP 7:

@@ -11,7 +11,7 @@ title: Shared Space Experiment at Alexanderplein
 aliases:
   - /2017/09/27/shared-space-experiment-at-alexanderplein.html
 ---
-[![](2017/09/alexanderplein-640x397.jpg)](https://www.theguardian.com/environment/bike-blog/2017/sep/22/what-happens-if-you-turn-off-the-traffic-lights)
+[![2017/09/alexanderplein-640x397.jpg](alexanderplein-640x397.jpg)](https://www.theguardian.com/environment/bike-blog/2017/sep/22/what-happens-if-you-turn-off-the-traffic-lights)
 
 [Shared Space Experiment](https://www.theguardian.com/environment/bike-blog/2017/sep/22/what-happens-if-you-turn-off-the-traffic-lights)
 

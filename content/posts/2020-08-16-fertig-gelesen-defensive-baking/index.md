@@ -19,7 +19,7 @@ influencing dough and baked goods, her familiar is a sourdough starter named
 Bob.
 
 
-[![](2020/08/defensive-baking.jpg)](https://www.amazon.de/Wizards-Guide-Defensive-Baking-English-ebook/dp/B08CJ86Y1W)
+[![2020/08/defensive-baking.jpg](defensive-baking.jpg)](https://www.amazon.de/Wizards-Guide-Defensive-Baking-English-ebook/dp/B08CJ86Y1W)
 
 *A Wizards Guide To Defensive Baking*, T. Kingfisher, [Amazon](https://www.amazon.de/Wizards-Guide-Defensive-Baking-English-ebook/dp/B08CJ86Y1W)
 

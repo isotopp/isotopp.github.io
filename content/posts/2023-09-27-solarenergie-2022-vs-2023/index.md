@@ -14,7 +14,7 @@ aliases:
 Dieses Jahr war nicht sehr heiß bei uns, und auch nicht so tödlich trocken wie letztes Jahr.
 Das war notwendig und angenehm, auch wenn es den Ertrag vom Dach um 10-15 % gegenüber dem Vorjahr gedrückt hat.
 
-![](2023/09/solar-comparison-01.png)
+![2023/09/solar-comparison-01.png](solar-comparison-01.png)
 
 *2022 in Blau (links verschoben), 2023 in Grün (rechts).*
 
@@ -30,7 +30,7 @@ Wir hatten einen Verbrauch von 4837 kWh/Jahr im letzten Jahr vor den Panels.
 Jun 2022 bis 2023 war -2800 kWh Netto (Verbrauch - Ertrag) und etwa 2300 kWh Netzbezug.
 Durch das neue Elektroauto werden wir aus Jun 2022 bis 2023 mit Glück +/- Null in Summe rauskommen.
 
-![](2023/09/solar-comparison-02.png)
+![2023/09/solar-comparison-02.png](solar-comparison-02.png)
 
 *Jahresverbrauch im Vergleich.
 Der Abrechnungszeitraum ist Juni bis Juni des Folgejahres.
@@ -46,7 +46,7 @@ Wir liegen bei 75-80 kWh pro qm und Jahr.
 Das setzt uns gerade eben auf eine deutsche [Energieeffizienzklasse C](https://www.bundestag.de/resource/blob/964446/f5d200e4905963c7b23ad390b4f1b547/WD-5-072-23-pdf-data.pdf)
 oder "A++" bis "A+" in der niederländischen Skala (ebenda).
 
-![](2023/09/solar-comparison-03.png)
+![2023/09/solar-comparison-03.png](solar-comparison-03.png)
 
 *Gasverbrauch pro Jahr in m^3.
 Der Abrechnungszeitraum ist wiederum Juni bis Juni.
@@ -78,7 +78,7 @@ An normalen September-Tagen speisen wir in etwa 4 kWh Netto ein.
 Brutto sind es 10 kWh von 14.5 kWh Produktion, und wir ziehen 5.7 kWh aus dem Netz.
 Nachts saugt das Haus 0.3 kW, tags immer ein wenig, wenn ein Herd oder eine Mikrowelle mehr Watt will als das Dach liefern kann.
 
-![](2023/09/solar-comparison-04.png)
+![2023/09/solar-comparison-04.png](solar-comparison-04.png)
 *Tage, an denen das Auto aufgeladen wird, sind in der Monatsansicht klar erkennbar.*
 
 Wen das E-Auto geladen wird, ist der Tagesverbrauch deutlich höher, denn es werden dann circa 40 kWh in 4 Stunden bezogen.

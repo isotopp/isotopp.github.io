@@ -15,7 +15,7 @@ aliases:
 
 "[Old Man's War](https://www.amazon.de/Old-Mans-English-John-Scalzi-ebook/dp/B000SEIK2S)" is the first "large" works by John Scalzi,
 
-[![](2021/09/oldmanswar.jpg)](https://www.amazon.de/Old-Mans-English-John-Scalzi-ebook/dp/B000SEIK2S)
+[![2021/09/oldmanswar.jpg](oldmanswar.jpg)](https://www.amazon.de/Old-Mans-English-John-Scalzi-ebook/dp/B000SEIK2S)
 
 *[Old Man's War](https://www.amazon.de/Old-Mans-English-John-Scalzi-ebook/dp/B000SEIK2S), John Scalzi*
 

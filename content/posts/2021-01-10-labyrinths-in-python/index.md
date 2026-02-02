@@ -13,7 +13,7 @@ aliases:
 My son wants labyrinths. Ok, let's make them like it's the first semester.
 
 
-![](2021/01/backtracking2.png)
+![2021/01/backtracking2.png](backtracking2.png)
 
 We need a `class Labyrinth` that holds the dimensions of our maze, and the actual maze, in `grid` - a List of Lists of integers. That's not exactly a two-dimensional array (it can have a ragged right edge), but it will do for us.
 
@@ -298,7 +298,7 @@ We have provided the option to supply a callback function `show=` (for which we 
 
 Here is a labyrinth generation in progress:
 
-![](2021/01/backtracking.png)
+![2021/01/backtracking.png](backtracking.png)
 
 ## Painting the labyrinth
 

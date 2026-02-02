@@ -12,7 +12,7 @@ aliases:
 ---
 So we are baking bread, and for that we have a Wiesheu minimat oven that comes in at a full 16A - supposedly it is using 3kW or more peak plus the condenser hood that comes in at another 500W top power draw. On the other hand, when running the thing is hardly lukewarm, it is running much cooler than the Neff household oven/microwave combo we have.
 
-![](2020/05/wiesheu.jpg)
+![2020/05/wiesheu.jpg](wiesheu.jpg)
 
 *Wiesheu minimat with condenser hood. Convection oven with 3 trays (for buns) or a single layer of stone plate for bread. Can do 3x12 buns (20 min) or 2-3 loaves of bread (1h). Power draw 3kW + 0.5kW for the hood. Intended use is a show oven in the sales room of a bakery, or as PoS oven in a gas station or supermarket.*
 
@@ -37,7 +37,7 @@ The TP-Link Kasa arrived yesterday and was immediately usable: Plug in, install 
 - It consumes around 54W when on and running idle.
 - It consumes 3.5W when switched off in standby.
 
-![](2020/05/wiesheu-power.png)
+![2020/05/wiesheu-power.png](wiesheu-power.png)
 
 Yesterday the Gosund plugs have been arriving, too. They need a bit of treatment, though. Instructions said to not connect them so that they do not update themselves - it can only make the reflashing harder if the original firmware is current.
 

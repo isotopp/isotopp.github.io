@@ -33,19 +33,19 @@ Auf jeden Fall implementiert auch `oath-toolkit` die üblichen Verfahren zur Gen
 
 Um MFA zu aktivieren, klicke auf "Edit Profile" im Mastodon Webinterface, und wähle Account Settings -> Two Factor Auth.
 
-![](2022/12/2fa-01.png)
+![2022/12/2fa-01.png](2fa-01.png)
 *Auf Edit Profile klicken, um in die Benutzerkonfiguration zu kommen.*
 
-![](2022/12/2fa-02.png)
+![2022/12/2fa-02.png](2fa-02.png)
 *Im Menü in der Seitenleiste erst auf "Account Settings", und dann auf "Two-factor Auth" klicken.*
 
-![](2022/12/2fa-03.png)
+![2022/12/2fa-03.png](2fa-03.png)
 *Es erscheint das 2FA Setup. Man kann gefahrlos durch den ganzen Prozess laufen, ohne die Konfiguration zu verändern. 
 Erst, wenn man den ersten Sechs-Zahlen-Code erfolgreich eingegeben hat, wird 2FA für dieses Login aktiviert.*
 
 Es kommt dieser Screen, eventuell nach nochmaliger Aufforderung, das Passwort einzugeben.
 
-![](2022/12/2fa-04.png)
+![2022/12/2fa-04.png](2fa-04.png)
 *Der gezeigte QR-Code kann mit einer Authenticator-Anwendung gescannt werden.
 Er enthält nichts anderes als die daneben angezeigte Seed-Folge.
 Diese wiederum kann man auch direkt in Anwendungen wie Bitwarden kopieren.*
@@ -59,7 +59,7 @@ Damit kann man bei Verlust von Telefon oder Rechner dennoch an seine Accounts ko
 In der Regel ist es bei Problemen einfacher, die archivierten QR-Codes neu zu scannen, als durch den Account Recovery Workflow eines mit 2FA geschützten Accounts zu laufen.
 Das ist dann auch einheitlich, Account Recovery ist je nach Anbieter unterschiedlich.
 
-![](2022/12/2fa-05.png)
+![2022/12/2fa-05.png](2fa-05.png)
 *Der Seed-Code wird in diesem Beispiel in Bitwarden eingetragen.
 Bitwarden wird mit dem Code und der aktuellen Zeit in die Lage versetzt, den jeweils geltenden Code zu erzeugen und anzuzeigen.*
 
@@ -72,7 +72,7 @@ Nachdem man den QR-Code mit einem Authenticator gescannt hat, oder man den Seed-
 Sie hat 6 Stellen und wechselt alle 30 Sekunden.
 Sie ist aber oft ein wenig länger gültig: Viele Implementierungen nehmen die vorhergehende und die nachfolgende Zahl auch noch an.
 
-![](2022/12/2fa-06.png)
+![2022/12/2fa-06.png](2fa-06.png)
 *Nach dem Abspeichern des Seeds in Bitwarden wird eine laufend wechselnde Zahl angezeigt.
 Diese kann man in das Testfeld "Two-factor code" übertragen und beweist so, daß das Setup korrekt ist.
 Erst nach dem Klicken auf den großen "Enable"-Knopf wird 2FA aktiviert. Hier kann man also noch abbrechen.* 
@@ -98,7 +98,7 @@ Es kann aber nicht schaden, diese zu kopieren und auch zu archivieren.
 Etwa in Bitwarden und auf dem o.a. USB-Stick mit dem QR-Code.
 Oder auf einem Papierfetzen, den man unter die Schreibtisch-Schublade klebt.
 
-![](2022/12/2fa-07.png)
+![2022/12/2fa-07.png](2fa-07.png)
 *Diese Recovery-Codes werden niemals gebraucht, wenn man stattdessen den Seed-Text oder den QR-Code archiviert.
 Mit dem kann man sich jederzeit ein neues Authenticator-Gerät aufsetzen, indem man den Code neu scannt.
 Dennoch kann es nützlich sein, auch die Recovery-Codes zu archivieren.*
@@ -122,7 +122,7 @@ Es gibt 2FA Speicher, die 2FA Codes in der Cloud sichern und an die eigene Telef
 Google Authenticator und Aegis gehören nicht dazu, die Daten werden ausdrücklich lokal gespeichert und die Anwendung beansprucht keine Rechte, und funktioniert offline.
 Code-Transfer erfolgt mit QR-Codes.
 
-![](2022/12/2fa-08.png)
+![2022/12/2fa-08.png](2fa-08.png)
 *Twilio Authy fragt bei der Einrichtung nach einer Telefonnummer, sendet dieser dann eine Kennung zu und verbindet den Passwortspeicher mit der Telefonnummer.
 Auch bei Wechsel zwischen Android und iPhone (oder hier MacOS) bleiben die 2FA Secrets erhalten.*
 
@@ -136,7 +136,7 @@ Viele Passwortmanager haben die Option, Reports und Account-Audits zu generieren
 Oft wird eine Funktion angeboten, die alle möglichen, aber nicht genutzten 2FA-Möglichkeiten listet.
 Diese Liste kann man durchgehen und systematisch für alle Accounts 2FA aktivieren.
 
-![](2022/12/2fa-09.png)
+![2022/12/2fa-09.png](2fa-09.png)
 *Vaultwarden Webanwendung, Passwort-Reports.
 Hier kann man auf "Inactive Two-step Login" klicken und eine Liste von Logins bekommen, die man hat und die 2FA haben könnten, aber bei denen in Vaultwarden kein 2FA hinterlegt ist.
 Die meisten Passwortmanager haben inzwischen solche Reports.*

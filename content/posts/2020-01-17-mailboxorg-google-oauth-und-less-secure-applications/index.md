@@ -31,7 +31,7 @@ Beide sind verschieden von meinem mit 2FA gesicherten Zugang zu meinem Google Ac
 
 Google gibt einem eine Security-Übersicht für Deinen Account in [Google Account](https://myaccount.google.com/security). Auf der [Permissions](https://myaccount.google.com/permissions)-Seite kann man sehen, wer Zugriff hat und was die dürfen. Nach Anklicken sieht man auch, wann das war und man kann den Zugriff wiederrufen.
 
-![](2020/01/lsa-review-screen.png)
+![2020/01/lsa-review-screen.png](lsa-review-screen.png)
 
 [Permissions](https://myaccount.google.com/permissions) Seite für OAuth2 Anwendungen in [Google Account](https://myaccount.google.com/security).
 
@@ -39,7 +39,7 @@ Das alles ist eine Feine Sache™ und ein großer Fortschritt. In der Vergangenh
 
 Das weiß Google auch, und daher gab es bisher für Programme, die OAuth2 nicht beherrschen, eine Sonderlocke: "Application Specific Passwords for Less Secure Applications" (LSA).
 
-![](2020/01/lsa-appspecific-passwords.png)
+![2020/01/lsa-appspecific-passwords.png](lsa-appspecific-passwords.png)
 
 "Application Specific Passwords for Less Secure Applications" (LSA) ist auch in Google Account zu finden und hoffentlich leer.
 
@@ -55,7 +55,7 @@ Hier ist die [Dokumentation für GMail Scopes](https://developers.google.com/gma
 
 Wenn man den OAuth2 Playground einmal durchspielt passiert dies:
 
-![](2020/01/lsa-oauth2-playground-1.png)
+![2020/01/lsa-oauth2-playground-1.png](lsa-oauth2-playground-1.png)
 
 Schritt 1: Wähle einen OAuth2 Scope aus, hier gmail.readonly. Auf der rechten Seite sieht man die entsprechenden REST Requests und Responses, sodaß ein Entwickler gleich sehen kann, wie so etwas auf dem Kabel aussieht. In der Praxis wird dieser Schritt vom Anwendungsentwickler ausgeführt und man sieht ihn nicht.
 
@@ -65,17 +65,17 @@ Führt man diesen Schritt durch, gibt es einen typischen Google Autorisierungscr
 
 Sagt man ja, gibt es einen Alarm via Push Notification und eine Nachricht in Google Mail: Jemand hat neuen Zugriff auf unseren Account bekommen.
 
-![](2020/01/lsa-cellphone.png)
+![2020/01/lsa-cellphone.png](lsa-cellphone.png)
 
 Terror auf meinem Handy: "Google OAuth2 Playground" darf jetzt auf mein GMail.
 
 Das ist auch eine Gute Sache™, denn auf diese Weise ist sichergestellt, daß so ein Zugriff nicht leise und aus Versehen erfolgt.
 
-![](2020/01/lsa-oauth2-playground-2.png)
+![2020/01/lsa-oauth2-playground-2.png](lsa-oauth2-playground-2.png)
 
 Mit dem Authorization Code aus Schritt 1 kann die Anwendung sich jetzt ein Zugriffstoken holen, das eine Stunden gilt. Der Grund ist, daß auf diese Weise die Anwendung auf jeden Fall spätestens eine Stunde nach dem Widerruf von Rechten ausgesperrt ist, auch wenn dieses spezifische Token nicht gesondert widerrufen wird.
 
-![](2020/01/lsa-oauth2-playground-3.png)
+![2020/01/lsa-oauth2-playground-3.png](lsa-oauth2-playground-3.png)
 
 Und mit diesem Access Token kann die Anwendung dann endlich GMail API Funktionen aus dem Read Only Scope aufrufen, zum Beispiel Identity. Sie kann keine Non-GMail Aktionen ausführen und sie kann auch keine Nachrichten senden, Filter bearbeiten oder ähnliches. Das wäre ein anderer Scope.
 

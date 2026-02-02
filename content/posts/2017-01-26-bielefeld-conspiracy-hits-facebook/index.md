@@ -19,7 +19,7 @@ knows:
 > "[Bielefeldverschwörung](https://en.wikipedia.org/wiki/Bielefeld_Conspiracy)"
 > (Bielefeld Conspiracy): 
 
-![](2017/01/Ortsangabe-bei-Facebook-stimmt-wieder-Bielefeldverschwoerung-verschwunden_image_630_420f.jpg)
+![2017/01/Ortsangabe-bei-Facebook-stimmt-wieder-Bielefeldverschwoerung-verschwunden_image_630_420f.jpg](Ortsangabe-bei-Facebook-stimmt-wieder-Bielefeldverschwoerung-verschwunden_image_630_420f.jpg)
 
 Facebook showing "Bielefeldverschwörung" (Bielefeld Conspiracy) instead of
 the proper city name.

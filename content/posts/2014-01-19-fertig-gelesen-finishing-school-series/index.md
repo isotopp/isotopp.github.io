@@ -14,7 +14,7 @@ aliases:
 ---
 Fertig gelesen: "Finishing School" Series (Etiquette & Espionage, Curtsies and Conspiracies), Gail Carriger
 
-[![](2014/01/etiquette.png)](https://www.amazon.de/Etiquette-Espionage-Number-Finishing-English-ebook/dp/B0091LLBNO/)
+[![2014/01/etiquette.png](etiquette.png)](https://www.amazon.de/Etiquette-Espionage-Number-Finishing-English-ebook/dp/B0091LLBNO/)
 
 "Mademoiselle Geraldine's Finishing Academy for Young Ladies of Quality" ist nicht der Ort, zu dem Sophronia Temminnick gerne möchte, aber nach einem Vorfall mit dem Lastenfahrstuhl, dem Dessert und Frau Barnaclegoose hat ihre Mutter die Geduld mit ihr verloren.
 

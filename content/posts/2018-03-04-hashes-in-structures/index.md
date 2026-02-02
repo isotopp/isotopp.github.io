@@ -105,7 +105,7 @@ the sender and we do know who the sender is.
 When calculating hashes over a sequence of messages, it is
 possible to seed each message with the previous messages hash:
 
-![](2018/03/eternal-logfile.png)
+![2018/03/eternal-logfile.png](eternal-logfile.png)
 
 Each log entry consists of the actual message, the current
 timestamp and the hash of the previous entry. The current hash

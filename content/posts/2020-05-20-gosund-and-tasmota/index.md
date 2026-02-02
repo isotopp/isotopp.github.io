@@ -12,7 +12,7 @@ aliases:
 ---
 (continued from [Plugs with Wi-Fi]({{< relref "2020-05-12-plugs-with-wifi.md" >}})) So the Gosund plugs came, as did the Raspi 4. I did cancel the Shelly plug and decomissioned the TP-Link Kaka, because Tasmota on Gosund is awesome and the Gosund hardware is dirt cheap.
 
-![](2020/05/tasmota-grafana.jpg)
+![2020/05/tasmota-grafana.jpg](tasmota-grafana.jpg)
 
 *Power consumption of the local data grave, with too old a mainboard and CPU and way too much storage*
 
@@ -28,7 +28,7 @@ Some Tuya devices are locked. In this case it is always possible to convert them
 
 In my home, the new firmware is [Tasmota](https://github.com/arendst/Tasmota) - there is also esphome. Tasmota does http, mqtt (both with TLS, if you wish) and syslog.
 
-![](2020/05/tasmota-ui.jpg)
+![2020/05/tasmota-ui.jpg](tasmota-ui.jpg)
 
 *Tasmota UI in Admin mode. When configured, it can be locked to only show the data and the ON/OFF toggle. Control is then only possible via MQTT. It can also be basic-auth protected.*
 

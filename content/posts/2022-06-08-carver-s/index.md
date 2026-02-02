@@ -18,9 +18,9 @@ Katja Diehl coined the german tongue-in-cheek term "Maximaleventualbedarfsauto" 
 Looking around, we test drove a [Carver.Earth](https://carver.earth/), which was the right size, but limited to 45 km/h (and bike pathes in some areas).
 Then Carver started to offer the "Carver S+".
 
-![](2022/06/carver1.jpg)
-![](2022/06/carver2.jpg)
-![](2022/06/carver3.jpg)
+![2022/06/carver1.jpg](carver1.jpg)
+![2022/06/carver2.jpg](carver2.jpg)
+![2022/06/carver3.jpg](carver3.jpg)
 
 The vehicle can be driven with an A-license or a B-license from before 2013.
 It has 2 seats placed one after the other, and the back seat is rather basic.
@@ -29,19 +29,19 @@ It carves, which means that it leans into curves in a rather awesome way (less a
 It has no steering or brake assist, which means you get to work a bit.
 But at 330kg total system weight, empty, it is pretty manageable.
 
-![](2022/06/carver4.jpg)
-![](2022/06/carver5.jpg)
+![2022/06/carver4.jpg](carver4.jpg)
+![2022/06/carver5.jpg](carver5.jpg)
 
 The car charges with a regular household plug, but a type 2 adapter is available.
 It will still not fast charge.
 
 Completely filling it up to 7.1 kWh from 10% charge took 4h and the house consumed 7.1kWh during that time (but we have base load and made a coffee).
 
-![](2022/06/carver6.jpg)
-![](2022/06/carver7.png)
+![2022/06/carver6.jpg](carver6.jpg)
+![2022/06/carver7.png](carver7.png)
 
 So all in all a pretty good match, and exactly what we expected.
 Radically less car, so exactly the right amount of car.
 
-![](2022/06/carver8.jpg)
-![](2022/06/carver9.jpg)
+![2022/06/carver8.jpg](carver8.jpg)
+![2022/06/carver9.jpg](carver9.jpg)

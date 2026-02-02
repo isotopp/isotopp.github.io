@@ -14,7 +14,7 @@ aliases:
 ---
 Harry August lebt sein Leben das erste Mal, und es war nicht schön, 1919 als uneheliches Kind eines ziemlich verkommenen englischen Landadeligen als Bastard aufgezogen zu werden, aufzuwachsen, Weltkrieg, Nachkriegszeit, Tod 1989 in Newcastle...
 
-[![](2018/09/harry-august.jpg)](https://www.amazon.de/Die-vielen-Leben-Harry-August-ebook/dp/B00WUPW6XC)
+[![2018/09/harry-august.jpg](harry-august.jpg)](https://www.amazon.de/Die-vielen-Leben-Harry-August-ebook/dp/B00WUPW6XC)
 
 [Die vielen Leben des Harry August](https://www.amazon.de/Die-vielen-Leben-Harry-August-ebook/dp/B00WUPW6XC)
 

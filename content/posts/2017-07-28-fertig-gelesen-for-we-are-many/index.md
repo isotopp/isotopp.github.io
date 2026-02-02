@@ -12,7 +12,7 @@ title: 'Fertig gelesen: For We Are Many'
 aliases:
   - /2017/07/28/fertig-gelesen-for-we-are-many.html
 ---
-[![](2017/07/wearemany_final_small.png)](https://www.amazon.de/Are-Many-Bobiverse-Book-English-ebook/dp/B01MZI77C0)
+[![2017/07/wearemany_final_small.png](wearemany_final_small.png)](https://www.amazon.de/Are-Many-Bobiverse-Book-English-ebook/dp/B01MZI77C0)
 
 Bob is making what he was built for: more Bobs. Bob is in fact a
 dead computer programmer back from the destroyed and near

@@ -13,7 +13,7 @@ aliases:
 ---
 [Heaven's River](https://www.amazon.de/Heavens-River-English-Dennis-Taylor-ebook/dp/B08P3NTSSR) is the fourth part of the Bobiverse Trilogy, in which the original Bob finds a decaying alien megastructure, and investigates.
 
-[![](2021/04/heavens-river.jpg)](https://www.amazon.de/Heavens-River-English-Dennis-Taylor-ebook/dp/B08P3NTSSR)
+[![2021/04/heavens-river.jpg](heavens-river.jpg)](https://www.amazon.de/Heavens-River-English-Dennis-Taylor-ebook/dp/B08P3NTSSR)
 
 Previously in the Bobiverse:
 

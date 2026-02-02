@@ -12,11 +12,11 @@ aliases:
 ---
 "Kris, guck mal, connection surge auf $WICHTIGER_MASTER, davor kurzer Activity drop. Alle anderen Graphen sehen normal aus."
 
-![Graph: Connection Surge]({{ site.baseurl }}/uploads/screenshot-kris-20121031-1.png)
+![Graph: Connection Surge](enemy-action-01.jpg)
 
 und
 
-![Graph: QPS Drop]({{ site.baseurl }}/uploads/screenshot-kris-20121031-2.png)
+![Graph: QPS Drop](enemy-action-02.jpg)
 
 Ich gucke.
 

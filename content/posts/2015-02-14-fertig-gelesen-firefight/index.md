@@ -14,7 +14,7 @@ aliases:
 ---
 In Brandon Sandersons "Firefight" geht es, wie der Name schon sagt, um Megan, die nach der Vernichtung von Steelhart aus Newcago verschwand. Die Geschichte führt den jetzt berümten David "Steelslayer" und die Reckoners nach Babylon Restored, vormals New York City. Babylon ist jetzt nicht nur durch die Kräfte der Wasser kontrollierenden Regalia überflutet, sondern auch mit wunderbaren, leuchtenden psychedelischen Pflanzen überwuchert.
 
-[![](2015/02/firefight.jpg)](https://www.amazon.de/Firefight-Reckoners-Book-2-English-ebook/dp/B00JNQMKSC)
+[![2015/02/firefight.jpg](firefight.jpg)](https://www.amazon.de/Firefight-Reckoners-Book-2-English-ebook/dp/B00JNQMKSC)
 
 [Firefight](https://www.amazon.de/Firefight-Reckoners-Book-2-English-ebook/dp/B00JNQMKSC)
 

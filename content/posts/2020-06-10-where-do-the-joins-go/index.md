@@ -12,7 +12,7 @@ aliases:
 ---
 I was asking on Twitter:
 
-[![](2020/06/joins.png)](https://twitter.com/isotopp/status/1270746627339358208)
+[![2020/06/joins.png](joins.png)](https://twitter.com/isotopp/status/1270746627339358208)
 
 *Are you a Developer and understand (Micro-) Services? I am a database person and a bit simple, and I have a genuine Question:*
 
@@ -21,7 +21,7 @@ I was asking on Twitter:
 I gave the following context:
 
 ****
-![](2020/06/shop-schema.png)
+![2020/06/shop-schema.png](shop-schema.png)
 
 *A simple shop*
 

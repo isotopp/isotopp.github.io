@@ -32,18 +32,18 @@ Das Teil hat in Karlsruhe, 2 Orten in Berlin, und in Amsterdam Dienst getan.
 Dann ist auch gut.
 Hier ist der neue, wieder ein Dauphin Shape XT.
 
-![](2023/10/sitz-01.jpg)
+![2023/10/sitz-01.jpg](sitz-01.jpg)
 
 *Anlieferung fertig montiert in einem sehr stabilen Monsterkarton.*
 
-![](2023/10/sitz-02.jpg)
+![2023/10/sitz-02.jpg](sitz-02.jpg)
 
 *Ausstattung, wie bestellt, via [https://www.objectservice.de/](https://www.objectservice.de/).*
 
 Da der Sitz vormontiert bestellt war, gestaltete sich das Auspacken schnell und einfach.
 Dachte ich, aber es gab Luftpolsterfolie!
 
-![](2023/10/sitz-03.jpg)
+![2023/10/sitz-03.jpg](sitz-03.jpg)
 
 *Luftpolsterfolie!*
 
@@ -51,14 +51,14 @@ Der Stuhl kommt mit einem ausführlichen Handbuch und einer Erklärung der Grund
 Das braucht es auch, denn dies ist ein richtiger Bürostuhl,
 und kein Gamer-Stuhl oder gar, wie einige Kollegen auch im Jahr 3 der Pandemie, ein Küchenstuhl.
 
-![](2023/10/sitz-04.jpg)
+![2023/10/sitz-04.jpg](sitz-04.jpg)
 
 *Bild des Bürostuhls am Arbeitsort: Höhenverstellbarer Schreibtisch, jede Menge Strom, eine Rollmatte und ein ordentlicher Stuhl.
 Tageslicht von Links.*
 
 Der Stuhl kommt mit einer Vielzahl an Einstellmöglichkeiten.
 
-![](2023/10/sitz-05.jpg)
+![2023/10/sitz-05.jpg](sitz-05.jpg)
 
 *Übersicht der Einstellmöglichkeiten.*
 

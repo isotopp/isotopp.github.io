@@ -13,7 +13,7 @@ aliases:
 
 The trench ain't here:
 
-![](2017/01/deathstar_image2_marked1-1024x447.png)
+![2017/01/deathstar_image2_marked1-1024x447.png](deathstar_image2_marked1-1024x447.png)
 
 It is
 [elsewhere](http://fxrant.blogspot.de/2017/01/the-death-star-and-final-trench-run.html).

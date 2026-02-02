@@ -13,7 +13,7 @@ aliases:
 ---
 Sarah Chrisman ist ein Portländer Original mit starken Meinungen. Während ihr Mann einen DeLorean DMC-12 restauriert und fährt, bekommt sie aus Gründen ein Korsett geschenkt und beginnt, es zu tragen und in Folge historische viktorianische Kleidung zu restaurieren und zu tragen.
 
-[![](2017/01/victorian-secrets.jpg)](https://www.amazon.de/Victorian-Secrets-Corset-Taught-Present-ebook/dp/B00E25AV3K)
+[![2017/01/victorian-secrets.jpg](victorian-secrets.jpg)](https://www.amazon.de/Victorian-Secrets-Corset-Taught-Present-ebook/dp/B00E25AV3K)
 
 [Victorian Secrets](https://www.amazon.de/Victorian-Secrets-Corset-Taught-Present-ebook/dp/B00E25AV3K)
 

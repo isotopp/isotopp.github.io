@@ -17,7 +17,7 @@ aliases:
 The memoir of Brian Kernighan, and the story of how UNIX came to be and what working at Bell Labs was like at that time:
 [UNIX: A History and a Memoir](https://www.amazon.de/UNIX-History-English-Brian-Kernighan-ebook/dp/B07ZQHX3R1) is required reading for anyone who wants to know where Unix concepts came from and what ideas were behind its inception.
 
-[![](2021/09/unix.jpg)](https://www.amazon.de/UNIX-History-English-Brian-Kernighan-ebook/dp/B07ZQHX3R1)
+[![2021/09/unix.jpg](unix.jpg)](https://www.amazon.de/UNIX-History-English-Brian-Kernighan-ebook/dp/B07ZQHX3R1)
 
 *"[UNIX: A History and a Memoir](https://www.amazon.de/UNIX-History-English-Brian-Kernighan-ebook/dp/B07ZQHX3R1)", Brian Kernighan*
 

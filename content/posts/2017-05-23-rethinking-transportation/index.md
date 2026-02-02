@@ -25,7 +25,7 @@ sees a self-amplifiying change in how we travel and transport things:
 > investor value — but also creating trillions of dollars in new business
 > opportunities, consumer surplus and GDP growth.
 
-[![](2017/05/rethinkx.jpg)](http://www.ourenergypolicy.org/rethinking-transportation-2020-2030-the-disruption-of-transportation-and-the-collapse-of-the-internal-combustion-vehicle-and-oil-industries/)
+[![2017/05/rethinkx.jpg](rethinkx.jpg)](http://www.ourenergypolicy.org/rethinking-transportation-2020-2030-the-disruption-of-transportation-and-the-collapse-of-the-internal-combustion-vehicle-and-oil-industries/)
 
 [Rethinking Transportation](http://www.ourenergypolicy.org/rethinking-transportation-2020-2030-the-disruption-of-transportation-and-the-collapse-of-the-internal-combustion-vehicle-and-oil-industries/)
 

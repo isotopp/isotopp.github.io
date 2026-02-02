@@ -22,7 +22,7 @@ Inodes store the files metadata and contain an array of block numbers, which mak
 The array is folded multiple times, to optimize for the more common case of small files:
 The first few block numbers were stored in the inode, followed by a pointer to a block containing file block numbers, then a pointer to a block containing pointers to blocks of file block numbers and so on.
 
-![](2021/09/filestructure.png)
+![2021/09/filestructure.png](filestructure.png)
 
 *The block list inside an array is folded multiple times, to optimize for the more common case of small files.*
 

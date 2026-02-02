@@ -62,7 +62,7 @@ and by 2030 no combustion engines are being allowed in the city at all.
 
 # Important advice
 
-![](2023/05/scanauto.jpg)
+![2023/05/scanauto.jpg](scanauto.jpg)
 *Scanautos are being used to automatically enforce parking rules inside the city.
 They are checking around 800x more effective than an unaugmented parking enforcement human.*
 
@@ -88,7 +88,7 @@ But it often is "while you still park" (20 minutes or less),
 so near realtime.
 This has the effect of ruining whatever you are currently doing in the city, so just park legally.
 
-![](2023/05/overtoom.png)
+![2023/05/overtoom.png](overtoom.png)
 *S106, Overtoom. A major inroad into the city. Note how this is one lane per direction, and no parking at the side.*
 
 The cheapest way to do that is to park at a [Park and Ride](https://www.amsterdam.nl/en/parking/park-ride/),
@@ -103,7 +103,7 @@ Be sensible, use OV.
 
 # Summary
 
-![](2023/05/electric-charge-points.png)
+![2023/05/electric-charge-points.png](electric-charge-points.png)
 
 *Map of [electric charge points](https://www.amsterdam.nl/parkeren/elektrische-oplaadpunten-amsterdam/) in Amsterdam*
 

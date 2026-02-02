@@ -18,7 +18,7 @@ Sid Meier lists, chronologically and very systematically, all the games he has b
 And tells us what happened to him, the game and the game development process while he worked on it.
 Somehow that becomes a Memoir, even if some things are only implied or appear out of order.
 
-![](2022/05/memoir.jpg)
+![2022/05/memoir.jpg](memoir.jpg)
 
 *[Sid Meier's Memoir!](https://www.amazon.de/-/en/Sid-Meier-ebook/dp/B085845CX9), Sid Meier*
 

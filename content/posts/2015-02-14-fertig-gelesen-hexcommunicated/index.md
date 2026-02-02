@@ -14,7 +14,7 @@ aliases:
 ---
 Turns out people go insane by the way of identity loss if you provide remove too much of their own body in the process of giving them milspec cyber enhancements. Turns out that's fixable by giving them a good backstory and themed identity. At least that is the premise that Chandler uses to excuse his merciless verbal sadism that brings us Nosferodents, Vampoules, Fearwolves, Frankenstitches and other Force Amplified Entities (FAE) of the Hermetic Extroy Division (Hex Divison). We are spared nothing.
 
-[![](2015/02/hexcommunicated.jpg)](https://www.amazon.de/Hexcommunicated-Agent-Tepes-Book-English-ebook/dp/B008IVFRCE)
+[![2015/02/hexcommunicated.jpg](hexcommunicated.jpg)](https://www.amazon.de/Hexcommunicated-Agent-Tepes-Book-English-ebook/dp/B008IVFRCE)
 
 [Hexcommunicated](https://www.amazon.de/Hexcommunicated-Agent-Tepes-Book-English-ebook/dp/B008IVFRCE)
 

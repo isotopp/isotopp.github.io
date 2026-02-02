@@ -12,7 +12,7 @@ title: 'Fertig gelesen: River of Teeth'
 aliases:
   - /2017/11/07/fertig-gelesen-river-of-teeth.html
 ---
-[![](2017/11/river-of-teeth.png)](https://www.amazon.de/River-Teeth-Sarah-Gailey-ebook/dp/B01MRJW3OS)
+[![2017/11/river-of-teeth.png](river-of-teeth.png)](https://www.amazon.de/River-Teeth-Sarah-Gailey-ebook/dp/B01MRJW3OS)
 
 »In the early twentieth century, the Congress of our great
 nation debated a glorious plan to resolve the meat shortage in

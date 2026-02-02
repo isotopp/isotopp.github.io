@@ -25,11 +25,11 @@ really like reliably timed writes like these. Maximum queue depth would be
 48, the system is not touching
 that.
 
-![](2017/07/pure-storage1.jpg)
+![2017/07/pure-storage1.jpg](pure-storage1.jpg)
 
 and here is iostat on the iSCSI client running the test
 
-![](2017/07/pure-storage2-1024x238.jpg)
+![2017/07/pure-storage2-1024x238.jpg](pure-storage2-1024x238.jpg)
 
 100k random writes, 4k write size, inside a 2 TB linux file of random data,
 on a 15 TB filesystem with XFS, on an LVM2 volume provided by iSCSI over a

@@ -47,7 +47,7 @@ Betriebssysteme wie Windows für Workgroups und Windows'95, die dem Benutzer zwa
 Dazu kommt, daß die Familie der Windows-Betriebssysteme die Groß-/Kleinschreibung von Paßworten in einigen Kombinationen von Betriebssystem/Paßwort verändern.
 Samba hat eine ganze Reihe Mechanismen, um diesem Problem abzuhelfen, aber der Verwaltungsaufwand ist anfangs trotzdem höher als bei einer typischen NFS-Installation.<p>
 
-![](1996/01/SuperNOS.gif)
+![1996/01/SuperNOS.gif](SuperNOS.gif)
 
 *Novell hat versucht, das Super Network Operating System durch Verschmelzung der zugekauften UNIX-Quellen mit ihrem eigenen Serverbetriebssystem zu bauen und ist gescheitert. Klammheimlich hat das frei verfügbare Linux gelernt, die meisten Netzwerkprotokolle zu sprechen und ist auf dem besten Wege, eben dieses SuperNOS zu werden.*
 
@@ -92,7 +92,7 @@ testparm:
 testprns:
 : Syntaxchecker für die Druckerkonfiguration.
 
-![](1996/01/programme.gif)
+![1996/01/programme.gif](programme.gif)
 
 *Samba besteht aus einer Reihe von Programmen, die zum Betrieb des Servers (Server-Tools) oder zu seinem Test (Client-Tools) dienen.*
 

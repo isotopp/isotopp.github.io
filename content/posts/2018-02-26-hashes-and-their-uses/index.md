@@ -13,7 +13,7 @@ aliases:
 A hash function is a function that maps a large number of arbitrary data
 types onto a smaller number of contiguous integers.
 
-![](2018/02/simple-hash.png)
+![2018/02/simple-hash.png](simple-hash.png)
 
 This simple hash function maps strings of arbitrary length to integers. Some
 strings are mapped to the same integer: a hash value collision.
@@ -46,7 +46,7 @@ calculate, but very weak. They can detect simple individual changes, but
 because of additive commutativity, they won't detect swapped digits: The
 digit sum of `357` is identical to `537`, because `3+5 = 5+3`.
 
-![](2018/02/digit-sum.png)
+![2018/02/digit-sum.png](digit-sum.png)
 
 Additive commutativity makes it possible to swap digits in a number without
 changing the digit sum.
@@ -67,11 +67,11 @@ position:
 - On the other hand, `537` is `5*1 + 3*2 + 7*3 = 32` (Checksum: 2).
 
 This is actually what the 10-digit ISBN uses: 
-![](2018/02/isbn-10-v1.png)
+![2018/02/isbn-10-v1.png](isbn-10-v1.png)
 
 which expands to 
 
-![](2018/02/isbn-10-v2.png)
+![2018/02/isbn-10-v2.png](isbn-10-v2.png)
 
 and that is exactly what we used above in our 357 vs. 537 example.
 One difference in the ISBN-10 case: a different modulo factor. The
@@ -107,7 +107,7 @@ dictionaries, and they are typically used by transforming a string
 using a hash function, and then using the integer as an index into an
 array (yielding `a[3]` again). There are a few problems:
 
-![](2018/02/text-hash.png)
+![2018/02/text-hash.png](text-hash.png)
 
 Two otherwise unrelated strings may have the same hash value.
 

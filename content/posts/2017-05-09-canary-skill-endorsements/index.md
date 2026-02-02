@@ -10,7 +10,7 @@ title: Canary Skill Endorsements
 aliases:
   - /2017/05/09/canary-skill-endorsements.html
 ---
-[![](2017/05/canary-skill-endorsements-1024x768.jpg)](https://twitter.com/iantien/status/861248220428738560/photo/1)
+[![2017/05/canary-skill-endorsements-1024x768.jpg](canary-skill-endorsements-1024x768.jpg)](https://twitter.com/iantien/status/861248220428738560/photo/1)
 
 "[Canary Skill Endorsements](https://twitter.com/iantien/status/861248220428738560/photo/1)":
 If you see them being used in a letter sent to you by a recruiter, you go

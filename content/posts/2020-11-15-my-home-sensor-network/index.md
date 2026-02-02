@@ -66,7 +66,7 @@ crw-rw---- 1 root dialout 166, 0 Nov 15 11:51 /dev/ttyACM0
 ```
 The instructions say you should be connecting the Conbee to the device using a USB cable, to keep it away from the device HF. This will improve the reach of the antenna supposedly a lot.
 
-![](2020/11/iot-conbee.jpg)
+![2020/11/iot-conbee.jpg](iot-conbee.jpg)
 
 *Dresden Elektronik ConBee attached to the Ubuntu fileserver using a USB cable.*
 
@@ -92,13 +92,13 @@ They report measurements asynchronously as the data changes, which makes MQTT a 
 
 They are available on Amazon from a number of makers, at vastly different prices and delivery times. I assume that a 100-pack of these directly from Shenzhen comes in at 2.50 Euro/pc or so - individual sensors incl. shipping come in at $6.50 at Aliexpress. [Here](https://www.amazon.de/gp/product/B07SB2C327), [here](https://www.amazon.de/gp/product/B07RQTQ4JH) and [here](https://www.amazon.de/gp/product/B088ZT28T6) are some sources, but I have seen them as low as 10-12 Euro/pc.
 
-![](2020/11/iot-aqara1.jpg)
+![2020/11/iot-aqara1.jpg](iot-aqara1.jpg)
 
 *A wireless mouse was delivered in container made from these plastic shells. I used one to protect the Aqara sensor against the weather.*
 
 The Aqara sensor is not really an outdoor sensor. It works well on the east side of the house, but the west side is the local weather side, and needs more water protection. I know this, because the first sensor on this side of the house drowned and shorted out after a rainstorm. I have mounted the replacement sensor in an upside down, open plastic container, and then glued the container to the top bar of a window. The seems to work fine.
 
-![](2020/11/iot-aqara2.jpg)
+![2020/11/iot-aqara2.jpg](iot-aqara2.jpg)
 
 *Aqara sensor mounted on the top bar of a window. The plastic container is open to the bottom, but acts as a shield against rain and weather.*
 
@@ -527,7 +527,7 @@ graphviz: /usr/bin/sfdp
 
 The result is a network map. The map is always only a current snapshot, and the actual configuration may vary depending on network conditions.
 
-[![](2020/11/iot-mesh.png)](/uploads/2020/11/iot-mesh-large.png)
+[![2020/11/iot-mesh.png](iot-mesh.png)](/uploads/2020/11/iot-mesh-large.png)
 
 *The MQTT network map shows the devices and how they connect between each other. Unlinked devices connect directly to the coordinator.*
 

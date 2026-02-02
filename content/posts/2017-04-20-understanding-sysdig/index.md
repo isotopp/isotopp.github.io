@@ -97,7 +97,7 @@ hierarchical), with system objects (Spans can have IDs and tags) and with
 other events (spans are called spans, because they mark a span of time and
 space and they contain other system events). 
 
-![](2017/04/tracers_spectro.png)
+![2017/04/tracers_spectro.png](tracers_spectro.png)
 
 A spectrogram plots logarithmically bucketized spans (or calls) every 2
 seconds. Slow calls to the right, fast to the left. You can mark an area

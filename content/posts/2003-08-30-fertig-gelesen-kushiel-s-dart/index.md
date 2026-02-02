@@ -13,7 +13,7 @@ aliases:
 ---
 [Kushiel's Dart](https://www.amazon.de/Kushiels-Dart-Legacy-Book-English-ebook/dp/B0055DLCAY) - Eine Mantel-und-Degen Geschichte in einer seltsamen Parallelwelt, in der die Römer Britannien nicht erobert haben und in der Jesus Sohn in Frankreich freie Liebe gepredigt hat.
 
-[![](2003/08/kushiels_dart.jpg)](https://www.amazon.de/Kushiels-Dart-Legacy-Book-English-ebook/dp/B0055DLCAY)
+[![2003/08/kushiels_dart.jpg](kushiels_dart.jpg)](https://www.amazon.de/Kushiels-Dart-Legacy-Book-English-ebook/dp/B0055DLCAY)
 
 Die Heldin, eine Art Tempelkurtisane mit einer Wahrnehmungsstörung (Sie kann Pleasure und Pain nicht unterscheiden) wird von einem Altmeister der Spionage in die Lehre genommen und zu einer gefährlichen Waffe ausgebildet, die in den Salons und den Betten der Mächtigen zum Einsatz kommt.
 

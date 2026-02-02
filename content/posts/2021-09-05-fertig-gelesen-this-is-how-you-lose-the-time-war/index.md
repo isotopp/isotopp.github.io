@@ -15,7 +15,7 @@ aliases:
 
 Max Gladstone and Amal El-Mohtar co-authored [This Is How You Lose The Time-War](https://www.amazon.de/This-How-Lose-Time-English-ebook/dp/B07RTYNHRM), not exactly a Science Fiction novel.
 
-[![](2021/09/time-war.jpg)](https://www.amazon.de/This-How-Lose-Time-English-ebook/dp/B07RTYNHRM)
+[![2021/09/time-war.jpg](time-war.jpg)](https://www.amazon.de/This-How-Lose-Time-English-ebook/dp/B07RTYNHRM)
 
 *[This Is How You Lose The Time War](https://www.amazon.de/This-How-Lose-Time-English-ebook/dp/B07RTYNHRM), Amal El-Mohtar and Max Gladstone*
 

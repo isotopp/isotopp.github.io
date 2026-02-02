@@ -68,7 +68,7 @@ Looking at the `PyModuleDef` requires [the documentation](https://docs.python.or
 We identify two functions, `cbcEncrypt` and `cbcDecrypt` by their [`PyMethodDef`](https://docs.python.org/3/c-api/structures.html#c.PyMethodDef) entries.
 Two labels for entry points in a stripped binary identified.
 
-![](2021/11/arista-pymethoddef.png)
+![2021/11/arista-pymethoddef.png](arista-pymethoddef.png)
 
 *The Python Method Definition Table for the _DesCrypt Module defines two functions, named `cbcEncrypt` and `cbcDecrypt`.*
 
@@ -93,7 +93,7 @@ the padding is encoded in the high nibble of a fixed magic int.
 That magic int is always prepended, even if no padding was necessary:
 We get `?ebb884c`, with `?` indicating the number of padbytes (`0` to `7`).
 
-![](2021/11/arista-gethashedkey.png)
+![2021/11/arista-gethashedkey.png](arista-gethashedkey.png)
 
 *Ghidra Output of the getHashedKey() function, with a bit of annotation and typing added to get a better view.*
 
@@ -233,7 +233,7 @@ I am definitively not doing these things often enough anymore to not make this k
 
 Having a working `getHashedKey()` we can now look at `cbcEncrypt()` and reverse that.
 
-![](2021/11/arista-cbcencrypt.png)
+![2021/11/arista-cbcencrypt.png](arista-cbcencrypt.png)
 
 *The heart of `cbcEncrypt()` fetches two Python `bytearray`, `key` and `data` and works with them. The `key` is processed with `getHashedKey()`, then `cbc_crypt()` is set up and called. The result returned to Python using `Py_BuildValue`.*
 

@@ -11,7 +11,7 @@ title: When Video Games are not quite playing things straight…
 aliases:
   - /2017/10/12/when-video-games-are-not-quite-playing-things-straight.html
 ---
-![](2017/10/games-are-cheating.jpg)]
+![2017/10/games-are-cheating.jpg](games-are-cheating.jpg)]
 
 [Computer Games are cheating](https://mobile.twitter.com/Gaohmee/status/903510060197744640)
 
@@ -36,7 +36,7 @@ dumbing down offscreen threats)? I prefer solutions that let the player
 feel impressive, but aren't exactly hidden. Like modern schmup hitbox
 sizes."
 
-![](2017/10/DI-26_9XYAIDXo6.jpg)
+![2017/10/DI-26_9XYAIDXo6.jpg](DI-26_9XYAIDXo6.jpg)
 
 "I'm getting tired of these things being described as "dumbing down". The games
 that don't do these things you'd not touch with a stick. Nothing is

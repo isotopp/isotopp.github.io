@@ -17,7 +17,7 @@ A program was set up to fix that, assuming things would be done with in ten year
 The program was a great success, and people taking the bike to use the train, and to use a bike after they arrived at their destination by train increased greatly.
 This created more needs, and so the program is, changed, still active today.
 
-![](2022/05/fietspark-01.jpg)
+![2022/05/fietspark-01.jpg](fietspark-01.jpg)
 
 *[Fietsparkeren bij Stations](https://www.amazon.de/-/en/Folkert-Piersma/dp/9068688286), Folkert Piersma and Wout Ritzema*
 
@@ -25,7 +25,7 @@ This created more needs, and so the program is, changed, still active today.
 
 The book talks, in one chapter each, about analyzing customer needs, the history of the program, guidelines and goals, the plannning process, typical bike parking facilities, architecture and design, investment costs, facility operations, technical resources, innovative solutions and finally an outlook.
 
-![](2022/05/fietspark-02.jpg)
+![2022/05/fietspark-02.jpg](fietspark-02.jpg)
 *Table of Content*
 
 - What matters to cycling train travellers?
@@ -41,7 +41,7 @@ The book talks, in one chapter each, about analyzing customer needs, the history
 - Challenges and opportunities
 - Overview of bicycle parking facilities at railway stations, numbers of bicycle parking spaces per station to storage type
 
-![](2022/05/fietspark-03.jpg)
+![2022/05/fietspark-03.jpg](fietspark-03.jpg)
 
 *The Bike/Train combination is special.*
 
@@ -68,11 +68,11 @@ The book talks, in one chapter each, about analyzing customer needs, the history
 > for example, the centre of Arnhem to the Rijksmuseum in Amsterdam (approximately 100 km) 
 > is virtually the same for both the bike/train combination and the car.
 
-![](2022/05/fietspark-04.jpg)
+![2022/05/fietspark-04.jpg](fietspark-04.jpg)
 
 *Load diagrams and station plan with the bike parking in relation to the platforms.*
 
-![](2022/05/fietspark-05.jpg)
+![2022/05/fietspark-05.jpg](fietspark-05.jpg)
 
 *"Groot, licht, dichtbij. Dit is ideaal!" -- Christien*
 
@@ -81,13 +81,13 @@ The book talks, in one chapter each, about analyzing customer needs, the history
 > Protected bike parking can be with personnel or without.
 > An example of protected bike parking without personnel would be bike boxes.
 
-![](2022/05/fietspark-06.jpg)
+![2022/05/fietspark-06.jpg](fietspark-06.jpg)
 
 *"Ik kom hier graag. Er is gewoon altijd plek!" -- Xiaohe*
 
 Planability and reliable availability of bike slots are important to customers and commuters.  
 
-![](2022/05/fietspark-07.jpg)
+![2022/05/fietspark-07.jpg](fietspark-07.jpg)
 
 *Bike parking in the 1970s. 
 Fietsenstalling bij station Koudum Molkwerum (boven) en fietsenstalling bi station Dronrip (jaren zeventig van de vorige euw).*
@@ -97,19 +97,19 @@ Times and usage-patterns change.
 To understand where the Netherlands are today, we have to look at the past.
 These photos from the 1970s show the situation in typical stations from that time.
 
-![](2022/05/fietspark-08.jpg)
+![2022/05/fietspark-08.jpg](fietspark-08.jpg)
 
 *Station Kampen, 1982.*
 
 The Dutch word for a bike park is "stalling" ("stable"), and in this case it is meant quite literally.
 
-![](2022/05/fietspark-09.jpg)
+![2022/05/fietspark-09.jpg](fietspark-09.jpg)
 
 *Replanning and rebuilding bike parking at station Deventer.*
 
 The Situation shown in 2002, and in 2012 after renovation.
 
-![](2022/05/fietspark-10.jpg)
+![2022/05/fietspark-10.jpg](fietspark-10.jpg)
 
 *"Programma fietsparkeren bij Stations"*
 
@@ -124,7 +124,7 @@ despite more people arriving by bike at the train than ever before,
 also the quality of the area around the train stations improved.
 The dark and seedy underpasses and the general feeling of insecurity around many train stations areas in other cities is no longer present here.
 
-![](2022/05/fietspark-11.jpg)
+![2022/05/fietspark-11.jpg](fietspark-11.jpg)
 
 What works and what doesn't?
 After gaining experience with the initial construction program and being pleasantly surprised by its success,
@@ -139,11 +139,11 @@ Financially, the group also improved its position.
 > It also turned out to be necessary to equip the indoor monitored storage with tiered racks,
 > which was already the case in virtually all existing monitored storage facilities.
 
-![](2022/05/fietspark-12.jpg)
+![2022/05/fietspark-12.jpg](fietspark-12.jpg)
 
 *Planning and exploration phases for a bicycle parking facility are presented and explained*
 
-![](2022/05/fietspark-13.jpg)
+![2022/05/fietspark-13.jpg](fietspark-13.jpg)
 
 *Target audience and their needs.*
 
@@ -163,7 +163,7 @@ Financially, the group also improved its position.
 > and spend as little time as possible parking their bikes.
 > Therefore, we place the bicycle parking facility as close as possible to the station entrance.
 
-![](2022/05/fietspark-14.jpg)
+![2022/05/fietspark-14.jpg](fietspark-14.jpg)
 
 *Capacity planning using the example of the fictional station Amperveen.*
 
@@ -176,11 +176,11 @@ Financially, the group also improved its position.
 > It would not be surprising if the long-term projection ends up at 5750 spots 
 > (20 % increase in travelers, 20 % increase in bicycle usage, and 10 % latent demand).
 
-![](2022/05/fietspark-15.jpg)
+![2022/05/fietspark-15.jpg](fietspark-15.jpg)
 
 *Real Simulations: Amsterdam Centraal Station. [ZW1A with a capacity of 7000 parking spaces has just been completed](https://www.youtube.com/watch?v=EqwasBTzZS8).*
 
-![](2022/05/fietspark-16.jpg)
+![2022/05/fietspark-16.jpg](fietspark-16.jpg)
 
 > Case Station Amperveen: Distance to the Station
 >
@@ -192,7 +192,7 @@ Financially, the group also improved its position.
 > it may be considered to provide a free unguarded parking facility at a slightly greater distance,
 > up to a maximum of 400 meters.
 
-![](2022/05/fietspark-17.jpg)
+![2022/05/fietspark-17.jpg](fietspark-17.jpg)
 
 Types, by Prevalence and Price:
 
@@ -202,12 +202,12 @@ Types, by Prevalence and Price:
 - Underground Parking
 - Mega Parking
 
-![](2022/05/fietspark-18.jpg)
+![2022/05/fietspark-18.jpg](fietspark-18.jpg)
 
 *Pedestrian Flow Analysis for the bike-parking "Stationsplein Eindhoven Central (south side)".
 Variations in the Layout of bike lots.*
 
-![](2022/05/fietspark-19.jpg)
+![2022/05/fietspark-19.jpg](fietspark-19.jpg)
 
 So, what did we learn in the last 20 years?
 
@@ -225,7 +225,7 @@ So, what did we learn in the last 20 years?
 | Windows in a portion of the wall                              | Floor-to-ceiling windows                                                                                                                      |
 | Turnstile at pedestrian exit with low steel revolving gate    | Full-height glass turnstile                                                                                                                   |
 
-![](2022/05/fietspark-20.jpg)
+![2022/05/fietspark-20.jpg](fietspark-20.jpg)
 
 *And this is what it looks like.*
 

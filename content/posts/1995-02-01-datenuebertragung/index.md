@@ -46,7 +46,7 @@ Griff, kann man sich dem nächstkomplizierten Problem zuwenden. Das
 OSI-Modell besteht insgesamt aus sieben Schichten, mit denen man 
 versucht, die Aufgabe zu strukturieren.
 
-![](1995/02/bild1.gif)
+![1995/02/bild1.gif](bild1.gif)
 
 *Bild 1: Das OSI 7-Schichtenmodell*
 
@@ -137,7 +137,7 @@ Verbindungen er es zum eigentlichen Zielrechner senden kann. Die
 folgenden Rechner leiten das Paket ebenfalls weiter, solange bis es 
 den Zielrechner endlich erreicht.
 
-![](1995/02/bild2.gif)
+![1995/02/bild2.gif](bild2.gif)
 
 *Bild 2: Ein Router nimmt ein Paket und leitet es an einen näher am Ziel gelegenen Rechner weiter. Auf diese Weise entstehen indirekte Verbindungen.*
 
@@ -201,7 +201,7 @@ Leitung vor, die als Steuerleitung (*Strobe*, "Bitte sehr")
 fungiert und signalisiert, daß die Inhalte der acht Datenleitungen 
 gültig sind.
 
-![](1995/02/bild3.gif)
+![1995/02/bild3.gif](bild3.gif)
 
 *Bild 3: Signal-Zeitdiagramm an einer Centronics Schnittstelle. Die Datenübertragung erfolgt asychron ohne ein Taktsignal. Die Geschwindigkeit der Übertragung regelt sich durch die Bestätigung eines jeden Zeichens selbst.*
 
@@ -253,7 +253,7 @@ das sind etwa 11.2 KB/Sekunde.
 
 ## V.24
 
-![](1995/02/bild4.gif)
+![1995/02/bild4.gif](bild4.gif)
 
 *Bild 4: Belegung und Bedeutung der Anschlüsse an einer V.24 Schnittstelle.*
 
@@ -269,7 +269,7 @@ sind festgelegt, andere sind in gewissen Grenzen variabel. Wenn Sender
 und Empfänger nicht auf genau die gleichen Übertragungsparameter 
 eingestellt sind, wird die Übertragung nicht gelingen.
 
-![](1995/02/bild5.gif)
+![1995/02/bild5.gif](bild5.gif)
 
 *Bild 5: Bitfolge auf einem V.24 Kabel zur Übertragung eines 7 Bit Zeichens mit gerader Parität: Nach dem Startbit folgenden die 7 Datenbits, das niederwertigste Bit zuerst. Das Paritätsbit sorgt dafür, daß die Anzahl der Einsbits im Datenwort gerade ist. Mit dem Stopbit wird das Ende des Datenwortes signalisiert.*
 
@@ -293,7 +293,7 @@ Bit pro Sekunde werden pro Sekunde also genau 960 Byte transportiert.
 Der Benutzer einer seriellen Schnittstelle kann einige Parameter der 
 Übertragung frei festlegen. 
 
-![](1995/02/bild6.gif)
+![1995/02/bild6.gif](bild6.gif)
 
 *Bild 6: Nicht alle Parameter einer seriellen Schnittstelle sind konfigurierbar. Einstellbar sind neben der Geschwindigkeit der Übertragung auch die Anzahl der Datenbits pro Datenwort, die Parität und die Anzahl der Stopbits. Übliche Parameterwerte sind 8-N-1 oder 7-E-1.*
 
@@ -445,7 +445,7 @@ Länge und andere Informationen mit überträgt. Es ist auch in der Lage,
 weitere Datenblöcke zu versenden, bevor die Bestätigungen für 
 vorhergehende Pakete eingegangen sind.
 
-![](1995/02/bild7.gif)
+![1995/02/bild7.gif](bild7.gif)
 
 *Bild 7: Der Sender kann dem Empfänger vorauseilen. Er sendet Daten,
 deren Empfang der Empfänger noch nicht bestätigt hat. Das bedeutet, für
@@ -496,7 +496,7 @@ jedoch nur einen einzigen Parameter einer Schwingung, nämlich die
 Tonhöhe, die Frequenz.  Außerdem überträgt man so nur ein Bit zur 
 Zeit.
 
-![](1995/02/bild8.gif)
+![1995/02/bild8.gif](bild8.gif)
 
 *Bild 8: Das Diagramm zeigt Phasenwinkel und Amplitudenwerte eines
 Signals. Der Sender steuert zur Signalisierung eines von 16 Zuständen Phase

@@ -11,7 +11,7 @@ title: 'FOSDEM Talk: cgroups-v2'
 aliases:
   - /2017/02/07/fosdem-talk-cgroups-v2.html
 ---
-![](2017/02/cgroups-v2.png)
+![2017/02/cgroups-v2.png](cgroups-v2.png)
 
 
 [The talk](https://fosdem.org/2017/schedule/event/cgroupv2/)

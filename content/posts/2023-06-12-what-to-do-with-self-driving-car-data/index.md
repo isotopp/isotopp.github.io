@@ -14,7 +14,7 @@ aliases:
 
 This is what a self-driving car sees, or constructs from the sensor data it uses:
 
-![](2023/06/self-driving-01.jpg)
+![2023/06/self-driving-01.jpg](self-driving-01.jpg)
 
 *Screenshot from [How is LiDAR remote sensing used for Autonomous vehicles?](https://youtu.be/JC94Y063x58?t=38)*
 
@@ -35,7 +35,7 @@ the car would build the world-model wrongly and hit other people or things.
 
 ## Detecting speeding while driving
 
-![](2023/06/self-driving-02.jpg)
+![2023/06/self-driving-02.jpg](self-driving-02.jpg)
 
 *Albrechtstraße, driving towards Wenckebachstraße, in Berlin. To the right a playground. This road is a "30 zone".*
 
@@ -72,7 +72,7 @@ Should that car have reported itself and its driver? Why or why not?
 
 The driver of the recording car tries to park illegally:
 
-![](2023/06/self-driving-03.jpg)
+![2023/06/self-driving-03.jpg](self-driving-03.jpg)
 
 *Wenckebachstrasse 1, Berlin. The driver tries to park to the right of the Seat and the red-white boundary.*
 

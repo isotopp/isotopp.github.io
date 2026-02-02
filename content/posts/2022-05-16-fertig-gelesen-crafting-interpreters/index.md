@@ -15,7 +15,7 @@ aliases:
 Robert Nystrom is a language developer who works at Google on the Dart programming language.
 In his book [Crafting Interpreters](https://www.amazon.de/-/en/Robert-Nystrom-ebook/dp/B09YLQSGKL) he explains lexing, parsing and executing a programming language in an accessible way.
 
-[![](2022/05/crafting-interpreters.jpg)](https://www.amazon.de/-/en/Robert-Nystrom-ebook/dp/B09YLQSGKL)
+[![2022/05/crafting-interpreters.jpg](crafting-interpreters.jpg)](https://www.amazon.de/-/en/Robert-Nystrom-ebook/dp/B09YLQSGKL)
 
 *"[Crafting Interpreters](https://www.amazon.de/-/en/Robert-Nystrom-ebook/dp/B09YLQSGKL)", Robert Nystrom*
 

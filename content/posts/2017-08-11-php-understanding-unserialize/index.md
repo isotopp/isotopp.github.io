@@ -108,19 +108,19 @@ good,
 
 **So what is the state of `unserialize()` in PHP these days, and why?**
 
-![](2017/08/Screen-Shot-2017-08-11-at-13.44.00.png)
+![2017/08/Screen-Shot-2017-08-11-at-13.44.00.png](Screen-Shot-2017-08-11-at-13.44.00.png)
 
 [That was a controversial Tweet](https://twitter.com/nikita_ppv/status/895571304325062656)
 
 It links to this: 
 
-![](2017/08/do-not-unserialize-foreign-code.png)
+![2017/08/do-not-unserialize-foreign-code.png](do-not-unserialize-foreign-code.png)
 
 [Really Good Advice™](http://php.net/unserialize)
 
 People object:
 
-![](2017/08/how-does-this-solve-anything.png)
+![2017/08/how-does-this-solve-anything.png](how-does-this-solve-anything.png)
 
 [People object](https://twitter.com/buherator/status/895933031529275392)
 

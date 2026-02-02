@@ -14,7 +14,7 @@ aliases:
 ---
 Die zerbrochene Puppe kam hier quasi zeitgleich mit Aetherhertz von Anja Bagus rein und ist ebenfalls ein deutscher Streampunk-Roman, da hören die Gemeinsamkeiten auch schon auf. Während ich Aetherhertz so heruntergelesen habe und gespannt auf einen zweiten Teil warte, habe ich mich durch die zerbrochene Puppe hindurch kämpfen müssen.
 
-[![](2013/11/puppe.png)](http://www.amazon.de/Die-zerbrochene-Puppe-Steampunk-Roman-ebook/dp/B00BD16NPQ)
+[![2013/11/puppe.png](puppe.png)](http://www.amazon.de/Die-zerbrochene-Puppe-Steampunk-Roman-ebook/dp/B00BD16NPQ)
 
 [Die zerbrochene Puppe](http://www.amazon.de/Die-zerbrochene-Puppe-Steampunk-Roman-ebook/dp/B00BD16NPQ)
 

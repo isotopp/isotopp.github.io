@@ -12,7 +12,7 @@ title: On cache problems, and what they mean for the future
 aliases:
   - /2017/06/23/on-cache-problems-and-what-they-mean-for-the-future.html
 ---
-![](2017/06/ssd-problem.jpg)
+![2017/06/ssd-problem.jpg](ssd-problem.jpg)
 
 This is a disk utilization graph on a heavily loaded Graphite box. In this
 case, a Dell with a MegaRAID, but that actually does not matter too much.

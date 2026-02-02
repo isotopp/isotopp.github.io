@@ -13,7 +13,7 @@ aliases:
 ---
 "Hexenmacht" (German Edition) and "Maschinengötter" (German Edition) are part 2 and 3 in the series "Die Krone der Sterne" (The Crown of Stars) by Kai Meyer. See [Die Krone der Sterne]({{< relref "2017-02-13-fertig-gelesen-die-krone-der-sterne.md" >}}) for a review of part 1.
 
-[![](2020/05/hexenmacht.jpg)](https://www.amazon.de/-/en/Die-Krone-Sterne-Kai-Meyer-ebook/dp/B076Q1RZH9)
+[![2020/05/hexenmacht.jpg](hexenmacht.jpg)](https://www.amazon.de/-/en/Die-Krone-Sterne-Kai-Meyer-ebook/dp/B076Q1RZH9)
 
 *[Hexenmacht](https://www.amazon.de/-/en/Die-Krone-Sterne-Kai-Meyer-ebook/dp/B076Q1RZH9), Kai Meyer, 12.99 Eur (Kindle)*
 

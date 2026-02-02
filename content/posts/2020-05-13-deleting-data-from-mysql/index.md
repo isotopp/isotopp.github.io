@@ -12,7 +12,7 @@ aliases:
 ---
 I have been pointed at the following question: »Has anyone ever used mySQL events to auto-delete rows from a table after set period? Wondering your experience of doing this.«
 
-[![](2020/05/mysql-delete.png)](https://twitter.com/wsakaren/status/1260434965810085889)
+[![2020/05/mysql-delete.png](mysql-delete.png)](https://twitter.com/wsakaren/status/1260434965810085889)
 
 There are two ends to this question:
 

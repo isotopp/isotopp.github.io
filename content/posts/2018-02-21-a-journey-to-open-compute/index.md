@@ -17,13 +17,13 @@ Yesterday, Booking.com hosted the Open Compute Meetup in
 Amsterdam. My talk is on Slideshare and a recording is on
 Youtube.
 
-![](2018/02/Screen-Shot-2018-02-21-at-09.54.18.png)
+![2018/02/Screen-Shot-2018-02-21-at-09.54.18.png](Screen-Shot-2018-02-21-at-09.54.18.png)
 
 - [Slideshare: A journey to OCP](https://www.slideshare.net/isotopp/a-journey-to-ocp)
 - [Youtube: A journey to OCP](https://www.youtube.com/watch?v=c0Z32UsB5g0)
 
 A cleaned up and more coherent transcript of the talk is here:
-![](2018/02/ocp.003.jpeg)
+![2018/02/ocp.003.jpeg](ocp.003.jpeg)
 
 Booking.com started out as a small online travel agency in
 Amsterdam, but is now financially about 15% of Google. We have
@@ -37,7 +37,7 @@ restaurants, it makes sense to integrate that more and graduate
 from a Hotel Room marketplace to something more complete, a full
 trip or complete experience marketplace.
 
-![](2018/02/ocp.004.jpeg)
+![2018/02/ocp.004.jpeg](ocp.004.jpeg)
 
 At this point we have about 30k machines in 3 locations. 
 
@@ -50,7 +50,7 @@ would like to be able to run on the 2620 stuff completely, of
 course, but some parts of our application require the clock and
 the Oomph of the large CPUs. We are working on that.
 
-![](2018/02/ocp.005-1.jpeg)
+![2018/02/ocp.005-1.jpeg](ocp.005-1.jpeg)
 
 The part of the workload that actually earns us money is mostly
 replacing strings taken from a database in HTML templates, we
@@ -74,7 +74,7 @@ rather focus on the hotel thing. :-)
 A lot of stuff is recent, due to growth - Moore's law also
 applies backwards. Speaking about growth:
 
-![](2018/02/ocp.006.jpeg)
+![2018/02/ocp.006.jpeg](ocp.006.jpeg)
 
 There are a few old numbers taken from quarterly public company
 performance reports, roomnights and hotels. But it could be
@@ -84,7 +84,7 @@ you would see the same curve.
 
 On a log-Y scale it's even nicer:
 
-![](2018/02/ocp.007.jpeg)
+![2018/02/ocp.007.jpeg](ocp.007.jpeg)
 
 Some nice straight lines.If I were to draw the yearly increase
 in compute power as given by Moores law into this graph, you
@@ -93,7 +93,7 @@ one that is raising far slower that the other lines here.
 
 For a scalability person like me it means a tough life.
 
-![](2018/02/ocp.008.jpeg)
+![2018/02/ocp.008.jpeg](ocp.008.jpeg)
 
 Drawing the lines out naively sees us covering the earth in data
 centers by 2040 or so. That's a problem, because where are we
@@ -102,7 +102,7 @@ going to put the hotels?
 Of course that's not going to happen, but it underlines that we
 need to change our ways of handling stuff.
 
-![](2018/02/ocp.009.jpeg)
+![2018/02/ocp.009.jpeg](ocp.009.jpeg)
 
 Currently, we are handling the hardware part "enterprise'y". So
 we get space, build out the room, add racks, switches and
@@ -129,7 +129,7 @@ switches, storage, collects power data and temperature
 information and links into monitoring, load balancer
 configuration and to puppet.
 
-![](2018/02/ocp.010.jpeg)
+![2018/02/ocp.010.jpeg](ocp.010.jpeg)
 
 Using commercial colo space means many constraints. We are in
 small rooms, multiple 0.5MW sizes, and that creates a number of
@@ -142,7 +142,7 @@ image, that's a blade center that has the potential to create
 non-oversubscribed racks that are 10/40U full. That's about knee
 high.
 
-![](2018/02/ocp.011.jpeg)
+![2018/02/ocp.011.jpeg](ocp.011.jpeg)
 
 Here is a test run of a single blade from that bladecenter,
 where I am exercising all the cores as hard as possible,
@@ -150,7 +150,7 @@ recording the power draw. We reach 50% power draw at 6/56 cores
 busy, and using the maximum power draw, times 16 blades, gives
 me a total load of 6.4kW from the whole enclosure.
 
-![](2018/02/ocp.012.jpeg)
+![2018/02/ocp.012.jpeg](ocp.012.jpeg)
 
 Similarly, here is a rack of 32 machines (actually 40, but I got
 only 32 due to BMC instabilities), exercising at full power.
@@ -166,7 +166,7 @@ times are getting unwieldy.
 Finally, the BMC, which is our gateway into the machinery for
 ServerDB and it's assorted tools, is a big problem.
 
-![](2018/02/ocp.013.jpeg)
+![2018/02/ocp.013.jpeg](ocp.013.jpeg)
 
 ServerDB contains an abstraction layer that tries to hide the
 various differences in functionality and API between the various
@@ -198,13 +198,13 @@ machine.").
 So where do we got from here? What is required to graduate from
 this?
 
-![](2018/02/ocp.014.jpeg)
+![2018/02/ocp.014.jpeg](ocp.014.jpeg)
 
 Three issues need adressing: Going Rack Scale, Bringing volume
 up and Getting Rooms to match. Let's look at each of these in
 turn.
 
-![](2018/02/ocp.016.jpeg)
+![2018/02/ocp.016.jpeg](ocp.016.jpeg)
 
 We started ordering hardware by the blade center chassis. That
 did good: It solves many of the trash issues, it streamlines the
@@ -223,7 +223,7 @@ It gives you more design flexibility, and it may or may not
 retain the savings in power and cooling from shared
 power/cooling setup depending on what you do.
 
-![](2018/02/ocp.017.jpeg)
+![2018/02/ocp.017.jpeg](ocp.017.jpeg)
 
 The Intel RSD solution is available in many vendor flavors, HP,
 Dell and Supermicro all have them. It gives you a Pod and a Rack
@@ -251,7 +251,7 @@ software - in management for us that's ServerDB and in
 production for us that is more or less Kubernetes or something
 that does what K8s does, but differently.
 
-![](2018/02/ocp.018.jpeg)
+![2018/02/ocp.018.jpeg](ocp.018.jpeg)
 
 And that's exactly the sales promise from Open Compute. Clean,
 bare server designs without value add. Documented interfaces
@@ -260,25 +260,25 @@ integrate our stuff without problems. Delivery by the rack, and
 on top of that, potential operational and capital savings, if
 you treat room and rack as a system.
 
-![](2018/02/ocp.019.jpeg)
+![2018/02/ocp.019.jpeg](ocp.019.jpeg)
 
 Getting the volume up is the next important consideration, and
 if we are looking at our machine park, that's going to be a
 problem.
 
-![](2018/02/ocp.020.jpeg)
+![2018/02/ocp.020.jpeg](ocp.020.jpeg)
 
 If you go into ServerDB and count machine profiles, it goes up
 to 11: blade 9 and two additional blade2 variants. Actually
 digging into this yields basically 'large and small' CPU configs
 and memory configs, but lots of different local storage options.
 
-![](2018/02/ocp.021.jpeg)
+![2018/02/ocp.021.jpeg](ocp.021.jpeg)
 
 The answer is, to quote Jello Biafra, obvious: Ban Everything!
 In our case, local storage. So we disaggregate:
 
-![](2018/02/ocp.022.jpeg)
+![2018/02/ocp.022.jpeg](ocp.022.jpeg)
 
 In a rack design where we give a 2 OU, 500 W, 100 GBit slot to
 the storage people and provide un-RAID-ed 2 TB local SSD as the
@@ -303,7 +303,7 @@ even the smallest Silver 4110 is going to be too large for most
 units of deployment (in Java, consider 8 cores, 16 GB of RAM to
 be a limit, for example).
 
-![](2018/02/ocp.023.jpeg)
+![2018/02/ocp.023.jpeg](ocp.023.jpeg)
 
 Being able to pull that off will give us 4 profiles or fewer,
 disk made to measure as requested, location independence for
@@ -315,12 +315,12 @@ compute and the networking parts are separate and can be on
 different renewal cycles. All of that bound together by on
 single TCP/IP network, not some bespoke PCI or FC/AL stuff.
 
-![](2018/02/ocp.024.jpeg)
+![2018/02/ocp.024.jpeg](ocp.024.jpeg)
 
 Assuming I all have that, I will need rooms to match the rack in
 order to fully leverage the advantages of Open Compute.
 
-![](2018/02/ocp.025.jpeg)
+![2018/02/ocp.025.jpeg](ocp.025.jpeg)
 
 Open Compute hardware is built to be able to run in a barn:
 concrete floor, air-in of up to 35 or 40 deg Centigrade,
@@ -341,7 +341,7 @@ to achive the overcooling which we do no longer require, so the
 actual PUE is actually way worse than what we could have from an
 OCP compliant data center.
 
-![](2018/02/ocp.026.jpeg)
+![2018/02/ocp.026.jpeg](ocp.026.jpeg)
 
 We do get Tier-3 space easily, though. That is because it is
 being built without a buyers name on the constract. Buyers and
@@ -358,7 +358,7 @@ space, that's a larger commitment, because the space is being
 built for you, and you will need to keep it for the building
 lifetime.
 
-![](2018/02/ocp.027.jpeg)
+![2018/02/ocp.027.jpeg](ocp.027.jpeg)
 
 So having an OCP compliant data center build spec for OCP
 hardware is important to make OCP attractive to smaller
@@ -372,7 +372,7 @@ size, there is still the problem of many 0.5MW rooms or similar,
 capacity fragmentation, but for a more normal sized company
 that's actually a non-issue. They can be happy in these spaces.
 
-![](2018/02/ocp.028.jpeg)
+![2018/02/ocp.028.jpeg](ocp.028.jpeg)
 
 So to sum it up again: How can OCP work on non-hyperscaler
 scales? Provide a two sided market for DC space over a shared

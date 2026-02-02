@@ -15,7 +15,7 @@ When you insert data into a database and run COMMIT you expect things to be ther
 
 We are instead trying to understand what our databases are doing all day, from the point of view of the storage stack.
 
-![](2021/02/linux_observability_tools.png)
+![2021/02/linux_observability_tools.png](linux_observability_tools.png)
 
 *That Brendan Gregg Graphics*
 
@@ -78,7 +78,7 @@ It turns out that you can’t `blktrace` a single disk database machine, because
 
 When we feed that trace to Workload Intelligence, we get this:
 
-![](2021/02/class-200-iops.png)
+![2021/02/class-200-iops.png](class-200-iops.png)
 
 *The low red line is the 200 IOPS baseline load. Turns out, there are spikes, up and past 2000 IOPS.*
 
@@ -88,7 +88,7 @@ The second thing we learn: 200 IO Operations per Second it may be, but there are
 
 So how long does it take to write to disk? Well, there is no disk. There is Flash Storage, and it does not even have a disk interface any more – it sits directly on the PCI bus. A Flash drive that is directly on the PCI bus is called NVME instead of SSD (it is otherwise the same drive).
 
-![](2021/02/class-200-latency.png)
+![2021/02/class-200-latency.png](class-200-latency.png)
 
 *Most of the time there is very little wait.*
 
@@ -96,7 +96,7 @@ Flash is not fast, but NVME is: The drive not only has flash, it also has (large
 
 Sometimes we have to wait a bit, but most of the time it’s really, really fast. How fast? We need to go deeper:
 
-![](2021/02/class-200-latency-detail.png)
+![2021/02/class-200-latency-detail.png](class-200-latency-detail.png)
 
 *30µs or 0.03ms is the time it takes to write to memory over the PCI bus.*
 
@@ -106,7 +106,7 @@ Another number, which will come in handy later, is the time to cross our entire 
 
 Where do the writes go? We can plot the Linear Block Addresses and see:
 
-![](2021/02/class-200-lba.png)
+![2021/02/class-200-lba.png](class-200-lba.png)
 
 *LBA over time. See the position of the log files, and the checkpoints.*
 
@@ -120,7 +120,7 @@ In the graphics above you can also see the checkpoints scatter writes happen, an
 
 Flash does not have a single write head as disk drives do. They are not forced to do things sequentially, but in fact all the various chips in your drive can do things concurrently. Deep disk write queues are necessary to keep all these channels fed for NVME, while they are poison of SSD and HDD.
 
-![](2021/02/class-200-qdepth.png)
+![2021/02/class-200-qdepth.png](class-200-qdepth.png)
 
 *Queue Depth over time*
 
@@ -130,7 +130,7 @@ These are two other important numbers to keep in mind. They are the reason why �
 
 Let’s have a look at the latency diagram from above, again, and check the distribution of completion times in a Latency Histogram. It tells us how prevalent slow writes are over the observation window:
 
-![](2021/02/class-200-latency-histo.png)
+![2021/02/class-200-latency-histo.png](class-200-latency-histo.png)
 
 *It's called Flash for a reason.*
 
@@ -138,7 +138,7 @@ So even with these curtains in the latency over time diagram, we can see that 90
 
 Write sizes over time:
 
-![](2021/02/class-200-iosize.png)
+![2021/02/class-200-iosize.png](class-200-iosize.png)
 
 *Write sizes: Loads of small writes*
 
@@ -152,7 +152,7 @@ I chose this particular database as a member of the 2000 Commit/s Class, also be
 
 We are much better now. I am not missing the old times at all.
 
-![](2021/02/class-2000-iops.png)
+![2021/02/class-2000-iops.png](class-2000-iops.png)
 
 *IOPS over time, 2000 with Spikes to 5000.*
 
@@ -160,7 +160,7 @@ We are much better now. I am not missing the old times at all.
 
 True, but see, even a big and old monster such as this one can live with the working set in memory, completely. You, too, can be a successful database performance consultant: Say “Buy more memory!” and “There is an index missing” as needed (add “That’s going to be expensive”, if you work for SAP or Oracle).
 
-![](2021/02/class-2000-qdepth.png)
+![2021/02/class-2000-qdepth.png](class-2000-qdepth.png)
 
 *Our Write Queues are more busy.*
 
@@ -168,13 +168,13 @@ A quick look at the Write Queue Depth over Time: NVME loves this.
 
 Write Latencies from the helicopter looks a bit worrysome:
 
-![](2021/02/class-2000-latency.png)
+![2021/02/class-2000-latency.png](class-2000-latency.png)
 
 *These 5ms Curtains, how dense are they compared to the baseline?*
 
 We can zoom in: They are not bad.
 
-![](2021/02/class-2000-latency-detail.png)
+![2021/02/class-2000-latency-detail.png](class-2000-latency-detail.png)
 
 *We can see horizontal latency bands at fixed latencies. They expose internal structure of the Flash storage that I have not enough knowledge of. Grumble!*
 
@@ -182,7 +182,7 @@ We do see dark green, fixed bands of latency layers at 30µs, 120µs and 220µs.
 
 They are also visible in the latency histogram:
 
-![](2021/02/class-2000-latency-histo.png)
+![2021/02/class-2000-latency-histo.png](class-2000-latency-histo.png)
 
 *Our 30µs, 120µs and 220µs bands as bumps in the histogram. Anything below 500µs is probably immaterial in terms of worry.*
 
@@ -192,7 +192,7 @@ The chosen example is a [database as a queue]({{< relref "2021-01-28-database-as
 
 It is also very busy.
 
-![](2021/02/class-20000-iops.png)
+![2021/02/class-20000-iops.png](class-20000-iops.png)
 
 *During the sampling, 2500 baseline, with spikes up to 7500.*
 
@@ -200,7 +200,7 @@ During the sampling, they ran at 2500 commit/s, with spikes up to 7500. The hard
 
 So what can NVME do for us?
 
-![](2021/02/class-20000-qdepth.png)
+![2021/02/class-20000-qdepth.png](class-20000-qdepth.png)
 
 *Queues in our Queues!*
 
@@ -208,7 +208,7 @@ Turns out, writes to a Queue Databases keep the Queues to the NVME busy to their
 
 Is that bad for latency?
 
-![](2021/02/class-20000-latency.png)
+![2021/02/class-20000-latency.png](class-20000-latency.png)
 
 *Latency Curtains for Writes*
 
@@ -216,7 +216,7 @@ Well, if you kept up to this point you are probably not surprised to see write l
 
 Let’s zoom in a bit:
 
-![](2021/02/class-20000-latency-detail.png)
+![2021/02/class-20000-latency-detail.png](class-20000-latency-detail.png)
 
 *We do see the curtains under the microscope, true, but look at this dark green band of fast writes below all of this.*
 
@@ -224,7 +224,7 @@ As you can see in the dark green band of fast writes below all of the curtains, 
 
 As a histogram:
 
-![](2021/02/class-20000-latency-histo.png)
+![2021/02/class-20000-latency-histo.png](class-20000-latency-histo.png)
 
 *By far the most writes are still to NVRAM drive-side. Above 0.25ms we are basically clean.*
 
@@ -232,7 +232,7 @@ Smooth customer experience, even with an abusive customer such as this queue-dat
 
 Histograms are fun, by the way. We can for example count disk writes per block address:
 
-![](2021/02/class-20000-lba-histo.png)
+![2021/02/class-20000-lba-histo.png](class-20000-lba-histo.png)
 
 *We basically always change the same few pages.*
 

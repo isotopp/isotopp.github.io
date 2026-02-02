@@ -14,7 +14,7 @@ aliases:
 ---
 Was als ein fehlgeschlagenes Experiment beginnt, in  dem ein künstliches schwarzes Loch in die Erde fällt und beginnt diese von innen zu zerfressen wird am Ende zu einem Krieg gegen unbekannte Aliens, die die Erde schon 1908 angegriffen und mit einer Raumzeitbombe zum Tode verurteilt haben.
 
-![](2015/11/earth.jpg)
+![2015/11/earth.jpg](earth.jpg)
 
 Was aber auch egal ist, denn die Handlung, 50 Jahre in der Zukunft von 1990, dient nur als Hintergrund für eine Reihe von Vorhersagen.
 

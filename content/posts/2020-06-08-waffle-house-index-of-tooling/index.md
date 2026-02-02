@@ -12,7 +12,7 @@ aliases:
 ---
 Charity Majors was [on fire and on target, again](https://twitter.com/mipsytipsy/status/1268418428542443520):
 
-[![](2020/06/waffle-house-index.png)](https://twitter.com/mipsytipsy/status/1268418428542443520)
+[![2020/06/waffle-house-index.png](waffle-house-index.png)](https://twitter.com/mipsytipsy/status/1268418428542443520)
 
 What is a [Waffle House Index](https://en.wikipedia.org/wiki/Waffle_House_Index#Levels)?
 > The Waffle House Index is an informal metric named after the Waffle House restaurant chain and is used by the Federal Emergency Management Agency (FEMA) to determine the effect of a storm and the **likely scale of assistance required for disaster recovery**.

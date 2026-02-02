@@ -10,7 +10,7 @@ title: Friday Deploys, and other harmful BOFH memes
 aliases:
   - /2017/07/03/friday-deploys-and-other-harmful-bofh-memes.html
 ---
-![](2017/07/friday-deploy.jpg)
+![2017/07/friday-deploy.jpg](friday-deploy.jpg)
 
 *Glorifying toil, glorifying organisational ossification*
 

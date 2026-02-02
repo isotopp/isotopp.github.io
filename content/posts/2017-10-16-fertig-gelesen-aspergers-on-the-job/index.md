@@ -12,7 +12,7 @@ title: 'Fertig gelesen: Asperger''s on the Job'
 aliases:
   - /2017/10/16/fertig-gelesen-aspergers-on-the-job.html
 ---
-[![](2017/10/as-on-the-job-194x300.jpg)](Asperger's on the Job) 
+[![2017/10/as-on-the-job-194x300.jpg](as-on-the-job-194x300.jpg)](Asperger's on the Job) 
 
 [Asperger's on the Job](https://www.amazon.de/Aspergers-Job-Must-Have-Functioning-Employers-ebook/dp/B00TZN9OF0)
 

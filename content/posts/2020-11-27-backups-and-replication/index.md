@@ -19,7 +19,7 @@ We use databases to make state persistent. That is: As a developer you can think
 
 We can log statements that change the state of our database in a log. In MySQL, we call this *The Binlog*.
 
-![](2020/11/replication-01.png)
+![2020/11/replication-01.png](replication-01.png)
 
 *Making a change to the database, and logging the data changing statement to the binlog.*
 
@@ -31,7 +31,7 @@ The server will periodically start new binlogs: When it becomes too large, when 
 
 Every transaction that changes data is being assigned a unique binlog position, and this way we also get a total order of all transactions (and that is becoming a problem later in the game).
 
-![](2020/11/replication-02.png)
+![2020/11/replication-02.png](replication-02.png)
 
 *We can see the binlog position as the internal clock of the database: Whenever something changes in the database, it is written to the binlog. Each transaction is assigned a unique binlog position, and thus, transactions also have a total order.*
 
@@ -70,7 +70,7 @@ The `SQL_THREAD` then reads the relay log and executes it in sequence, strictly 
 
 This logic, at the core, is unchanged even today:
 
-![](2020/11/replication-03.png)
+![2020/11/replication-03.png](replication-03.png)
 
 *Simple, asynchronous replication as seen even today.*
 

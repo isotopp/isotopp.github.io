@@ -11,7 +11,7 @@ title: github updates its TOS, and they are not trying to cheat
 aliases:
   - /2017/03/09/github-updates-its-tos-and-they-are-not-trying-to-cheat.html
 ---
-![](2017/03/github-300x300.png)
+![2017/03/github-300x300.png](github-300x300.png)
 
 Every single time a big Silicon Valley company updates their
 Terms of Service, there is somebody who mis-interprets the

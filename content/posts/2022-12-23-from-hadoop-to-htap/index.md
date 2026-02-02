@@ -64,7 +64,7 @@ Terasort, a benchmark that sorts one Terabyte of generated data, was a popular w
 - If the network was oversubscribed or badly built, this would overwhelm the switches, exhaust buffers, 
 engage [RED](https://en.wikipedia.org/wiki/Random_early_detection) and lead to packet loss.
 
-![](2022/12/hadoop-01.png)
+![2022/12/hadoop-01.png](hadoop-01.png)
 
 *"Profiling the network performance of data transfers in Hadoop Jobs", [Biligiri, Ali (2014)](https://www.slideshare.net/pramodbiligiri/shuffle-phase-as-the-bottleneck-in-hadoop-terasort), Network transfer rates over the lifetime of a terasort job.
 The Shuffle phase reaches 700 MBit/s, which was the peak transfer rate measured during testing.*
@@ -77,7 +77,7 @@ Brad Hedlund, then working for Dell,
 [described Leaf-and-Spine architectures](https://bradhedlund.com/2012/01/25/construct-a-leaf-spine-design-with-40g-or-10g-an-observation-in-scaling-the-fabric/) 
 built from Off-the-shelf Hardware for Hadoop already in 2012, and described that in a series of articles.
 
-![](2022/12/hadoop-02.png)
+![2022/12/hadoop-02.png](hadoop-02.png)
 
 *"Construct a Leaf Spine design with 40G or 10G? An observation in scaling the fabric", [Brad Hedlund (2012)](https://bradhedlund.com/2012/01/25/construct-a-leaf-spine-design-with-40g-or-10g-an-observation-in-scaling-the-fabric/).
 On today's hardware this is of course done with different hardware and at higher speeds, for example some Juniper EX-hardware with 25G downlinks and 100G uplinks,
@@ -88,7 +88,7 @@ They are useful out of Hadoop contexts as well.
 For example, when running a private cloud with distributed storage, every disk access is potentially a network read or write,
 and again a structure where any CPU in any machine can talk to any disk in any other machine without network congestion is useful.
 
-![](2022/12/hadoop-03.png)
+![2022/12/hadoop-03.png](hadoop-03.png)
 
 *[Warum eigentlich Cloud (2015, german language, 5. Open Source Workshop of German Rail, Frankfurt)](https://www.slideshare.net/isotopp/warum-eigentlich-cloud), Kristian Köhntopp.
 The slide shows traffic inside an Openstack cluster with distributed storage.
@@ -130,7 +130,7 @@ And why stop at one drive, when you can have over a dozen per machine, if you ha
 
 In practice that means that seeks are now basically free, and data access structures and file-systems that allow massively parallel access have a huge advantage.
 
-![](2022/12/hadoop-04.png)
+![2022/12/hadoop-04.png](hadoop-04.png)
 
 *"[Operation Unthinkable - Software Defined Storage @ Booking.com](https://www.slideshare.net/Storage-Forum/operation-unthinkable-software-defined-storage-bookingcom-peter-buschman)", Peter Buschman (2019). An AMD EPYC based single-socket machine with plenty of RAM and NVMRAM, 100 GBit/s NIC and up to 24 U.2 NVME drives from different, independently sourced vendors, using less than 500W, in 2U, running one out of 10 different storage server products optimized and certified for this platform. "There is one in every other rack!" -- Peter Buschman revolutionized storage at Booking.com with this design.*
 

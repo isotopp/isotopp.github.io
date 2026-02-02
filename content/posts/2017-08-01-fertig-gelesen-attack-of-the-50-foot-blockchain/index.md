@@ -12,7 +12,7 @@ title: 'Fertig gelesen: Attack of the 50 foot Blockchain'
 aliases:
   - /2017/08/01/fertig-gelesen-attack-of-the-50-foot-blockchain.html
 ---
-[![](2017/08/51aIGVbfJcL.jpg)](https://www.amazon.de/Attack-50-Foot-Blockchain-Contracts-ebook/dp/B073CPP581)
+[![2017/08/51aIGVbfJcL.jpg](51aIGVbfJcL.jpg)](https://www.amazon.de/Attack-50-Foot-Blockchain-Contracts-ebook/dp/B073CPP581)
 
 The Blockchain is the solution to everything, and especially the
 problem of the state. So or similar goes the hype. This book

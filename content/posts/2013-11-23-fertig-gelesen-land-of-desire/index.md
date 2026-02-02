@@ -13,7 +13,7 @@ aliases:
 ---
 Ein Sachbuch über die Ursprünge der Konsumentenkultur in den USA, und dem Rest der Welt im Kontext der industriellen Revolution zu Anfang des zwanzigsten Jahrhunderts. Gezeigt werden die technischen und sozialen Veränderungen und wie sie die Gesellschaft und ihre Werte verändert haben. Dabei verzichtet das Buch weitgehend auf Wertungen und beschränkt sich auf Darstellung der Zusammenhänge und Belege.
 
-[![](2013/11/land-of-desire.png)](http://www.amazon.de/gp/aw/d/B004HFRME6)
+[![2013/11/land-of-desire.png](land-of-desire.png)](http://www.amazon.de/gp/aw/d/B004HFRME6)
 
 Eine faszinierende und extrem aufschlussreiche Lektüre. Wer sich für Geschichte, Gesellschaft und Politik interessiert sollte sich das durchlesen.
 

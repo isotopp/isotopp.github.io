@@ -15,7 +15,7 @@ aliases:
 [Ram V](https://twitter.com/therightram) is a writer, sometimes for comics.
 Together with artist Sumit Kumar he wrote a simple story: English Vampires vs. Indian Rakshasa.
 
-[![](2021/09/savage.jpg)](https://www.amazon.de/These-Savage-Shores-English-Ram-ebook/dp/B07YYNFP38)
+[![2021/09/savage.jpg](savage.jpg)](https://www.amazon.de/These-Savage-Shores-English-Ram-ebook/dp/B07YYNFP38)
 
 *[These Savage Shores](https://www.amazon.de/These-Savage-Shores-English-Ram-ebook/dp/B07YYNFP38), Ram V & Sumit Kumar*
 

@@ -29,7 +29,7 @@ If the write-load to a specific replication hierarchy threatened to overwhelm a 
 About a decade ago, MySQL as a company started to work on that problem.
 The execution part of that is easy, and roughly looks like this:
 
-![](2021/11/parallel-replication.jpg)
+![2021/11/parallel-replication.jpg](parallel-replication.jpg)
 
 As before, the IO_THREAD logs into the primary and downloads the binlog, then saves it to the local disk of the replica. 
 This is called the relay log.

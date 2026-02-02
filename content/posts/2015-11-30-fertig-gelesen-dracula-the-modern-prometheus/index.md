@@ -14,7 +14,7 @@ aliases:
 ---
 Ok. So I read earlier works from Rafael Chandler and while they have been grim und bloody they also have been light and funny. This one is different.
 
-[![](2015/11/dracula.jpg)](https://www.amazon.de/Dracula-Prometheus-English-Rafael-Chandler-ebook/dp/B0167UTLII)
+[![2015/11/dracula.jpg](dracula.jpg)](https://www.amazon.de/Dracula-Prometheus-English-Rafael-Chandler-ebook/dp/B0167UTLII)
 
 [Dracula](https://www.amazon.de/Dracula-Prometheus-English-Rafael-Chandler-ebook/dp/B0167UTLII)
 

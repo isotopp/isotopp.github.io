@@ -13,7 +13,7 @@ aliases:
 ---
 Dies ist ein sehr sperriges Buch, das sich zwar Zeit in seinen Erklärungen nimmt, sich aber andererseits wenig Mühe gibt, seinen Punkt in allgemein verständlicher Sprache zu machen. Wolin erklärt, was er mit dem Begriff "Inverted Totalitarism" meint und beschreibt dann die emergenten Mechanismen, die nach 9/11 dazu geführt haben, wie aus American Superpower eine Corporate Superpower wurde, und wie diese sich mit dem Muster des Totalitarismus anders als dieser an die Macht geschlichen hat und wie sie die Macht genau anders herum als dieser strukturiert.
 
-[![](2014/10/inverted-totalitarianism.jpg)](https://www.amazon.de/Democracy-Incorporated-Managed-Inverted-Totalitarianism-ebook/dp/B0718Z8LPM)
+[![2014/10/inverted-totalitarianism.jpg](inverted-totalitarianism.jpg)](https://www.amazon.de/Democracy-Incorporated-Managed-Inverted-Totalitarianism-ebook/dp/B0718Z8LPM)
 
 [Democracy Incorporated](https://www.amazon.de/Democracy-Incorporated-Managed-Inverted-Totalitarianism-ebook/dp/B0718Z8LPM)
 

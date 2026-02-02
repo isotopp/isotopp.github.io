@@ -15,7 +15,7 @@ aliases:
 Ok, ein Aspie-Kandidat hat 
 [Snow Crash](https://en.wikipedia.org/wiki/Snow_Crash) gelesen und ist von den Erwähnungen sumerischer Kultur und Alt-Enochisch als Sprache fasziniert und tut das, was ein Aspie in so einer Situation als normal empfindet: Er lernt alles über das Thema, verdaut es und erzeugt dann einen Braindump. Der ist durchaus lesbar.
 
-[![](2016/08/broken-tablet.jpg)](https://www.amazon.de//dp/B01G4YM4RW)
+[![2016/08/broken-tablet.jpg](broken-tablet.jpg)](https://www.amazon.de//dp/B01G4YM4RW)
 
 [Broken Tablet](https://www.amazon.de//dp/B01G4YM4RW)
 

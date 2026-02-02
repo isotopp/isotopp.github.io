@@ -73,7 +73,7 @@ It is possible and totally normal to get 200 databases ready to run in a replica
 Despite this being fully automatic and comfortable, it has a number of disadvantages.
 For example, it is slow, because hardware provisioning is slow. Rebooting a Dell or HP Blade takes 300 seconds, and only then the OS install can begin. A full provisioning run easily takes around 20-30 minutes.
 
-[![](2017/06/something-boots.png)](https://www.youtube.com/watch?v=R_qR9_fVIbQ)
+[![2017/06/something-boots.png](something-boots.png)](https://www.youtube.com/watch?v=R_qR9_fVIbQ)
 *Not a blade, but an HP 380DL booting, but not much of a difference in timing or handling ([video](https://www.youtube.com/watch?v=R_qR9_fVIbQ)).*
 
 Bare-metal hardware also is often too large or too small for the task:

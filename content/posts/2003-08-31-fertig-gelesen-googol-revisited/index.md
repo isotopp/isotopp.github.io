@@ -13,7 +13,7 @@ aliases:
 ---
 Lord Gamma erinnert mich an die Geschichte eines anderen deutschen Sci-Fi Autors, die ich witzigerweise auf einem USA-Urlaub las. Ein riesiger pyramidenförmiger Flugkörper dringt in das Sonnensystem ein und nur die Nostradamus, ein experimentelles deutsches Schiff, ist in der Lage schnell genug dort hinzukommen, um das Objekt zu untersuchen, bevor es wieder verschwindet. Doch stellt sich heraus, daß ein Saboteur an Bord ist, daß auch andere Nationen auf dem Weg zur Pyramide sind und daß noch eine ganze Menge anderer Dinge faul sind.
 
-[![](2003/08/googol.jpg)](https://www.amazon.de/Googol-Flug-Nostradamus-H-Klein-ebook/dp/B00YJGLW26)
+[![2003/08/googol.jpg](googol.jpg)](https://www.amazon.de/Googol-Flug-Nostradamus-H-Klein-ebook/dp/B00YJGLW26)
 
 *[Googol](https://www.amazon.de/Googol-Flug-Nostradamus-H-Klein-ebook/dp/B00YJGLW26)*
 

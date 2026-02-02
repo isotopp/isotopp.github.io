@@ -12,7 +12,7 @@ title: 'Fertig gelesen: Sourdough'
 aliases:
   - /2017/11/06/fertig-gelesen-sourdough.html
 ---
-[![](2017/11/sourdough.png)](https://www.amazon.de/Sourdough-English-Robin-Sloan-ebook/dp/B0725QBS43)
+[![2017/11/sourdough.png](sourdough.png)](https://www.amazon.de/Sourdough-English-Robin-Sloan-ebook/dp/B0725QBS43)
 
 Lori Clary is a software engineer and silicon valley geek,
 programming embedded systems and robot arms at General Dexterity

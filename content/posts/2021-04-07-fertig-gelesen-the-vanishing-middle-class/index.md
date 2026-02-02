@@ -13,7 +13,7 @@ aliases:
 ---
 [The Vanishing Middle Class: Prejudice and Power in a Dual Economy](https://www.amazon.de/Vanishing-Middle-Class-Prejudice-Economy-ebook/dp/B08BT2XDNT) by Peter Temin analyzes the economical and political structure of the USA. Temin does this through the lens of the "[Dual Economy](https://en.wikipedia.org/wiki/Dual_economy)" Model.
 
-[![](2021/04/vanishing-middle-class.jpg)](https://www.amazon.de/Vanishing-Middle-Class-Prejudice-Economy-ebook/dp/B08BT2XDNT)
+[![2021/04/vanishing-middle-class.jpg](vanishing-middle-class.jpg)](https://www.amazon.de/Vanishing-Middle-Class-Prejudice-Economy-ebook/dp/B08BT2XDNT)
 
 Dual Economies are normally prevalent in colonial societies of "less developed" countries. These countries usually have local production and production for a global export market, and besides economical and income structures around this separation, there are also social segration and a certain degree of isolation of the social groups from each other - in politics as well as attempts to prevent social migration into the higher ranked group.
 

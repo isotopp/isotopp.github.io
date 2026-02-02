@@ -53,7 +53,7 @@ signal the existence of a problem. In [Load, Load Testing and
 Benchmarking]({{< relref "2017-02-16-load-load-testing-and-benchmarking.md" >}}), 
 there is the hockey stick: 
 
-![](2017/02/benchmark2.png) 
+![2017/02/benchmark2.png](benchmark2.png) 
 
 Requests/s vs. Response/s (Capacity) and Requests/s vs. Response time
 (Latency). As we raise offered load, the system approaches the 100% line
@@ -84,7 +84,7 @@ application requires an instance of the type _Z_ for every _m_ requests/s
 going into the system. So you could monitor the request rate and just before
 you reach that limit you are ordering the next instance. 
 
-![](2017/08/Screen-Shot-2017-08-09-at-10.10.06-640x204.png)
+![2017/08/Screen-Shot-2017-08-09-at-10.10.06-640x204.png](Screen-Shot-2017-08-09-at-10.10.06-640x204.png)
 
 Image from [The virtues of boring technology]('https://www.slideshare.net/isotopp/boring-dot-com-the-virtues-of-boring-technology),
 Slide #12

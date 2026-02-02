@@ -13,7 +13,7 @@ aliases:
 ---
 On Twitter, [@CaptainEyesight](https://twitter.com/CaptainEyesight/status/1221889419654787073) asked a question:
 
-[![](2020/01/pk-question.png)](https://twitter.com/CaptainEyesight/status/1221889419654787073)
+[![2020/01/pk-question.png](pk-question.png)](https://twitter.com/CaptainEyesight/status/1221889419654787073)
 
 »Database architecture question: For deleting records, instead of a DELETE, UPDATE the id to the negative (i.e. 1 becomes -1) and then add `AND id > 0` to every query. Great idea? or Greatest idea?«
 
@@ -23,7 +23,7 @@ I was honestly a bit confused, because this idea is so weird that I took this qu
 
 In InnoDB, data is stored as a B+-Tree indexed by the primary key. A B+-Tree is a B-Tree in which the leaf pages contain the actual data records. That means that data is (within limits) stored physically, on disk, in primary key order. A record with a lower primary key value will be "further left" in the B+-Tree than a record with a higher primary key value, and within limits will also be on a disk block with a lower or equal number than blocks with higher primary key values.
 
-![](2020/01/pk-innodb-order.png)
+![2020/01/pk-innodb-order.png](pk-innodb-order.png)
 
 InnoDB structure as a tree index blocks pointing to other index blocks, and the leaf nodes containing the actual data.
 
@@ -65,7 +65,7 @@ In any case, there will likely be dead records on each page loaded into memory, 
 
 You will need a log of changes, for compliance reasons, for business intelligence (BI) reasons and for reporting as well as many other use cases. You can implement an Extract-Transform-Load (ETL) process into a data warehouse, with the usual DW transaction from online transaction processing normalized schemas into data warehousey star and snowflake schemas. That is, in the DW you will not store ids, but actual data values, because you are not interested where customer_id 17 lives now in 2020, but that the item "USB Memory Stick 128 GB" was actually priced "24.99 EUR" when you delivered it to a customer in 24110, Germany in August 2013. So part of the ETL process is to join all the things, keep the values you want to archive and then archive them into a giant fact table (and maybe recompressing the values back to DW ids in sideways lookup tables for space reasons). Then you create daily aggregate along the dimensions of reporting, creating a star or snowflake from the fact table timeline.
 
-![](2020/01/pk-innodb-order-2.png)
+![2020/01/pk-innodb-order-2.png](pk-innodb-order-2.png)
 
 Deleting from a monster fact table where primary keys corrospond to temporal data is just as bad. Use partitions instead, and drop expired days.
 

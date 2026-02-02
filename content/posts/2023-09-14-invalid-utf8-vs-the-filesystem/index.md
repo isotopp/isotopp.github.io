@@ -76,7 +76,7 @@ int main(void) {
 
 When running this on a Linux system with XFS, this works:
 
-![](2023/09/invalid-utf8-xfs.png)
+![2023/09/invalid-utf8-xfs.png](invalid-utf8-xfs.png)
 
 *The program runs and generates all files. Even those with byte sequences that are not valid utf-8.*
 
@@ -86,7 +86,7 @@ This works the same with ext4 on Linux.
 
 When running this on a Linux system with ZFS, filenames containing invalid utf-8 sequences are rejected.
 
-![](2023/09/invalid-utf8-zfs.png)
+![2023/09/invalid-utf8-zfs.png](invalid-utf8-zfs.png)
 
 *The program runs and generates files with valid utf-8 names. The `open(2)` syscall fails for names with invalid utf-8 filenames.*
 
@@ -95,7 +95,7 @@ When running this on a Linux system with ZFS, filenames containing invalid utf-8
 
 When running this on a MacOS Ventura system with APFS, filenames containing invalid utf-8 sequences are rejected.
 
-![](2023/09/invalid-utf8-apfs.png)
+![2023/09/invalid-utf8-apfs.png](invalid-utf8-apfs.png)
 
 *The program runs and generates files with valid utf-8 names. The `open(2)` syscall fails for names with invalid utf-8 filenames.*
 

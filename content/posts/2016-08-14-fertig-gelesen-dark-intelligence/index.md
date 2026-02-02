@@ -14,7 +14,7 @@ aliases:
 ---
 Nach dem Tode seiner Frau ist Neal Asher durch eine ziemlich fiese Depression gelaufen und war naturgemäß wenig produktiv. Nun, wie sag ichs, es geht ihm besser und er schreibt wieder.
 
-[![](2016/08/dark-intelligence.jpg)](https://www.amazon.de/dp/B00M43ZYN4)
+[![2016/08/dark-intelligence.jpg](dark-intelligence.jpg)](https://www.amazon.de/dp/B00M43ZYN4)
 
 [Dark Intelligence](https://www.amazon.de/dp/B00M43ZYN4)
 

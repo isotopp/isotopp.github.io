@@ -13,18 +13,18 @@ aliases:
   - /2015/04/09/mysql-explain-explain.html
 ---
 
-![](2015/04/explain-001.jpg)
+![2015/04/explain-001.jpg](explain-001.jpg)
 
 MySQL Optimization, slides and talk given for the Kaunas PHP UG in April 2015.
 
 # On indexes
 
-![](2015/04/explain-002.jpg)
+![2015/04/explain-002.jpg](explain-002.jpg)
 
 Query execution speed hinges on the presence and use of an index.
 So lets have a look to better understand what an index is, and why it speeds things up when searching.
 
-![](2015/04/explain-003.jpg)
+![2015/04/explain-003.jpg](explain-003.jpg)
 
 The canonical example for an index is a literal index,
 as they were being used in libraries before the invention of a computer.
@@ -33,7 +33,7 @@ You visit the library and you want a specific book.
 But in this pre-computer Harry Potter world, you can't type a query into a terminal.
 How do you find a book?
 
-![](2015/04/explain-004.jpg)
+![2015/04/explain-004.jpg](explain-004.jpg)
 
 Let's imagine a library of one million books, in no particular order.
 You task:
@@ -44,7 +44,7 @@ The answer is:
 Without an index,
 all of them.
 
-![](2015/04/explain-005.jpg)
+![2015/04/explain-005.jpg](explain-005.jpg)
 
 Back when I was little, libraries had this: catalogs.
 An author catalog is a copy of each author's name written on a card, with a note where to find the actual book.
@@ -59,7 +59,7 @@ and divide the remainder again.
 For this smaller subset, we could repeat that step,
 until we find Larry’s card.
 
-![](2015/04/explain-006.jpg)
+![2015/04/explain-006.jpg](explain-006.jpg)
 
 Because the author catalog is kept sorted, we can find things in it with logarithmic complexity.
 Instead of one million comparisons to find all books by Larry Wall,
@@ -67,7 +67,7 @@ we would only need `log2(1 000 000) ~= 20` comparisons.
 
 For each factor of 1000, we would need around 10 comparisons more.
 
-![](2015/04/explain-007.jpg)
+![2015/04/explain-007.jpg](explain-007.jpg)
 
 In MyISAM, each index is kept in a `.MYI` file.
 We can have multiple indexes, one on `author`, one on `title` and so on.
@@ -87,7 +87,7 @@ But effectively, we do not have a binary tree as in our example above, but a tre
 
 That means with each comparison, we do not divide the subtree in two, but in however many records fit.
 
-![](2015/04/explain-008.jpg)
+![2015/04/explain-008.jpg](explain-008.jpg)
 
 In InnoDB instead of MyISAM, we have 16 KB pages.
 With a hypothetical 32 byte index record, we would fit 512 index records into an index page.
@@ -95,7 +95,7 @@ With a hypothetical 32 byte index record, we would fit 512 index records into an
 Often we see fanouts of 50 to 500,
 and that means we find any record in an index in about 4 comparisons (instead of one million).
 
-![](2015/04/explain-010.jpg)
+![2015/04/explain-010.jpg](explain-010.jpg)
 
 
 In a bad case, we need to find one record in one billion, and have a fanout of only 50.
@@ -104,7 +104,7 @@ This gives us `x = ln(1 000 000 000)/ln(50) = 5.2` comparisons.
 In a good case, we need to find one record in a million, and have a fanout of 500.
 This gives us `x = ln(1 000 000)/ln(500) = 2.2` comparisons.
 
-![](2015/04/explain-011.jpg)
+![2015/04/explain-011.jpg](explain-011.jpg)
 
 And that means,
 if anyone ever asks you how many comparison operations a database has to make in order to find a single record,
@@ -114,7 +114,7 @@ It is "circa 4", minus whatever we find in the cache.
 
 # Going to the disk
 
-![](2015/04/explain-012.jpg)
+![2015/04/explain-012.jpg](explain-012.jpg)
 
 Indexes matter, because each index lookup is, if it is not caches, a disk access.
 And rotating disks are slow.
@@ -122,7 +122,7 @@ We should avoid disk accesses in order to be fast.
 
 Let's have a look at the details.
 
-![](2015/04/explain-013.jpg)
+![2015/04/explain-013.jpg](explain-013.jpg)
 
 Your computer is running at a clock speed in the Ghz range.
 That means, the cycle time for the CPU and L1 cache is likely measured in ns (nanoseconds, 1/ 10^9 s).
@@ -132,12 +132,12 @@ A L2 cache acess is 5 ns.
 
 A memory (RAM) access is 80 ns.
 
-![](2015/04/explain-015.jpg)
+![2015/04/explain-015.jpg](explain-015.jpg)
 
 A disk seek is 5 to 13 ms = 5 000 000 to 13 000 000 ns.
 
-![](2015/04/explain-016.jpg)
-![](2015/04/explain-017.jpg)
+![2015/04/explain-016.jpg](explain-016.jpg)
+![2015/04/explain-017.jpg](explain-017.jpg)
 
 A hard disk gives you a linear access speed of 100-200 MB/s, and a disk seek time to read a random record of 5-10 ms.
 With a linear read, we scan about 200000 to 400000 records per second, at 500 bytes/record.
@@ -148,7 +148,7 @@ With a record per page, that's 100-200 records/sec worst case.
 SSD gives you a linear access speed of 200-400 MB/s, so you scan 400000 to 800000 records fo 500 bytes per second,
 and with disk seeks, you get 10000 to 20000 records/sec worst case.
 
-![](2015/04/explain-018.jpg)
+![2015/04/explain-018.jpg](explain-018.jpg)
 
 A query is fast, if it does not have to go to the disk.
 
@@ -157,11 +157,11 @@ For access, that means: make sure the query uses indexes.
 
 # Missing indexes
 
-![](2015/04/explain-019.jpg)
+![2015/04/explain-019.jpg](explain-019.jpg)
 
 So a lot of database optimization is actually about checking index use, and providing indexes.
 
-![](2015/04/explain-021.jpg)
+![2015/04/explain-021.jpg](explain-021.jpg)
 
 Are you using enough indexes?
 A simple way to check is the checking certain database performance counters.
@@ -169,7 +169,7 @@ There is one that counts records read using an index, and another that counts re
 The ratio between these two should be as high as possible:
 Records should be read using indexes, and not using scans.
 
-![](2015/04/explain-023.jpg)
+![2015/04/explain-023.jpg](explain-023.jpg)
 
 So using the command `show global status like "handler_%"`, we look at these global counters
 (or their delta between two measurements).
@@ -185,7 +185,7 @@ And the counters for scans are:
 - `Handler_read_rnd`
 - `Handler_read_rnd_next`
 
-![](2015/04/explain-025.jpg)
+![2015/04/explain-025.jpg](explain-025.jpg)
 
 What do we see, when a database does not have an index it needs,
 when it is scanning a lot?
@@ -204,9 +204,9 @@ when it is scanning a lot?
 
 # The `sys` Schema
 
-![](2015/04/explain-026.jpg)
+![2015/04/explain-026.jpg](explain-026.jpg)
 
-![](2015/04/explain-027.jpg)
+![2015/04/explain-027.jpg](explain-027.jpg)
 
 `performance_schema` (`p_s`) is a raw interface, optimized for minimal overhead, 
 because the database has to update it for every query.
@@ -217,14 +217,14 @@ It is much more accurate and up to date than the slow query log.
 Because of that design requirement of minimal overhead, P_S can be hard to use for day-to-day DBA work.
 In fact, it is not even hard to use, but also hard to pronounce and type, so everybody just calls it p_s.
 
-![](2015/04/explain-028.jpg)
+![2015/04/explain-028.jpg](explain-028.jpg)
 
 Mark Leith of Oracle (Ex-MySQL AB)
 wrote a collection of views and stored routines originally called `ps_helper` to make p_s easier to work with.
 Later it got renamed to `sys`, and since 5.7.7 is part of a standard server installation.
 The source can be found on GitHub.
 
-![](2015/04/explain-029.jpg)
+![2015/04/explain-029.jpg](explain-029.jpg)
 
 `sys` mostly provides views into p_s.
 The views with `x$` names are provided for reading through programs.
@@ -235,7 +235,7 @@ targeting human consumption.
 Most of the time, you will use the `x$` views for metrics collection,
 after having decided what you want to see using the normal views in ad-hoc queries.
 
-![](2015/04/explain-030.jpg)
+![2015/04/explain-030.jpg](explain-030.jpg)
 
 With `sys`, our query "Am I using enough indexes?" gets much more useful and directed answers.
 The two views `sys.schema_tables_with_full_table_scans` and `sys.statements_with_full_table_scans` give
@@ -243,7 +243,7 @@ you direct pointers to the tables and queries that are problematic.
 
 # Running Queries
 
-![](2015/04/explain-031.jpg)
+![2015/04/explain-031.jpg](explain-031.jpg)
 
 So now that we have established that our server has bad indexing and which queries are causing it,
 let’s have a look at what we can learn about them.
@@ -276,7 +276,7 @@ You can't seek in the data, only process it linearly, but it uses a lot less mem
 `mysqldump` by default uses this (with the `—quick` option, which is on by default).
 Do you know why?
 
-![](2015/04/explain-032.jpg)
+![2015/04/explain-032.jpg](explain-032.jpg)
 
 A sample query:
 
@@ -299,7 +299,7 @@ If you can use indices, this is handles fast and memory efficient, and is stream
 In all other cases, it resolves into something horrible.
 That makes MySQL a really bad database for data warehouse problems.
 
-![](2015/04/explain-033.jpg)
+![2015/04/explain-033.jpg](explain-033.jpg)
 
 Because the plan is fixed, a "nested loop join",
 the only thing the optimizer can vary are the table order, and the lookup methods.
@@ -308,7 +308,7 @@ And for "web shop" or other transactional things that is usually okay.
 
 That is what `EXPLAIN` shows.
 
-![](2015/04/explain-034.jpg)
+![2015/04/explain-034.jpg](explain-034.jpg)
 
 Some real world example:
 
@@ -329,7 +329,7 @@ EXPLAIN SELECT …
            and brrd.default_policy_group_id <> 0
 ```
 
-![](2015/04/explain-036.jpg)
+![2015/04/explain-036.jpg](explain-036.jpg)
 
 Here is what `EXPLAIN` says: 
 These are all `SIMPLE` joins, there are no subqueries, no unions.
@@ -340,7 +340,7 @@ The **badness** of a query is the product of all the numbers in `rows`.
 
 Optimization is bringing a badness of a query down.
 
-![](2015/04/explain-037.jpg)
+![2015/04/explain-037.jpg](explain-037.jpg)
 
 The tables (or their aliases) ar shown in join order.
 In the nested loop join, the first table is in the outermost loop, and the last table is in the innermost loop.
@@ -352,17 +352,17 @@ The operator `STRAIGHT_JOIN` does the same thing as `JOIN`, but is defined as no
 You can use it to prevent the optimizer from messing with the join order.
 It will be executed in the order written.
 
-![](2015/04/explain-038.jpg)
+![2015/04/explain-038.jpg](explain-038.jpg)
 
 The join type is indicated in the `type` column, and tells you which table from the `table` column is connected
 to what table in the `ref` column.
 
-![](2015/04/explain-039.jpg)
+![2015/04/explain-039.jpg](explain-039.jpg)
 
 To resolve the join as indicated, there may be zero or more keys.
 They are all listed in the `possible_keys` columns.
 
-![](2015/04/explain-040.jpg)
+![2015/04/explain-040.jpg](explain-040.jpg)
 
 The key actually used is shown in the `key` column.
 Not all keys are used fully, some keys are only used as prefixes.
@@ -372,7 +372,7 @@ For example, if the index `a_b_index` is defined over two integer columns `a` an
 If the `key_len` for `a_b_index` is shown as 8, both `a` and `b` will be used, in this order, as a compound index.
 If instead the `key_len` is shown as `4`, only the `a` prefix of `INDEX(a.b)` is being used.
 
-![](2015/04/explain-041.jpg)
+![2015/04/explain-041.jpg](explain-041.jpg)
 
 Here, again, our **badness* calculation.
 The number of comparisons to resolve **this** query.
@@ -389,11 +389,11 @@ but we have keep in mind that it has to produce the "unfolded" result set before
 in order to resolve the query.
 That means the minimum badness for queries that use `GROUP BY` or `LIMIT` may be larger than the result set we see.
 
-![](2015/04/explain-042.jpg)
+![2015/04/explain-042.jpg](explain-042.jpg)
 
 The final column, `extras` contains extra annotations from the optimizer, good and bad.
 
-![](2015/04/explain-044.jpg)
+![2015/04/explain-044.jpg](explain-044.jpg)
 
 So let's see:
 The `type` column can have join types.
@@ -416,7 +416,7 @@ fulltext
 index_merge
 : using two (or more) indexes, intersecting the two partial results.
 
-![](2015/04/explain-045.jpg)
+![2015/04/explain-045.jpg](explain-045.jpg)
 
 The `type` can also be, from worse to really bad:
 
@@ -437,7 +437,7 @@ ALL
 
 **NOTE:** A `SELECT … FROM t WHERE str LIKE "bla%"` can be written as a `BETWEEN` query and is a **range**.
 
-![](2015/04/explain-046.jpg)
+![2015/04/explain-046.jpg](explain-046.jpg)
 
 A real life, unusual example:
 
@@ -452,7 +452,7 @@ select translation_id,
 
 Indexes exist for `language_code` and for `project_id`, but not for the combination.
 
-![](2015/04/explain-047.jpg)
+![2015/04/explain-047.jpg](explain-047.jpg)
 
 The `EXPLAIN` says:
 
@@ -473,7 +473,7 @@ possible_keys: language_code,project_id
 This is one of the rare cases where MySQL uses more than one index in an **index_merge** optimization,
 and therefore the output is really weird.
 
-![](2015/04/explain-048.jpg)
+![2015/04/explain-048.jpg](explain-048.jpg)
 
 In the `extras` column there can be a number of additional notes from the optimizer.
 Some are good, some are bad.
@@ -488,7 +488,7 @@ using temporary
 : the result is pushed into a temp table at some point, and then processed further.
   The temp table can be in memory or go to disk.
 
-![](2015/04/explain-049.jpg)
+![2015/04/explain-049.jpg](explain-049.jpg)
 
 Check how many of your temporary tables actually go to disk.
 This can impact performance a lot.
@@ -500,7 +500,7 @@ mysql> show global status like "created_tmp%tables";
 
 The ratio of `Created_tmp_disk_tables` to `Created_tmp_tables` should be 1:10 or better. 
 
-![](2015/04/explain-050.jpg)
+![2015/04/explain-050.jpg](explain-050.jpg)
 
 Find queries with temporary tables, and check them out, using `sys`:
 
@@ -510,7 +510,7 @@ select *
  where db not in ('sys', 'mysql', 'information_schema', 'performance_schema');
 ```
 
-![](2015/04/explain-051.jpg)
+![2015/04/explain-051.jpg](explain-051.jpg)
 
 Other `extra` notices that are not so bad news:
 
@@ -537,18 +537,18 @@ Using where
 
 # When and How to Index?
 
-![](2015/04/explain-052.jpg)
+![2015/04/explain-052.jpg](explain-052.jpg)
 
 Ok, so indexes are the key to performance.
 When should indexes be used, and how can they help?
 
-![](2015/04/explain-053.jpg)
+![2015/04/explain-053.jpg](explain-053.jpg)
 
 The point of an index is fewer disk operations.
 Rows are on disk in pages, and data is always read in pages.
 If we need a single row in a page, all of the page is being read, and then kept in memory.
 
-![](2015/04/explain-054.jpg)
+![2015/04/explain-054.jpg](explain-054.jpg)
 
 The term **Selectivity** describes the percentage of rows selected by a condition.
 
@@ -566,7 +566,7 @@ If yes, selectivity is a function of cardinality:
 - n rows
 - selectivity = (n/cardinality)*100
 
-![](2015/04/explain-055.jpg)
+![2015/04/explain-055.jpg](explain-055.jpg)
 
 As an example, let's consider defining an `INDEX(a,b,c)` on three columns.
 
@@ -575,7 +575,7 @@ It can be used for a conjunction (AND) of equalities, and one trailing relation/
 
 Effectively, we are selecting a subtree in the index b-tree.
 
-![](2015/04/explain-056.jpg)
+![2015/04/explain-056.jpg](explain-056.jpg)
 
 Examples:
 
@@ -593,7 +593,7 @@ Examples:
 : uses (a,b). This uses the equality in `a`, and the range in `b`.
   It cannot leverage the index on `¬, c` for sorting, though, and we will have to manually sort.
 
-![](2015/04/explain-057.jpg)
+![2015/04/explain-057.jpg](explain-057.jpg)
 More Examples:
 
 `WHERE a<10 AND b = 10`
@@ -611,16 +611,16 @@ More Examples:
 
 # Are we done, yet?
 
-![](2015/04/explain-058.jpg)
+![2015/04/explain-058.jpg](explain-058.jpg)
 
 When optimizing, this is a process.
 When do we stop?
 
-![](2015/04/explain-059.jpg)
+![2015/04/explain-059.jpg](explain-059.jpg)
 
 Revisiting the badness calculation.
 
-![](2015/04/explain-060.jpg)
+![2015/04/explain-060.jpg](explain-060.jpg)
 
 The badness is ~2600.
 2600 comparisons for 2600 result set rows are ok. 

@@ -35,7 +35,7 @@ Anders als bei DOS werden die Verwaltungseinheiten auf einer Platte also nicht g
 Den Anfang eines Dateisystems bildet der sogenannte Superblock, der das Dateisystem selbst beschreibt. 
 Er enthält Geometriedaten der Platte, gibt an, wie viele Blöcke das Dateisystem enthält und welche davon Verwaltungsinformationen und welche Daten enthalten.
 
-![](1994/02/disklayout.gif)
+![1994/02/disklayout.gif](disklayout.gif)
 
 *Bild 1: Am Anfang des Dateisystems steht der Superblock. 
 Er enthält alle Metainformationen, die das Dateisystem beschreiben. 
@@ -110,7 +110,7 @@ von einem dreifach indirekten Block Gebrauch gemacht werden (Bild 3).
 Zum Glück sind zum Laden eines solchen Datenblockes aber keine vier Plattenzugriffe notwendig,
 denn alle UNIX-Versionen haben einen Plattencache, der häufig benötigte Daten im RAM präsent hält.
 
-![](1994/02/filestructure.gif)
+![1994/02/filestructure.gif](filestructure.gif)
 
 *Bild 3: Von der I-Node zu den Datenblöcken einer Datei*
 
@@ -158,7 +158,7 @@ Man kann nicht sagen, welcher von zwei Namen einer Datei der erste und welcher d
 Anstatt eine Datei zu löschen, kann man in UNIX nur die Anzahl ihrer Namen um Eins vermindern.
 Sobald die Anzahl der Namen einer Datei Null wird, gibt das Betriebssystem dem Plattenplatz frei, der zu einer Datei gehört.
 
-![](1994/02/verzeichnis.gif)
+![1994/02/verzeichnis.gif](verzeichnis.gif)
 *Bild 4: Das alte System V UNIX Dateisystem behandelt Verzeichnisse als gewöhnliche Dateien mit einer festen Satzstruktur von 16 Byte. Die ersten beiden Byte enthalten die I-Node Nummer einer Datei, die folgenden 14 Bytes stellen den Namen der Datei (mit Nullbytes aufgefüllt) dar.*
 
 *Im BSD Dateisystem sind längere Dateinamen erlaubt. Um die Platzverschwendung zu minimieren, ist die Struktur eines Verzeichnisses etwas komplizierter, aber das Prinzip der Zuordnung eines Namens zu einer
@@ -179,7 +179,7 @@ Sobald die I-Nodenummer für das "`bin`"-Verzeichnis gefunden ist, kann es nach 
 Erst wenn die I-Nodenummer von "`ls`" bekannt ist, kann die Datei geöffnet oder geladen werden. 
 Bei der Auflösung von Pfadnamen ergibt sich also eine wechselseitige Verkettung von Datenblöcken und I-Nodes: I-Nodes enthalten Zeiger auf Datenblöcke und die Datenblöcke eines Verzeichnisses enthalten Zeiger auf I-Nodes.
 
-![](1994/02/nameiresolver.gif)
+![1994/02/nameiresolver.gif](nameiresolver.gif)
 
 *Bild 5: Zugriffe beim Auflösen eines Pfadnamens*
 
@@ -212,7 +212,7 @@ Und schließlich kann man bei der Verwendung von großen Datenblöcken oft mehrf
 In modernen UNIX-Dateisystem löst man dieses Dilemma, indem man ein Dateisystem mit einer relativ großen Blockgröße (meistens 8 Kilobyte) anlegt, Dateienden aber in speziellen Blöcken, den Fragmenten, speichert.
 Fragmente werden erzeugt, in dem man einen normalen Plattenblock in mehrere gleich grosse Teilblöcke unterteilt, die jeweils das Dateiende einer anderen Datei aufnehmen können. 
 
-![](1994/02/bsdfragment.gif)
+![1994/02/bsdfragment.gif](bsdfragment.gif)
 
 *Bild 6: Zwei Dateienden in einem fragmentierten Block*
 
@@ -230,7 +230,7 @@ Außerdem entfallen Bewegungen des Schreib-/Lesekopfes der Platte.
 Wie man am Beispiel von DOS sehen kann, ist es leider ist es nicht damit getan, die Blöcke einer Datei hintereinander anzuordnen.
 Man muss ausserdem auch Platz lassen, damit Dateien wachsen können.
 
-![](1994/02/fragmentierung.gif)
+![1994/02/fragmentierung.gif](fragmentierung.gif)
 
 *Bild 7: Durch unkluge Anordnung von Daten zerstückelt MS-DOS Dateien in kleine, nicht zusammenhängende Fragmente.*
 
@@ -242,7 +242,7 @@ Bei sehr langen Dateien wird außerdem nach dem Schreiben von jeweils einem Mega
 Man geht davon aus, daß man sehr lange Dateien sowieso nicht in einem Stück zusammenhängend lagern kann.
 Stattdessen versucht man, die einzelnen Stücke möglichst groß zu machen. 
 
-![](1994/02/bsdlayout.gif)
+![1994/02/bsdlayout.gif](bsdlayout.gif)
 
 *Bild 8: Das BSD Fast Filing System unterteilt die Platte in Streifen von einigen MB Größe. Das Betriebssystem versucht durch verschiedene Verfahren, 
 das Verhältnis von belegten Datenblöcken zu belegten I-Nodes in allen cylinder groups einer Platte in etwa ausgewogen zu halten. Dadurch ist das Dateisystem effektiv selbst defragmentierend.*
@@ -260,7 +260,7 @@ Selbst das Entwicklerteam von BSD UNIX, das das Dateisystem vor 10 Jahren einer 
 Das UNIX-Dateisystem ist dem nur halb so alten, aber wesentlich weniger effektiv organisierten MS-DOS Dateisystem in Sachen Geschwindigkeit, Zugriffsschutz und Benutzerfreundlichkeit weit überlegen.
 Die Ideen der UNIX-Entwickler waren letztlich so überzeugend, daß sie sich letztendlich im OS/2 HPFS und schließlich auch im Dateisystem von Windows NT wiederfinden.
 
-![](1994/02/mount.gif)
+![1994/02/mount.gif](mount.gif)
 
 *Bild 9: 26 Laufwerksbuchstaben wären für eine gut ausgelastete Workstation viel zu wenig. UNIX kennt deswegen nur einen einzigen Dateibaum. Beim Anmelden (mounten) eines Dateisystems wird eine Platte an einer
 bestimmten Stelle in den Verzeichnisbaum eingehängt. Beim Wechsel des Verzeichnisses wechselt man so auch gleich die Platte oder bei Netzwerkplatten sogar den Rechner, auf dem man aktiv ist.*

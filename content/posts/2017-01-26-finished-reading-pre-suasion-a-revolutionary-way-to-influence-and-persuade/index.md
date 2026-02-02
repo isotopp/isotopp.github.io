@@ -13,7 +13,7 @@ aliases:
   - /2017/01/26/finished-reading-pre-suasion-a-revolutionary-way-to-influence-and-persuade.html
 ---
 
-![](2017/01/Bildschirmfoto-2017-01-26-um-21.50.01.png)]
+![2017/01/Bildschirmfoto-2017-01-26-um-21.50.01.png](Bildschirmfoto-2017-01-26-um-21.50.01.png)]
 
 "[Pre-Suasion: A Revolutionary Way to Influence and Persuade](https://www.amazon.de/Pre-Suasion-Revolutionary-Way-Influence-Persuade-ebook/dp/B01A6DJD7Q)",
 Robert Cialdini, (english language, EUR 12.99)

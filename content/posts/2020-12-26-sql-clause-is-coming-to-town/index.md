@@ -13,7 +13,7 @@ aliases:
 
 [Olya Kudriavtseva has an ugly Christmas sweater](https://twitter.com/roliepoly/status/1342549035211661312):
 
-[![](2020/12/sql-clause.jpg)](https://twitter.com/roliepoly/status/1342549035211661312)
+[![2020/12/sql-clause.jpg](sql-clause.jpg)](https://twitter.com/roliepoly/status/1342549035211661312)
 
 *He's making a table. He's sorting it twice. SELECT * FROM contacts WHERE behavior = "nice"; SQL Clause is coming town!*  ([buy here](https://www.xonot.com/product/sql-clause-sweatshirt/))
 

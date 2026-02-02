@@ -14,7 +14,7 @@ aliases:
 ---
 [Neal Asher](http://en.wikipedia.org/wiki/Neal_Asher) kenne ich als Autor eher von seinen Geschichten aus dem "Polity"-Universum. Dort sind seine Helden bis an die Oberkante Unterlippe hochge-mary-sue't und entsprechend muß er seine Welten mit Gegnern und feindseligen Biosphäre versorgen, die irgendwo zwischen "over the top" und "lächerlich" angesiedelt sind, damit seine Geschichten ihren Helden Gegner präsentieren können, die angemessen sind.
 
-[![](2013/12/departure.png)](https://www.amazon.de/Departure-Owner-Trilogy-Book-English-ebook/dp/B005GDZHRW)
+[![2013/12/departure.png](departure.png)](https://www.amazon.de/Departure-Owner-Trilogy-Book-English-ebook/dp/B005GDZHRW)
 
 [The Departure](https://www.amazon.de/Departure-Owner-Trilogy-Book-English-ebook/dp/B005GDZHRW)
 

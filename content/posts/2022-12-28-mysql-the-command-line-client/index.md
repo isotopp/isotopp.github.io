@@ -156,12 +156,12 @@ mysql> select * from t;
 
 It will work:
 
-![](2022/12/mysql-client-01.png)
+![2022/12/mysql-client-01.png](mysql-client-01.png)
 *`pager pspg` shows the output of `select * from t`. The cursor can be moved to select rows and columns. Hit `q` to quit.*
 
 It will also handle `SHOW ENGINE INNODB STATUS` just fine.
 
-![](2022/12/mysql-client-02.png)
+![2022/12/mysql-client-02.png](mysql-client-02.png)
 *The oversized output of `SHOW ENGINE INNODB STATUS` in `pager pspg` in the MySQL command line client.*
 
 Note that `pspg` kind of defeats the purpose of the Command Line client for copy and pasteable results.

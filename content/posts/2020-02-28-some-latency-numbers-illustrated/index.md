@@ -14,7 +14,7 @@ These images are older than time itself. I picked them up while working as a con
 
 Here are some important latency numbers. A pixel is a nanosecond (nano = 10^-9, a billionth of a second, 1 billion events/s = 1 GHz):
 
-![](2020/02/latency-top.gif)
+![2020/02/latency-top.gif](latency-top.gif)
 
 And below is the HDD disk seek latency in full at the same scale. An uncached index access can result in up to 5 disk seeks, worst case.
 
@@ -32,4 +32,4 @@ If that service does not have an API that allows batching and/or asynchronous op
 
 Please zoom in for details:
 
-![](2020/02/latency.gif)
+![2020/02/latency.gif](latency.gif)

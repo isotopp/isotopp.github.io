@@ -17,7 +17,7 @@ He wrote a posthumous biography, titled
 [A Life With Footnotes](https://www.amazon.de/gp/product/B09R2B8J17).
 Wilkins is now the manager of the Pratchett literary estate.
 
-![](2023/09/pratchett.jpg)
+![2023/09/pratchett.jpg](pratchett.jpg)
 
 The book does what a biography is supposed to do:
 It traces the life of Terry Pratchett, 

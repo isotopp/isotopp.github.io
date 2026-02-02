@@ -13,7 +13,7 @@ aliases:
 ---
 Clay Jannon braucht einen Job, nachdem das Startup, in dem er rumgehangen hat, den Bach runtergegangen ist. Er findet immerhin eine Nebenbeschäftigung in dem Buchladen des Mr. Penumbra, der an einem tatsächlichen Verkauf der Bücher in seinem Laden eigenartig wenig interessiert zu sein scheint. Stattdessen beschäftigen er und die seltsamen Nichtkunden der Nachschicht damit, eigenartige Werke, die nicht im Katalog stehen zu decodieren.
 
-[![](2015/11/bookstore.jpg)](https://www.amazon.de/Mr-Penumbras-24-hour-Bookstore-English-ebook/dp/B00A25NLOU)
+[![2015/11/bookstore.jpg](bookstore.jpg)](https://www.amazon.de/Mr-Penumbras-24-hour-Bookstore-English-ebook/dp/B00A25NLOU)
 
 [Mr. Penumbra's 24-hour bookstore](https://www.amazon.de/Mr-Penumbras-24-hour-Bookstore-English-ebook/dp/B00A25NLOU)
 

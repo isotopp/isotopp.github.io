@@ -13,7 +13,7 @@ aliases:
 ---
 Der leider viel zu früh verstorbene Pieter Hintjens ist nicht nur Urheber und Contributor bei zahlreichen Open Source Projekten gewesen (darunter ZeroMQ), sondern hat sich auch sehr weitreichende Gedanken zu dem Umfeld von erfolgreichen Open Source Projekten gemacht.
 
-[![](2017/07/social-architecture.jpg)](https://www.amazon.de/Social-Architecture-Building-line-Communities-ebook/dp/B01F8I7Z7E)
+[![2017/07/social-architecture.jpg](social-architecture.jpg)](https://www.amazon.de/Social-Architecture-Building-line-Communities-ebook/dp/B01F8I7Z7E)
 
 [Social Architecture](https://www.amazon.de/Social-Architecture-Building-line-Communities-ebook/dp/B01F8I7Z7E)
 

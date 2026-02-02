@@ -19,7 +19,7 @@ And more generally, how can I trace function execution in Python, showing functi
 
 Of course, you can always simply turn on this in the PyCharm debugger:
 
-![](2023/03/python-tracing-01.png)
+![2023/03/python-tracing-01.png](python-tracing-01.png)
 
 *PyCharm, Debug Window, Gear Icon, "Show Return Values"*
 
@@ -131,7 +131,7 @@ We are using `__qualname__` to handle inner functions properly here, even if tha
 
 Running the code results in
 
-![](2023/03/python-tracing-02.png)
+![2023/03/python-tracing-02.png](python-tracing-02.png)
 
 *Output from the Python program above shows function calls and results.*
 
@@ -178,7 +178,7 @@ After setting up a log channel with proper formatting, we can mark functions wit
 
 The output:
 
-![](2023/03/python-tracing-03.png)
+![2023/03/python-tracing-03.png](python-tracing-03.png)
 
 *Output of our program using the `autologging` package.*
 
@@ -227,7 +227,7 @@ install()
 
 The output looks like this:
 
-![](2023/03/python-tracing-04.png)
+![2023/03/python-tracing-04.png](python-tracing-04.png)
 
 *Running our code with `icecream` produces this output, nicely colorized and pretty printed.
 We enabled `includeContext=True`, so we also get file names and line numbers.*
@@ -290,19 +290,19 @@ This will instrument the code to run with `snoop`, and also log into the databas
 
 The trace is pretty:
 
-![](2023/03/python-tracing-05.png)
+![2023/03/python-tracing-05.png](python-tracing-05.png)
 
 *Output of `snoop` running on our test function. We instrumented with `@spy`, which will also create a trace file.*
 
 Running the Birdseye decoder is easy: `python -m birdeye` will start it on the default port, `7777`.
 
-![](2023/03/python-tracing-06.png)
+![2023/03/python-tracing-06.png](python-tracing-06.png)
 
 *Starting the `birdseye` web server to serve trace files. It is bound to localhost, and listens by default on Port `7777`.*
 
 The rendered trace looks like this:
 
-![](2023/03/python-tracing-07.png)
+![2023/03/python-tracing-07.png](python-tracing-07.png)
 
 *`birdseye` webserver showing a trace. You can click through the program execution.*
 

@@ -14,7 +14,7 @@ aliases:
 ---
 Ich habe nun endlich "Republic of Thieves" von Scott Lynch durchgelesen. Das Buch ist der dritte Band der Gentlemen Bastards Sequence, nach [The Lies of Locke Lamora]({{< relref "2010-08-10-fertig-gelesen-die-l-gen-des-locke-lamora.md" >}}) und Red Seas Under Red Skies.
 
-[![](2013/11/republic-of-thieves.png)](http://www.amazon.de/Republic-Thieves-Gentlemen-Bastard-Sequence-ebook/dp/B00BY7B70A)
+[![2013/11/republic-of-thieves.png](republic-of-thieves.png)](http://www.amazon.de/Republic-Thieves-Gentlemen-Bastard-Sequence-ebook/dp/B00BY7B70A)
 
 [Republic of Thieves](http://www.amazon.de/Republic-Thieves-Gentlemen-Bastard-Sequence-ebook/dp/B00BY7B70A)
 

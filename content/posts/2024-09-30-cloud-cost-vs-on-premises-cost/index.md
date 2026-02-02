@@ -24,7 +24,7 @@ Der Haupttreiber bei der ganzen Sache ist die simple Tatsache, dass wir immer me
 Der Chip wird zwar nicht mehr schneller, weil bei circa 3 GHz Takt Dauerleistung Schluss ist,
 aber weil die Strukturen immer noch kleiner werden bekommen wir immer mehr Cores und Cache.
 
-![](2024/09/01-cloud-on-prem.png)
+![2024/09/01-cloud-on-prem.png](01-cloud-on-prem.png)
 
 *Fortschritte bei der Chipentwicklung über Zeit. 
 Die y-Ache ist logarithmisch. Wir sehen, wie die Anzahl der Transistoren pro Chip ungebrochen hoch geht.

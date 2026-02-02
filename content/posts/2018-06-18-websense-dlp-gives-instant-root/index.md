@@ -129,7 +129,7 @@ We can load it into [Hopper](https://www.hopperapp.com/). Hopper is a $99 IDAPro
 
 Turns out, the kext is delivered with a full symbol table. Here is what you see when you start Hopper, drag the kext into it and click on the symbol that inits the kernel extension:
 
-[![](2018/06/hopper-01.jpg)](/uploads/2018/06/hopper-01.jpg)
+[![2018/06/hopper-01.jpg](hopper-01.jpg)](/uploads/2018/06/hopper-01.jpg)
 
 *Initial glance at the kext after loading. We have symbols. That's almost like cheating.*
 
@@ -137,7 +137,7 @@ There is a tempting call to `_ws_anti_tampering_initialize()`, but I have learne
 
 That's here:
 
-[![](2018/06/hopper-02.jpg)](/uploads/2018/06/hopper-02.jpg)
+[![2018/06/hopper-02.jpg](hopper-02.jpg)](/uploads/2018/06/hopper-02.jpg)
 
 *Two places in vnode_listener_callback_9135*
 
@@ -145,7 +145,7 @@ We are looking at a vnode listener, which is a type of [kauth](https://www.aprio
 
 And here is the callback:
 
-[![](2018/06/hopper-03.jpg)](/uploads/2018/06/hopper-03.jpg)
+[![2018/06/hopper-03.jpg](hopper-03.jpg)](/uploads/2018/06/hopper-03.jpg)
 
 *Read the highlighted code...*
 

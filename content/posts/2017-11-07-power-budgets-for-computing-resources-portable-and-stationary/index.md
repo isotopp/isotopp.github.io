@@ -25,7 +25,7 @@ The scale on the left is mW, down is discharge, up is recharge
 (plugged in). It's basically limited to 5W, and that only for
 short periods of time.
 
-![](2017/11/power-budget.jpg)]
+![2017/11/power-budget.jpg](power-budget.jpg)]
 
 *Cellphone power over time. Green bar = plugged in. Yellow bar =
 Screen on.*
@@ -48,7 +48,7 @@ are better than dark devices on sunny days on the Autobahn.
 Your laptop probably has a fan. Mine does. It is still mostly
 idle, but it is easily out of the TDP for fanless devices.
 
-![](2017/11/Screen-Shot-2017-11-07-at-12.34.50.png) 
+![2017/11/Screen-Shot-2017-11-07-at-12.34.50.png](Screen-Shot-2017-11-07-at-12.34.50.png) 
 
 *This machine is currently drawing 12.1W. The fans are hardly
 moving.*
@@ -74,7 +74,7 @@ Large servers in a data center usually have one or two Xeon type
 CPUs, and depending on the kind of servers, some also have a
 small two digit number of harddisks. 
 
-![](2017/11/hadoop.jpg)
+![2017/11/hadoop.jpg](hadoop.jpg)
 
 A rack full of Hadoop servers
 

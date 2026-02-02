@@ -13,7 +13,7 @@ title: 'Fertig gelesen: We are Legion (We are Bob)'
 aliases:
   - /2017/03/02/fertig-gelesen-we-are-legion-we-are-bob.html
 ---
-[![](2017/03/Screen-Shot-2017-03-02-at-21.24.31.png)](https://www.amazon.de/Are-Legion-Bobiverse-Book-English-ebook/dp/B01LWAESYQ)
+[![2017/03/Screen-Shot-2017-03-02-at-21.24.31.png](Screen-Shot-2017-03-02-at-21.24.31.png)](https://www.amazon.de/Are-Legion-Bobiverse-Book-English-ebook/dp/B01LWAESYQ)
 
 [We are Legion](https://www.amazon.de/Are-Legion-Bobiverse-Book-English-ebook/dp/B01LWAESYQ)
 

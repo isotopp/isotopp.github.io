@@ -58,7 +58,7 @@ How about the Desktop App being a Sound Source for the Speakers?
 Right, can't do that unless the source is a Mac and the target is… the only IKEA speaker in my home.
 That's pretty lame.
 
-![](2020/03/sonos-airplay.png)
+![2020/03/sonos-airplay.png](sonos-airplay.png)
 
 *Windows System Output can't be used as a Sound Source for Sonos.
 And Airplay does not work to most of my speakers, because they are "too old"

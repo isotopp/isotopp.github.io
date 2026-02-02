@@ -25,7 +25,7 @@ It also channels this data into events (what we have instead of [Honeycomb](http
 
 “That’s easy”, people will usually say, and then start with the average plus/minus one standard deviation. “We’ll construct this “n stddev wide corridor around the average” and then look at all the things outside.”
 
-![](2020/11/obs-no.png)
+![2020/11/obs-no.png](obs-no.png)
 
 *No.*
 
@@ -33,7 +33,7 @@ That is descriptive statistics for normal distributions and for them to work we 
 
 Averages and Standard Deviations work on normal distributions. So the first thing we need to do is to look at the data and ensure that we actually have a normal distribution.
 
-![](2020/11/obs-anscombe.png)
+![2020/11/obs-anscombe.png](obs-anscombe.png)
 
 *Anscombe's Quartet is a set of graphs having an identical number of points, and producing identical descriptive statistics, but being clearly extremely different distributions.*
 
@@ -41,7 +41,7 @@ Because when you apply the Descriptive Statistics of Averages and Standard Devia
 
 So what we would want is a graph of the data. For a time series – which is what we usually get when dealing with metrics – a good way to plot the data is a heatmap. For the given problem, the heatmap more often than not looks like this:
 
-![](2020/11/obs-heatmap.png)
+![2020/11/obs-heatmap.png](obs-heatmap.png)
 
 *We partition the time axis into buckets of - say - 10s each, and then bucket execution times linearly or logarithmically. For each query we run, we determine the bucket it goes into and increment by one. The resulting numbers are plotted as pixels - darker, redder means more queries in that bucket. A flat 2D plot of three dimensional data.*
 
@@ -49,7 +49,7 @@ What you see here is a bi- or multipartite distribution. It is a common case whe
 
 The slow set is  also often run with unstable execution times – an important secondary observation.
 
-![](2020/11/obs-mixture.png)
+![2020/11/obs-mixture.png](obs-mixture.png)
 
 This is not a normal distribution, but a thing composed of two other things (hence bipartite), each of which in itself hopefully can be adequately modelled as a normal distribution: A [gaussian mixture](https://en.wikipedia.org/wiki/Mixture_model#Gaussian_mixture_model).
 

@@ -14,7 +14,7 @@ aliases:
 ---
 Nach den drei Büchern um Annabelle Rosenherz hat Anja Bagus mit Falk und Minerva ein zweites Paar in ihrem Ætherwelt-Universum angesiedelt. "[Waldesruh]({{< relref "2014-12-01-fertig-gelesen-waldesruh.md" >}})" war der erste Band, "Glasberg" setzt die Geschichte fort.
 
-[![](2015/11/glasberg.jpg)](https://www.amazon.de/dp/B00X3LK2JW)
+[![2015/11/glasberg.jpg](glasberg.jpg)](https://www.amazon.de/dp/B00X3LK2JW)
 
 [Glasberg](https://www.amazon.de/dp/B00X3LK2JW)
 

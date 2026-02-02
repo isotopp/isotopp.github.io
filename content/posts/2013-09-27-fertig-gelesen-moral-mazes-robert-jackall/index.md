@@ -15,7 +15,7 @@ aliases:
 
 Seit kurzem gibt es Moral Mazes als Kindle-Edition. Robert Jackall beschriebt hier die Business Ethics und Regeln des Managements einiger amerikanischer Konzerne, auf der Basis von Interviews und Fallstudien in den späten 80er und frühen 90er Jahren.
 
-[![](2013/09/moral-mazes.png)](https://www.amazon.de/Moral-Mazes-Corporate-Managers-ebook/dp/B00FF7IG0Y)
+[![2013/09/moral-mazes.png](moral-mazes.png)](https://www.amazon.de/Moral-Mazes-Corporate-Managers-ebook/dp/B00FF7IG0Y)
 
 [Moral Mazes](https://www.amazon.de/Moral-Mazes-Corporate-Managers-ebook/dp/B00FF7IG0Y)
 

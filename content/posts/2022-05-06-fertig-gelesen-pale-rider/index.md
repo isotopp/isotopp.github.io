@@ -14,7 +14,7 @@ aliases:
 
 A book from 2017, about the Spanish Flu, which in the wake of the first world war turned into a global pandemic, killing between 50 and 100 million people on all continents.
 
-![](2022/05/pale-rider.jpg)
+![2022/05/pale-rider.jpg](pale-rider.jpg)
 
 *[Pale Rider](https://www.amazon.de/-/en/Laura-Spinney-ebook/dp/B01GH07CG6), Laura Spinney*
 

@@ -22,7 +22,7 @@ This week was "Broken Security Software Advertising Week."
 
 First off, **today** was Fortigate patch day:
 
-![](2024/02/schlangenoel-01.jpg)
+![2024/02/schlangenoel-01.jpg](schlangenoel-01.jpg)
 
 *CVE-2024-23113, CVSSV3 Score 9.8, Unauthorized Code Execution, "Format String Bug"*
 
@@ -47,7 +47,7 @@ This means this type of error does not occur in a contemporary development envir
 
 Also, **yesterday** was Fortigate patch day:
 
-![](2024/02/schlangenoel-02.jpg)
+![2024/02/schlangenoel-02.jpg](schlangenoel-02.jpg)
 
 *CVE-2024-21762, CVSSV3 Score 9.6, Unauthorized Code Execution, "Out of Bounds Write"*
 
@@ -77,7 +77,7 @@ and Fortinet got confused with the CVE numbers due to the sheer volume of them c
 Meanwhile, the US CISA (Cybersecurity and Infrastructure Security Agency) 
 is demanding all US institutions to shut down Ivanti VPN (formerly Juniper Pulse Secure):
 
-![](2024/02/schlangenoel-03.jpg)
+![2024/02/schlangenoel-03.jpg](schlangenoel-03.jpg)
 
 *"CISA is requiring all Federal agencies to disconnect Ivanti products by Friday at midnight
 (Ivanti Connect Secure & Ivanti Policy Secure).
@@ -94,7 +94,7 @@ The patches mentioned are not suitable for fixing the error.
 
 Meanwhile, someone opened up the Ivanti image and took a look inside.
 
-![](2024/02/schlangenoel-04.jpg)
+![2024/02/schlangenoel-04.jpg](schlangenoel-04.jpg)
 
 *Versions of software that have been routinely outdated for more than a decade in the current image.*
 
@@ -153,7 +153,7 @@ And I am not even a "security researcher," just an amateur with reverse engineer
 It is this software, which is supposed to protect, ending up making the computer vulnerable. 
 When someone like Fefe talks about [snake oil](https://blog.fefe.de/?q=Schlangen), it is to be taken literally.
 
-![](2024/02/schlangenoel-05.jpg)
+![2024/02/schlangenoel-05.jpg](schlangenoel-05.jpg)
 
 *[Snake-Oil](https://en.wikipedia.org/wiki/Snake_oil) is a term used to describe deceptive marketing,
 health care fraud, or a scam.
@@ -257,6 +257,6 @@ The numbers of CVEs and CVSS scores can indicate whether a company has improved 
 If it is apparent that this has not been the case over the years, how can a purchasing decision be made positively?
 Something to think about.
 
-![](2024/02/meerschweinchen-anne.jpg)
+![2024/02/meerschweinchen-anne.jpg](meerschweinchen-anne.jpg)
 
 *Some things can only be made bearable with cute guinea pig photos.*

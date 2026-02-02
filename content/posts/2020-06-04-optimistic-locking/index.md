@@ -74,7 +74,7 @@ The web form shows these values, and as hidden fields, also preserves the pre-ed
 {% endblock %}
 ```
 
-![](2020/06/optimistic-locking-1.png)
+![2020/06/optimistic-locking-1.png](optimistic-locking-1.png)
 
 Flask and WTForms demand a Form Class to handle this. We name it `EditForm` and define our hidden and visible fields:
 

@@ -13,7 +13,7 @@ aliases:
 ---
 Janette Sadik-Khan über ihren Job als Transportation Commissioner in New York und den Umbau und die urbane Erneuerung von New York.
 
-[![](2018/11/jsk.jpg)](https://www.amazon.de/gp/aw/d/B00ZQH30TU)
+[![2018/11/jsk.jpg](jsk.jpg)](https://www.amazon.de/gp/aw/d/B00ZQH30TU)
 
 [Streetfight](https://www.amazon.de/gp/aw/d/B00ZQH30TU)
 

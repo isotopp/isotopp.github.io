@@ -83,7 +83,7 @@ tree
 
 Graphically, the highlighted part of the structure:
 
-![](2021/10/git-tree-view.jpg)
+![2021/10/git-tree-view.jpg](git-tree-view.jpg)
 
 *The commit `daad5e31...` has two parents: It is a merge commit of `b71d9463...` and `75077bc7...`*
 

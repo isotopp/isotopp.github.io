@@ -14,7 +14,7 @@ Der Schnuppel ist jetzt in der niederländischen Groep 8, also in der 6. und let
 Die letzten Tests sind geschrieben, die Schulempfehlungen sind raus und bindend, die Folgeschule steht fest und hat die Anmeldung bestätigt.
 Das Schuljahr ist also noch lange nicht zu Ende, aber alle Arbeit ist getan.
 
-![](2022/05/snackphone-02.jpg)
+![2022/05/snackphone-02.jpg](snackphone-02.jpg)
 
 *Das Snackphone One, Zubehör und Nachfolgemodelle im Webshop.*
 
@@ -29,7 +29,7 @@ Zum Beispiel hatte der Schnuppel "USB Sticks" für sein Telefon entworfen, also 
 
 Kennt Ihr solche Pop Up Kinderbücher?
 
-[![](2022/05/popup.png)](https://www.tausendkind.ch/artikel/buch/das-wetter-pop-up-buch_34785275-1)
+[![2022/05/popup.png](popup.png)](https://www.tausendkind.ch/artikel/buch/das-wetter-pop-up-buch_34785275-1)
 
 *[Das Wetter. Pop-Up Buch](https://www.tausendkind.ch/artikel/buch/das-wetter-pop-up-buch_34785275-1)*
 
@@ -40,7 +40,7 @@ Aber diese Woche geht es mit der Klasse zum Campen an die See.
 Handies bauen und "verkaufen" ist also nicht.
 Und außerdem ist der Spaß ja im Basteln.
 
-![](2022/05/snackphone-01.jpg)
+![2022/05/snackphone-01.jpg](snackphone-01.jpg)
 
 *Der Snackphone Webshop.*
 
@@ -69,7 +69,7 @@ Sammy und der Schnuppel haben Videomaterial produziert, und er hat das in affena
 Sammy hat mit dem Schnuppel Bastelbögen produziert.
 Die beiden haben Scripte zum "Verkaufen" der ganzen Sache in einem Videovortrag geschrieben, Szenen gedreht, und der Schnuppel hat es dann fertig geschnitten.
 
-![](2022/05/snackphone-03.jpg)
+![2022/05/snackphone-03.jpg](snackphone-03.jpg)
 
 *Backend vom Webshop: Sales Panel.*
 
@@ -77,7 +77,7 @@ Wie bei jedem Life-Gang wird alles in letzter Sekunde fertig, und dann geht es i
 Nach der Mittagspause Vortrag und Öffnung des Webshops. 
 Der Vortrag scheint den Verkaufsdaten nach einigermassen funktioniert zu haben.
 
-![](2022/05/snackphone-04.jpg)
+![2022/05/snackphone-04.jpg](snackphone-04.jpg)
 
 Insbesondere die verschiedenen Motive auf den Bastelbögen für die Handyhüllen scheinen es den Leuten angetan haben.
 An der Schule macht der Laserdrucker Überstunden, und die Kinder basteln.

@@ -14,7 +14,7 @@ aliases:
 
 # Directory Services vs. Relationale Datenbanken
 
-![](2002/01/dir_vs_rel.001.jpg)
+![2002/01/dir_vs_rel.001.jpg](dir_vs_rel.001.jpg)
 
 Überblick:
 - Eigenschaften von LDAP
@@ -27,7 +27,7 @@ aliases:
 
 # LDAP im Schnelldurchlauf
 
-![](2002/01/dir_vs_rel.002.jpg)
+![2002/01/dir_vs_rel.002.jpg](dir_vs_rel.002.jpg)
 
 - Wald von Bäumen aus Knoten
 - Jeder Knoten hat mindestens die Attribute `dn`, `objectClass`
@@ -49,7 +49,7 @@ Der `dn` beschreibt den Pfad durch den Baum und ist PK. PKs sollen strukturlos u
 
 # SQL im Schnelldurchlauf
 
-![](2002/01/dir_vs_rel.003.jpg)
+![2002/01/dir_vs_rel.003.jpg](dir_vs_rel.003.jpg)
 
 - Datenbank als Kollektion von Tabellen, Tabellen als Kollektion von Spalten, Spalten haben Typen
 - Spalten sind NULL, NOT NULL. Spalten sind einwertig.
@@ -63,7 +63,7 @@ Umfangreiches Handwerkszeug zur Definition von Datenstrukturen und deren Pflege 
 
 # SQL Operationen
 
-![](2002/01/dir_vs_rel.004.jpg)
+![2002/01/dir_vs_rel.004.jpg](dir_vs_rel.004.jpg)
 
 SQL erlaubt komplexe Operationen auf Tabellen:
 - Selektion (WHERE-Clause) wählt Zeilen
@@ -85,7 +85,7 @@ Minimierung des Netzverkehrs und sinnvolle Aufteilung der Anwendung zwischen Ser
 
 #  LDAP Anwendungen 
 
-![](2002/01/dir_vs_rel.005.jpg)
+![2002/01/dir_vs_rel.005.jpg](dir_vs_rel.005.jpg)
 
 Authentisierung
 - am OS (PAM)
@@ -116,7 +116,7 @@ Sinnvolle Anwendungen von LDAP:
 
 # SQL Anwendungen
 
-![](2002/01/dir_vs_rel.006.jpg)
+![2002/01/dir_vs_rel.006.jpg](dir_vs_rel.006.jpg)
 
 Datenspeicher für Anwendungsdaten
 - Persistente Daten
@@ -152,7 +152,7 @@ Kein Zugriff, insbesondere kein schreibender Zugriff an dieser Logik vorbei mög
 
 # Relationenmodell in Verzeichnisdiensten
 
-![](2002/01/dir_vs_rel.007.jpg)
+![2002/01/dir_vs_rel.007.jpg](dir_vs_rel.007.jpg)
 
 - Woher kommen die Daten im Verzeichnis?
   - Welches ist das führende System?
@@ -182,7 +182,7 @@ Wo ein LDAP 40.000 Queries braucht, kommt SQL mit einem Join hin.
 
 # Häufige Designprobleme in LDAP
 
-![](2002/01/dir_vs_rel.008.jpg)
+![2002/01/dir_vs_rel.008.jpg](dir_vs_rel.008.jpg)
 
 - LDAP wird als führende Datenbank eingesetzt
 - LDAP wird stark beschrieben
@@ -199,7 +199,7 @@ Jeder andere Ansatz wird sehr, sehr weh tun.
 
 # LDAP wird als führende Datenbank eingesetzt 
 
-![](2002/01/dir_vs_rel.009.jpg)
+![2002/01/dir_vs_rel.009.jpg](dir_vs_rel.009.jpg)
 
 LDAP-Attribute haben eine Syntax (einen Typ)
 - Typen sind zahlreich und im Standard vordefiniert
@@ -226,7 +226,7 @@ Beispiel: Liste von Usern nach Standorten
 
 # LDAP wird stark beschrieben
 
-![](2002/01/dir_vs_rel.010.jpg)
+![2002/01/dir_vs_rel.010.jpg](dir_vs_rel.010.jpg)
 
 - LDAP ist als Protokoll für Leseoperationen optimiert.
 - Es existiert noch kein standardisiertes Bulk-Update Protokoll.
@@ -249,7 +249,7 @@ Proprietäre Bulk-Updates skalieren sich gut, erzwingen aber homogene Serverinst
 
 # LDAP wird konkurrent beschrieben
 
-![](2002/01/dir_vs_rel.011.jpg)
+![2002/01/dir_vs_rel.011.jpg](dir_vs_rel.011.jpg)
 
 - LDAP definiert einzelne add oder modify-Operationen als atomar.
 - LDAP kennt keine Locks und keine Transaktionen
@@ -270,7 +270,7 @@ Da keine Locks vorhanden sind, ist rmw nicht implementierbar (aber UID kann als 
 
 # LDAP wird dynamisch beschreiben
 
-![](2002/01/dir_vs_rel.012.jpg)
+![2002/01/dir_vs_rel.012.jpg](dir_vs_rel.012.jpg)
 
 - Viele LDAP-Server speichern die Schema-Definition out-of-band
   - Externe Dateien, die per include in die Serverkonfiguration mit eingebunden werden.
@@ -288,7 +288,7 @@ Dynamische Schemadefinition ist nur in esoterischen Anwendungen von Bedeutung.
 
 # Beziehungen zwischen LDAP-Objekten
 
-![](2002/01/dir_vs_rel.013.jpg)
+![2002/01/dir_vs_rel.013.jpg](dir_vs_rel.013.jpg)
 
 Der PK in LDAP ist immer der `dn`.
 - Der `dn` ist nicht opaque, sondern hat Struktur: Pfadinformation.
@@ -314,7 +314,7 @@ Da der `dn` nicht opak ist, sind keine stabilen Referenzen implementierbar.
 
 # LDAP wird zur Reportgenerierung verwendet
 
-![](2002/01/dir_vs_rel.014.jpg)
+![2002/01/dir_vs_rel.014.jpg](dir_vs_rel.014.jpg)
 
 LDAP kennt keine Aggregation
 - Reports können nur durch Durchlesen des Bestandes erstellt werden. 
@@ -336,7 +336,7 @@ Statistiken scheiden ganz aus.
 
 # Hierarchische Struktur im LDAP I
 
-![](2002/01/dir_vs_rel.015.jpg)
+![2002/01/dir_vs_rel.015.jpg](dir_vs_rel.015.jpg)
 
 - Der PK in LDAP ist immer der `dn`.
 - Der `dn` enthält Strukturinformation.
@@ -362,7 +362,7 @@ Besser:
 
 # Hierarchische Struktur im LDAP II
 
-![](2002/01/dir_vs_rel.016.jpg)
+![2002/01/dir_vs_rel.016.jpg](dir_vs_rel.016.jpg)
 
 LDAP erlaubt die Partitionierung des Bestandes nur nach Teilbäumen
 - Erzwingt die Bildung von Hierarchien im Bestand
@@ -383,7 +383,7 @@ LDAP erlaubt die Partitionierung des Bestandes nur nach Teilbäumen
 
 # Fazit I
 
-![](2002/01/dir_vs_rel.017.jpg)
+![2002/01/dir_vs_rel.017.jpg](dir_vs_rel.017.jpg)
 
 - LDAP ist der Teil von X.500, der "brauchbar" war.
 - LDAP verwirft elementare Erkenntnisse des relationalen Datenmodells.
@@ -404,7 +404,7 @@ Wie kann es sein? Haben die alle in Datenbanken 101 gepennt?
 
 #  Warum dann keine relationalen Systeme?
 
-![](2002/01/dir_vs_rel.018.jpg)
+![2002/01/dir_vs_rel.018.jpg](dir_vs_rel.018.jpg)
 
 Deutschland, 9.00 Uhr:
 - 150.000 MA loggen sich ein.
@@ -423,7 +423,7 @@ Deutschland, 9.00 Uhr:
 
 # Warum dann kein MYSQL?
 
-![](2002/01/dir_vs_rel.019.jpg)
+![2002/01/dir_vs_rel.019.jpg](dir_vs_rel.019.jpg)
 
 MySQL?
 - Connect/disconnect problemlos
@@ -449,7 +449,7 @@ bessere Performance und Skalierbarkeit.
 
 # Und XML?
 
-![](2002/01/dir_vs_rel.020.jpg)
+![2002/01/dir_vs_rel.020.jpg](dir_vs_rel.020.jpg)
 
 LDAP und XML haben strukturell viel gemeinsam
 - Rückkehr zu hierarchischen (Datenbank-) Systemen.

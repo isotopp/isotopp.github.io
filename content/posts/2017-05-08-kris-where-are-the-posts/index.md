@@ -20,6 +20,6 @@ and Steam Streaming is busy. I'm off
 [laying tracks](https://steamcommunity.com/sharedfiles/filedetails/?id=816733942)
 with the family, now the screen updates are not jumpy any more.
 
-[![](2017/05/schenker-xmg-prime.jpg)](https://www.mysn.de/xmg-gaming-desktop-pcs/xmg-prime)
+[![2017/05/schenker-xmg-prime.jpg](schenker-xmg-prime.jpg)](https://www.mysn.de/xmg-gaming-desktop-pcs/xmg-prime)
 
 [XMG Prime](https://www.mysn.de/xmg-gaming-desktop-pcs/xmg-prime)

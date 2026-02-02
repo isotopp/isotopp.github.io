@@ -13,7 +13,7 @@ aliases:
 ---
 Das Buch erklärt die verschiedenen bronzezeitlichen Hochzivilisationen der Mittelmeeranrainer, und wie diese miteinander in Verbindung standen. Es belegt insbesondere auf der Grundlage historischer Quellen die Existenz und Struktur eines umfangreichen Handels über das Mittelmeer, und zeigt, wie intensiv dieser war und wie er organisiert war. Es wird deutlich, daß die Mittelmehranrainer keine isolierten Stämme waren, sondern ein reger internationaler Handel und eine starke Abhängigkeit der Nationen untereinander existierte.
 
-[![](2014/10/1177.jpg)](https://www.amazon.de/dp/B013VPYYGQ)
+[![2014/10/1177.jpg](1177.jpg)](https://www.amazon.de/dp/B013VPYYGQ)
 
 [1177 B.C. - The Year Civilization Collapsed](https://www.amazon.de/dp/B013VPYYGQ)
 

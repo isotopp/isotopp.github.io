@@ -15,7 +15,7 @@ aliases:
 This 2018 book in some aspects is already outdated: Silicon Valley Techbro Kai-Fu Lee describes what AI is and what he thinks it will do to our future, the nature of work and the job market.
 But since then, the worlds view on what AI can and cannot do, what the problems to solve really are and a lot of other things have changed. 
 
-[![](2021/09/ai-superpowers.jpg)](https://www.amazon.de/AI-Superpowers-Silicon-Valley-English-ebook/dp/B0795DNWCF)
+[![2021/09/ai-superpowers.jpg](ai-superpowers.jpg)](https://www.amazon.de/AI-Superpowers-Silicon-Valley-English-ebook/dp/B0795DNWCF)
 
 *[AI Superpowers:China, Silicon Valley, and the New World Order](https://www.amazon.de/AI-Superpowers-Silicon-Valley-English-ebook/dp/B0795DNWCF), Kai-Fu Lee*
 

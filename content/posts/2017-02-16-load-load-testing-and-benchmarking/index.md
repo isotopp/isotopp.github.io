@@ -22,7 +22,7 @@ you want to run a benchmark.
 
 The main plan looks like this:
 
-![](2017/02/benchmark_plana.png)
+![2017/02/benchmark_plana.png](benchmark_plana.png)
 
 The basic idea: Find a box, offer load, see what happens, learn.
 
@@ -76,7 +76,7 @@ But load usually is not constant, but will vary, depending on what users are
 doing and how expensive the individual requests are: Not all operations are
 equally expensive.
 
-![](2017/02/benchmark1.png) 
+![2017/02/benchmark1.png](benchmark1.png) 
 
 A system close to saturation: Average load is slightly below the maximum, but
 individual peaks spike above the saturation line.
@@ -86,7 +86,7 @@ rolling average in which the actual load is constantly fluctuating and
 oscillating around this average until the peaks exceed the point of
 saturation. 
 
-![](2017/02/benchmark3.png)
+![2017/02/benchmark3.png](benchmark3.png)
 
 The average offered load is below the 100% saturation line, but the peaks
 are already exceeding the limit.
@@ -117,7 +117,7 @@ above graph and take it out of the time domain. We will be graphing offered
 load (requests/s) vs. throughput (responses/s) and offered load (requests/s)
 vs. response time (latency). 
 
-![](2017/02/benchmark2.png)
+![2017/02/benchmark2.png](benchmark2.png)
 
 Requests/s vs. Response/s (Capacity) and Requests/s vs. Response time
 (Latency). As we raise offered load, the system approaches the 100% line
@@ -142,7 +142,7 @@ curve has the shape of a hockey stick.
 
 That is not a theory, but can be shown in real production systems. 
 
-![](2017/02/benchmark5.png) 
+![2017/02/benchmark5.png](benchmark5.png) 
 
 A typical production setup. User requests are entering the system from the
 internet at the top, hitting a load balancer. The request are routed to a
@@ -173,7 +173,7 @@ or very slightly below this point in order to find the saturation point.
 
 Here is a time domain plot of such an event:
 
-![](2017/02/load-test-time.png)
+![2017/02/load-test-time.png](load-test-time.png)
 
 A request graph of a MySQL database slave being load tested. Writes are
 coming in via replication, and are not subject to load testing, hence
@@ -193,7 +193,7 @@ results of that run.
 Taking the results from the above run and plotting them in a latency graph
 results in the following graph. The hockey stick is clearly visible:
 
-![](2017/02/load-test-comparison.png)
+![2017/02/load-test-comparison.png](load-test-comparison.png)
 
 Latency graph: test1 is shown in blue, test2 in orange.
 

@@ -60,7 +60,7 @@ So here is how you race this: [beepbop](https://gist.github.com/fkt/5f8f9560ef54
 Which is bad, because Ubuntu and Debian both install beep SUID root, by
 default. You can check with "dpkg-reconfigure -plow beep".
 
-![](2018/04/dpkg-reconfigure-beep.png)
+![2018/04/dpkg-reconfigure-beep.png](dpkg-reconfigure-beep.png)
 
 Debian installs beep SUID root by default, "dpkg-reconfigure -plow
 beep"
@@ -68,13 +68,13 @@ beep"
 Somebody also created a fun website for the beep problem, complete with
 logo and name: [Holey Beep](https://holeybeep.ninja/).
 
-![](2018/04/holey-beep.png)
+![2018/04/holey-beep.png](holey-beep.png)
 
 [Holey Beep](https://holeybeep.ninja/): The site, which is done very tongue
 in cheek, also contained a [patch](https://holeybeep.ninja/beep.patch) for
 the problem, advertising it like this:
 
-![](2018/04/patch-exploit.png)
+![2018/04/patch-exploit.png](patch-exploit.png)
 
 So why would your computer beep when it applies a patch? 
 That's another fun thing. The patch contains this hunk:

@@ -14,7 +14,7 @@ aliases:
 ---
 Hines ist da, wo Stross noch hin will: Der Deckel ist ab, die Muggel haben die Magie gesehen und müssen sich in der neuen Welt zurecht finden - nichts, was sie bisher über die Welt und ihre Geschichte wissen ist noch wahr und eine neue, bisher unbekannte Macht existiert.
 
-[![](2016/08/revisionary.jpg)](https://www.amazon.de/dp/B00X5935Z0)
+[![2016/08/revisionary.jpg](revisionary.jpg)](https://www.amazon.de/dp/B00X5935Z0)
 
 [Revisionary](https://www.amazon.de/dp/B00X5935Z0)
 

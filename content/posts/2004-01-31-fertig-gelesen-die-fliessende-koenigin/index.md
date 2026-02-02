@@ -13,7 +13,7 @@ aliases:
 ---
 [Die fließende Königin](https://www.amazon.de/Merle-Die-Fließende-Königin-Merle-Zyklus-ebook/dp/B07ZR53C3M) ist die Beschützerin von Venedig. Nur sie allein hat mit ihrer Magie die Mumien-Truppen des Pharao über 30 Jahre zurückhalten können.
 
-![](2004/01/fliessende_koenigin.jpg)
+![2004/01/fliessende_koenigin.jpg](fliessende_koenigin.jpg)
 
 Merle ist Schülerin bei Venedigs berühmtesten und berüchtigtsten Spiegelmacher, Arcimboldo. Sie und ihre Mitlehrlinge liegen im Streit mit den Lehrlingen des gegenüberliegenden Hauses. Doch während sie sich im kleinen streitet, wird hinter den Kulissen der Stadt ein wesentlich größerer Kampf ausgetragen.
 

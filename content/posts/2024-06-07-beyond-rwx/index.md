@@ -25,7 +25,7 @@ To read a file you need `r` permission, to write it you need `w`, and to run it 
 
 That's it, right?
 
-![](2024/06/opening-files-01.jpg)
+![2024/06/opening-files-01.jpg](opening-files-01.jpg)
 
 *A developer opening a file. (ChatGPT)*
 
@@ -156,7 +156,7 @@ Storing authorizations with the user generates a **capability system**.
 AppArmor is an example for a capability-based system to limit what file accesses and system calls a process
 is allowed to do. 
 
-![](2024/06/opening-files-04.png)
+![2024/06/opening-files-04.png](opening-files-04.png)
 
 *Slicing RDF triples with authorizations by object,
 creating a permission system, or by subject, creating a capability system.*
@@ -216,7 +216,7 @@ In traditional Unix, the logic was as follows:
    Any user being in any of these groups gets to use the second set of permission bits.
 3. All other users get to use the other permissions.
 
-![](2024/06/opening-files-02.png)
+![2024/06/opening-files-02.png](opening-files-02.png)
 
 ***A different example:** A process wants to open a file. The UID does not match, the GID does match. Group permissions are granted.*
 
@@ -499,7 +499,7 @@ I lied. There are not nine permission bits to a file, there are 12. It's not `rw
 The `sst` is rarely set, so it is not shown unless it is set.
 When it is set, it is shown instead of the three `x`, in lower case if the `x` below is set, else in upper case.
 
-![](2024/06/opening-files-03.png)
+![2024/06/opening-files-03.png](opening-files-03.png)
 
 *What are the `sst` bits and why don't we see them?*
 

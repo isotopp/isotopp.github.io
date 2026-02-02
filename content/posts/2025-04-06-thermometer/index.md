@@ -62,7 +62,7 @@ Einige Beispiele:
     sich die Umweltwerte in der aufgestellten Umgebung zueinander verhalten.
 
 
-[![](2025/04/vindstyrka.jpeg)](/uploads/2025/04/vindstyrka.jpeg)
+[![2025/04/vindstyrka.jpeg](vindstyrka.jpeg)](/uploads/2025/04/vindstyrka.jpeg)
 
 *Ein IKEA Vindstyrka in einem Bücherregal* 
 
@@ -70,7 +70,7 @@ Einige Beispiele:
     Temperaturwerte mit einer Auflösung von 0.1 Grad Celsius, die angezeigten
     und über die Shelly API gelieferten Werte stimmen im wesentlichen überein.
 
-[![](2025/04/shelly-htg3.jpeg)](/uploads/2025/04/shelly-htg3.jpeg)
+[![2025/04/shelly-htg3.jpeg](shelly-htg3.jpeg)](/uploads/2025/04/shelly-htg3.jpeg)
 
 *Shelly HT G3 mit externer Stromversorgung* 
     
@@ -79,7 +79,7 @@ Einige Beispiele:
     die BTHome API liefert es Werte mit einer Auflösung von 0.01 Grad Celsius.
 
 
-[![](2025/04/MHO-C401.jpeg)](/uploads/2025/04/MHO-C401.jpeg)
+[![2025/04/MHO-C401.jpeg](MHO-C401.jpeg)](/uploads/2025/04/MHO-C401.jpeg)
 
 *Ein MHO-C401(N) mit der [alternativen Firmware für BTHome
 Support](https://pvvx.github.io/MHO_C401/). Es sei angemerkt, dass es für C401
@@ -90,11 +90,11 @@ flashen.*
  4. Ein Aqara Zigbee Thermostat liefert Werte mit einer Auflösung von 0.1 Grad
     Celsius.
 
-[![](2025/04/aqara_ths.jpeg)](/uploads/2025/04/aqara_ths.jpeg)
+[![2025/04/aqara_ths.jpeg](aqara_ths.jpeg)](/uploads/2025/04/aqara_ths.jpeg)
  
  5. Ein Sonoff SNZB-02P liefert Werte mit einer Auflösung von 0.1 Grad Celsius.
 
-[![](2025/04/sonoff-ths.jpeg)](/uploads/2025/04/sonoff-ths.jpeg)
+[![2025/04/sonoff-ths.jpeg](sonoff-ths.jpeg)](/uploads/2025/04/sonoff-ths.jpeg)
 
  6. Tasmota unterstützt verschiedene Thermostate von DHT22 bis BME820, die
     jeweils entsprechend der technischen Kapazitäten Werte liefern.
@@ -107,7 +107,7 @@ Raumtemperatur vielleicht angenehmer für mich als Kris' 21 Grad Raumtemperatur.
 Fussbodenheizungen mit Bimetall-Technik auch nur eine Genauigkeit von +-0,5
 Grad haben).
 
-[![](2025/04/Raumregler.jpeg)](/uploads/2025/04/Raumregler.jpeg)
+[![2025/04/Raumregler.jpeg](Raumregler.jpeg)](/uploads/2025/04/Raumregler.jpeg)
 
 *Ein temperaturgeführter Raumregler für Stellventile einer Flächenheizung. Im
 Inneren bewährte, unkaputtbare Bimetalltechnik. Leider nutzlos, weil die
@@ -124,7 +124,7 @@ sich, den Messwert zu glätten, bevor man ihn zur Schaltung verwendet. Das
 verzögert den Steuerungsvorgang in der Regel, aber die Taktung wird
 vermieden.
 
-[![](2025/04/Heizleistung12Gaeste.png)](/uploads/2025/04/Heizleistung12Gaeste.png)
+[![2025/04/Heizleistung12Gaeste.png](Heizleistung12Gaeste.png)](/uploads/2025/04/Heizleistung12Gaeste.png)
 
 *Die Heizleistung von 12 Personen auf einer Party.* 
 
@@ -144,7 +144,7 @@ bestimmtes Delta verändert haben, und dann noch alle X Minuten, auch wenn sich
 nichts geändert hat. Bei einigen Zigbee Sensoren sind die Schwellwerte über
 gewisse API Calls anpassbar -- bei mir hat das aber nie funktioniert.
 
-[![](2025/04/batterien.png)](/uploads/2025/04/batterien.png)
+[![2025/04/batterien.png](batterien.png)](/uploads/2025/04/batterien.png)
 
 Wer Batterien vermeiden möchte, hat die Wahl zwischen
 
@@ -186,7 +186,7 @@ Minuten). Aqara THS aktualisieren sich ca einmal alle 3-5 Minuten (oder wenn
 die Temperatur sich um 0.1 Grad ändert), die SNZB-02P ca einmal alle 15 Minuten
 oder wenn die Temperatur sich um 0.2 Grad ändert. 
 
-[![](2025/04/CheckinsThermometer.png)](/uploads/2025/04/CheckinsThermometer.png)
+[![2025/04/CheckinsThermometer.png](CheckinsThermometer.png)](/uploads/2025/04/CheckinsThermometer.png)
 
 *Vergleich der Aktualisierung der Werte in HomeAssistant von verschiedenen
 Thermometern, die direkt nebeneinander stehen. 'rettemp' ist ein DS18B20 an

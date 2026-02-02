@@ -12,7 +12,7 @@ title: 'Fertig gelesen: Children of Time'
 aliases:
   - /2017/11/07/fertig-gelesen-children-of-time.html
 ---
-[![](2017/11/children-of-time.png)](https://www.amazon.de/Children-Time-Winner-Arthur-English-ebook/dp/B00SN93AHU)
+[![2017/11/children-of-time.png](children-of-time.png)](https://www.amazon.de/Children-Time-Winner-Arthur-English-ebook/dp/B00SN93AHU)
 
 The people of Earth are on the verge of transcendence: They
 almost managed to create mind uploads, they are on the verge of

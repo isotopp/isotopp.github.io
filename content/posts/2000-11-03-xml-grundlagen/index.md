@@ -13,7 +13,7 @@ aliases:
 
 # XML Normensalat
 
-![](2000/11/xml-grundlagen.001.jpg)
+![2000/11/xml-grundlagen.001.jpg](xml-grundlagen.001.jpg)
 
 XML ist ein sehr unübersichtliches Thema, bestehtend aus einem Strauß von ca. 10 Normen.
 Einige dieser Normen sind zueinander inkompatibel.
@@ -28,7 +28,7 @@ Wir kennen die Normen:
 
 # Warum XML?
 
-![](2000/11/xml-grundlagen.002.jpg)
+![2000/11/xml-grundlagen.002.jpg](xml-grundlagen.002.jpg)
 
 XML als Standard erscheint 1996 als eine Markup-Variante von SGML, aber regulärer und einfacher zu parsen.
 Das Ziel der Norm ist ein vereinheitlichtes Datentauschformat für die Industrie mit den Eigenschaften "Self-Describing" und "lang, aber gut komprimierbar", Ablösung von "EDIFACT".
@@ -38,7 +38,7 @@ API-Normen sind SAX (streaming Parser) und DOM.
 
 # SGML, XML, HTML
 
-![](2000/11/xml-grundlagen.003.jpg)
+![2000/11/xml-grundlagen.003.jpg](xml-grundlagen.003.jpg)
 
 HTML ist *eine* SGML, mit einem vorgeschriebenen festen Tag-Vokabular, für die spezielle Anwendung "Display von Seiten".
 
@@ -52,7 +52,7 @@ Durch die optionale DTD wird XML validierbar.
 
 # Normenumfeld
 
-![](2000/11/xml-grundlagen.004.jpg)
+![2000/11/xml-grundlagen.004.jpg](xml-grundlagen.004.jpg)
 
 HTML 4 (strict) und CSS 2 sind eine Erweiterung und Bereinigung von HTML 3.2.
 
@@ -68,7 +68,7 @@ Mit XSLT kann man eine Transformation von einem XML zu einem anderen XML spezifi
 
 # Normenumfeld II
 
-![](2000/11/xml-grundlagen.005.jpg)
+![2000/11/xml-grundlagen.005.jpg](xml-grundlagen.005.jpg)
 
 Im Business-Umfeld müssen oft Datenaustauschformate spezifiziert werden.
 Dazu ist ein Schema notwendig.
@@ -85,7 +85,7 @@ Anwendungen von XML finden wir in
 
 # XML Syntax I: Tags
 
-![](2000/11/xml-grundlagen.006.jpg)
+![2000/11/xml-grundlagen.006.jpg](xml-grundlagen.006.jpg)
 
 XML ist
 - case sensitive
@@ -96,7 +96,7 @@ XML ist
 
 # XML Syntax II: Attributes, Entities
 
-![](2000/11/xml-grundlagen.007.jpg)
+![2000/11/xml-grundlagen.007.jpg](xml-grundlagen.007.jpg)
 
 Tags könnnen Attribute haben. Die sind ebenfalls Case Sensitive, einmalig pro Tag, und müssen zwingend Werte in Anführungszeichen haben (einfache oder doppelte).
 Leere Attribute werden durch Wiederholung des Namens als String geschrieben.
@@ -113,7 +113,7 @@ Oder Literale mit CDATA: `<[CDATA[<&>'"]]>`
 
 # XML Syntax III: Whitespace, Language
 
-![](2000/11/xml-grundlagen.008.jpg)
+![2000/11/xml-grundlagen.008.jpg](xml-grundlagen.008.jpg)
 
 Whitespace (Tab, LF, CR und Space) ist normalerweise ohne Bedeutung.
 In besonderen Fällen ist jedoch mehr Kontrolle notwendig.
@@ -134,7 +134,7 @@ Zugelassen sind ISO 639 LC, IETF RFC 1766 LC, ISO 3316 CC, ISO 639 LC-CC, I-<lan
 
 # XML Syntax IV: PIs, Comments
 
-![](2000/11/xml-grundlagen.009.jpg)
+![2000/11/xml-grundlagen.009.jpg](xml-grundlagen.009.jpg)
 
 Dannn gibt es noch Processing Instructions (vgl. PHP) und Kommentare.
 
@@ -149,7 +149,7 @@ Kommentare können kein `--` enthalten, und kein trailing `-`, können nicht ges
 
 # Ein Beispiel
 
-![](2000/11/xml-grundlagen.010.jpg)
+![2000/11/xml-grundlagen.010.jpg](xml-grundlagen.010.jpg)
 
 ```xml
 <?xml version="1.0"
@@ -178,7 +178,7 @@ Die Form ist klassisch: Pluralisierter Name der Elemente zeigt einen Container a
 
 # Document Type Declarations
 
-![](2000/11/xml-grundlagen.011.jpg)
+![2000/11/xml-grundlagen.011.jpg](xml-grundlagen.011.jpg)
 
 DTDs bestimmen, welche Elemente im Dokument vorkommen dürfen, wie sie geschachtelt werden und wie sie wiederholt werden können. Genauso werden Attribute Elementen zugeordnet, mit Defaults und erlaubten Werten versehen.
 
@@ -186,7 +186,7 @@ In jedem Fall ist XML auch ohne DTD syntaktisch korrekt, wenn es korrekt geschac
 
 # DTDs am Beispiel: Entities, Elemente
 
-![](2000/11/xml-grundlagen.012.jpg)
+![2000/11/xml-grundlagen.012.jpg](xml-grundlagen.012.jpg)
 
 DTDs werden aus Entities zusammengesetzt, diese werden literal hin geschreben, oder aus Daten gelesen oder kommen sonstwo her.
 Es gibt ein paar Konstrukte, die an die Bausteine und Notation von EBNF erinnern.
@@ -219,7 +219,7 @@ Es gibt ein paar Konstrukte, die an die Bausteine und Notation von EBNF erinnern
 
 # DTDs am Beispiel: Attribute
 
-![](2000/11/xml-grundlagen.013.jpg)
+![2000/11/xml-grundlagen.013.jpg](xml-grundlagen.013.jpg)
 
 Genau so definiert die DTD auch Attribute.
 
@@ -251,7 +251,7 @@ Genau so definiert die DTD auch Attribute.
 
 # Datenmodellierung mit XML: Entities und Attribute
 
-![](2000/11/xml-grundlagen.014.jpg)
+![2000/11/xml-grundlagen.014.jpg](xml-grundlagen.014.jpg)
 
 Will man XML verwenden, um ein Datentauschformat zwischen Geschäften zu definieren, muß man meist Daten modellieren.
 Diese Modelle liegen oft als ER-Modell vor.
@@ -267,7 +267,7 @@ Attribute erlauben Wertlisten, und Defaults, erlauben mit ID und IDREF Queryverw
 
 # Datenmodellierung mit XML: Attributwerte
 
-![](2000/11/xml-grundlagen.015.jpg)
+![2000/11/xml-grundlagen.015.jpg](xml-grundlagen.015.jpg)
 
 Einheiten codieren
 - `<buch dicke="987 seiten"/>` vs. `<buch dicke="987" einheit="seiten"/>`
@@ -286,7 +286,7 @@ Saubere Umsetzung von ER-Modellen in XML Schemata ist derzeit nicht möglich. De
 
 # Document Object Model: XML Bäume
 
-![](2000/11/xml-grundlagen.016.jpg)
+![2000/11/xml-grundlagen.016.jpg](xml-grundlagen.016.jpg)
 
 ```xml
 <book>
@@ -307,7 +307,7 @@ SAX-API repräsentiert das Dokument nicht, sondern liefert Parse-Events
 
 # XML Namespaces (Erläuterung)
 
-![](2000/11/xml-grundlagen.017.jpg)
+![2000/11/xml-grundlagen.017.jpg](xml-grundlagen.017.jpg)
 
 Beim Mischen zweiter DTDs in einem Dokument kann es zu Namenskollisionen kommen, doppelte Elementnamen, Attribute sollen global verwendbar sein.
 Die Idee, jedes Element mit der URL seiner DTD zu prefixen ist zu umständlich.
@@ -315,7 +315,7 @@ Feste Namen gehen auch nicht, da dann auch wieder Kollisionen möglich sind.
 
 # XML Namespaces (Deklaration)
 
-![](2000/11/xml-grundlagen.018.jpg)
+![2000/11/xml-grundlagen.018.jpg](xml-grundlagen.018.jpg)
 
 Daher deklariert man Namespaces, indem man für die URL der DTD einen lokalen Kurznamen definiert und den dann als Prefix verwendet.
 Dies geschieht mit `xmlns:kurzname=URL`.
@@ -337,7 +337,7 @@ Schon das stylesheet-Element selbst kann das Prefix xsl verwenden. Innerhalb des
 
 # XSLT
 
-![](2000/11/xml-grundlagen.019.jpg)
+![2000/11/xml-grundlagen.019.jpg](xml-grundlagen.019.jpg)
 
 XML-Quelldokument und XSLT-Stylesheet werden als Baum dargestellt.
 Die Transformationsregeln des Stylesheet matchen dann ähnlich AWK auf Elemente vom Quellbaum, und generieren den Resultatbaum.
@@ -362,7 +362,7 @@ Baumwurzel:
 
 # xsl:stylesheet Element
 
-![](2000/11/xml-grundlagen.020.jpg)
+![2000/11/xml-grundlagen.020.jpg](xml-grundlagen.020.jpg)
 
 Das `xsl:stylesheet` Element definiert die Version des Stylesheet, kann spezielle Erweiterungen aktivieren, und kann das Stylesheet benennen.
 
@@ -370,17 +370,17 @@ In einem XML-Dokument kann mit dem `<?xml-stylesheet ?>` dem XML ein Stylesheet 
 
 # Embedded Stylesheet
 
-![](2000/11/xml-grundlagen.021.jpg)
+![2000/11/xml-grundlagen.021.jpg](xml-grundlagen.021.jpg)
 
 Eine Mischform existiert, sie vermischt aber unangenehm Daten und Format. Nicht empfehlenswert.
 
 # Vereinfachte Stylesheets
 
-![](2000/11/xml-grundlagen.022.jpg)
+![2000/11/xml-grundlagen.022.jpg](xml-grundlagen.022.jpg)
 
 # Whitespace Handling
 
-![](2000/11/xml-grundlagen.023.jpg)
+![2000/11/xml-grundlagen.023.jpg](xml-grundlagen.023.jpg)
 
 XML-Bäume enthalten kein Whitespace.
 Whitespace in Nodes mit `#PCDATA` ist signifikant.
@@ -390,7 +390,7 @@ Overrides existieren.
 
 # XPath: Achsen
 
-![](2000/11/xml-grundlagen.024.jpg)
+![2000/11/xml-grundlagen.024.jpg](xml-grundlagen.024.jpg)
 
 Um Elemente zu finden und zu selektieren, definiert XPath Suchausdrücke.
 Sie suchen im Dokument entlang von "Achsen".
@@ -404,7 +404,7 @@ Einige XPath Achsen:
 
 # XPath: Mehr über Achsen
 
-![](2000/11/xml-grundlagen.025.jpg)
+![2000/11/xml-grundlagen.025.jpg](xml-grundlagen.025.jpg)
 
 Achsen:
 - ancestor, ancestor-or-self
@@ -418,7 +418,7 @@ Achsen:
 
 # XPath: Node Tests
 
-![](2000/11/xml-grundlagen.026.jpg)
+![2000/11/xml-grundlagen.026.jpg](xml-grundlagen.026.jpg)
 
 Der etwas seltsam klingende Name "Node Test" bezieht sich auf einen Ausdruck, der ausgehend vom aktueellen Knoten weitere Elemente auswählt.
 Das Resultat ist ein Node Set, also kein Baum.
@@ -428,24 +428,24 @@ Dennoch kann man weitere Prädikate auf den Node Set anwenden und weiter filtern
 
 # XPath: Kurzschreibweisen
 
-![](2000/11/xml-grundlagen.027.jpg)
+![2000/11/xml-grundlagen.027.jpg](xml-grundlagen.027.jpg)
 
 Ein Haufen Kurzschreibweisen existieren, damit man XPath-Ausdrücke ohne kilometerlange Achsennamen schreiben kann.
 
 # XPath: Mehr Kurzschreibweisen
 
-![](2000/11/xml-grundlagen.028.jpg)
+![2000/11/xml-grundlagen.028.jpg](xml-grundlagen.028.jpg)
 
 Es braucht etwas Übung, bis die Syntax von der Hand geht.
 
 # XPath: Core Function Library
 
-![](2000/11/xml-grundlagen.029.jpg)
+![2000/11/xml-grundlagen.029.jpg](xml-grundlagen.029.jpg)
 
 Dazu kommmt ein sehr begrenzter Satz Funktionen, die man auf Knoten oder Knotenmengen anwenden kann.
 
 # XSLT und XPath
 
-![](2000/11/xml-grundlagen.030.jpg)
+![2000/11/xml-grundlagen.030.jpg](xml-grundlagen.030.jpg)
 
 XSLT und XPath zusammen können dann verwendet werden, um Daten aus einem Quell-XML Dokument zu extrahieren und in ein Zieldokument einzusetzen.

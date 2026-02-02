@@ -34,7 +34,7 @@ Warmwasser kommt durch eine Brauchwasser-Wärmepumpe.
 Diese zieht Außenluft durch eine Einström-Öffnung ein, kühlt die Außenluft ab 
 und pustet die Luft durch ein 2. Loch wieder raus.
 
-![](2025/03/electric-14.jpg)
+![2025/03/electric-14.jpg](electric-14.jpg)
 
 *Der Dachaufbau auf der Nordost-Seite: Solarzellen, die Öffnungen für die Brauchwasser-Wärmepumpe,
 und der Schornstein der Gas-Therme, an seinem letzten Tag.*
@@ -56,7 +56,7 @@ der Kompressor muss mehr arbeiten—und braucht mehr Energie.
 
 Und das sehen wir auch in der Messung:
 
-![](2025/06/heizen-01.png)
+![2025/06/heizen-01.png](heizen-01.png)
 
 *Leistungsaufnahme einer Brauchwasser-Wärmepumpe, steigt über Zeit von 480 W auf 635 W.*
 
@@ -104,7 +104,7 @@ Wir können das in eine
 [Energieeffizienzklasse](https://www.effizienzhaus-online.de/energieeffizienzklasse/)
 übertragen.
 
-![](2025/06/heizen-06.png)
+![2025/06/heizen-06.png](heizen-06.png)
 
 *Energieeffizienzklassen in Energieausweisen für Wohngebäude ab Mai 2014.*
 
@@ -177,11 +177,11 @@ Ich habe zwei Multisplit-Anlagen:
 Ein Außengerät an der Südseite mit 5 Anschlüssen (einer ungenutzt),
 und ein Außengerät an der Nordseite mit 3 Anschlüssen.
 
-![](2025/06/heizen-02.png)
+![2025/06/heizen-02.png](heizen-02.png)
 
 *Anschalten um kurz vor 8, Abschalten um halb 10.*
 
-![](2025/06/heizen-03.png)
+![2025/06/heizen-03.png](heizen-03.png)
 
 *Die Raumtemperatur schnellt quasi sofort von 19.0ºC auf 20.5ºC hoch.
 Beim Abschalten fällt sie sehr schnell von 20.5ºC auf 20.0ºC ab und sinkt dann langsam weiter, wie in der Nacht.*
@@ -259,7 +259,7 @@ Das ist ganz genauso wie bei der normalen Raumheizung mit einem Heizkörper.
 
 In der Praxis sehen wir, dass die relative Luftfeuchte während des Heizbetriebes am Messpunkt von 60% auf 56% gefallen ist.
 
-![](2025/06/heizen-04.png)
+![2025/06/heizen-04.png](heizen-04.png)
 
 *Luftfeuchtigkeit im Erdgeschoss, im Wohnzimmer und in der Küche, während des Heizbetriebes.*
 
@@ -303,7 +303,7 @@ Bei nörgelnden Nachbarn sollte man den Artikel
 [WP: Go Away Green](https://en.wikipedia.org/wiki/Go_Away_Green)
 lesen und seine Schlüsse ziehen.
 
-![](2025/06/heizen-05.png)
+![2025/06/heizen-05.png](heizen-05.png)
 
 *Einstellmöglichkeiten der Klimaanlage in Home Assistant.*
 
@@ -315,7 +315,7 @@ dass es jetzt mal auf den Kopf hauen soll, weil ich es schnellstmöglich warm ha
 
 Hier ist ein komplizierter Graph aus Home Assistant:
 
-![](2025/06/heizen-07.png)
+![2025/06/heizen-07.png](heizen-07.png)
 
 Im unteren Graphen sehen wir die Leistungsaufnahme der Klimaanlage ("Südseite").
 Von circa 10 Uhr bis 13 Uhr und von kurz vor 16 Uhr bis 17:30 Uhr ist die Kühlung gelaufen, 

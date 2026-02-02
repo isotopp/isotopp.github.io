@@ -15,7 +15,7 @@ aliases:
 Dave Addey ran a Tumblr once, titled "Typeset in the Future", in which he dissected the typography of Science Fiction films.
 This has been turned into the eponymous book.
 
-[![](2021/09/typeset.jpg)](https://www.amazon.de/Typeset-Future-Typography-Science-Fiction-ebook/dp/B07G7SGRZ2)
+[![2021/09/typeset.jpg](typeset.jpg)](https://www.amazon.de/Typeset-Future-Typography-Science-Fiction-ebook/dp/B07G7SGRZ2)
 
 *[Typeset in the Future](https://www.amazon.de/Typeset-Future-Typography-Science-Fiction-ebook/dp/B07G7SGRZ2), Dave Addey*
 
@@ -24,7 +24,7 @@ In 2013, Addey nerded out over the fonts in a Science Fiction movie and discover
 He started a Tumblr about this, and in great detail went through a number of movies, and about every sign, letter and font used in there.
 The Tumblr became quite successful, and he turned the most important posts into a book, adding a lot of images with examples and a number of interviews and essays to it.
 
-![](2021/09/typeset2.jpg)
+![2021/09/typeset2.jpg](typeset2.jpg)
 
 *Table of Contents*
 

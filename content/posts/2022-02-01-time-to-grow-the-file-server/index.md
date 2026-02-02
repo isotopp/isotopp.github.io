@@ -16,7 +16,7 @@ The old file server was full, and since the little one got more local storage in
 I am running a 5x cage using up 3 disk slots in a Midi-Tower.
 Two slots are filled with Seagate Ironwolf 10 TB disks already, the rest is available.
 
-[![](2022/02/cold-storage1.jpg)](https://www.amazon.de/-/en/gp/product/B019HE69FO)
+[![2022/02/cold-storage1.jpg](cold-storage1.jpg)](https://www.amazon.de/-/en/gp/product/B019HE69FO)
 
 *A 5x [hot swap disk cage](https://www.amazon.de/-/en/gp/product/B019HE69FO) using 3 disk slots in a midi tower.* 
 
@@ -38,7 +38,7 @@ That is fine, the disks are used as backup targets for a number of Mac devices o
 I ordered two additional Seagate Ironwolf 10 TB disks to match the existing ones.
 They came in rather cold from the delivery van:
 
-![](2022/02/cold-storage2.jpg)
+![2022/02/cold-storage2.jpg](cold-storage2.jpg)
 
 *After unpacking the disk chassis had single digit celsius temperatures.
 When I remembered to take a thermal image they were already warmed up a bit.
@@ -46,7 +46,7 @@ I let them warm up a bit more before I put them in.*
 
 Pushing in the disks generated a lot of kernel log, and also a nice graph in the temperature monitoring:
 
-![](2022/02/cold-storage3.jpg)
+![2022/02/cold-storage3.jpg](cold-storage3.jpg)
 
 *The new disks are warming up rapidly. The dropping line is a scratch disk that I have been taking out of slot 3 and pushing back in into slot 5.*
 

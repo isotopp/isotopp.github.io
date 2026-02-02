@@ -17,7 +17,7 @@ I never wrote this up, and the information online is all referring to older vers
 
 On older versions of Windows, you would start the old control panel and then go to "Clock, Language and Region", and then set up things from there:
 
-![](2021/05/settings00.png)
+![2021/05/settings00.png](settings00.png)
 
 *The old control panel. Current Windows 10 still has the old control panel, but no longer has language options in it.*
 
@@ -25,13 +25,13 @@ This does no longer work, because while current Windows 10 still has the old con
 
 Instead, the new Windows 10 settings are required. Start them (Windows+I), and choose "Time and Language".
 
-![](2021/05/settings01.jpg)
+![2021/05/settings01.jpg](settings01.jpg)
 
 *Windows+I will bring up the settings*
 
 In "Time and Language", select the Tab "Language", make sure "English (United States)" is selected in "Preferred Languages", and click "Options".
 
-![](2021/05/settings02.jpg)
+![2021/05/settings02.jpg](settings02.jpg)
 
 *Select "English (United States)" in "Preferred Languages" to make the "Options" button visible. Click that button.*
 
@@ -41,13 +41,13 @@ It will be added to the list of available keyboard layouts.
 
 If you wish, click on the "US (QWERTY)" keyboard, and click "Remove".
 
-![](2021/05/settings03.jpg)
+![2021/05/settings03.jpg](settings03.jpg)
 
 *After hitting "[+] Add a keyboard", choose "United States - International (QWERTY)"*
 
 The finished selection should look like this:
 
-![](2021/05/settings04.jpg)
+![2021/05/settings04.jpg](settings04.jpg)
 
 *The keyboard layout chosen is "United States - International (QWERTY)".*
 

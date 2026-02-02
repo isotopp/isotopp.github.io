@@ -12,7 +12,7 @@ title: 'Fertig gelesen: All these worlds'
 aliases:
   - /2017/11/06/fertig-gelesen-all-these-worlds.html
 ---
-[![](2017/11/all-these-worlds.png)](https://www.amazon.de/These-Worlds-Bobiverse-Book-English-ebook/dp/B0736185ZL)
+[![2017/11/all-these-worlds.png](all-these-worlds.png)](https://www.amazon.de/These-Worlds-Bobiverse-Book-English-ebook/dp/B0736185ZL)
 
 All these worlds is the third and final part of the adventures of Bob,
 conqueror of the universe and saviour of humanity. 

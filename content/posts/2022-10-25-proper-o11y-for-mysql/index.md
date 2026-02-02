@@ -36,7 +36,7 @@ A lot of Honeycomb assumes that the values are numbers, but it doesn't have to s
 
 Spans nest, and you could look at the execution of your program as an arrow of time on which the spans are arranged.
 
-![](2022/10/proper-o11y-01.png)
+![2022/10/proper-o11y-01.png](proper-o11y-01.png)
 
 *A root span at the application level is started in `buildAvailabilityQuery()`. This called into `sqlORM()`, which in turn called `runSQL()` several times. All this is recorded from the application and the application code. We'd want to see MySQL execution data in there, as subspans of `runSQL()`.*
 
@@ -98,7 +98,7 @@ The `beeline.add_context()` calls add KV-pairs to the tracing span.
 
 # What database integration can look like
 
-![](2022/10/proper-o11y-02.png)
+![2022/10/proper-o11y-02.png](proper-o11y-02.png)
 
 *What we want from a Query: The SQL_TEXT, and the Query Plan that actually ran for that Query. We would also want a list of Page#'s requested and Page#'s read from disk. Optionally, we would want subspans for each lock and wait, with annotations.*
 
@@ -145,7 +145,7 @@ Then I will finally be able to debug SQL properly, and in a single place with th
 
 My colleague Willian Stewart pointed me at Vitess, which [already does that for the "above MySQL"](https://vitess.io/docs/16.0/user-guides/configuration-advanced/tracing/#instrumenting-queries) part of Vitess:
 
-![](2022/10/proper-o11y-03.png)
+![2022/10/proper-o11y-03.png](proper-o11y-03.png)
 
 *The call tree of a Query to Vitess as it is being handled inside of Vitess, as seen by Jaeger.*
 

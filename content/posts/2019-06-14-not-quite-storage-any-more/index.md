@@ -55,7 +55,7 @@ But it also means that you get all the benefits of the large address space that 
 
 This controller can make use of the fact that all accesses are block-sized, and it can do additional magic to do error correction. Stephen Bates gave a [presentation about Low Latency Block Devices](https://www.snia.org/sites/default/files/SDC/2017/presentations/General_Session/Bates_Stephen_Linux_Optimizations_for_Low_Latency_Block_Devices.pdf) in a 2017 [SNIA](https://en.wikipedia.org/wiki/Storage_Networking_Industry_Association) conference that was interesting in its own right. But in one slide he dropped a really interesting observation on block storage and error correction, which he coined the Bates Conjecture.
 
-![](2019/06/optane-bates.png)
+![2019/06/optane-bates.png](optane-bates.png)
 
 *Bates Conjecture Slide (Slide 10)*
 
@@ -111,13 +111,13 @@ Well, up to 32 readers, I get an aggregate of 32 GB/s, 2m aggregated IOPS and th
 
 Here is a comparison of some key performance data: SSD with smart controller, SSD direct, NVME direct and Optane.
 
-![](2019/06/optane-latency.png)
+![2019/06/optane-latency.png](optane-latency.png)
 
 *Read, Buffered and Unbuffered Writes. The Optane Data is there, you just cannot see it, because it is too fast. The scale is µs.*
 
 Moral: NVME don’t buy you much latency, but look at those sweet IOPS, all available in parallel accesses/deep queues only.
 
-![](2019/06/optane-iops.png)
+![2019/06/optane-iops.png](optane-iops.png)
 
 *IOPS and Bandwidth of various storage hardware compared*
 

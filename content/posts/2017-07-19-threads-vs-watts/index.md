@@ -40,14 +40,14 @@ Debug=0
 
 Running this with variable values for TortureThreads allows me to learn the impact of CPU usage on power consumption. When Idle, the box consumes 170W, because we basically prevented it from sleeping. When busy, it’s some 406 to 420W.
 
-![](2017/07/power-reading.jpg)
+![2017/07/power-reading.jpg](power-reading.jpg)
 
 *Running at almost full power.*
 
 And the power consumption is not linear. Well, it is up to 28 Threads, and
 then more or less plateaus.
 
-![](2017/07/watt.jpg)
+![2017/07/watt.jpg](watt.jpg)
 
 *Watt used, by number of threads busy.*
 
@@ -63,7 +63,7 @@ If you define the full power usage at 420W and want to spend only half of that, 
 
 Another way to think about it is Watt per Thread: 
 
-![](2017/07/watt-thread.jpg)
+![2017/07/watt-thread.jpg](watt-thread.jpg)
 
 *Watts per Thread.*
 

@@ -13,7 +13,7 @@ aliases:
 ---
 The Box ist vordergründig ein Buch über die Erfindung des Containers und die vierzig Jahre des Strukturwandels, die seiner Erfindung und seinem Siegeszug um die Welt folgen.
 
-[![](2017/01/box.jpg)](https://www.amazon.de/Box-Shipping-Container-Smaller-Economy-ebook/dp/B01772PS00)
+[![2017/01/box.jpg](box.jpg)](https://www.amazon.de/Box-Shipping-Container-Smaller-Economy-ebook/dp/B01772PS00)
 
 [The Box](https://www.amazon.de/Box-Shipping-Container-Smaller-Economy-ebook/dp/B01772PS00)
 

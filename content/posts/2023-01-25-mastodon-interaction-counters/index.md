@@ -27,7 +27,7 @@ In order for a node to receive an article from a remote user in the first place,
 
 So given the following situation:
 
-![](2023/01/mastodon-subscribe.png)
+![2023/01/mastodon-subscribe.png](mastodon-subscribe.png)
 *On mastodon.social, the user GamingonLinux subscribes to SirSquid\@toot.io. 
 On chaos.social, the user isotopp subscribes to SirSquid\@toot.io.
 On subscription, the toot.io server is notified of the subscription.*
@@ -38,7 +38,7 @@ Old articles from SirSquid do not exist on either remote server, they will not b
 
 When SirSquid now posts a new article, the following happens because of the subscription:
 
-![](2023/01/mastodon-post.png)
+![2023/01/mastodon-post.png](mastodon-post.png)
 
 *SirSquid posts a new article.
 The new article only exists at toot.io.
@@ -73,7 +73,7 @@ They won't find the post on the copy of the home timeline of SirSquid on mastodo
 
 When readers on mastodon.social or chaos.social interact with the local copy of a post, this will happen:
 
-![](2023/01/mastodon-interaction.png)
+![2023/01/mastodon-interaction.png](mastodon-interaction.png)
 
 *A user on chaos.social boosts the post.
 The local boost counter for the post is updated.

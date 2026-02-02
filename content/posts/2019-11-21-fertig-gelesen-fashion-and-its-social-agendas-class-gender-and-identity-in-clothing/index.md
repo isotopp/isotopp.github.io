@@ -16,7 +16,7 @@ by Diane Crane is an analysis of the changes in society during
 the various phases of the industrial revolution through the lens
 of clothing in various societal strata.
 
-![](2019/11/fashion-social-agenda.jpg)
+![2019/11/fashion-social-agenda.jpg](fashion-social-agenda.jpg)
 
 The book studies fashion and clothing choices in three countries - 
 France, the United States, and England - over a period of 150

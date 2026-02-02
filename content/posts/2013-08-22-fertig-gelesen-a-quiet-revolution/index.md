@@ -11,7 +11,7 @@ aliases:
 ---
 Fertig gelesen: "Leila Ahmed - A Quiet Revolution: The Veil's Resurgence, from the Middle East to America"
 
-[![](2013/08/veil.png)](http://www.amazon.de/Quiet-Revolution-Resurgence-America-ebook/dp/B004XDTODO)
+[![2013/08/veil.png](veil.png)](http://www.amazon.de/Quiet-Revolution-Resurgence-America-ebook/dp/B004XDTODO)
 
 [A Quiet Revolution: The Veil's Resurgence](http://www.amazon.de/Quiet-Revolution-Resurgence-America-ebook/dp/B004XDTODO)
 

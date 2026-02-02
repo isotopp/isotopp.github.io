@@ -14,7 +14,7 @@ aliases:
 ---
 Cornelia Funke hat mit Tintenherz eine Geschichte geschrieben, in der ein Buchmagier und Vorleser die Gestalten und Gegenstände aus Büchern zum Leben in der realen Welt erwecken kann. Aber Tintenherz denkt die Logik der Magie von Büchern nicht konsequent zu Ende und ist nicht einmal im Ansatz dreckig genug.
 
-[![](2013/09/libriomancer.jpg)](https://www.amazon.de/Libriomancer-Magic-Ex-Libris-English-ebook/dp/B0855W41M5)
+[![2013/09/libriomancer.jpg](libriomancer.jpg)](https://www.amazon.de/Libriomancer-Magic-Ex-Libris-English-ebook/dp/B0855W41M5)
 
 [Libriomancer](https://www.amazon.de/Libriomancer-Magic-Ex-Libris-English-ebook/dp/B0855W41M5)
 

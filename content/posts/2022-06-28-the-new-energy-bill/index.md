@@ -21,14 +21,14 @@ Today we got the bill for Summer 2021 to Summer 2022.
 I installed a P1 interface on my electricity counter late in April, so my data does not cover all of the lifetime of the Solar Roof.
 Starting the graph at 01-Apr-2022, I get this:
 
-![](2022/06/bill-in-and-out.png)
+![2022/06/bill-in-and-out.png](bill-in-and-out.png)
 
 *At this resolution, not very helpful.*
 
 What is visible is the fact that we do not have a battery, and therefore each day we produce energy, but also consume energy from the grid.
 What is not visible is the relation.
 
-![](2022/06/bill-counter.png)
+![2022/06/bill-counter.png](bill-counter.png)
 
 Looking at the absolute counter values is more helpful.
 The total production is on the right hand side, the consumption on the left hand side, and the important number is the Range value below the graph.
@@ -36,7 +36,7 @@ The total production is on the right hand side, the consumption on the left hand
 We produced 1.66 MWh during the range between 01-Apr and now. We consumed 279 kWh in that interval.
 That leaves us with slightly under 1.5 MWh pushed to the grid.
 
-![](2022/06/bill-gas-meter.png)
+![2022/06/bill-gas-meter.png](bill-gas-meter.png)
 
 *Heating consumed around 10 m^3 in one evening, otherwise we use gas for warm water. Not a lot.*
 
@@ -57,7 +57,7 @@ So already, without knowing details, we have our mission.
 
 This is our electricity intake for the last 5 years:
 
-![](2022/06/bill-electricity.png)
+![2022/06/bill-electricity.png](bill-electricity.png)
 
 *Down to 2.052 MW/a from 4.850 MW/a.*
 
@@ -68,7 +68,7 @@ The array has been built with future use-cases in mind.
 
 In any case, in the last 12 months we used 3881 kWh, and pushed 1834 kWh back to the grid for the set consumption you see in the bill.
 
-![](2022/06/bill-gas.png)
+![2022/06/bill-gas.png](bill-gas.png)
 
 *Down to 1251 m^3 of gas.*
 

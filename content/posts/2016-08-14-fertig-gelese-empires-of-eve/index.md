@@ -14,7 +14,7 @@ aliases:
 ---
 Spreadsheets in Space ist eines der tollsten Computerspiele und MMOGs, die ich nie spielen werde, weil ich schon ein Leben habe, und weil ich mich gut erinnern kann, wie schlimm PernMUSH damals für mein erstes Leben war. Außerdem glaube ich fest daran, daß Zusammenfassungen und Geschichten über EVE zu lesen viel toller ist als EVE tatsächlich zu spielen. Das muß ich schon, damit ich es nicht ausprobiere. :-)
 
-[![](2016/08/eve.jpg)](https://www.amazon.de/dp/B01DONPR0M)
+[![2016/08/eve.jpg](eve.jpg)](https://www.amazon.de/dp/B01DONPR0M)
 
 [Empires of EVE](https://www.amazon.de/dp/B01DONPR0M)
 

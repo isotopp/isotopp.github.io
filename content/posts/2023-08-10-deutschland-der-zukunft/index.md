@@ -15,7 +15,7 @@ Das Statistische Bundesamt hat in
 [Bevölkerungspyramide](https://service.destatis.de/bevoelkerungspyramide/index.html) 
 eine der coolsten Bevölkerungspyramiden, ever.
 
-![](2023/08/deutschland-01.png)
+![2023/08/deutschland-01.png](deutschland-01.png)
 
 *[Destatis Bevölkerungspyramide](https://service.destatis.de/bevoelkerungspyramide/index.html)*
 
@@ -27,7 +27,7 @@ Man kann die Sprache umschalten, links oben ist ein Schalter für Englisch.
 Indem ihr den Jahresregler verschiebt, seht ihr Bevölkerungspyramiden der Vergangenheit, oder eine simulierte Zukunft.
 Die Simulationsparameter kann man rechts oben einstellen und darunter ablesen, was sie bedeuten.
 
-![](2023/08/deutschland-02.png)
+![2023/08/deutschland-02.png](deutschland-02.png)
 
 *Legende und Erklärungen.*
 
@@ -37,7 +37,7 @@ Die Parameter sind Geburtenraten von 1.44, 1.55 und 1.67 (alle niedriger als fü
 Die Parameter für Lebenserwartung sind 82/86, 84/88, 86/90.
 Die Parameter für Zuwanderung sind 180k, 290k und 400k pA.
 
-![](2023/08/deutschland-03.png)
+![2023/08/deutschland-03.png](deutschland-03.png)
 *Deutschland 2070.*
 
 Wir sagen "Bevölkerungspyramide", aber das ist nur in agrarischen Gesellschaften mit hoher Reproduktion und hoher Sterblichkeit korrekt.

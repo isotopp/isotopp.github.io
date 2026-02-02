@@ -25,7 +25,7 @@ Aber die Welt hat sich verändert. Sehr.
 Zum Beispiel:
 Die Anzahl der PKW in Deutschland hat sich seit 1985 von 25 Millionen auf 50 Millionen verdoppelt.
 
-[![](2024/06/welt-01.png)](https://de.statista.com/statistik/daten/studie/12131/umfrage/pkw-bestand-in-deutschland/)
+[![2024/06/welt-01.png](welt-01.png)](https://de.statista.com/statistik/daten/studie/12131/umfrage/pkw-bestand-in-deutschland/)
 *[Quelle](https://de.statista.com/statistik/daten/studie/12131/umfrage/pkw-bestand-in-deutschland/)*
 
 Und die Autos selbst haben sich auch verdoppelt.
@@ -33,11 +33,11 @@ Und die Autos selbst haben sich auch verdoppelt.
 - 700 kg Mini vs. 1200 kg Mini,
 - 800 kg Golf vs. 1700 kg ID.3
 
-[![](2024/06/welt-02.png)](https://www.carsized.com/en/cars/compare/volkswagen-golf-1983-5-door-hatchback-vs-volkswagen-id3-2019-5-door-hatchback/rear/)
+[![2024/06/welt-02.png](welt-02.png)](https://www.carsized.com/en/cars/compare/volkswagen-golf-1983-5-door-hatchback-vs-volkswagen-id3-2019-5-door-hatchback/rear/)
 
 *[Quelle](https://www.carsized.com/en/cars/compare/volkswagen-golf-1983-5-door-hatchback-vs-volkswagen-id3-2019-5-door-hatchback/rear/) Golf vs. ID.3*
 
-[![](2024/06/welt-03.png)](https://www.carsized.com/en/cars/compare/mini-cooper-1990-3-door-hatchback-vs-mini-cooper-2013-3-door-hatchback/rear/)
+[![2024/06/welt-03.png](welt-03.png)](https://www.carsized.com/en/cars/compare/mini-cooper-1990-3-door-hatchback-vs-mini-cooper-2013-3-door-hatchback/rear/)
 
 *[Quelle](https://www.carsized.com/en/cars/compare/mini-cooper-1990-3-door-hatchback-vs-mini-cooper-2013-3-door-hatchback/rear/) Mini vs. Mini*
 
@@ -50,7 +50,7 @@ Das mit der Klimakatastrophe waren wir, nicht unsere Eltern oder Großeltern.
 Wir haben das menschengemachte CO₂ in der Atmosphäre seit 1985 verdoppelt.
 Im vollen Wissen um die Folgen.
 
-[![](2024/06/welt-04.png)](https://ourworldindata.org/grapher/co2-long-term-concentration?time=1800..latest)
+[![2024/06/welt-04.png](welt-04.png)](https://ourworldindata.org/grapher/co2-long-term-concentration?time=1800..latest)
 
 *[Quelle](https://ourworldindata.org/grapher/co2-long-term-concentration?time=1800..latest) 285 ppm vorindustriell, 
 352 ppm in 1965, 420 ppm jetzt.*
@@ -61,7 +61,7 @@ Sie wächst nicht mehr und wird laut Modell in 2086 oder so einen Spitzenwert vo
 aber das Modell berücksichtigt keine Klimakatastrophe oder andere Einwirkungen, 
 die Mortalität erhöhen oder die Geburtenrate senken.
 
-[![](2024/06/welt-05.png)](https://ourworldindata.org/grapher/population?time=1800..latest&country=~OWID_WRL)
+[![2024/06/welt-05.png](welt-05.png)](https://ourworldindata.org/grapher/population?time=1800..latest&country=~OWID_WRL)
 
 *[Quelle](https://ourworldindata.org/grapher/population?time=1800..latest&country=~OWID_WRL), 
 die Weltbevölkerung war 4 Milliarden in 1974, und liegt jetzt bei 8 Milliarden.*
@@ -81,13 +81,13 @@ Teile der Welt verändern sich übrigens noch schneller.
 So hat sich die installierte Solarleistung zwischen 2019 und 2022 einfach mal eben so verdoppelt
 *und der Trend beschleunigt sich*.
 
-[![](2024/06/welt-06.png)](https://ourworldindata.org/grapher/installed-solar-pv-capacity)
+[![2024/06/welt-06.png](welt-06.png)](https://ourworldindata.org/grapher/installed-solar-pv-capacity)
 
 *[Quelle](https://ourworldindata.org/grapher/installed-solar-pv-capacity). PV Installation in der Welt, Summe über Zeit.*
 
 Die Kosten haben sich seit 2012 geviertelt, und seit 2017 halbiert.
 
-[![](2024/06/welt-07.png)](https://ourworldindata.org/grapher/solar-pv-prices)
+[![2024/06/welt-07.png](welt-07.png)](https://ourworldindata.org/grapher/solar-pv-prices)
 
 *[Quelle](https://ourworldindata.org/grapher/solar-pv-prices). 
 Die PV Kosten sinken exponentiell (gerade Linie in einem Log-Y Graphen) seit 1975, und bisher ist das Ende noch nicht in Sicht.*
@@ -160,7 +160,7 @@ Das ist ein Problem.
 
 Man muss sich selbst da aktiv einbringen und aktualisieren.
 
-![](2024/06/welt-08.jpg)
+![2024/06/welt-08.jpg](welt-08.jpg)
 
 *Ich hatte, wie viele Kinder meiner Generation, 
 in meinem Regal hier gut 50 Was-ist-Was-Bücher aus den 1980er Jahren stehen.

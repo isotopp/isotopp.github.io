@@ -39,7 +39,7 @@ This will create a generic password titled "payslip" in my default keychain,
 in my account, and the password is "keks". If you run "Keychain Access.app"
 and check out the content of the keychain, it looks like this: 
 
-![](2017/01/Bildschirmfoto-2017-01-26-um-20.13.38.png)
+![2017/01/Bildschirmfoto-2017-01-26-um-20.13.38.png](Bildschirmfoto-2017-01-26-um-20.13.38.png)
 
 The generic password "payslip" has been created.
 
@@ -55,7 +55,7 @@ may not be the login password for your computer). By hitting "Always Allow"
 you will also add "Keychain Access" as a program to access this information
 without password. 
 
-![](2017/01/Bildschirmfoto-2017-01-26-um-20.20.16.png)
+![2017/01/Bildschirmfoto-2017-01-26-um-20.20.16.png](Bildschirmfoto-2017-01-26-um-20.20.16.png)
 
 Trying to see the actual password triggers an authentication
 dialog.
@@ -64,7 +64,7 @@ Switching from the "Attributes" tab to the "Access Control tab shows us
 which programs can always access the password (without a Dialog). It looks
 like this:
 
-![](2017/01/Bildschirmfoto-2017-01-26-um-20.21.51.png)
+![2017/01/Bildschirmfoto-2017-01-26-um-20.21.51.png](Bildschirmfoto-2017-01-26-um-20.21.51.png)
 
 Creating the generic password with "security", the program gives itself free
 access to the data.
@@ -90,7 +90,7 @@ $ security find-generic-password -w -a $LOGNAME -s payslip
 If you did not allow "security" to include itself, you will see a permission
 prompt on the desktop:
 
-![](2017/01/Bildschirmfoto-2017-01-26-um-20.28.30.png)
+![2017/01/Bildschirmfoto-2017-01-26-um-20.28.30.png](Bildschirmfoto-2017-01-26-um-20.28.30.png)
 
 You will see this prompt if "security" created the generic password with -T
 "", preventing it from adding itself to the access control list.

@@ -15,7 +15,7 @@ aliases:
 
 End of April 2022, we got [our solar roof]({{< relref "2022-05-02-a-solar-roof.md" >}}).
 
-![](2022/05/solar-03.png)
+![2022/05/solar-03.png](solar-03.png)
 
 *Using gas, we are heating this house using 1100-1300 m^3 gas per year.
 That's 11-13 MWh primary energy. At 156 qm, that is between 72 kWh/(qm \* year) and
@@ -30,7 +30,7 @@ Our objective for 2025 was to get rid of the gas heating,
 and install electrical heating based on heat pumps.
 Additionally, I needed cooling, because upstairs it can get rather warm in the summer.
 
-![](2025/03/electric-1.jpg)
+![2025/03/electric-1.jpg](electric-1.jpg)
 
 *In summer, the temperature upstairs won't fall below 24ºC, even at night.
 During these times, I can't sleep upstairs anymore.
@@ -44,7 +44,7 @@ and the 3x outdoor unit would be sitting at the north wall, driving 3 indoor uni
 
 Warm water would be supplied by a heat pump boiler.
 
-![](2025/03/electric-2.jpg)
+![2025/03/electric-2.jpg](electric-2.jpg)
 
 *A Panasonic indoor unit, wall mounted under the roof of the room.*
 
@@ -61,14 +61,14 @@ They are then led to the outdoor unit on the ground.
 Condensate is spilled directly to the ground (into the plants), 
 and power and refrigerant connections are led to the outdoor units.
 
-![](2025/03/electric-3.jpg)
+![2025/03/electric-3.jpg](electric-3.jpg)
 
 *This is what the wall mount and the hole look like, under the indoor units.*
 
 Running the plumbing and the wires under the wood hides all the ugly pipes quite well,
 but required quite some effort with the house.
 
-![](2025/03/electric-4.jpg)
+![2025/03/electric-4.jpg](electric-4.jpg)
 
 *The 5x outdoor unit, already in place. No plumbing is connected, so far, 
 but the wood panels are already removed, ready to take the pipes.*
@@ -83,7 +83,7 @@ including newly added differential breakers, more space and a general cleanup.
 I also got some wall sockets in the fuse box, for the fiber connection and the fiber modem,
 plus some spares.
 
-![](2025/03/electric-5.jpg)
+![2025/03/electric-5.jpg](electric-5.jpg)
 
 *The fuse box and electrical meter, after the cleanup. 
 There are still two additional Shelley meters that need to go in.*
@@ -95,7 +95,7 @@ In the photo you see it before installation: a 200l tank with a heat pump on top
 For installation, it needs to be fixated, connected and requires two 160mm pipes to the roof
 for air-in and air-out. These are not yet visible in the image.
 
-![](2025/03/electric-6.jpg)
+![2025/03/electric-6.jpg](electric-6.jpg)
 
 Normally, you would install it in the place where the old gas boiler was.
 Since we are keeping the gas boiler around for at least another 1-2 years as a backup,
@@ -105,7 +105,7 @@ This device is also the loudest of all parts.
 When running, it creates a 43 dBa noise level,
 39 dBa in 1.5m distance.
 
-![](2025/03/electric-7.jpg)
+![2025/03/electric-7.jpg](electric-7.jpg)
 
 We typically run it at 11:00 in the morning.
 At that time, we have sufficient solar energy to drive the heat pump (500 W intake),
@@ -119,7 +119,7 @@ so warming up the entire thing will have an initial run-time of 6 hours.
 Or you press the "Boost" button, which will enable an additional electrical heater inside,
 adding another 1500 W of energy intake to speed things up.
 
-![](2025/03/electric-8.jpg)
+![2025/03/electric-8.jpg](electric-8.jpg)
 
 *A teenage boy has showered late in the evening. The heat pump brings the water reservoir up to spec again.
 This used 1.1 kWh (around 30 cent).
@@ -137,7 +137,7 @@ We also wanted to make the airspace smaller above the staircase, and install som
 This will keep the cool air generated upstairs (where it is warmest in summer) upstairs,
 and give us some much needed storage space for some things.
 
-![](2025/03/electric-9.jpg)
+![2025/03/electric-9.jpg](electric-9.jpg)
 
 *In the staircase to the top floor, looking up. A wooden lattice is being constructed, strong enough to carry some weight.
 Insulation will go into the lattice, Rigips is installed on the lower side, and will be painted over.
@@ -145,13 +145,13 @@ A wooden floor goes on top.
 An retractable staircase will go into the larger rectangle.
 The staircase will get walls from floor to top, with an aluminium frame and acrylic glass, and a door.*
 
-![](2025/03/electric-10.jpg)
+![2025/03/electric-10.jpg](electric-10.jpg)
 
 *Roof, retractable staircase, and a half-installed air-conditioner, top floor.* 
 
 # Did it all work?
 
-![](2025/03/electric-11.jpg)
+![2025/03/electric-11.jpg](electric-11.jpg)
 
 Ten days into March, we are at 0 m^3 gas usage.
 So we are natural-gas free.
@@ -161,7 +161,7 @@ Currently, we are coming out at net 13 kWh consumed for the first ten days.
 
 Electricity usage is definitively up. A lot.
 
-![](2025/03/electric-12.jpg)
+![2025/03/electric-12.jpg](electric-12.jpg)
 
 *The first ten days of March, compared to the last 10 days of September, and air temperatures of early march.*
 
@@ -180,7 +180,7 @@ so all indoor units but the one in the living room on the first floor have been 
 
 For the night of the 9th of March, things looked like this (compared to September):
 
-![](2025/03/electric-13.jpg)
+![2025/03/electric-13.jpg](electric-13.jpg)
 
 *Baseline usage in September was around 300 Watt. We are now at around 700-750 Watt with a single unit running.
 This keeps the temperature stable in the living room, and kitchen.*
@@ -214,6 +214,6 @@ but it may be that we actually end up with considerably less energy usage in the
 
 All in all the solution works, and performs at least as well as projected.
 
-![](2025/03/electric-14.jpg)
+![2025/03/electric-14.jpg](electric-14.jpg)
 *NE-roof: Solar Array, the outside air-ducts for the warm water boiler, and the gas boiler is active.
 It's the final day of natural gas usage for heating.*

@@ -11,7 +11,7 @@ title: Why you can't have nice things…
 aliases:
   - /2017/08/13/why-you-cant-have-nice-things.html
 ---
-![](2017/08/eating-from-the-trashcan.jpg)
+![2017/08/eating-from-the-trashcan.jpg](eating-from-the-trashcan.jpg)
 
 [»Yay for discounts, aber die Einstellung vom Köhntopp finde ich ja
 eigentlich ziemlich vermessen und
@@ -115,7 +115,7 @@ understanding how they work, is actually more fun than playing them - and so
 I stopped playing for some 15 or 20 years. You can thank Ingress for the
 fact that I am even looking at games again at all.
 
-![](2017/08/steam-library.jpg)
+![2017/08/steam-library.jpg](steam-library.jpg)
 
 Another kind of very long tail.
 
@@ -165,7 +165,7 @@ discount, because life told us for multiple decades that this how it works:
 And that is why you can't have nice things. Don't look for a career in art
 or media. 
 
-![](2017/08/vinyl-558x640.jpg)
+![2017/08/vinyl-558x640.jpg](vinyl-558x640.jpg)
 
 [Some people define themselves through Media. That's ok, but that's not
 me.](https://twitter.com/avalanche_edin/status/895979245339541504)

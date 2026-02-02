@@ -14,7 +14,7 @@ aliases:
 
 Hier ist ein T-Shirt/Tragetasche Unikat mit einem selbst gemachten Slogan.
 
-[![](2023/08/tasche.jpg)](https://xvlt.net/@frainfostudent/110917197522005126)
+[![2023/08/tasche.jpg](tasche.jpg)](https://xvlt.net/@frainfostudent/110917197522005126)
 
 *Eine Tasche mit Aufdruck, via [Mastodon](https://xvlt.net/@frainfostudent/110917197522005126).*
 
@@ -62,7 +62,7 @@ und binnen 2-3 Jahren regelmäßigen Tragens wird sich die Grafik ablösen.
 Strichdicke spielt eine Rolle. 
 Ein T-Shirt ist kein Skizzenblock
 
-![](2023/08/t-shirt.jpg)
+![2023/08/t-shirt.jpg](t-shirt.jpg)
 
 *Ein mehrere Jahre altes Elite Retro-T-Shirt. Die Schrift hat sich gut gehalten, die feine Grafik vom Raumschiff nicht.*
 
@@ -90,15 +90,15 @@ Und schließlich:
 
 Hier ein Motiv 835 px hoch, und sein Druck, ca. 11 cm hoch.
 
-![](2023/08/t-shirt-02.jpg)
+![2023/08/t-shirt-02.jpg](t-shirt-02.jpg)
 
 Man kann sehen, daß man sich mit der Auflösung ziemlich entspannen kann. 
 
 Hier ein anderes Motiv (1629px breit) und sein Druck:
 
-![](2023/08/t-shirt-03.jpg)
+![2023/08/t-shirt-03.jpg](t-shirt-03.jpg)
 
 Die Druckvorlage ist eine Reproduktion: Ich habe vor einigen Jahren ein Barbie & Dragons T-Shirt geschenkt bekommen, aber hatte keine Vorlage.
 Im Jahr von Barbie-Film und Baldur's Gate 3 mußte ich das in frisch haben, also hab ich mir das selbst neu gemacht.
 
-![](2023/08/t-shirt-04.jpg)
+![2023/08/t-shirt-04.jpg](t-shirt-04.jpg)

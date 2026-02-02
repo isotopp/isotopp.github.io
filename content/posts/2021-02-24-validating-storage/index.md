@@ -13,7 +13,7 @@ aliases:
 
 Where I work, we try to run databases in a memory saturated way. That is, we try to provide so much memory that the working set of the database is memory resident, or in other words, the number of disk reads after an initial warmup is no longer dependent on the database load.
 
-![](2021/02/workload-intelligence.png)
+![2021/02/workload-intelligence.png](workload-intelligence.png)
 
 *Workload Intelligence Analytics showing "IOPS over time" for a mixed read/write benchmark on Datera iSCSI.*
 
@@ -206,7 +206,7 @@ I am mostly interested into the behavior of the system along "IOPS over time", "
 
 Looking at the unconstrained, single threaded, queue depth=2 cases I get a relatively representative quick overview over the result:
 
-![](2021/02/all-results.png)
+![2021/02/all-results.png](all-results.png)
 
 *Ceph has a commit latency of around 1.1ms, which at a queue depth of 2 results in around 1800 IOPS. Datera has a commit latency of around 0.17ms, which results in around 9000 IOPS, but with nasty downspikes to some 6500ish IOPS.*
 

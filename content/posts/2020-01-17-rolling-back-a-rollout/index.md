@@ -13,7 +13,7 @@ aliases:
 ---
 Florian Haas [asks on Twitter](https://twitter.com/xahteiwi/status/1217903825824120834):
 
-![](2020/01/rolling-back.png)
+![2020/01/rolling-back.png](rolling-back.png)
 
 "How do you solve reliable rollback. The definition of a reliable rollback being: 'get reset --hard <ref>', 'git push -f' and then magic happening that returns your infra to the exact state it was at <ref>."
 
@@ -30,7 +30,7 @@ The talk focuses on how the sysadmin profession started to die out somewhere aro
 
 The term has been abused a lot, but what does it actually mean? In one slide I show this:
 
-[![Go away or I will replace you with a little Shell Script (english) - Slide 19](2020/01/rolling-away.jpg)](https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english#19)
+[![2020/01/rolling-away.jpg](rolling-away.jpg)](https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english#19)
 
 The modern development environment according to Devops, and the technical meaning of the term.
 
@@ -91,7 +91,7 @@ And because I have access to the unshortened, unaggregated raw event data persis
 
 That is the Dual Use value of an experiment framework: You get the business value out of that, testing hypothesis on draft code in production before you spend engineering hours on things that aren't going to make you richer. That is, in terms of bug stages, finding bugs in requirements.
 
-![](2020/01/rolling-relative-bugfix-cost.png)
+![2020/01/rolling-relative-bugfix-cost.png](rolling-relative-bugfix-cost.png)
 
 *From [8 rollouts a day (2012), Slide 19](https://www.slideshare.net/isotopp/8-rollouts-a-day): Relative cost of a bugfix in various stages of the code lifecycle. Fixing broken requirements is the cheapest.*
 
@@ -119,7 +119,7 @@ After doing that a while, your code will be littered with Experiment Gateways th
 
 You can even use this data to build predictors for expected business behavior, and alert on deviations. "According to observed growth and data from last year, last month and last week, we would expect x bookings per minute, but see m fewer, so something is likely wrong. That started 10 minutes ago at the yellow activation line of experiment 13" is a thing where I live, and turning off 13 before even looking for possible root causes is a complete no-brainer. In 95% of the cases or more it actually fixes the incident for now, so that any followup is done again outside of panic mode.
 
-![](2020/01/rolling-production.jpg)
+![2020/01/rolling-production.jpg](rolling-production.jpg)
 
 That is: Testing In Production Is A Safe Thing To Do - if you build an environment that makes it survivable. The key ingredients are
 

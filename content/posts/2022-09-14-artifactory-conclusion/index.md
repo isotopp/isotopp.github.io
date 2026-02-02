@@ -39,7 +39,7 @@ There are several choices of data delivery formats for Artifactory, we are using
 Artifactory is using a database as a metadata storage, and again, there are several possible choices. 
 We are using MySQL.
 
-![](2022/09/artifactory-01.jpg)
+![2022/09/artifactory-01.jpg](artifactory-01.jpg)
 
 *Binary Delivery Formats and Protocols supported by Artifactory (https://jfrog.com/artifactory/).*
 
@@ -50,7 +50,7 @@ Investigation of that shows that this was very much true:
 
 The primary of the replication hierarchy was a blade from 2017 with 12C/24T, and was showing load spiking into the 40-ies.
 
-![](2022/09/artifactory-02.jpg)
+![2022/09/artifactory-02.jpg](artifactory-02.jpg)
 
 *For a CPU-saturated MySQL on a 12C/24T, anything over 18-20 is probably not very stable and certainly not fun.*
 
@@ -69,7 +69,7 @@ Read [Boiling JFrogs]({{< relref "2022-08-25-mysql-boiling-jfrogs.md" >}}) for t
 Solving the long runners, we found several other issues at the database level. 
 But first we threw more cores into the fire and scaled Artifactory vertically to buy more runway:
 
-![](2022/09/artifactory-03.jpg)
+![2022/09/artifactory-03.jpg](artifactory-03.jpg)
 
 *The Blade 7 hardware type uses 2x $400 CPUs for 16C/32T. Blade 2A.1 hardware uses 2x $2100 CPUs for 32C/64T. At the same load, these more expensive CPUs are also clocked around 1 GHz faster.*
 
@@ -79,7 +79,7 @@ Even after the optimization, these were scans, but on less and better organized 
 Still, we had a base load of 12 on the Blade 7 with only 12C/24T. 
 Moving to the better equipped, but more expensive Blade 2A.1, we have 32C/64T, and at the same load, we gain around 1 GHz is clock speed.
 
-![](2022/09/artifactory-04.png)
+![2022/09/artifactory-04.png](artifactory-04.png)
 
 *At a load of 12 on a Dual-4110, we have 6 cores busy per socket, running at 2400 MHz.
 At a load of 12 on a Dual-6130, we have 6 cores out of many more busy, so we have budget for 3400 MHz clock, 1 GHz faster. The work completes faster, we have less concurrency and the load drops to 8, 4 cores per socket, and 3500 MHz until things stabilize.*
@@ -94,7 +94,7 @@ The workload is completed faster, and the level of concurrency is lower – you 
 That is also what happened in our case, we speed up the clock by slightly less than 1/3, and we get a load that is roughly 1/3 lower. 
 The replacement box, running the optimized queries, is humming along at a load of 5-10ish, which is okay for a machine of that class and size:
 
-![](2022/09/artifactory-05.jpg)
+![2022/09/artifactory-05.jpg](artifactory-05.jpg)
 
 *Replacement machine is good for a load of ~40, but is running at 10 or less, so we are good. Further optimizations after 10-Sep show even more improvement, read on.*
 
@@ -106,7 +106,7 @@ Looking at the various indicators reported by the database monitoring, we see a 
 Something is pushing load into the database in waves, but we do not know what it is: 
 It is using the normal Artifactory production user and coming from one (but only one) of the Artifactory application boxes.
 
-![](2022/09/artifactory-06.jpg)
+![2022/09/artifactory-06.jpg](artifactory-06.jpg)
 
 *We see access patterns repeating at 40 minute intervals, and pushing various statistics up. The data indicates a read and write load (read heavy), from one Artifactory application machine.*
 
@@ -131,7 +131,7 @@ Lessons learned:
 
 The bad queries we optimized in Part 1 are still there and looking at what they actually do, they do not look particularly useful.
 
-![](2022/09/artifactory-07.jpg)
+![2022/09/artifactory-07.jpg](artifactory-07.jpg)
 
 *Multiple instances of a reporting query running in parallel. Even optimized they seem to be wasteful. We want to know where they come from.*
 

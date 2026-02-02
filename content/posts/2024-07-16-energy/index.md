@@ -26,7 +26,7 @@ How much is a Watt?
 In our graphics, a Watt is a single red pixel, right of the word cellphone
 One Watt is what an iPhone uses when you are running Ice Cubes, scrolling social media.
 
-![](2024/07/energy-01.png)
+![2024/07/energy-01.png](energy-01.png)
 *Zoom into this image to see the pixel. It symbolizes 1 W.*
 
 # Media appliances
@@ -47,7 +47,7 @@ when idle showing steam and the Windows desktop.
 
 400 W is what my gaming machine uses when I play.
 
-![](2024/07/energy-02.png)
+![2024/07/energy-02.png](energy-02.png)
 *Typical household media consumption, Energy used. One pixel = one W.*
 
 # Household heat
@@ -59,7 +59,7 @@ At 10 Ampere, you get around 2300 W from 230 V. At 16 Ampere, 3680 W.
 Most of these heaters are very simple devices: They are fully on or completely off.
 So we see a lot of devices that are using either full power or almost no power.
 
-![](2024/07/energy-09.png)
+![2024/07/energy-09.png](energy-09.png)
 
 *A Wiesheu Minimat 43s, a professional baking oven of the kind that you find in gas stations or supermarkets.
 It uses single phase normal power, 16A, so that still can fit into a normal household. 
@@ -67,7 +67,7 @@ The device heats up, using 3000W, and then switches on and off to maintain tempe
 This pattern is typical for household appliances that produce process heat:
 Ovens, cooking plates, washing machines, dryers.*
 
-![](2024/07/energy-03.png)
+![2024/07/energy-03.png](energy-03.png)
 *Adding a 2000 W (10 A) and a 3000 W (16 A) household device.*
 
 # Driving and charging a car
@@ -76,7 +76,7 @@ Many people now drive electrical cars.
 Those that have the space often use a local charge-point that uses three-phase power at 16 A per phase to charge.
 Three phases at 16 A and 230 V deliver 3 * 16 A * 230 V = 11000 W.
 
-![](2024/07/energy-04.png)
+![2024/07/energy-04.png](energy-04.png)
 *Adding the charge-point, 11000 W.*
 
 Over one hour, this uses 11 kWh of Energy.
@@ -127,7 +127,7 @@ Even on somewhat cloudy days.
 When driving, that car (in my case, a Renault Megane e-Tech 60 kWh) straight on a flat Netherlands Autobahn,
 the car consumes 15,000 W.
 
-![](2024/07/energy-05.png)
+![2024/07/energy-05.png](energy-05.png)
 
 *If your car shows "15 kWh being used",
 it means that if you continued to drive this way for an hour, it would use 15 kWh of the battery.
@@ -145,7 +145,7 @@ The Renault Megane we used as an example further up can be
 driven on the autobahn at 100 km/h with 15,000 W.
 But it can consume 160,000 W (220 horsepower) for a short time to get away from the traffic light in a race.
 
-[![](2024/07/energy-06.png)](/uploads/2024/07/energy-06.png)
+[![2024/07/energy-06.png](energy-06.png)](/uploads/2024/07/energy-06.png)
 
 *Hitting a Megane on the head will use 160 kW, 220 hp. [full size](2024/07/energy-06.png)*
 
@@ -171,13 +171,13 @@ A Tesla V4 fast charger will provide 250,000 W.
 
 A Porsche Taycan can provide 560 000 Watt (760 hp) for a short time.
 
-[![](2024/07/energy-07.png)](/uploads/2024/07/energy-07.png)
+[![2024/07/energy-07.png](energy-07.png)](/uploads/2024/07/energy-07.png)
 
 *Hitting a Porsche Taycan on the head will use 560 kW, 760 hp. [full size](2024/07/energy-07.png)*
 
 # Bonus picture: Being dumb
 
-![](2024/07/energy-08.png)
+![2024/07/energy-08.png](energy-08.png)
 
 *I am opening the deep freezer door to take out the chocolate ice cream, and I do not close the door properly.
 The deep freezer goes into overdrive.
@@ -204,7 +204,7 @@ A modern washer uses around 1.3 kWh to wash 7 kg of clothing.
 Permanently running devices such as file-servers use a lot of energy because they are always on.
 Multiply their power by 24 to get energy.
 
-![](2024/07/energy-10.png)
+![2024/07/energy-10.png](energy-10.png)
 
 *Running the washing machine used 1.3 kWh at 13:00.
 But over the whole day, my desk and all the computers on it are using the most energy,
@@ -214,13 +214,13 @@ All that energy use is completely dwarfed by driving.
 Here is a day
 that shows what happens when we charge the Megane e-Tech at the charge-point and the Carver S+ using a normal wall-plug.
 
-![](2024/07/energy-11.png)
+![2024/07/energy-11.png](energy-11.png)
 
 *Charging the Megane for 20 kWh and the Carver for 7 kWh. The rest of households power consumption is much smaller.*
 
 Is that bad?
 
-![](2024/07/energy-12.png)
+![2024/07/energy-12.png](energy-12.png)
 
 *On that particular day, 2024-Jul-12, we produced 38.8 kWh of energy using the solar array on our roof.
 We consumed 33.9 kWh. 

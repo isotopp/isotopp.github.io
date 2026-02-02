@@ -16,7 +16,7 @@ At work, replication chains have a single primary database node, to which you wr
 
 Here is what the one sample chain looks like in Orchestrator:
 
-![](2020/10/mysql-orchestrator.png)
+![2020/10/mysql-orchestrator.png](mysql-orchestrator.png)
 
 *instance-918d is the current primary, in the blue AZ. Replicas in orange and green are in other AZs. Blue badges indicate multiple replicas, eg (38) means 38 machines.*
 
@@ -35,7 +35,7 @@ Other chains are shared between different applications, and in order to prevent 
 
 In any case, we run automated capacity tests on each pool, and then adjust pool sizes as needed. We also report to ourselves on that. Sometimes that report is interesting:
 
-![](2020/10/mysql-pool-size-change.png)
+![2020/10/mysql-pool-size-change.png](mysql-pool-size-change.png)
 
 *The example-misc pool changed target size from 3 to 16 in the night of 05-Oct, which is a 433% increase.*
 
@@ -45,7 +45,7 @@ DBA Operations talk to the customer: “I am reaching out to you because you are
 
 Starting yesterday, the example chain (and, specifically, its example-misc pool) has seen a significant increase in load, mostly in the blue AZ, as shown here:”
 
-![](2020/10/mysql-threads.png)
+![2020/10/mysql-threads.png](mysql-threads.png)
 
 *MySQL "Threads Running" going through the roof, load testing reports diminished capacity, and we ready more instances. The world is safe again! Or, is it?*
 
@@ -68,7 +68,7 @@ e5724da64f134c34810f48211f5b777c-example-2014.dc1.prod.example.com
 
 So let’s have a look at example-8051:
 
-![](2020/10/mysql-load.png)
+![2020/10/mysql-load.png](mysql-load.png)
 
 *This box is terribly idle. For 18 hours, it was slightly less idle.*
 
@@ -82,13 +82,13 @@ During the incident it was higher, but not much. Yet, the capacity test returned
 
 Let’s look at a few metrics for the time between 04-Oct, noon and 05-Oct, 6am. We want to know if we can see more action than the CPU thing. Let’s check the network:
 
-![](2020/10/mysql-network.png)
+![2020/10/mysql-network.png](mysql-network.png)
 
 *Nope. No action on the network.*
 
 And the disk:
 
-![](2020/10/mysql-disk.png)
+![2020/10/mysql-disk.png](mysql-disk.png)
 
 *We see few writes, and almost no reads. This is a memory-saturated database.*
 
@@ -112,7 +112,7 @@ All of these cases would create a lot more load than we see, so it is none of th
 
 What else stands out?
 
-![](2020/10/mysql-query-workload.png)
+![2020/10/mysql-query-workload.png](mysql-query-workload.png)
 
 *Queries/s stable, Select/s looking normal. A slow query "spike" of very few slow queries.*
 
@@ -128,7 +128,7 @@ So
 
 We have [seen this before]({{< relref "2019-11-18-a-blast-from-the-past.md" >}}), and we have seen it [a long time before that]({{< relref "2011-04-28-mysql-undo-log.md" >}}) as well. Let’s check the undo-log size:
 
-![](2020/10/mysql-undo-log.png)
+![2020/10/mysql-undo-log.png](mysql-undo-log.png)
 
 *Undo-Log shark fin perfectly coinciding with the incident.*
 

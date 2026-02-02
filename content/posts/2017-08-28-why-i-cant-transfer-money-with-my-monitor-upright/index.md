@@ -10,7 +10,7 @@ title: Why I can't transfer money with my Monitor upright
 aliases:
   - /2017/08/28/why-i-cant-transfer-money-with-my-monitor-upright.html
 ---
-[![](2017/08/berliner-sparkasse.jpg)](https://www.berliner-sparkasse.de/de/home/service/faq.html?n=true)
+[![2017/08/berliner-sparkasse.jpg](berliner-sparkasse.jpg)](https://www.berliner-sparkasse.de/de/home/service/faq.html?n=true)
 
 [Berliner Sparkasse Onlinebanking FAQ](https://www.berliner-sparkasse.de/de/home/service/faq.html?n=true):
 

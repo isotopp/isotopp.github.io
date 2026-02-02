@@ -19,7 +19,7 @@ truthful answer is of course "In a different company, twice
 removed. Not because you suck more than anywhere else, but,
 like, statistically."
 
-[![](2017/09/five-years.jpg)](https://twitter.com/LionKingLee/status/906220573637971968)
+[![2017/09/five-years.jpg](five-years.jpg)](https://twitter.com/LionKingLee/status/906220573637971968)
 
 "Where do you see yourself in five years?" "Week 27 or 28?" --
 [LionKingLee](https://twitter.com/LionKingLee/status/906220573637971968)

@@ -26,7 +26,7 @@ Damit man mit Notebooks, Tablets oder Chromebooks an einer Schule arbeiten kann,
 
 Wi-Fi für viele Clients baut man nicht wie daheim, indem man irgendwo einen AP hinklatscht. Man muß eine Ausleuchtungsanalyse machen, Positionen von APs planen, Sendeleistungen und Frequenzen wählen. Man braucht vermutlich einen AP pro Klassenraum, mit gut gewählten Frequenzen und radikal runtergedrehter Sendeleistung, damit er die Nachbar-APs in den Nebenräumen und darüber/darunter nicht stört.
 
-![](2020/06/netspot-whg-berlin-before.png)
+![2020/06/netspot-whg-berlin-before.png](netspot-whg-berlin-before.png)
 
 *Ausleuchtungsanalyse einer Privatwohnung vor der Optimierung*
 
@@ -68,7 +68,7 @@ Das ist kein haltbarer Zustand, wenn es um die Ausbildung der kommenden Generati
 
 "Ja, und dann?" Ich lebe als Deutscher in den Niederlanden und habe ein 10-jähriges Kind in der Group 6 (der 4. Klasse) an einer niederländischen Basisschool. Durch das Lehrkonzept hier (Google Edu, Wi-Fi-Chromebook Klassen) kann ich aus eigener Erfahrung sagen, daß der Drill (NL: "geautomatiseerd") etwa beim Kopfrechnen komplett an Webseiten übergeht. Statt Eckenrechnen, Kopfrechen-Stafetten, und anderen Klassenspielen, die den Lehrer binden, haben die Kinder Zugriff auf programmierte Unterweisungen und casual games, die die zu drillenden Fertigkeiten einüben. "Löse einfache Kopfrechenaufgaben" oder "Rechtschreibaufgaben" um Space Invaders abzuwehren und ähnlich.
 
-![](2020/06/gynzi-kids.png)
+![2020/06/gynzi-kids.png](gynzi-kids.png)
 
 *Gynzi Kids ist ein Anbieter von Lehrspielen und Casual Games mit Ausbildungshintergrund, der an der Schule verwendet wird.*
 
@@ -80,7 +80,7 @@ Das ist sehr spannend, weil für uns Deutsche sehr ungewohnt - die Lehrer haben 
 
 Dabei werden schon in der Grundschule Medienkompetenz und später selbstständiges Arbeiten traininiert.
 
-![](2020/06/nos-jeugdjournaal.png)
+![2020/06/nos-jeugdjournaal.png](nos-jeugdjournaal.png)
 
 *Website von NOS Jeugdjournaal*
 

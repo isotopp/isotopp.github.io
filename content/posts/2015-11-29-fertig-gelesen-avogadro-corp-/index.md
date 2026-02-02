@@ -14,7 +14,7 @@ aliases:
 ---
 Eine nach einer großen Zahl benannte Firma, die ihr Geld mit einem Mailsystem und Werbung verdient, baut einen Assistenten, der automatische Antworten zu Mails verfassen kann, die besonders überzeugend sein können. Da das Projekt zuviel CPU verbraucht, hackt sein Urheber es so um, daß es selbst und unkontrolliert Mails generieren kann und gibt ihm ein Ziel - "seinen eigenen Erfolg zu maximieren". Was als Mailassistent für einen Webmailer gedacht war, wird sich seiner selbstbewußt und fängt an, seinen Erfolg zu maximieren - da es um erfolgreich zu sein auf Menschen angewiesen ist, also erst mal mit Frieden im Nahen Osten.
 
-[![](2015/11/avogadro.jpg)](https://www.amazon.de/Avogadro-Corp-Singularity-Appears-English-ebook/dp/B006ACIMQQ)
+[![2015/11/avogadro.jpg](avogadro.jpg)](https://www.amazon.de/Avogadro-Corp-Singularity-Appears-English-ebook/dp/B006ACIMQQ)
 
 [Avogadro Corp](https://www.amazon.de/Avogadro-Corp-Singularity-Appears-English-ebook/dp/B006ACIMQQ)
 

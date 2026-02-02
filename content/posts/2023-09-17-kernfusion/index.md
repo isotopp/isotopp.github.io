@@ -36,7 +36,7 @@ Die Studie malt die üblichen IEA Szenarien für die Energieversorgung der Zukun
 um dann auf eine hätte-könnte-würde Welt umzuschwenken, in der wir auf einmal Kernfusion haben.
 Dabei wird in diesen Slides Konjunktiv verwendet, denn es gibt keine dauerhafte existierende Kernfusion in diesem Planetensystem, außer in der Sonne.
 
-![](2023/09/strategyand-04.jpg)
+![2023/09/strategyand-04.jpg](strategyand-04.jpg)
 *Fusion energy may be the missing key to a sustainable, sufficient and affordable energy supply:
 Im Jahr 2040 taucht magisch Kernfusion auf, und im Jahr 2050 ersetzt sie komplett und just-in-time die fossile Restenergie.*
 
@@ -44,7 +44,7 @@ Consultantwitzchen am Rande:
 Das Lithium für die Fusion bekommen wir aus recycelten Batterien, hihi!
 Eigentlich brauchen wir Deuterium, und Lithium nur als Zwischenschritt für Tritium, aber Witz!
 
-![](2023/09/strategyand-05.jpg)
+![2023/09/strategyand-05.jpg](strategyand-05.jpg)
 *Die Zutaten und das Resultat.*
 
 Die Zutaten in unserem Fantasiebaukasten sind 100% Buzzword-Compliant:
@@ -56,7 +56,7 @@ Die Zutaten in unserem Fantasiebaukasten sind 100% Buzzword-Compliant:
 
 Alles muss unbedingt auf eine einsame Insel mit einem Vulkan, und wir brauchen auch eine weiße Perserkatze!
 
-![](2023/09/strategyand-06.jpg)
+![2023/09/strategyand-06.jpg](strategyand-06.jpg)
 *Hier eine technisch aussehende Zeichnung einsetzen, und diesmal nicht wieder eine von diesen Perry-Rhodan Rißzeichnungen, bitte!*
 
 Und jetzt bitte: FOMO Alarm! FOMO Alarm! Release the Fördermittelkraken!
@@ -69,7 +69,7 @@ Viel Geld!
 Bitte stoppt sofort Fernfusion, wir haben bald schon Kernfusion! 
 Und Perserkatzen mit Lasern!
 
-![](2023/09/strategyand-08.jpg)
+![2023/09/strategyand-08.jpg](strategyand-08.jpg)
 *The decisive advantage over existing renewables: Fusion energy is simultaneously base-load capable and easily scalable.
 Und der Feenstaubverbrauch ist minimal!*
 
@@ -79,7 +79,7 @@ Das ist ein verbrannter Begriff aus den 50er Jahren.
 Wir haben stattdessen "secure and cheap oversupply."
 Yay!
 
-![](2023/09/strategyand-09.jpg)
+![2023/09/strategyand-09.jpg](strategyand-09.jpg)
 *The amount of energy from raw materials for fusion available worldwide is sufficient for secure and cheap energy oversupply:
 250 Kilo Treibstoff pro Jahr statt ganzer Güterzüge voller herkömmlicher Energieträger.
 Oder Berlin-Mitte überdachen.
@@ -93,20 +93,20 @@ Aber *diesmal* ist es wirklich fast so weit.
 
 Großes Unternehmensberaterehrenwort!
 
-![](2023/09/strategyand-11.jpg)
+![2023/09/strategyand-11.jpg](strategyand-11.jpg)
 *The remaining challenges until fusion's commercial maturity are expected to be manageable with technology available today.*
 
 Darum dreht jetzt unbedingt die Geldhähne auf,
 dann wird unsere Zaubertechnologie die kommende Klimakrise magisch weg putzen,
 ohne dass sich irgendjemand umstellen muss.
 
-![](2023/09/strategyand-15.jpg)
+![2023/09/strategyand-15.jpg](strategyand-15.jpg)
 *What needs to be done now?
 A National Fusion Energy Strategy can turn Germany's current position into an agenda for success.*
 
 und
 
-![](2023/09/strategyand-16.jpg)
+![2023/09/strategyand-16.jpg](strategyand-16.jpg)
 *If Germany acts in time, fusion energy has the potential to become a new engine for the German national economy.*
 
 ## Ergebnis
@@ -124,4 +124,4 @@ wenn die Feenstaub-Fässer in meinem Keller überlaufen und das Land mit Wunschp
 
 ## Sticker
 
-![](2023/09/fernfusion.png)
+![2023/09/fernfusion.png](fernfusion.png)

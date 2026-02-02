@@ -44,7 +44,7 @@ Nothing in the UI of the original Discord cellphone app explains to a casual obs
 "Using this function will log somebody in to your account".
 The copy is simply "Scan QR code".
 
-![](2021/11/discord-scan-qr.jpg)
+![2021/11/discord-scan-qr.jpg](discord-scan-qr.jpg)
 
 *Discord Settings show the "Use the cellphone to auth the desktop app" function simply as "Scan QR Code". Nothing explains what the function really does: It logs in somebody which may or may not be you. Never use this function.*
 

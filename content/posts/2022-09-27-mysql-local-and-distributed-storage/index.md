@@ -32,7 +32,7 @@ I joke about that:
 But it is true: Reads are really bad for databases. 
 Here is what a database workload looks like when the database does not fit into memory:
 
-![](2022/09/local-storage-01.jpg)
+![2022/09/local-storage-01.jpg](local-storage-01.jpg)
 
 *Graph based on data recorded with `blktrace`, analyzed by [Workload Intelligence](https://www.oakgatetech.com/applications/analytics) from Oakgate.*
 
@@ -61,7 +61,7 @@ Increasing the requirements introduces more latency, and brings down our maximum
 
 But uncached reads are worse.
 
-![](2022/09/local-storage-02.jpg)
+![2022/09/local-storage-02.jpg](local-storage-02.jpg)
 
 *Writes can build deep queues, but for reads that is hardly happening. This is a key observation.*
 
@@ -122,7 +122,7 @@ Meet our availability databases.
 They are holding hotel room availability information. 
 This database is running on bare metal, 16C/32T, 128 GB memory and two SSD on a controller with a battery backed cache unit (BBU).
 
-![](2022/09/local-storage-03.jpg)
+![2022/09/local-storage-03.jpg](local-storage-03.jpg)
 
 *The box is serving mostly reads, 4746 in the last second, and as a replica sees writes only from upstream.*
 
@@ -130,19 +130,19 @@ The box is currently holding a few TB of data, serving around between 6000 and 1
 
 The statement mix looks like Java: around 50% of the statements are `SELECT`, the large percentage of `SET` statements is indicative of the JDBC driver and the rest is DML and transaction management.
 
-![](2022/09/local-storage-04.jpg)
+![2022/09/local-storage-04.jpg](local-storage-04.jpg)
 
 The box is currently running at a load of 9, but it is early morning, and we have a load peak in the evening. At a load of 12, it has sufficient capacity to carry on, if we lose an AZ and have to fold the failing data centers load into the surviving machines.
 
 This kind of hardware with this kind of workload will become uncomfortably jittery at a load of 24.
 
-![](2022/09/local-storage-05.jpg)
+![2022/09/local-storage-05.jpg](local-storage-05.jpg)
 
 We also observe variable read load of around 1000-ish IOPS, spiking into the 4000's.
 
 This works well. How well?
 
-![](2022/09/local-storage-06.jpg)
+![2022/09/local-storage-06.jpg](local-storage-06.jpg)
 
 We observe read and write latencies on a µs scale, that is 10^-6, millionth seconds.i
 2000 µs are 2ms.
@@ -182,13 +182,13 @@ Multiple copies and coordination add up, and the end result is a write time dist
 
 Read latencies have the same shape, but are somewhat lower – we need one copy of the data to read it, not all of them, so we come out at around 0.6ms.
 
-![](2022/09/local-storage-07.jpg)
+![2022/09/local-storage-07.jpg](local-storage-07.jpg)
 
 *Latency diagrams for read and write latencies of our Ceph storage are r=0.6 ms, w=0.9 ms. This is amazingly low for Ceph – a Ceph cluster in 2015 would have been around 5.0 ms.*
 
 Running a database with a comparable profile on top of this storage changes database behavior a lot:
 
-![](2022/09/local-storage-08.jpg)
+![2022/09/local-storage-08.jpg](local-storage-08.jpg)
 
 *Read latencies compared: Above, the graph from the local machine, below a comparable workload on Ceph volumes.*
 
@@ -210,7 +210,7 @@ use instances with more memory to make the disk accesses go away.
 
 For the writes, the picture changed completely:
 
-![](2022/09/local-storage-09.jpg)
+![2022/09/local-storage-09.jpg](local-storage-09.jpg)
 
 *Write latencies compared: Above, the graph from the local storage machine, below a comparable workload on Ceph volumes.*
 
@@ -226,17 +226,17 @@ Each write takes 0.9-ish ms, but you can do many of them in flight at the same t
 Unfortunately, transactional workloads do not have that shape. 
 [Parallel replication]({{< relref "2021-11-08-mysql-parallel-replication.md" >}}) is subject to a number of constraints regarding reordering, and also subject to limitations that result from implementation details.
 
-![](2022/09/local-storage-10.jpg)
+![2022/09/local-storage-10.jpg](local-storage-10.jpg)
 
 *Replication delay over time: Despite parallel replication being active, the instance cannot keep up with the write load. Only careful write modulation keeps the replica from delaying even more.*
 
 And that is not even a high write load: The statement mix shown here did not even touch the 1000 inserts/s barrier.
 
-![](2022/09/local-storage-11.jpg)
+![2022/09/local-storage-11.jpg](local-storage-11.jpg)
 
 Yet the storage statistics are absolutely devastating:
 
-![](2022/09/local-storage-12.jpg)
+![2022/09/local-storage-12.jpg](local-storage-12.jpg)
 
 We see somewhat over 1000 reads and 1000 writes per second on the volume, which are good considering the latencies we see above, but devoid of parallism. 
 The I/O we see is good for an aggregate I/O of 22 MB/s, and results in complete saturation of the Disk I/O.

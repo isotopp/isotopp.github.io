@@ -22,7 +22,7 @@ The book documents their experience, comparing structures in various North
 American cities to the Dutch learnings about traffic, density, and liveable
 cities at a human scale.
 
-[![](2020/08/cycling-city.jpg)](https://www.amazon.com/Building-Cycling-City-Blueprint-Vitality-ebook/dp/B07F1S9KVQ)
+[![2020/08/cycling-city.jpg](cycling-city.jpg)](https://www.amazon.com/Building-Cycling-City-Blueprint-Vitality-ebook/dp/B07F1S9KVQ)
 
 The books chapters go through various cities in the Netherlands and
 elsewhere to discuss why you would want to build a cycling city, how to do

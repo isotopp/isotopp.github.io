@@ -18,7 +18,7 @@ Storage technology
 
 In the past, we had stored data on rotating disks.
 
-![](2019/06/storage-hdd.png)
+![2019/06/storage-hdd.png](storage-hdd.png)
 
 *An open hard disk chassis. You can see the topmost of a stack of disks, and the arm with the r/w heads.*
 
@@ -30,7 +30,7 @@ All of that changed around 2012 or so. At that time, NAND flash based storage be
 
 SSD are plug-in replacements for traditional hard disks: They have the same connectors and bus systems, and the same form factor. They may be flatter, though: A modern U.2 (2.5”) SSD is either tall (15mm) or flat (7mm).
 
-![](2019/06/storage-ssd.png)
+![2019/06/storage-ssd.png](storage-ssd.png)
 
 *15mm U.2 drive and it’s content.*
 
@@ -38,7 +38,7 @@ On the inside they are different, though: They contain one logic board which hou
 
 The folded design is far from optimal: Inside such a chassis you have a thermal design power of 7W-9W in a consumer device, and up to 25W in an enterprise device - power consumption is linear with the number of chips, and superlinear with the clock rates of the chips. U.2 form factor is good for HDD, but not so good for SSD, because it is hard to cool.
 
-![](2019/06/storage-m2.png)
+![2019/06/storage-m2.png](storage-m2.png)
 
 *M.2 flash drive in a holder on a mainboard.*
 
@@ -46,7 +46,7 @@ One attempt of handling this better is M.2, which is basically a logic board for
 
 The attempt to fix all of that is the “flash ruler”, “EDSFF”.
 
-![](2019/06/storage-ruler.jpg)
+![2019/06/storage-ruler.jpg](storage-ruler.jpg)
 
 *Intel flash rulers in a 1U high chassis.*
 

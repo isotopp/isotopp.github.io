@@ -13,7 +13,7 @@ aliases:
 ---
 Wright vertritt die These, daß Makro-Geschichte eine Richtung oder Weiterentwicklung oder zumindest ein Thema hat, auch wenn es auf der Mikroebene immer wieder Rückschritte oder lokale Abweichungen gibt. 
 
-[![](2014/01/nonzero.png)](https://www.amazon.de/Nonzero-Logic-Human-Destiny-Vintage-ebook/dp/B000Q9IRBY)
+[![2014/01/nonzero.png](nonzero.png)](https://www.amazon.de/Nonzero-Logic-Human-Destiny-Vintage-ebook/dp/B000Q9IRBY)
 
 In der Spieltheorie gibt es Nullsummen-Spiele, bei denen eine Partei nur auf Kosten einer anderen Partei Gewinne machen kann, und es gibt Nicht-Nullsummenspiele, bei denen beide Parteien nur durch Kooperation Gewinne machen können (dann aber beide) oder halt beide gemeinsam verlieren.
 

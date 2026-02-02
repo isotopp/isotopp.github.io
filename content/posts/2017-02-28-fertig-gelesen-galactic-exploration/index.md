@@ -12,7 +12,7 @@ title: 'Fertig gelesen: Galactic Exploration'
 aliases:
   - /2017/02/28/fertig-gelesen-galactic-exploration.html
 ---
-[![](2017/02/Screen-Shot-2017-02-28-at-22.06.28-186x300.png)](https://www.amazon.de/Galactic-Exploration-English-Peter-Cawdron-ebook/dp/B008BYN3ZG)
+[![2017/02/Screen-Shot-2017-02-28-at-22.06.28-186x300.png](Screen-Shot-2017-02-28-at-22.06.28-186x300.png)](https://www.amazon.de/Galactic-Exploration-English-Peter-Cawdron-ebook/dp/B008BYN3ZG)
 
 [Galactic Exploration](https://www.amazon.de/Galactic-Exploration-English-Peter-Cawdron-ebook/dp/B008BYN3ZG)
 

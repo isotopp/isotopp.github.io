@@ -16,7 +16,7 @@ Where is the Internet coming from and how and when was it built?
 It's a network of tubes, or rather cables, and these days they are mostly fiber.
 Much of it was built during the dotcom boom, but little has been written.
 
-![](2022/05/network.jpg)
+![2022/05/network.jpg](network.jpg)
 
 *[The Undersea Network](https://www.amazon.de/-/en/Nicole-Starosielski-ebook/dp/B00WO58MBI), Nicole Starosielski*
 

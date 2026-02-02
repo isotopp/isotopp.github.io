@@ -63,7 +63,7 @@ So, this worked:
 
 For very slow and single threaded values of work: `iostat -x -k 10`
 
-![](2019/12/lvmraid-iostat.png)
+![2019/12/lvmraid-iostat.png](lvmraid-iostat.png)
 
 As you can see, nmve0n1 is being read at around 240 MB/s, and
 being written at the same speed to nvme6n1. The rimage_0 is

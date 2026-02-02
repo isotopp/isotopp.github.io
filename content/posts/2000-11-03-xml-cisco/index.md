@@ -13,7 +13,7 @@ aliases:
 
 # Cisco IP Phone XML
 
-![](2000/11/xml-cisco.001.jpg)
+![2000/11/xml-cisco.001.jpg](xml-cisco.001.jpg)
 
 Dokumentation bei Cisco
 - Als HTML: http://www.cisco.com/en/US/products/sw/voicesw/ps556/
@@ -26,7 +26,7 @@ Dokumentation bei Cisco
 
 # Tagliste
 
-![](2000/11/xml-cisco.002.jpg)
+![2000/11/xml-cisco.002.jpg](xml-cisco.002.jpg)
 
 Definierte Elemente:
 - CiscoIPPhoneMenu
@@ -46,7 +46,7 @@ Ist das gutes XML Design?
 
 # CiscoIPPhoneMenu
 
-![](2000/11/xml-cisco.003.jpg)
+![2000/11/xml-cisco.003.jpg](xml-cisco.003.jpg)
 
 ```xml
 <CiscoIPPhoneMenu>
@@ -74,7 +74,7 @@ Beachte:
 
 # CiscoIPPhoneText
 
-![](2000/11/xml-cisco.004.jpg)
+![2000/11/xml-cisco.004.jpg](xml-cisco.004.jpg)
 
 ```xml
 <CiscoIPPhoneText>
@@ -95,7 +95,7 @@ Beachte:
 
 # CiscoIPPhoneInput
 
-![](2000/11/xml-cisco.005.jpg)
+![2000/11/xml-cisco.005.jpg](xml-cisco.005.jpg)
 
 ```xml
 <CiscoIPPhoneInput>
@@ -126,7 +126,7 @@ CiscoIPPhoneInput enthält
 
 # CiscoIPPhoneInput Flags
 
-![](2000/11/xml-cisco.006.jpg)
+![2000/11/xml-cisco.006.jpg](xml-cisco.006.jpg)
 
 Flags:
 - A: Ascii Feld
@@ -140,7 +140,7 @@ Flags:
 
 # CiscoIPPhoneDirectory
 
-![](2000/11/xml-cisco.007.jpg)
+![2000/11/xml-cisco.007.jpg](xml-cisco.007.jpg)
 
 ```xml
 <CiscoIPPhoneDirectory>
@@ -162,7 +162,7 @@ CiscoIPPhoneDirectory
 
 # CiscoIPPhoneDirectory II
 
-![](2000/11/xml-cisco.008.jpg)
+![2000/11/xml-cisco.008.jpg](xml-cisco.008.jpg)
 
 URL Directories Parameter
 - Kann im Phone gesetzt werden.
@@ -177,7 +177,7 @@ URL Directories Parameter
 
 # CiscoIPPhoneImage
 
-![](2000/11/xml-cisco.009.jpg)
+![2000/11/xml-cisco.009.jpg](xml-cisco.009.jpg)
 
 CiscoIPPhoneImage
 - Title
@@ -197,7 +197,7 @@ CiscoIPPhoneImage
 
 # CiscoIPPhoneImage II
 
-![](2000/11/xml-cisco.010.jpg)
+![2000/11/xml-cisco.010.jpg](xml-cisco.010.jpg)
 
 - "generiere 4 Pixel: dunkel, schwarz, hell, weiss" -> 1 3 2 0
 - als Bits: `01 11 10 00`
@@ -223,7 +223,7 @@ wird dann zu:
 
 # CiscoIPPhoneGraphicMenu
 
-![](2000/11/xml-cisco.011.jpg)
+![2000/11/xml-cisco.011.jpg](xml-cisco.011.jpg)
 
 CiscoIPPhoneGraphicMenu
 - Title
@@ -241,7 +241,7 @@ CiscoIPPhoneGraphicMenu
 
 # HTTP Parameter
 
-![](2000/11/xml-cisco.012.jpg)
+![2000/11/xml-cisco.012.jpg](xml-cisco.012.jpg)
 
 - Refresh
   - Time (Seconds)

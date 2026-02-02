@@ -31,7 +31,7 @@ Das heißt, ein sinnvolles Windrad ist groß, steht "weit draußen" in der Fläc
 1000 m Höhe störungsfreier laminarer Strömung hinein.
 Das wird nie in Wohngebieten sein.
 
-![](2024/12/windkraft-zu-haus-01.png)
+![2024/12/windkraft-zu-haus-01.png](windkraft-zu-haus-01.png)
 
 Es gibt immer mal Ideen für "Windräder, die mit Wind aus wechselnden Richtungen" klar kommen,
 aber die Instabilität bodennaher Winde ist nur der kleinere Teil des Problems.

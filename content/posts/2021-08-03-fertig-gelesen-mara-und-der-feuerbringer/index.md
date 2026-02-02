@@ -15,7 +15,7 @@ aliases:
 Tommmy Krappweis ist nicht nur der Schöpfer von "Bernd, das Brot", sondern auch ein Musiker, Stuntman, Filmemacher und Autor diverser Bücher.
 In der Trilogie um "Mara und der Feuerbringer" nimmt er uns mit in die Geschichten um die 14-jährige Münchnerin Mara Lorbeer in der Welt der nordischen Sagen.
 
-[![](2021/08/mara1.jpg)](https://www.amazon.de/gp/product/B07RHCGD95)
+[![2021/08/mara1.jpg](mara1.jpg)](https://www.amazon.de/gp/product/B07RHCGD95)
 
 *"[Mara und der Feuerbringer](https://www.amazon.de/gp/product/B07RHCGD95), Band 1", Tommy Krappweis*
 

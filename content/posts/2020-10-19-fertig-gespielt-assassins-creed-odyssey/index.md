@@ -13,7 +13,7 @@ aliases:
 ---
 Ok, so the title is a bit of an exaggeration, I am about 80% done with the main games quests. Still, the shape and feel of the story is firmly established and it is fascinating. I have some 110 hours in "Assassins Creed: Origin", and some 65 hours or so in "Assassins Creed: Odyssey".
 
-![](2020/10/aco-alexios-kassandra.jpg)
+![2020/10/aco-alexios-kassandra.jpg](aco-alexios-kassandra.jpg)
 
 *You can play "Assassins Creed: Odyssey" as Alexios or Kassandra, and the change is permanent for the playthrough for storytelling reasons. My recommendation is that you play as Kassandra, see below.*
 
@@ -25,7 +25,7 @@ Gameplay revolves around a number of main and side quests, which can be solved b
 
 Compared to "Origin", "Odyssey" feels weirdly paced, and somewhat off. This is in part because of the map:
 
-![](2020/10/aco-map.jpg)
+![2020/10/aco-map.jpg](aco-map.jpg)
 
 *Assassins Creed maps are like dioramas in a museum, vastly shrinking the real world distances. The map in Odyssey is around 16 x 16 km in size, giving you a minified Aegean to play around in.*
 
@@ -35,7 +35,7 @@ Also, Odyssey uselessly scales up: If you are more than a few levels ahead of a 
 
 But anyway, once you are out of Phokis, and past the Thermopylae, things get more structure and yet, still, the game feels weird. And what is off is... the story. In a good way, though.
 
-![](2020/10/aco-kassandra-beach.jpg)
+![2020/10/aco-kassandra-beach.jpg](aco-kassandra-beach.jpg)
 
 *Kassandra, in her natural environment.*
 

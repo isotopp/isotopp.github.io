@@ -30,7 +30,7 @@ OWASP gibt dazu eine jedes Jahr aktualisierte Top-10 Liste von Sicherheitsproble
 
 Für 2021 hat es im Vergleich zu 2017 die folgenden Änderungen gegeben:
 
-![](2021/11/owasp-mapping.png)
+![2021/11/owasp-mapping.png](owasp-mapping.png)
 
 *Broken Access Control war 2017 auf Platz 5 und ist jetzt Problem #1. 94 % der getesteten Anwendungen hatten irgendeine Form von defekter Zugangskontrolle. Der ehemalige #1 Dauerbrenner Injection ist nur noch auf Platz 3.*
 

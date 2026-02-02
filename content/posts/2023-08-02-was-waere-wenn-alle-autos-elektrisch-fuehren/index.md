@@ -14,7 +14,7 @@ aliases:
 In Deutschland gibt es circa 50 Millionen Autos.
 Wieviele Kilometer fahren die so im Jahr?
 
-![](2023/08/autos-01.png)
+![2023/08/autos-01.png](autos-01.png)
 
 *[Statista: Fahrleistung der PKW in Deutschland von 1970 bis 2021](https://de.statista.com/statistik/daten/studie/2984/umfrage/entwicklung-der-fahrleistung-von-pkw/),
 die Statistik zeigt die Entwicklung der Fahrleistung der Pkw in Deutschland in den Jahren 1970 bis 2021. Im Jahr 2021 betrug die Fahrleistung der Personenkraftwagen in Deutschland rund 582,4 Milliarden Kilometer.*
@@ -32,7 +32,7 @@ Also 116 Mrd. kWh oder 116 TWh.
 
 Die Stromerzeugung in Deutschland lag in 2022 bei 574 TWh.
 
-![](2023/08/autos-02.png)
+![2023/08/autos-02.png](autos-02.png)
 
 *[Statista:  Bruttostromerzeugung in Deutschland in den Jahren 1991 bis 2022](https://de.statista.com/statistik/daten/studie/153267/umfrage/bruttostromerzeugung-in-deutschland-seit-1990/),
 im Jahr 2022 wurden in Deutschland 574 TWh Strom erzeugt.
@@ -43,14 +43,14 @@ Und 20 kWh/100 km sind ein Benzinäquivalent von 2.2 l/100 km.
 
 Der Primärenergieverbrauch von Deutschland ist 1989 maximal gewesen und seit dem linear leicht gesunken.
 
-![](2023/08/autos-03.png)
+![2023/08/autos-03.png](autos-03.png)
 
 *[OWiD: Primary energy consumption in TWh](https://ourworldindata.org/grapher/primary-energy-cons?tab=chart&country=~DEU).*
 
 Wir sind noch bei 78 % des Spitzenverbrauches, also ca. -0.7 % pro Jahr abnehmend.
 Das ist wohlgemerkt bei steigendem GDP:
 
-![](2023/08/autos-04.png)
+![2023/08/autos-04.png](autos-04.png)
 
 *[OWiD: GDP per Capita](https://ourworldindata.org/grapher/gdp-per-capita-worldbank?tab=chart&country=DEU).*
 
@@ -79,7 +79,7 @@ Rechnet man solche Ersparnisse über die Gesamtwirtschaft, kann man ein solches
 [Diagramm](https://www.energy.gov/energysaver/articles/annual-energy-and-carbon-flow-charts-detail-us-energy-use-sources-and) 
 zeichnen:
 
-[![](2023/08/autos-05.png)](https://www.energy.gov/energysaver/articles/annual-energy-and-carbon-flow-charts-detail-us-energy-use-sources-and)
+[![2023/08/autos-05.png](autos-05.png)](https://www.energy.gov/energysaver/articles/annual-energy-and-carbon-flow-charts-detail-us-energy-use-sources-and)
 
 *Energy Flow Chart. 
 Die Einheiten sind sehr amerikanisch: 

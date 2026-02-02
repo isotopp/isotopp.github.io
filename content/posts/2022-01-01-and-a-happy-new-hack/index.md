@@ -14,11 +14,11 @@ aliases:
 
 Und das neue Jahr beginnt für uns mit einem Minecraft-Server, auf dem wichtige Personen, die sich nichts haben zuschulden kommen lassen, plötzlich gebannt sind.
 
-![](2022/01/banned.jpg)
+![2022/01/banned.jpg](banned.jpg)
 
 Nach einem Unban an der Console: Der Spawn, der Eintrittspunkt für neue Spieler, ist komplett verwüstet.
 
-![](2022/01/spawn.png)
+![2022/01/spawn.png](spawn.png)
 
 Wir haben tägliche Backups, sodass das schnell behoben ist. Bleibt die Frage, was passiert ist.
 

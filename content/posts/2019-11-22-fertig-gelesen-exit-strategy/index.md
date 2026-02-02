@@ -17,7 +17,7 @@ Artificial Condition,
 Rogue Protocol,
 Exit Strategy,  Network Effect). 
 
-![](2019/11/exit-strategy.jpg)
+![2019/11/exit-strategy.jpg](exit-strategy.jpg)
 
 This novella is the culmination of the Murderbot Novellas, in
 which our nameless murderbot cyborg tries to nail the evil

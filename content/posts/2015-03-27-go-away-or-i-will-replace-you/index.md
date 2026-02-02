@@ -21,14 +21,14 @@ aliases:
 
 This is the writeup for the english variant of the talk "Go away or I will replace you with a very small Shell script". The original version of the talk was given in German at [GUUG FFG 2015](https://guug.de/veranstaltungen/ffg2015/abstracts.html#3_1_1) in Stuttgart. [A recorded version in german language](https://www.youtube.com/watch?v=e0CCv7pSK4s) has been made at Froscon in August 2015.
 
-![](2015/03/devops-en.001.jpg)
+![2015/03/devops-en.001.jpg](devops-en.001.jpg)
 
 *Go Away Or I Will Replace You With A Very Small Shell Script or There Is No Such Thing As A Devops Team*
 
 I came up with this talk, because I was invited to the GUUG FFG with the ask "to give some thoughts about Devops". I ended up with something that in some way is a reflection about what changed in how we do computers, between approximately the years 2000 and 2010.
 
 
-![](2015/03/devops-en.005.jpg)
+![2015/03/devops-en.005.jpg](devops-en.005.jpg)
 
 At Devops.com, Rajat Bhargava tries to explain in [DevOps and Enterprises: It's a culture thing](https://devops.com/devops_and-enterprises/) that
 
@@ -40,7 +40,7 @@ Let's look at these outside influences.
 
 ## Maturity of Market and Process, and Growth matters
 
-![](2015/03/devops-en.012.jpg)
+![2015/03/devops-en.012.jpg](devops-en.012.jpg)
 
 *A maturing environment (left hand side) allowed the development and establishment of quantitatively governed processes. After reaching a certain process maturity level (right hand side), outsourcing of processes in full or in part becomes possible, enabling a make-or-buy decision at the management level.*
 
@@ -62,7 +62,7 @@ For outsourcing decisions that means they are impossible. In order to have agree
 
 ## Scale-Up vs. Scale-Out
 
-![](2015/03/devops-en.013.jpg)
+![2015/03/devops-en.013.jpg](devops-en.013.jpg)
 
 At the beginning of the Dotcom bubble, running IT mostly meant Enterprise IT. Some somebody somewhere had a data center, and in the data center was a large computer called server. Somebody else now connected the data center network to the Internet. After figuring out a few basic concepts such as Firewalls, DMZ and basic network security, people started about thinking connecting the internal IT to the Internet. At that time the Web came around.
 
@@ -70,13 +70,13 @@ As the Web grew, more people used it, and the load on the existing large compute
 
 Obviously: buy a larger, faster and newer computer. [Moore's Law](https://en.wikipedia.org/wiki/Moore%27s_law) gives you an annual growth of around 45% year on year, and that should be right, shouldn't it?
 
-![](2015/03/devops-en.014.jpg)
+![2015/03/devops-en.014.jpg](devops-en.014.jpg)
 
 *One of twelve Enterprise 10000 "Starfire" at mobilcom, Germany, around 2002.*
 
 We see some seriously large machines at around that time - there were twelve 64 CPU Enterprise 10000 "Starfire" machines present at the mobilcom Data Center in Germany in the early 2000's, for example, and many more were deployed in other places just in the area I worked in.
 
-![](2015/03/devops-en.015.jpg)
+![2015/03/devops-en.015.jpg](devops-en.015.jpg)
 
 Yet it became obvious rather quickly that this was not an approach that worked, and even if it worked, it often was prohibitively complex, expensive and slow. Once that became clear, people started to automate basic tasks, learned to mange large fleets of moderately sized machines and then tried a different approach - "scale out" instead of "scale up". Use more computers instead of larger computers.
 
@@ -84,7 +84,7 @@ This triggered a lot of learnings at all levels of the profession - network, dat
 
 ## Operations change in response to scale-out
 
-![](2015/03/devops-en.016.jpg)
+![2015/03/devops-en.016.jpg](devops-en.016.jpg)
 
 I have been known to annoy people with saying that "Whenever you are using ssh, you might as well open a ticket."
 
@@ -92,13 +92,13 @@ If you need to login to a box manually to look something up, you are looking at 
 
 We get cfengine 3 (2004), and later Puppet (2005), Salt (2011) and Ansible (2012). Also, somewhere at the end of the observed time frame virtualisation becomes viable, and with that we get automated provisioning of hardware and "Infrastructure in Code".
 
-![](2015/03/devops-en.017.jpg)
+![2015/03/devops-en.017.jpg](devops-en.017.jpg)
 
 The thinking that permeates software development can now be applied to hardware and infrastructure resources: If there is a problem with a setup, recreate that setup, and the problem in a branch. Then modify the branch to see if that fixes the problem. When it does, merge the branch, and redeploy automatically.
 
 We get alignment of tooling in operations with tooling in development. This, and "zero manual interactions" grade of automation have a great impact:
 
-![](2015/03/devops-en.018.jpg)
+![2015/03/devops-en.018.jpg](devops-en.018.jpg)
 
 Automating things makes them reproducible: The same change applied to many instances always produces the same outcome. 
 
@@ -110,17 +110,17 @@ It is this stage where we see people moving from "highly available setups" using
 
 ## This requires a different mindset, and different qualifications
 
-![](2015/03/devops-en.019.jpg)
+![2015/03/devops-en.019.jpg](devops-en.019.jpg)
 
 When we change the tooling and the methods to be more closely aligned with Developers, culture also has to change.
 
-![](2015/03/devops-en.020.jpg)
+![2015/03/devops-en.020.jpg](devops-en.020.jpg)
 
 A figure of the pre-2000 USENET sysadmin culture has been the BOFH - the [Bastard Operator From Hell](http://bofh.bjash.com/). These are the stories about an outright hostile systems operator, written by Simon Traviaglia and posted to USENET. Parts of that have been sold to magazines and printed later on.
 
 A lot of people picked up on the concept, and the USENET groups alt.sysadmin.recovery and de.alt.sysadmin.recovery were born. People met, for example in German at the series of Cannossa parties.
 
-![](2015/03/devops-en.021.jpg)
+![2015/03/devops-en.021.jpg](devops-en.021.jpg)
 
 This is not a good mindset or culture. It not only rejects development, and change per se, it is also toxic and hostile, even to the people who actually pay the bill. Never a good idea.
 
@@ -128,13 +128,13 @@ Of course it is a joke, or satire, but unfortunately, stories influcence minds, 
 
 Around the same time, Thomas A. Limoncelli wrote the proto-devops book "The practice of System Administration", which interestingly contained a chapter on how not be to a BOFH - it asked the system administrator to reflect on the structure and processes of the larger company and their place in them. Limoncelli then goes on about how to build useful supporting and reporting structures to function successfully in that structure. He closes with advice on how to respond to unexpected demands without too much toil and effort. It foreshadows a lot of development that caught on later under the label devops.
 
-![](2015/03/devops-en.022.jpg)
+![2015/03/devops-en.022.jpg](devops-en.022.jpg)
 
 *The current, updated edition of that book is titled "The Practice of Systems and network Administration".*
 
 The term "Devops" meanwhile, was coined by [Patric Debois](https://twitter.com/patrickdebois) in 2008 in Belgium, and pretty much assembled and then taught the same ideas as the Limoncelli book, at a larger scale and using even clearer structure.
 
-![](2015/03/devops-en.023.jpg)
+![2015/03/devops-en.023.jpg](devops-en.023.jpg)
 
 *BOFH practice applied in the 2008 Booking.com office (re-enactment).*
 
@@ -142,17 +142,17 @@ The term "Devops" meanwhile, was coined by [Patric Debois](https://twitter.com/p
 
 Well, even at 2008 we already have processes for IT organisations. Large, scaled up and unwieldy processes that have been established top down, though: During the Dotcom boom, the structure of IT support and operations processes had been formulated as well in [ITIL](https://en.wikipedia.org/wiki/ITIL), and then often badly implemented in the wild.
 
-![](2015/03/devops-en.024.jpg)
+![2015/03/devops-en.024.jpg](devops-en.024.jpg)
 
 It is entirely valid and sometimes helpful to think of Devops as a reaction to bad ITIL deployments: 
 
-![](2015/03/devops-en.025.jpg)
+![2015/03/devops-en.025.jpg](devops-en.025.jpg)
 
 Bottom up, "apply development methods and thinking to IT operations, while staying small and agile and iterating quickly, and also focusing on automation, metrics capture and data driven improvement".
 
 Tear down the wall between software development and operations. Teach operators coding and coding thinking, and teach developers to care about operations and how operations matter, how scale matters.
 
-![](2015/03/devops-en.026.jpg)
+![2015/03/devops-en.026.jpg](devops-en.026.jpg)
 
 Jez Humble describes this tweet as a reaction:
 
@@ -164,7 +164,7 @@ and later wrote [a longer blog post](https://continuousdelivery.com/2012/10/ther
 
 Applying developer methods to operations problems changes the environment and tooling. The modern stack looks like this:
 
-![](2015/03/devops-en.033.jpg)
+![2015/03/devops-en.033.jpg](devops-en.033.jpg)
 
 - Systems are provisioned with "Infrastructure as Code", automatically and on demand, via an API with no humans involved.
 - The code for the application and the infrastructure itself resides in a shared version control system, where it can also be subject to automation.
@@ -196,7 +196,7 @@ Another thing that has proven to be useful is to build a monitoring system on to
 
 ## A clash of cultures
 
-![](2015/03/devops-en.039.jpg)
+![2015/03/devops-en.039.jpg](devops-en.039.jpg)
 
 In any case: We get convergence in tooling between Dev and Ops.
 
@@ -207,7 +207,7 @@ Eventually, developers and admins are using the same set of tools. So, let's con
 ## It's not that simple and doesn't work?
 
 
-![](2015/03/devops-en.040.jpg)
+![2015/03/devops-en.040.jpg](devops-en.040.jpg)
 
 Inevitably, cultures clash.
 
@@ -217,15 +217,15 @@ But they seem to be harder to spot.
 
 What are they about?
 
-![](2015/03/devops-en.041.jpg)
+![2015/03/devops-en.041.jpg](devops-en.041.jpg)
 
 Feature-Developers ("Developers") and Infrastructure-Developers (former "Operations" people) seem to have utterly different metrics for success.
 
-![](2015/03/devops-en.042.jpg)
+![2015/03/devops-en.042.jpg](devops-en.042.jpg)
 
 Infrastructure developers see feature developers as people who focus on new best cases: There is a plan, there is sprint. New features - new best cases - are developed, and what is deemed finished is being released in a big showy party. Everybody is colorful, happy and rolling across the lawn. What isn't finished goes back onto the backlog, and that is that.
 
-![](2015/03/devops-en.043.jpg)
+![2015/03/devops-en.043.jpg](devops-en.043.jpg)
 
 Infrastructure developer know that is not true for themselves. They look at themselves like in this picture, complete with helmet webcams.
 
@@ -233,7 +233,7 @@ Infrastructure developer know that is not true for themselves. They look at them
 
 Because of that, infrastructure developers judge change by looking at how worst cases behave and how worst case behavior changes with changed code. Only then they will look at other improvements.
 
-![](2015/03/devops-en.046.jpg)
+![2015/03/devops-en.046.jpg](devops-en.046.jpg)
 
 There are two famous Booking rules for rollouts, from the early days:
 
@@ -248,71 +248,71 @@ The answer to #2 should be "Yes!", again, or if cannot be that, it should be "bu
 
 So both of these rules are dealing with failure - anticipating and handling it properly. It's infrastructure developer thinking, but we give these rules to feature developers. That's a mind hack.
 
-![](2015/03/devops-en.048.jpg)
+![2015/03/devops-en.048.jpg](devops-en.048.jpg)
 
 Infrastructure thinking is really hard to explain to outsiders.
 
-![](2015/03/devops-en.049.jpg)
+![2015/03/devops-en.049.jpg](devops-en.049.jpg)
 
 For example, in this document, the Linux "Code of Conflict", what is being tried is to explain this - "There are people who will read your code, and they will evaluate it on how it fails, and how it changes failure before they even look at what it improves, because that is how Infrastructure works. Criticizing your code is not criticizing you, listen and learn."
 
 It also explains: "Criticizing you instead of your code is not okay, so if that happens, call out for help, please." It uses many words for that, because somehow most non-infrastructure people are not used to this.
 
-![](2015/03/devops-en.051.jpg)
+![2015/03/devops-en.051.jpg](devops-en.051.jpg)
 
 There is a certain type of experience associated with this kind of mindset. "Who here remembers this one?" When I asked the original audience of the talk about this incident, about 2/3 of the audience raised their hands. "I was there!" was being shouted by a few people.
 
 That was at that point in time 14 years ago.
 
-![](2015/03/devops-en.052.jpg)
+![2015/03/devops-en.052.jpg](devops-en.052.jpg)
 
 Ten years earlier, at Friday, the 13. May of 2005, I had to shut down 2MW of compute at the web.de data center, turning off the email for 25 million customers, because of a complete loss of cooling in the Data Center. We handled the incident, turned off the entire data center in less than 20 minutes in a chaotic rumble, and then back on to basic functionality with another two hours of work. Fully redundant and properly configured setup was reached again on Saturday, the 14th, around noon.
 
 People in the audience also remembered that one.
 
-![](2015/03/devops-en.053.jpg)
+![2015/03/devops-en.053.jpg](devops-en.053.jpg)
 
 Of course, Infrastructure developers are averse to change. Change introduces unknown behavior, and unknown operating conditions.
 
 Of course, if you are always ever judged by your failures, you focus on failure cases and how they are handled.
 
-![](2015/03/devops-en.054.jpg)
+![2015/03/devops-en.054.jpg](devops-en.054.jpg)
 
 This does not have to be a contradiction, though. A sequence of rapid small changes acutally makes deployment risk smaller, and allows you to fail safely in many cases - in all cases, even, with a bit of engineering and good practice - see above, the discussion about events, monitoring and separation of rollout and activation.
 
-![](2015/03/devops-en.056.jpg)
+![2015/03/devops-en.056.jpg](devops-en.056.jpg)
 
 Planning for change and budgeting downtime can help a lot, even. Internally, we teach this as shown in the slides below: We have a failure budget, in lost potential income, and we expect to make use of it, even.
 
-![](2015/03/devops-en.057.jpg)
+![2015/03/devops-en.057.jpg](devops-en.057.jpg)
 
 We look at what happened in a blameless postmortem process, and then write down what the takeaways from the outage are - how do we need to change processes, how to we need to improve monitoring and training, how do we need to fix code in order for that failure and that class of failure to go away?
 
-![](2015/03/devops-en.058.jpg)
+![2015/03/devops-en.058.jpg](devops-en.058.jpg)
 
 We talk about the concept of "Careful Carelessness", which is what allows you to jump out of a plane several thousand meters up in the air, more than once.
 
-![](2015/03/devops-en.060.jpg)
+![2015/03/devops-en.060.jpg](devops-en.060.jpg)
 
 The "Careful" part of skydiving is important. You need training, you need to know and trust your buddies, you need a plan for safe landing, and you need alternative plans, tested and ready, and reviewed by others. You need to review their plans.
 
-![](2015/03/devops-en.064.jpg)
+![2015/03/devops-en.064.jpg](devops-en.064.jpg)
 
 The core concept is to make changes "survivable", and then be able to execute the entire process in a way that it can be done often, without hurting. What is a project elsewhere, a one-off thing with additional staffing and a deadline, is a process for us, routinely, repeatedly done as part of normal operations, all of the time.
 
 This is what Devops is about: Making change a routine process of everyday operations.
 
-![](2015/03/devops-en.069.jpg)
+![2015/03/devops-en.069.jpg](devops-en.069.jpg)
 
 "Survivability" means to fail, or almost fail, but live to walk away and tell the tale. Because that is how we learn: When we succeed, we only confirm what we already know. When we fail, or almost fail, we learn a new thing, and we can share that experience with our peers.
 
 Not only do we learn from failure, we also share common history and experience, and that builds better communication, validates judgement, and builds trust. This is how you forge a team.
 
-![](2015/03/devops-en.071.jpg)
+![2015/03/devops-en.071.jpg](devops-en.071.jpg)
 
 Testing in production is okay, if you engineer for it, and make it survivable. Even outside of rollouts, you can increase resilience by introducing chaos and variabilty in procedures - don't shut down systems cleanly, always jank them out of production, or even install the chaos monkey. Always test in production, and find ways to do this safely. Also, this will help you find dependencies and metrics that matter.
 
-![](2015/03/devops-en.076.jpg)
+![2015/03/devops-en.076.jpg](devops-en.076.jpg)
 
 Martin Seeger of NetUSE is famous for popularizing the proverb "Nobody wants Backup. Everybody needs Restore." He wants to highlight the fact that Backups are just a cost center, and do not produce anything of value. The value - which needs to be proven - is in the successful Restore, and that is also what needs to be tested, constantly.
 
@@ -320,13 +320,13 @@ Of course, if you automate, you do not need backups for anything besides the (cl
 
 ## And yet, they are still fighting
 
-![](2015/03/devops-en.077.jpg)
+![2015/03/devops-en.077.jpg](devops-en.077.jpg)
 
 And yet, Dev and Ops are still fighting.
 
 Why is that?
 
-![](2015/03/devops-en.078.jpg)
+![2015/03/devops-en.078.jpg](devops-en.078.jpg)
 
 Developers tend to ignore operational complexity and toil, and often build from building blocks that look like rectangles on an architecture diagram, but are actually complex systems in themselves.
 
@@ -338,11 +338,11 @@ This is Openstack Monasca, Monitoring as a Service:
 
 At which point somebody in the audience usually shouts "Bingo!". There are a number of questions here - for example, "How do you hire for this?".
 
-![](2015/03/devops-en.083.jpg)
+![2015/03/devops-en.083.jpg](devops-en.083.jpg)
 
 Or, looking at this Openstack Infrastructure Diagram (simplified): How do you operate this under "system behavior in failure state" as a success metric - which is how Infrastructure people think.
 
-![](2015/03/devops-en.087.jpg)
+![2015/03/devops-en.087.jpg](devops-en.087.jpg)
 
 Infrastructure people see code like this coming in, and see people who package things they have not understood, taking on dependencies they do not know, and using practices that look like automated, repeatable procedures, but aren't.
 
@@ -352,15 +352,15 @@ The second example shows a Dockerfile executing, but what looks like a build pro
 
 The last example is part of an Openstack Puppet install, and downloads an actual operating system package, then NOT installing it, but unpacking it and copying individual unregistered files into a production system image.
 
-![](2015/03/devops-en.089.jpg)
+![2015/03/devops-en.089.jpg](devops-en.089.jpg)
 
 Or implementations of upgrade procedures with three nested loops (O(n^3) complexity), that work for l,m and n = 1 on a test laptop, but cannot possibly succeed in any production environment with significant values of l,m or n - clearly this has never seen an actual production environment.
 
-![](2015/03/devops-en.090.jpg)
+![2015/03/devops-en.090.jpg](devops-en.090.jpg)
 
 This captures the essence of this mindset, cargo culting, containerism. Abstractions packed away deep in a fragile stack, and then in production suddenly breaking, taking down the entire technology Jenga tower.
 
-![](2015/03/devops-en.091.jpg)
+![2015/03/devops-en.091.jpg](devops-en.091.jpg)
 
 Computer science is weird - it is hard, despite the fact that it is the science of zeroes and ones. Nothing individually in computer science is ever hard. It literally is as simple as Jenga or Tetris, and like these, the complexity comes from the layers.
 
@@ -368,11 +368,11 @@ I have an exercise where I let people list the dependencies for their applicatio
 
 So when we think about complexity in computer science, we speak about epsilon-delta in non-linear systems with cascading dependencies: A tiny change here has catastrophic outcomes elsewhere, 20 layers up or down the stack. You add a line of code, the working set of your application no longer fits into the CPU cache of low end CPU models, and suddenly the performance difference between the same code running on a Silver or Gold Xeon model is factor 20 and nobody even knows why.
 
-![](2015/03/devops-en.096.jpg)
+![2015/03/devops-en.096.jpg](devops-en.096.jpg)
 
 This is not a new complaint. Alan Perlis famously quipped this about LISP programmers in 1982: The level of abstraction in LISP in 1982 was so high that native LISP programmers with no insight into the implementation created similar situations to the previous cache scenario, regularly.
 
-![](2015/03/devops-en.099.jpg)
+![2015/03/devops-en.099.jpg](devops-en.099.jpg)
 
 In closing: What changes?
 

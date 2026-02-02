@@ -16,7 +16,7 @@ X.52 clutch mode. I am flying with a Saitek/Logitech X.52 pro
 a 'clutch button' (labelled "i") in the thumb position of the
 throttle (image: clutch highlighed in red)
 
-![](2020/01/x.52-clutch-0.png)
+![2020/01/x.52-clutch-0.png](x.52-clutch-0.png)
 
 "Clutch mode" for this button means that it is usable as a
 modfier for the other buttons, when pressed together with a
@@ -25,16 +25,16 @@ second button. Alone, it does nothing. For me, that is useless.
 In order to disable the function, go into Windows Settings, click
 Devices, and search for "Set up USB Game Controllers".
 
-![](2020/01/x.52-clutch-1.png)
+![2020/01/x.52-clutch-1.png](x.52-clutch-1.png)
 
 As always, useful things in Windows can only be accessed via
 search and not via menu.
 
-![](2020/01/x.52-clutch-2.png)
+![2020/01/x.52-clutch-2.png](x.52-clutch-2.png)
 
 Select the device, and then hit the device properties.
 
-![](2020/01/x.52-clutch-3.png)
+![2020/01/x.52-clutch-3.png](x.52-clutch-3.png)
 
 In the MFD (Multi Function Display) of all places you can also
 disable the clutch function (which, of course, has nothing to do
@@ -50,7 +50,7 @@ into a different USB port.
 > 
 > -Control Panel-Devices and Printers-Right Click on the HOTAS
 >
-> ![](2020/01/x.52-clutch-4.png)
+> ![2020/01/x.52-clutch-4.png](x.52-clutch-4.png)
 > 
 > The main use of the "Clutch Mode" is to get the current key function displayed on the MFD, without actually activating that function. 
 > I find that useful when you change between different SIMS, where you have alternative assignments to a specific key or function.
@@ -64,4 +64,4 @@ into a different USB port.
 > "Clutch"+"FireA" will now show "Kristian" on the MFD without actually sending anything to the running program. 
 > Given the rich programmimg possibilities I definitely need an online "cheat sheet" that the "Clutch" makes available.
 > 
-> ![](2020/01/x.52-clutch-5.png)
+> ![2020/01/x.52-clutch-5.png](x.52-clutch-5.png)

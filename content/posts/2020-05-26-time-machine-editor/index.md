@@ -14,7 +14,7 @@ I have an embedded Mac mini, it drives the local TV screen by doing OpenVPN to G
 
 To change the backup interval, install [Time Machine Editor](https://tclementdev.com/timemachineeditor/).
 
-[![](2020/05/tme.png)](https://tclementdev.com/timemachineeditor/)
+[![2020/05/tme.png](tme.png)](https://tclementdev.com/timemachineeditor/)
 
 *Time Machine Editor can change the Time Machine Backup interval. It has a background daemon that triggers the backups, a GUI application and a command line utility.*
 
@@ -30,6 +30,6 @@ $ sudo defaults write /System/Library/LaunchDaemons/com.apple.backupd-auto Start
 
 does no longer work: It tries to change a `plist` in `/System` and fails. The approach chosen by Time Machine Editor is cleaner and not subject to these new Apple limitations.
 
-![](2020/05/tme-before-after.png)
+![2020/05/tme-before-after.png](tme-before-after.png)
 
 *Energy consumption of the Mac mini before and after installation of Time Machine Editor. I am running a backup every 6h, and that is just fine with this machine and how it is being used.*

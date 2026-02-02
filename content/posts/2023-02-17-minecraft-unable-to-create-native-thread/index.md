@@ -105,7 +105,7 @@ When you go for the VPS, make a monthly contract and do not commit to a one-year
 On our server, we run three instances of "Paper" (a high-performance patch to a patch to a patch of the original minecraft server),
 and waterfall, a Minecraft proxy that directs users between the instances.
 
-![](2023/02/native-thread-01.png)
+![2023/02/native-thread-01.png](native-thread-01.png)
 
 *Output of the `htop` program.
 On the right hand side of the screenshot, we see three identically configured `java` instances, each representing a "Paper" server.
@@ -122,7 +122,7 @@ Our total memory is 32 GB.
 
 The server load is shown as 0.41/8.0, so the machine is pretty idle, and the CPU load meters above the memory meter agrees.
 
-![](2023/02/native-thread-02.png)
+![2023/02/native-thread-02.png](native-thread-02.png)
 
 *Output of the `htop` program, detail. When hitting `H` to toggle display of user threads, the number of running threads is also shown.
 We are running 245 threads.*

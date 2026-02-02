@@ -76,7 +76,7 @@ wenn die Heizungssteuerung abstürzt, oder die Heizung während der Wartung eine
 Stunde stromlos geschaltet wird....
 
 
-[![](2025/02/mybuderus-first-look.png)](/uploads/2025/02/mybuderus-first-look.png)
+[![2025/02/mybuderus-first-look.png](mybuderus-first-look.png)](/uploads/2025/02/mybuderus-first-look.png)
 
 *Ein Beispiel-Screenshot der MyBuderus App. In einer Wochenansicht Ende Oktober
 werden Tagesverbrauchswerte für die letzten beiden Tage angezeigt, darüber
@@ -127,7 +127,7 @@ erkenne ich folgende Unzulänglichkeiten:
    viel, aber ich nehme erstmal was ich kriegen kann).
 
 
-[![](2025/02/taktung.png)](/uploads/2025/02/taktung.png)
+[![2025/02/taktung.png](taktung.png)](/uploads/2025/02/taktung.png)
 
 *Verlaufskurve der Temperatur im Heizkreislauf über drei Tage. Man erkennt ein
 Sägezahnmuster, das auf Taktung hindeutet. Unterstützt wird die Hypothese durch
@@ -151,7 +151,7 @@ hierfür ist mir aber noch nicht klar. Auch dazu später mehr.
 
 # 2023/2024
 
-[![](2025/02/beginn-heizperiode-23.png)](/uploads/2025/02/beginn-heizperiode-23.png)
+[![2025/02/beginn-heizperiode-23.png](beginn-heizperiode-23.png)](/uploads/2025/02/beginn-heizperiode-23.png)
 
 *Im Winter 2023/2024 beginnt die Heizperiode bereits Anfang Oktober. In der
 MyBuderus-App sieht man wieder die beginnenden Heiztage, dieses mal bei von 12
@@ -243,7 +243,7 @@ voll geöffneten Heizthermostaten, Heizkurve, alternativen Steuerungsansätzen
 wie der Bajorath-Steuerung, und mein Verständnis dessen was ich tue entwickelt
 sich von steuern, beobachten, messen, nachsteuern, zu gezielteren Experimenten. 
 
-[![](2025/02/ha-panel.png)](/uploads/2025/02/ha-panel.png)
+[![2025/02/ha-panel.png](ha-panel.png)](/uploads/2025/02/ha-panel.png)
 
 *Ein komplexes Panel aus HomeAssistant, das viele verschiedene Heizungswerte
 und Diagramme zeigt: Aktuelle Einstellung des Thermostats, Raumtemperaturen,
@@ -289,7 +289,7 @@ Verlust der Wärme im Wasserspeicher pro Stunde. Wenn ich die
 Zirkulationsleitung sperre, fällt der Wärmeverlust auf eher den Umständen
 entsprechende Wärmeverluste von 0,4 Grad pro Stunde.
 
-[![](2025/02/wwwverlust.png)](/uploads/2025/02/wwwverlust.png)
+[![2025/02/wwwverlust.png](wwwverlust.png)](/uploads/2025/02/wwwverlust.png)
 
 *Ein Temperaturgraph, der einen stetigen Temperaturverlust anzeigt: Erst steil,
 dann weniger steil, dann wieder steil. Zum Zeitpunkt des weniger steilen
@@ -336,7 +336,7 @@ Flachbildschirms auf die Raumtemperatur sehen -- die Raumtemperatur geht um
 Wärmeentwicklung dieser drei Dinge in etwa 20% des Wärmebedarfs des fraglichen
 Raumes ...
 
-![](2025/02/humanheating.png)
+![2025/02/humanheating.png](humanheating.png)
 
 *Ausschnitt aus einer Temperaturkurve, die in kurzer Zeit einen steilen Anstieg
 der gemessenen Temperatur verzeichnet.*

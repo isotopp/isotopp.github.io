@@ -80,7 +80,7 @@ The architecture was not really changed, but mostly the components' deployment w
 
 # Modulith
 
-![](2023/05/modulith-microservices.jpg)
+![2023/05/modulith-microservices.jpg](modulith-microservices.jpg)
 *A modulithic deployment of co-located microservices allows for easy scaling and rearrangement.*
 
 Unfortunately, the subtitle of the article is

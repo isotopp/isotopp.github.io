@@ -81,7 +81,7 @@ This defines one major goal for BSD FFS: Better filesystem layout, bringing meta
 storing files in a single directory closer together,
 and preventing fragmentation of a file into small fragments that can be loaded only inefficiently.
 
-![](2023/05/filesystem-fragmentierung.png)
+![2023/05/filesystem-fragmentierung.png](filesystem-fragmentierung.png)
 *Fragmentation: Initially, four files are being created, each using 2 blocks.
 Then the files B and D are being deleted.
 The free space is then being reclaimed by the three-block-sized file E, which is stored in non-adjacent blocks.
@@ -106,7 +106,7 @@ The authors instead aim for a solution that places files sensibly in the first p
 The BSD FFS understands the physical layout of a harddisk, with [cylinders, heads and sectors](https://en.wikipedia.org/wiki/Cylinder-head-sector) (CHS).
 It divides the disk into cylinder groups, adjacent tracks of all disk heads.
 
-![](2023/05/cylinder-groups.png)
+![2023/05/cylinder-groups.png](cylinder-groups.png)
 *As the disk rotates, various disk heads reach inside the platter stack like a comb. 
 Each head marks a track on the disk, which is subdivided into physical disk blocks by the controller hardware.
 Together, all tracks marked by all heads form a cylinder.
@@ -132,7 +132,7 @@ trying to make the filesystem better redundant against harddisk failure.
 BSD FFS not only understood CHS geometry of disks, but also processor speed and disk rotational speed.
 This allowed it to configure and record in the superblock an [interleave factor](https://en.wikipedia.org/wiki/Interleaving_(disk_storage)) to optimize disk I/O throughput.
 
-![](2023/05/interleave.jpg)
+![2023/05/interleave.jpg](interleave.jpg)
 *The harddisk rotates continuously, but the CPU needs time to set up the next transfer.
 During this time the head may have moved already past the next block start boundary, and now the system would need to wait one full rotation to be able to write.
 Using an appropriate interleave factor, blocks of adjacent numbers are not stored adjacently on disk, but instead other blocks are interleaved in-between.

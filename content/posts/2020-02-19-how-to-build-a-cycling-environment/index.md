@@ -18,7 +18,7 @@ Welcome to the Netherlands. We're building roads differently. They are better, s
 
 ## What does it look like?
 
-![](2020/02/fiets-drempel.jpg)
+![2020/02/fiets-drempel.jpg](fiets-drempel.jpg)
 
 I am living in a village. That means a speed limit of 30 km/h inside the city limits, and that is being enforced by the design of the road.
 
@@ -26,13 +26,13 @@ The red path is only a subordinate cycle path. On the other side of the canal, t
 
 It looks like this:
 
-![](2020/02/fiets-drempel2.jpg)
+![2020/02/fiets-drempel2.jpg](fiets-drempel2.jpg)
 
 In the background you can see the traffic sign on the right hand side of the road, and the bridge. I am standing on the footpath, the bike path is on the left hand side.
 
 Let's move forward to the bridge:
 
-![](2020/02/fiets-bridge.jpg)
+![2020/02/fiets-bridge.jpg](fiets-bridge.jpg)
 
 In the mornings this is a very busy spot, because there are two basic schools down the road over the bridge, and of course all the children are biking to school.
 
@@ -44,17 +44,17 @@ My village is next to the N205. That is a multilane motorway, a national street,
 
 A cycling traffic light in the Netherlands looks like this. The "tikker" (call button) is only a formality, but good to hold yourself upright on the bike should you ever have to wait.
 
-![](2020/02/fiets-n205-1.jpg)
+![2020/02/fiets-n205-1.jpg](fiets-n205-1.jpg)
 
 Usually you don't. That's because of the sensors in the road: Two here (in order to measure direction and speed), and one more directly where the Tikker is. If you are driving the design speed of the cycle path (In the Netherlands that's 15 km/h), and the traffic allows that, you will have green exactly when you are reaching the light.
 
-![](2020/02/fiets-n205-2.jpg)
+![2020/02/fiets-n205-2.jpg](fiets-n205-2.jpg)
 
 That is because almost all traffic lights around here are dynamically controlled and have variable cycle times. The moment the last car or bike is clearing the crossing the light goes yellow and the waiting time for crossing traffic is shortened.
 
 All of that under the principle that pedestrians and cyclists have priority over car traffic at all times.
 
-![](2020/02/fiets-n205-3.jpg)
+![2020/02/fiets-n205-3.jpg](fiets-n205-3.jpg)
 
 ## Intersection Design
 
@@ -66,7 +66,7 @@ They also have a [Youtube Video](https://www.youtube.com/watch?v=XpQMgbDJPok) ([
 
 Go watch the video. But even then, let me highlight a few things from the video:
 
-![](2020/02/fiets-parking-protected-lane.jpg)
+![2020/02/fiets-parking-protected-lane.jpg](fiets-parking-protected-lane.jpg)
 
 This is what is called a parking protected bike lane. The parked cars act as a protective wall against the cars on the street. Where there is room enough there is an exit zone that prevents dooring.
 
@@ -74,7 +74,7 @@ Also, everyone here is being drilled with the [Dutch Reach](https://en.wikipedia
 
 Intersections in the Netherlands are a construct that is full of waiting pockets, staging areas that allow you to stop and wait without being pressured from the traffic behind you, until you are sure it is safe to move on.
 
-![](2020/02/fiets-pocket.jpg)
+![2020/02/fiets-pocket.jpg](fiets-pocket.jpg)
 
 That is true for cyclists. Here waiting cyclists can stop for the red light without being in the way of traffic that is moving straight on.
 
@@ -86,7 +86,7 @@ If you are used to driving in Germany, that is unexpected and initially confusin
 
 In fact, when driving in the Netherlands you will eventually notice that the main spot to check for dangers is usually 45 degrees to the right over the hood. That is, because whenever space allows it the situation is designed so that you can wait without being pressured from behind, handle one situation at the time, and the situation is coming up at approximately this position from the front-right (or, where traffic makes it necessary, from the front-left).
 
-![](2020/02/fiets-crossing.jpg)
+![2020/02/fiets-crossing.jpg](fiets-crossing.jpg)
 
 Here an intersection, also with staging areas. The marked car has passed the cycle path and is now waiting to be able to safely merge, out of the way of the cycle path. A second car is coming up, waiting before the cycle path, making sure there are no cyclists coming and that the staging area is clearing.
 
@@ -98,7 +98,7 @@ Cycle paths are separated from the road, where possible with a soft shoulder and
 
 The raised curb on the cycle path side also encourages cyclists to stay in the lane and make use of the marked path for crossing. That way separated types of traffic cross only in spots that are designed to make the crossing safely.
 
-![](2020/02/fiets-residential-zone.jpg)
+![2020/02/fiets-residential-zone.jpg](fiets-residential-zone.jpg)
 
 The same design language is applied everywhere, making roads readable to everyone intuitively. Here a car is turning right into a residential area. The curb is raised from street level with a bump and different paving, making it visually and haptically clear to a driver that the environment is changing. There is of course a staging area, so that turning and clearing the cycle path are two different, sequential tasks.
 
@@ -110,7 +110,7 @@ The situation is built so that potential conflicts happen the 45 degress-to-the-
 
 Consistent design language helps to make safety habitually automatic.
 
-![](2020/02/fiets-urban-roundabout.jpg)
+![2020/02/fiets-urban-roundabout.jpg](fiets-urban-roundabout.jpg)
 
 Roundabouts are safer and faster than intersections, but the same design principles and design language can be applied to this situation as well, even in historic old towns such as Amsterdam shown here.
 
@@ -122,7 +122,7 @@ The danger zone is positioned to the right-front for the car leaving the roundab
 
 Of course, according to the OSHA Hierarchy of Mitigations, none of this is the best solution.
 
-![](2020/02/fiets-osha-hierarchy.jpg)
+![2020/02/fiets-osha-hierarchy.jpg](fiets-osha-hierarchy.jpg)
 
 *OSHA Hierarchy of Mitigations* or *OSHA Hierarchy of Controls* for workplace safety. In german [Maßnahmenhierarchie nach TRBS](https://de.wikipedia.org/wiki/Ma%C3%9Fnahmenhierarchie#Ma%C3%9Fnahmenhierarchie_nach_TRBS). (after an [older tweet](https://twitter.com/isotopp/status/1169871272735436800))
 
@@ -137,13 +137,13 @@ So while we have been speaking about intersection design, we have been essential
 
 And again, we can see them in the Dutch road design:
 
-![](2020/02/fiets-separation.jpg)
+![2020/02/fiets-separation.jpg](fiets-separation.jpg)
 
 The roundabout shown in the video leads the cycle path through underpasses underneath the street, completely separating the car and bicycle traffic. That means no danger of collision, no traffic lights and no wait times for cyclists, ever. A way better solution that any intersection design.
 
 The video finishes with two children passing an intersection on bikes. Again, we can see the dynamic traffic light control: The moment the second cyclist enters the intersection, the green phase is shortened and the light turns yellow. As soon as the intersection has been cleared, cross traffic can start.
 
-![](2020/02/fiets-yellow.jpg)
+![2020/02/fiets-yellow.jpg](fiets-yellow.jpg)
 
 This is not a space intensive design. It works in many historic old towns in the Netherlands, and any design up to code in the US (or Germany) can be converted to a safer Dutch design within the same space.
 
@@ -173,11 +173,11 @@ Eltis explains [multimodality in Dutch rail](https://www.eltis.org/discover/case
 
 The dutch government provides Cycling Facts ([PDF](https://www.government.nl/binaries/government/documents/reports/2018/04/01/cycling-facts-2018/Cycling+facts+2018.pdf)).
 
-![](2020/02/fiets-use-nation.png)
+![2020/02/fiets-use-nation.png](fiets-use-nation.png)
 
 *Bike use is x2.5 higher in the Netherlands than in Germany, on the average*
 
-![](2020/02/fiets-use-spatial.png)
+![2020/02/fiets-use-spatial.png](fiets-use-spatial.png)
 
 *Bike use is regionally different, and in some zones the usage quota is more than 50% of all trips shorter than 7.5km*
 

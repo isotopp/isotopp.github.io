@@ -25,7 +25,7 @@ Consider some cats and their owners (or, in Cat, our "tin-openers"):
 | Shelley | Sarah   | San Diego   |
 | Lynn    | Louise  | Los Angeles |
 
-![](2022/02/mysqldump_cat.png)
+![2022/02/mysqldump_cat.png](mysqldump_cat.png)
 
 So far, so good. Now another cat strays to Louise:
 

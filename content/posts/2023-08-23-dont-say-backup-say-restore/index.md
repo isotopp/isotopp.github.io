@@ -59,7 +59,7 @@ S3 buckets or K8s Persistent Volumes, and there are people who will lose data in
 
 Don't be in the second group.
 
-![](2023/08/backup-restore-01.jpg)
+![2023/08/backup-restore-01.jpg](backup-restore-01.jpg)
 
 *"Nobody wants backup.
 Everybody wants restore."

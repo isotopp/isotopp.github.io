@@ -11,7 +11,7 @@ title: Chinese New Year, and birthrate anomalies
 aliases:
   - /2017/01/26/chinese-new-year-and-birthrate-anomalies.html
 ---
-![](2017/01/f9463344d3ed41479d28dcd7.jpg) 
+![2017/01/f9463344d3ed41479d28dcd7.jpg](f9463344d3ed41479d28dcd7.jpg) 
 
 Coming up: Chinese New Year on 28. January. The coming year is a
 [year of the Fire Rooster](http://www.chinahighlights.com/travelguide/chinese-zodiac/rooster.htm),
@@ -32,4 +32,4 @@ explains:
 Solution? Don't make babies in a Fire Horse year, and especially
 no female babies. So 1966 was a Fire Horse, and that's what 1966
 stats look like:
-![](2017/01/japan-birthrate-graph.png)
+![2017/01/japan-birthrate-graph.png](japan-birthrate-graph.png)

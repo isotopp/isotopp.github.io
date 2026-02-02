@@ -14,7 +14,7 @@ aliases:
 ---
 Reflex, Impulse and Exo are the continuation of [Jumper]({{< relref "2016-02-28-fertig-gelesen-jumper.md" >}}). Jumper was dealing with a young man, living with an alcohol dependent father and dealing with abuse. The young man leaves, builds a new existence and in this conflicts with secret services and terrorists. In the course of the story he makes peace with his father and his past, manages to build a meaningful relationship and build a stable life and income.
 
-[![](2018/09/impulse.jpg)](https://www.amazon.de/Impulse-Jumper-Novel-Steven-Gould-ebook/dp/B00AEC8OUW)
+[![2018/09/impulse.jpg](impulse.jpg)](https://www.amazon.de/Impulse-Jumper-Novel-Steven-Gould-ebook/dp/B00AEC8OUW)
 
 [Impulse](https://www.amazon.de/Impulse-Jumper-Novel-Steven-Gould-ebook/dp/B00AEC8OUW)
 

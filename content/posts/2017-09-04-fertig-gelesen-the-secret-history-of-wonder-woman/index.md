@@ -13,7 +13,7 @@ aliases:
   - /2017/09/04/fertig-gelesen-the-secret-history-of-wonder-woman.html
 ---
 
-[![](2017/09/secret-history-of-wonder-woman.jpg)](https://www.amazon.de/Secret-History-Wonder-Woman-ebook/dp/B00PBVBLGA)
+[![2017/09/secret-history-of-wonder-woman.jpg](secret-history-of-wonder-woman.jpg)](https://www.amazon.de/Secret-History-Wonder-Woman-ebook/dp/B00PBVBLGA)
 
 One of the weirdest and most interesting characters in the DC
 Universe is Wonder Woman, because she is full of seemingly

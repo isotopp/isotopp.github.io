@@ -15,7 +15,7 @@ It was set to remind the son that it is time to get going for school.
 We noticed in time, but when I looked into the "Why?" things got interesting.
 That alarm is a chime from the household Sonos system, and when I investigated, I got this:
 
-![](2020/06/sonos-s1.png)
+![2020/06/sonos-s1.png](sonos-s1.png)
 
 *Sonos did the split and upgraded/rebranded their controller operating system to S1.*
 

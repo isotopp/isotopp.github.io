@@ -63,7 +63,7 @@ The result of the test run is as follows shown, and since at point 10.000
 rows were not enough, I later added a second test run with 100.000 rows and
 step sizes of `5..14` (32 rows to 16384 rows).
 
-![](2020/07/transactions-benchmark.jpg)
+![2020/07/transactions-benchmark.jpg](transactions-benchmark.jpg)
 
 *Script runtime as a function of commit batch size. x-Axis is logarithmic, y-axis is linear.* 
 

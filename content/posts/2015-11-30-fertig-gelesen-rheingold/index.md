@@ -14,7 +14,7 @@ aliases:
 ---
 Dritter und letzter Teil der 2. Trilogie in der Ætherwelt, eine Falk-und-Minerva-Geschichte. In der wir endlich Fafnir treffen, die französischen Dampf-Kampfroboterinnen Action sehen, die Naniten zurück kommen und Thor Loki endlich aufs Maul haut. Oder anders gesagt - Anja Bagus dreht auf.
 
-[![](2015/11/rheingold.jpg)](https://www.amazon.de/dp/B015YDJ4GS)
+[![2015/11/rheingold.jpg](rheingold.jpg)](https://www.amazon.de/dp/B015YDJ4GS)
 
 [Rheingold](https://www.amazon.de/dp/B015YDJ4GS)
 

@@ -13,7 +13,7 @@ aliases:
   - /2017/02/28/fertig-gelesen-the-culture-map.html
 ---
 
-[![](2017/02/Screen-Shot-2017-02-28-at-21.51.11-201x300.png)](https://www.amazon.de/dp/B06XCGTKL8)
+[![2017/02/Screen-Shot-2017-02-28-at-21.51.11-201x300.png](Screen-Shot-2017-02-28-at-21.51.11-201x300.png)](https://www.amazon.de/dp/B06XCGTKL8)
 
 [The Culture Map](https://www.amazon.de/dp/B06XCGTKL8)
 

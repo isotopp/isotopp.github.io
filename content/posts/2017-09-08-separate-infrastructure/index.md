@@ -11,7 +11,7 @@ title: Separate Infrastructure
 aliases:
   - /2017/09/08/separate-infrastructure.html
 ---
-![](2017/09/separate-infrastructure-640x423.jpg)
+![2017/09/separate-infrastructure-640x423.jpg](separate-infrastructure-640x423.jpg)
 
 Cargobike mum with child cycling independently on Upper Thames Street.
 Unimaginable before cycling infrastructure. -- [Mark Treasure](https://twitter.com/AsEasyAsRiding/status/905444434288009216)
@@ -39,7 +39,7 @@ that bike paths hide cyclists until they suddenly appear when crossing a
 road, and the way this stuff is being constructed in Germany it is true that
 visibility of cyclists is suboptimal and often outright dangerous. 
 
-![](2017/09/altec-basic-28-inch-omafiets-zwart-52cm_1.jpg)
+![2017/09/altec-basic-28-inch-omafiets-zwart-52cm_1.jpg](altec-basic-28-inch-omafiets-zwart-52cm_1.jpg)
 
 The Omafiets is being used by everyone, Omas as well as Jongens or
 businessmen.

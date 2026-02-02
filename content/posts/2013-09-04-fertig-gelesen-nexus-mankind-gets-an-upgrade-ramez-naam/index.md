@@ -14,7 +14,7 @@ aliases:
 ---
 Noch schnell was zu lesen für heute Nacht?
 
-[![](2013/09/nexus.png)](https://www.amazon.de/Nexus-Trilogy-Book-English-ebook/dp/B00TOZI7FM)
+[![2013/09/nexus.png](nexus.png)](https://www.amazon.de/Nexus-Trilogy-Book-English-ebook/dp/B00TOZI7FM)
 
 [Nexus](https://www.amazon.de/Nexus-Trilogy-Book-English-ebook/dp/B00TOZI7FM)
 

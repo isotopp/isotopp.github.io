@@ -19,7 +19,7 @@ Golem titelt [Intel will Xeon-Funktionen als Lizenz-Update verkaufen](https://ww
 
 [Manuel Atug ranted](https://twitter.com/HonkHase/status/1442760700112343044) darüber auf Twitter:
 
-![](2021/09/intel-software-silicon.jpg)
+![2021/09/intel-software-silicon.jpg](intel-software-silicon.jpg)
 
 *Wenn dir die eigene Hardware nicht mehr gehört...
 Intel will Xeon-Funktionen als Lizenz-Update verkaufen

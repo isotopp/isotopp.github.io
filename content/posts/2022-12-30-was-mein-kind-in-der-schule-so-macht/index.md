@@ -17,7 +17,7 @@ Die Niederlande sind ja ein Land, das mit WhatsApp funktioniert.
 
 Damit kann man einverstanden sein oder nicht, aber Metcalfe's Law ist mächtig und wenn man das Land nicht in Hard Mode spielen will, dann legt man sich besser ein WhatsApp zu.
 
-![](2022/12/whatsapp-01.jpg)
+![2022/12/whatsapp-01.jpg](whatsapp-01.jpg)
 *An ungefähr jedem zweiten Wohngebiet findet man ein solches Schild an der Einfahrtstraße.
 Es gehört zu [WBAP](https://www.wabp.nl/) (WhatsApp BuurtPreventie), einem System von mehr als 10.000 Nachbarschafts-Chatgruppen.*
 
@@ -80,7 +80,7 @@ Die Anwendung kann mehrere Kinder verwalten.
 
 Ich sehe den Stundenplan, Hausaufgabe, Fehlzeiten, Noten und diverse Mails und Mitteilungen der Schulleitung, sowie To-do-Listen und zusätzliche Studienangebote der Schule.
 
-![](2022/12/magister-01.jpg)
+![2022/12/magister-01.jpg](magister-01.jpg)
 *Screenshot des Hauptmenüs von Magister mit den Punkten Stundenplan, Hausaufgaben, Abwesenheit, Noten, Mail, Mitteilungen, Studienwegweiser, Todo und Stammdatenverwaltung.*
 
 Ich kann im Stundenplan sehen, ob Hausaufgaben aufgegeben sind.
@@ -90,12 +90,12 @@ In der Hausaufgabenansicht bekomme ich das kompakter, als Liste.
 
 Fehlzeiten, entschuldigt und unentschuldigt, bekomme ich auch mit.
 
-![](2022/12/magister-02.jpg)
+![2022/12/magister-02.jpg](magister-02.jpg)
 *Stundenplan für den 12. Januar 2023, mit Unterrichtsbeginn um 9:35. Es ist eine Doppelstunde Geschichte, dann Kunst, dann zwei Doppelstunden O&O. Zu Geschichte ist eine Hausaufgabe vorhanden, die noch nicht abgehakt ist.*
 
 In der Notenansicht sind die letzten Ergebnisse, das Datum des neusten Ergebnisses und die Note selbst (hier zensiert) jeweils sichtbar.
 
-![](2022/12/magister-03.jpg)
+![2022/12/magister-03.jpg](magister-03.jpg)
 *Die Notenansicht. Sie zeigt jeweils das Datum des letzten Ergebnisses und (hier zensiert) das letzte Ergebnis, sowie die Anzahl der vorliegenden Ergebnisse. Man kann dann auf die einzelnen Leistungsnachweise zurückblättern.*
 
 Auf diese Weise ist zwischen allen Beteiligten jeweils die Faktenlage aktuell und transparent dokumentiert und es geht nichts verloren.

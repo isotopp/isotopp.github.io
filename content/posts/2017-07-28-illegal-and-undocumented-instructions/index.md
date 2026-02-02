@@ -11,7 +11,7 @@ title: Illegal and undocumented instructions
 aliases:
   - /2017/07/28/illegal-and-undocumented-instructions.html
 ---
-[![](2017/07/6502-die.jpg)](http://www.pagetable.com/?p=39)
+[![2017/07/6502-die.jpg](6502-die.jpg)](http://www.pagetable.com/?p=39)
 
 Illegal and undocumented instructions are not a new thing. The Commodore 64
 CPU, a 6502 with a few additional I/O lines, was known to have them. Since

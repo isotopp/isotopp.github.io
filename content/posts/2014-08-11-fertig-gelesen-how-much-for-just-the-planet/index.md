@@ -14,7 +14,7 @@ aliases:
 ---
 >The door opened again, and Ship’s Surgeon Leonard McCoy came in. Without a word to anyone, he walked crookedly to the wall, leaned heavily against it, and said something that sounded like “Plergb hfarizz ungemby, and coffee.” Bones McCoy was not a morning person.
 
-[![](2014/08/planet.jpg)](https://www.amazon.de/Much-Just-Planet-Star-Trek-ebook/dp/B000FC0PWQ)
+[![2014/08/planet.jpg](planet.jpg)](https://www.amazon.de/Much-Just-Planet-Star-Trek-ebook/dp/B000FC0PWQ)
 
 [How much just for the planet?](https://www.amazon.de/Much-Just-Planet-Star-Trek-ebook/dp/B000FC0PWQ)
 

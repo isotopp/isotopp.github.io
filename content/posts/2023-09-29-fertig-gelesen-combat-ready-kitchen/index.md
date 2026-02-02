@@ -16,7 +16,7 @@ In [Combat Ready Kitchen](https://www.amazon.de/gp/product/B00TY3ZOQE),
 Anastacia Marx de Salcedo traces the history of food preservation from an american point of view,
 and demonstrates the co-development of combat rations and modern U.S. supermarket food.
 
-![](2023/09/combat-ready.jpg)
+![2023/09/combat-ready.jpg](combat-ready.jpg)
 
 The book takes us through the history of U.S. combat rations, from before the invention of the tin can, through canned,
 better preserved, but incredibly heavy food to what soldiers have today.

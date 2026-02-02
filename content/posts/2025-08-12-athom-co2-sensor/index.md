@@ -30,7 +30,7 @@ The new device is autodetected in Bluetooth, and you can select it in Settings->
 Enter the Wifi Credentials, and it joins the Wifi and will be autodetected as a new ESPHome Device.
 It can then be integrated, and delivers measurements.
 
-![](2025/08/athom-01.png)
+![2025/08/athom-01.png](athom-01.png)
 *Athom Device delivering CO2 measurements as a graph and a PPM display.*
 
 {{< reveal question="Code for the display shown above (Yaml Fragment in Home Assistant)." >}}
@@ -73,5 +73,5 @@ You will need to find a safe wall socket to stick it into,
 so that nobody catches the device and breaks it off.
 Or find a USB power Supply with an angled USB Socket.
 
-![](2025/08/athom-02.png)
+![2025/08/athom-02.png](athom-02.png)
 *[Athom](https://www.athom.tech/blank-1/co2-sensor) order page with technical data.*

@@ -13,7 +13,7 @@ aliases:
 
 [Deloitte Media Consumer Survey 2024](https://www.deloitte.com/de/de/Industries/tmt/media-consumer-survey.html)
 
-![](2024/10/abnormal-01.png)
+![2024/10/abnormal-01.png](abnormal-01.png)
 *Mediennutzung 2021 vs. 2024: Auch 2021 hat Deloitte im Rahmen der Media Consumer Survey 2.000 Konsument:innen zur TV- und Videonutzung befragt. Was hat sich seitdem verändert?*
 
 *2021 Immer mehr Zuschauer wenden sich vom linearen TV ab // 2024 Trotz weiterer Zuschauerverluste schauen weiterhin 81% überwiegend linear.*

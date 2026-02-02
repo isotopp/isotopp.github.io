@@ -37,7 +37,7 @@ In Mail.app, select the message you have identified as phishing training mail, a
 `View -> Message -> Raw Source (⌥⌘U)`.
 Then check for lines that start with `X-` in the header that identify the training provider or reference "Phish".
 
-![](2023/05/phish-06.png)
+![2023/05/phish-06.png](phish-06.png)
 
 *See Message Raw Source in Mail.app.*
 
@@ -45,13 +45,13 @@ In Outlook for Mac, select the message you have identified as phishing training 
 `View Source`.
 Then check for lines that start with `X-` in the header that identify the training provider or reference "Phish".
 
-![](2023/05/phish-07.png)
+![2023/05/phish-07.png](phish-07.png)
 
 *See Message Raw Source in Outlook for Mac.*
 
 The line you are looking for might be looking like this:
 
-![](2023/05/phish-08.png)
+![2023/05/phish-08.png](phish-08.png)
 
 *In our case, the line identifying the phishing training mails looks like `X-Phishme: Phishing_Training`.
 In fact, we only care about the presence of the `X-PhishMe` header line and the actual value after the `:` is completely irrelevant.
@@ -64,17 +64,17 @@ I'm on a Mac, and for a long time my corporate email was on Gmail.
 Unfortunately, Gmail cannot filter on arbitrary X-headers, and registering an application to OAuth against corporate mail is complicated.
 But Apple's `Mail.app` comes preregistered, was allowed, and can filter.
 
-![](2023/05/phish-01.png)
+![2023/05/phish-01.png](phish-01.png)
 
 So I can just sacrifice another 200 MB or so to the God of Better Mail and get proper filters in return.
 In any case, `⌘-,` ("Cmd-Comma") gives me the `Rules` menu, and from there I can `Add Rule`.
 
-![](2023/05/phish-02.png)
+![2023/05/phish-02.png](phish-02.png)
 
 You would want to add a filter on the Header-Line `X-PhishMe`.
 For what, we want to create a rule that looks like this:
 
-![](2023/05/phish-03.png)
+![2023/05/phish-03.png](phish-03.png)
 
 *This is what our filter should look like, but it can't. 
 That is, because the first time around Mail.app does not know about this `X-` header.*
@@ -82,11 +82,11 @@ That is, because the first time around Mail.app does not know about this `X-` he
 Currently, your Mail.app does not yet understand this particular X-Header, so when you want to create this rule,
 you need to `Edit header list...`.
 
-![](2023/05/phish-04.png)
+![2023/05/phish-04.png](phish-04.png)
 
 and then add the header to the list of known header lines:
 
-![](2023/05/phish-05.png)
+![2023/05/phish-05.png](phish-05.png)
 
 Only now can you create the filter as shown above.
 In this example, I have moved the message to the Trash Bin, but you can choose any target you want.
@@ -101,11 +101,11 @@ You are done.
 In Outlook for Mac, also hit `⌘-,` ("Cmd-Comma") and choose `Rules`.
 Create a new rule and make sure it is enabled:
 
-![](2023/05/phish-09.png)
+![2023/05/phish-09.png](phish-09.png)
 
 The rule should look like this:
 
-![](2023/05/phish-10.png)
+![2023/05/phish-10.png](phish-10.png)
 
 That is, move the message to a folder of your choice, and make sure to enable "Stop processing more rules".
 Make sure the rule is the first one in the list.

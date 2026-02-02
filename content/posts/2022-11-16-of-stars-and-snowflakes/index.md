@@ -21,7 +21,7 @@ Users exist and can reserve Things to use, for a day.
 
 You probably get a structure such as this:
 
-![](2022/11/snowflake-01.png)
+![2022/11/snowflake-01.png](snowflake-01.png)
 
 *In an OLTP database, a reservation is a `(resid, userid, thingid, date)`. It references the `user` data by `userid`, and the `thing` data by `thingid`.*
 

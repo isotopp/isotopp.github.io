@@ -15,7 +15,7 @@ aliases:
 [John Scalzi's](https://mastodon.social/@scalzi) latest book is currently
 [Starter Villain](https://www.amazon.de/Starter-Villain-turbo-charged-supervillains-minions-ebook/dp/B0BJDXRGX8).
 
-![](2023/10/starter-villain.jpg)
+![2023/10/starter-villain.jpg](starter-villain.jpg)
 
 The premise is simple: Charlie's estranged Uncle Jake died.
 Charlie and his uncle are estranged because Charlie's father and Jake had a fallout at the funeral of Charlie's mom,

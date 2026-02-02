@@ -25,7 +25,7 @@ comparable hardware: -02 and -03 are both Dell M630 with 128 GB
 of memory and two SSD. They should behave identically, yet one
 runs from memory, but the other is reading 40 MB/s from disk.
 
-![](2019/11/symptom-metrics.png)
+![2019/11/symptom-metrics.png](symptom-metrics.png)
 
 Machine somehierarchy-02 reading up to 40 MB/s from disk. The
 sister box runs from memory.
@@ -186,7 +186,7 @@ old transactions.
 
 We can monitor this:
 
-![](2019/11/undo-log.png)
+![2019/11/undo-log.png](undo-log.png)
 
 and we will. Not necessarily a thing to alert on at night, but
 certainly a thing to check up on early on in debugging.

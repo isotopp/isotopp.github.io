@@ -17,7 +17,7 @@ Nachdem mich jetzt das dritte Paar computer-affiner Eltern mal gefragt hat, was 
 Minecraft ist ursprünglich von der schwedischen Firma Mojang in Java entwickelt worden.
 Der Eigner, Markus "Notch" Persson, hat das Spiel und die Firma Mitte 2014 auf Twitter zum Verkauf angeboten, und Microsoft hat die Firma gekauft.
 
-[![](2021/12/minecraft6.jpg)](https://twitter.com/notch/status/478766808841732096)
+[![2021/12/minecraft6.jpg](minecraft6.jpg)](https://twitter.com/notch/status/478766808841732096)
 *Spiel zu verkaufen - Minecraft ist auf Twitter angeboten worden. Jeder mit dem notwendigen Kleingeld -- 2.5 Milliarden USD -- konnte zuschlagen.*
 
 Techradar hat mehr zur [Geschichte von Minecraft](https://www.techradar.com/news/the-history-of-minecraft).
@@ -37,7 +37,7 @@ Es gibt deswegen praktisch keine Mod-Scene, sondern nur abgepacktes Gameplay.
 
 Niemand spielt Bedrock, und wenn Dein Kind von Minecraft redet, meint es die [Java-Edition](https://www.minecraft.net/en-us/store/minecraft-java-edition).
 
-![](2021/12/minecraft1.jpg)
+![2021/12/minecraft1.jpg](minecraft1.jpg)
 *Die Maskottchen und default Skins: Steve und Alex.*
 
 Die Java-Edition ist extrem lebendig, genau genommen ein unregulierter Dschungel.
@@ -51,7 +51,7 @@ Es ist zunächst einmal eine Art virtuelles Lego im Anzug eines Survival- und Cr
 Die Spieler müssen in einer Welt aus Blöcken erkunden, Ressourcen sammeln, aus den Ressourcen Dinge bauen und dabei die Nacht überleben.
 Das ist nicht unbedingt einfach, denn in der Nacht kommen verschiedene Monster, gegen die man nur bestehen kann, wenn man tagsüber einen Unterschlupf gebaut und Ausrüstung gewonnen hat.
 
-![](2021/12/minecraft2.jpg)
+![2021/12/minecraft2.jpg](minecraft2.jpg)
 *Die Overworld, die normale Welt, hat verschiedene Klimazonen ("Biome"), in denen unterschiedliche Ressourcen zu finden sind.*
 
 Das Spiel hat eine marginale Story, im Laufe derer die Spieler weitere "Welten" entdecken und durch Portale betreten können:
@@ -69,7 +69,7 @@ Weil es Java ist, funktioniert das alles mit demselben Spiel.
 Wegen der Modding-Community (dazu unten mehr) gibt es praktisch auch keine Höchstanforderungen an die Hardware:
 Wenn man Raytracing Renderer installiert hat, reizt das Spiel auch eine [Nvidia RTX 3090](https://www.youtube.com/watch?v=AdTxrggo8e8) voll aus.
 
-[![](2021/12/minecraft3.jpg)](/uploads/2021/12/minecraft3.jpg)
+[![2021/12/minecraft3.jpg](minecraft3.jpg)](/uploads/2021/12/minecraft3.jpg)
 *Minecraft Standard und mit einem Raytracing Render Mod auf einer Nvidia RTX. Was ein paar hingeworfene Kissen ausmachen...*
 
 Minecraft ist eine Client-Server-Anwendung. Ein oder mehr Spieler verbinden ihre Clients mit dem Minecraft-Server und bespielen dann zusammen diese Welt.
@@ -173,7 +173,7 @@ eula=true
 ```
  und eine etwa längliche `server.properties`-Datei, die die eigentliche [Konfiguration](https://www.spigotmc.org/wiki/spigot-configuration-server-properties/) des Basis-Servers darstellt.
 
-![](2021/12/minecraft4.jpg)
+![2021/12/minecraft4.jpg](minecraft4.jpg)
 *Dem Serverprozeß wird reichlich Speicher gegeben, aber trotz der großen Anzahl von Plugins liegt die effektive Prozeßgröße bei circa 3 GB (aber es laufen 84 Java-Threads).*
 
 Der Serverprozeß ist ursprünglich recht klein, aber wenn man den Server mit Plugins vollstopft nach oben offen.
@@ -212,7 +212,7 @@ Es automatisiert auch analog zum Server-Build, den Client automatisiert zu dekom
 Populär sind Forge und Fabric, die direkt von MultiMC integriert werden.
 Danach kann man den Client dann mit Mods voll laden.
 
-![](2021/12/minecraft5.jpg)
+![2021/12/minecraft5.jpg](minecraft5.jpg)
 *MultiMC mit einer Instanz von Minecraft 1.14.4 und installiertem Fabric. Zu neue Minecraft-Versionen werden von der Mod-Community noch nicht voll unterstützt, zu alte nicht mehr. Die 1.14-Serie hat im Moment gute Kompatibilität.*
 
 Mit den Mods und Plugins sollte man unbedingt mit dem Kind Vereinbarungen treffen.

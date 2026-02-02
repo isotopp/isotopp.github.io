@@ -130,7 +130,7 @@ These 21 words do not say "Wonder Woman", they do not even go near comics, DC, o
 Yet they draw a thousand-dimensional hyberbubble in latent space, the totality of knowledge known to ChatGPT,
 and the end result leaves just one choice – produce this blatant copyright violation.
 
-![](2025/06/recommender-01.png)
+![2025/06/recommender-01.png](recommender-01.png)
 
 I can trigger content with intent, not even going near the keywords that would be associated with it.
 

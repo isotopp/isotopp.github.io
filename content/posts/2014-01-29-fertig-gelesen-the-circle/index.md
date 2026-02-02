@@ -14,7 +14,7 @@ aliases:
 ---
 "The Circle" ist eine hypothetische Google-Facebook-Twitter-Nachfolgefirma und der Star des Silicon Valley. Die Firma hat sich totale Transparenz und umfassende Datenerfassung auf die Fahnen geschrieben. Mae Holland fängt durch Beziehungen bei The Circle an und wird auf Grund konstruierter Verwicklungen dort durch die Abteilungen geschoben und über die Zeit zum Firmenmaskottchen.
 
-[![](2014/01/circle.png)](http://www.amazon.de/Circle-Dave-Eggers-ebook/dp/B00EGMQIJ0)
+[![2014/01/circle.png](circle.png)](http://www.amazon.de/Circle-Dave-Eggers-ebook/dp/B00EGMQIJ0)
 
 Aber die Handlung ist irrelevant. Dave Eggers ist auf einer Mission, und bastelt daher einen hölzernen Lehr-Roman ohne relevante Handlung oder glaubhafte Personen. Die Handelnden (denn Personen sind es nicht) haben zum Teil Neurosen von Seinfeld-Ausmaßen ohne daß es wie bei Seinfeld Komik-Potential hat, und die Verwicklungen sind konstruiert.
 

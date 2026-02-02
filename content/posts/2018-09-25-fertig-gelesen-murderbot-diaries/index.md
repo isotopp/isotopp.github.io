@@ -14,7 +14,7 @@ aliases:
 ---
 Murderbot is a corporate owned killing machine, a secbot, a half-organic artificially intelligent android. Its purpose is to protect corporate assets - settlers and science teams - in hostile environments for as long as it makes economic sense.
 
-[![](2018/09/murderbot.jpg)](https://www.amazon.de/All-Systems-Red-Kindle-Single-ebook/dp/B01MYZ8X5C)
+[![2018/09/murderbot.jpg](murderbot.jpg)](https://www.amazon.de/All-Systems-Red-Kindle-Single-ebook/dp/B01MYZ8X5C)
 
 [All Systems Red](https://www.amazon.de/All-Systems-Red-Kindle-Single-ebook/dp/B01MYZ8X5C)
 

@@ -12,7 +12,7 @@ aliases:
   - /2017/03/20/when-you-commit-to-git-how-long-does-it-matter.html
 ---
 
-[![](2017/03/git-git-768x473.png)](https://erikbern.com/2016/12/05/the-half-life-of-code.html)
+[![2017/03/git-git-768x473.png](git-git-768x473.png)](https://erikbern.com/2016/12/05/the-half-life-of-code.html)
 
 [Commit to git](https://erikbern.com/2016/12/05/the-half-life-of-code.html)
 

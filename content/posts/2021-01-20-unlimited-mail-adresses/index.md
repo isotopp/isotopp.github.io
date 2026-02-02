@@ -125,7 +125,7 @@ I used to run Apple Mail.app with this setup, and now on Windows am using [eM Cl
 
 In my case, I define a smart folder search which will find all unread mail in all folders (except $list of exceptions), and show it in a single folder. I want the search to automatically discover newly generated folders automatically, and I need the folder name shown in the overview.
 
-![](2021/01/emclient.png)
+![2021/01/emclient.png](emclient.png)
 
 *A smart folder, finding all unread mail anywhere, and showing it by folder. I made a few mails unread for demonstration.*
 

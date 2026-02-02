@@ -14,7 +14,7 @@ aliases:
 ---
 Ein SciFi-Roman über Buchhaltung in einer interstellaren Gesellschaft ohne FTL-Reisen. Wie kann man in so einem Umfeld Finanztransaktionen über Lichtjahre abwickeln, Investments und Kredite über Jahrhunderte vorfinanzieren und Verträge zwischen Entities schaffen, die sich konstruktionsbedingt nie treffen können?
 
-[![](2014/01/neptunes-brood.png)](http://www.amazon.de/Neptunes-Brood-Charles-Stross-ebook/dp/B009SQ01BA)
+[![2014/01/neptunes-brood.png](neptunes-brood.png)](http://www.amazon.de/Neptunes-Brood-Charles-Stross-ebook/dp/B009SQ01BA)
 
 [Neptune's Brood](http://www.amazon.de/Neptunes-Brood-Charles-Stross-ebook/dp/B009SQ01BA)
 

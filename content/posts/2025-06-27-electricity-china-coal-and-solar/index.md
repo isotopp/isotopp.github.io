@@ -18,14 +18,14 @@ According to Our World in Data, its electricity production is dominated by coal:
 
 https://ourworldindata.org/grapher/electricity-prod-source-stacked?country=~CHN&tableFilter=countries&tableSearch=China
 
-![](2025/06/china-01.png)
+![2025/06/china-01.png](china-01.png)
 *"OMG! So much coal! China dooms us all!"*
 
 Well, no.
 We are looking at growth in a growing market, and that is complicated.
 Let's switch to percentages...
 
-![](2025/06/china-02.png)
+![2025/06/china-02.png](china-02.png)
 
 Coal’s market share peaked at about 80% in 2007, but has since fallen to 58%—a 27-percentage point drop 
 despite overall growth in electricity production.

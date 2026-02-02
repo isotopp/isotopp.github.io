@@ -17,7 +17,7 @@ is the third and final book in Neal Asher's
 [Transformation Sequence](https://www.amazon.de/gp/product/B0725J2WXN/ref=series_rw_dp_sw),
 a trilogy set in the [Polity Universe](https://www.panmacmillan.com/blogs/science-fiction-and-fantasy/introduction-polity-universe-neal-asher).
 
-[![](2019/11/infinity-engine.jpg)](https://www.amazon.de/Infinity-Engine-Transformation-Book-Three/dp/159780889X)
+[![2019/11/infinity-engine.jpg](infinity-engine.jpg)](https://www.amazon.de/Infinity-Engine-Transformation-Book-Three/dp/159780889X)
 
 This is the conclusion of the three book arc about the
 redemption of the mis-manufactured and temporarily mad AI Penny

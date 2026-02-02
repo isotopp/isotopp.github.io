@@ -14,7 +14,7 @@ So where I work we have a large number of MySQL instances. They are organized in
 
 ## Structure of a large database setup
 
-![](2020/03/mysql-replication-pools.png)
+![2020/03/mysql-replication-pools.png](mysql-replication-pools.png)
 
 *A rough sketch of the setup we have. Variants of this exist in various sizes - from 6 replicas in 3 regions to hundreds of replicas per region, with Group Replication at the top and per Region Intermedia Master.*
 
@@ -38,7 +38,7 @@ The data we collect is circa any conceivable server metric, and using our versio
 
 This is sufficient to give us a general impression of query health: If we actually had bad queries, we would see the latencies suffer - first the P99, then the lower P's.
 
-![](2020/03/mysql-replication-bimodal.png)
+![2020/03/mysql-replication-bimodal.png](mysql-replication-bimodal.png)
 
 *An example bimodal distribition as per [Wikipedia: Multimodal Distribution](https://en.wikipedia.org/wiki/Multimodal_distribution#Mixture_of_two_normal_distributions). A bimodal distribution of query latencies can happen if you have fast queries with a normal distribution of execution times at the lower end, and a smaller hump of slow queries with higher execution times added to this. Not looking at the full histogram, the slow queries will first affect the P99, and then successively the lower P's until they affect the Median (P50).*
 

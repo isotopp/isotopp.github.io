@@ -16,7 +16,7 @@ aliases:
 module, but then I realized I could access the combined feed of
 entertainment channels carried on the company satellites.«
 
-[![](2017/11/all-systems-red.png)](https://www.amazon.de/Systems-Kindle-Single-Murderbot-Diaries-ebook/dp/B01MYZ8X5C)
+[![2017/11/all-systems-red.png](all-systems-red.png)](https://www.amazon.de/Systems-Kindle-Single-Murderbot-Diaries-ebook/dp/B01MYZ8X5C)
 
 This is how »All Systems Red« begins.
 

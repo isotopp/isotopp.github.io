@@ -12,7 +12,7 @@ title: 'Finished Reading: Maddrax 443 "Die Erleuchteten"'
 aliases:
   - /2017/01/26/finished-reading-maddrax-443-die-erleuchteten.html
 ---
-![](2017/01/Bildschirmfoto-2017-01-26-um-21.14.42.png)
+![2017/01/Bildschirmfoto-2017-01-26-um-21.14.42.png](Bildschirmfoto-2017-01-26-um-21.14.42.png)
 
 "[Maddrax 443: Die Erleuchteten](https://www.amazon.de/Maddrax-Folge-443-Die-Erleuchteten-ebook/dp/B01MSZX2T7)",
 Jo Zybell (german language, EUR 1.49)

@@ -23,7 +23,7 @@ Man kommt an eine neue Maschine und muss sich erst einmal zurechtfinden.
 
 # Neu auf einem fremden System
 
-![](2000/04/neu-system-001.jpg)
+![2000/04/neu-system-001.jpg](neu-system-001.jpg)
 
 Orientierung:
 - Typ und Ausstattung der Maschine
@@ -50,7 +50,7 @@ Die Maschine kann für ihre Aufgabe angepasst werden (Hardware- oder Softwareins
 
 # Typ und Ausstattung der Maschine
 
-![](2000/04/neu-system-002.jpg)
+![2000/04/neu-system-002.jpg](neu-system-002.jpg)
 
 - Was für Hardware ist das hier?
 - Was ist in der Maschine eingebaut?
@@ -76,7 +76,7 @@ Neben `w` und `uptime` einmal die Prozeßliste ansehen (`ps -ef`, `ps axuwww`) u
 
 # Speicher und Last
 
-![](2000/04/neu-system-003.jpg)
+![2000/04/neu-system-003.jpg](neu-system-003.jpg)
 
 Virtueller Speicher und seine Auslastung:
 
@@ -95,7 +95,7 @@ Punktmessungen können hilfreich sein, aber ein Wochenlastprofil ist sehr viel w
 
 # Platten
 
-![](2000/04/neu-system-004.jpg)
+![2000/04/neu-system-004.jpg](neu-system-004.jpg)
 
 - Logical Volume Management?
   - Welches System?
@@ -134,7 +134,7 @@ Prüfe auch:
 
 # Netzwerk und Netzwerknachbarschaft
 
-![](2000/04/neu-system-005.jpg)
+![2000/04/neu-system-005.jpg](neu-system-005.jpg)
 
 - Übersicht über Interfaces und Routen
   - `-n` Option verwenden
@@ -157,7 +157,7 @@ Andere Kunden haben nur Default-Routen und bekommen differenzierte Routen nur ü
 
 # Name Resolution
 
-![](2000/04/neu-system-006.jpg)
+![2000/04/neu-system-006.jpg](neu-system-006.jpg)
 
 - Welche Namensdienste werden verwendet?
 - Welche Server werden verwendet?
@@ -182,7 +182,7 @@ Security: Wer macht was in wessen Auftrag? Wer kontrolliert? Wird die Konfigurat
 
 # Netzwerkdienste
 
-![](2000/04/neu-system-007.jpg)
+![2000/04/neu-system-007.jpg](neu-system-007.jpg)
 
 - Welche Netzwerkdienste werden erbracht?
   - Prüfe neben `inetd` auch persistenten Server.
@@ -216,7 +216,7 @@ Vergleiche Prozeduren bei uns im Haus:
 
 # Welche Verzeichnisse werden exportiert?
 
-![](2000/04/neu-system-008.jpg)
+![2000/04/neu-system-008.jpg](neu-system-008.jpg)
 
 - Häufige Panne:
   - Verzeichnisse werden ungewollt exportiert
@@ -251,7 +251,7 @@ Einschlägige Selbstmordkonfigurationen zeigen.
 
 # Was ist installiert?
 
-![](2000/04/neu-system-009.jpg)
+![2000/04/neu-system-009.jpg](neu-system-009.jpg)
 
 - Welche Pakete und Programme sind installiert?
   - In welcher Version?
@@ -277,7 +277,7 @@ Einschlägige Selbstmordkonfigurationen zeigen.
 
 # Was soll laufen?
 
-![](2000/04/neu-system-010.jpg)
+![2000/04/neu-system-010.jpg](neu-system-010.jpg)
 
 - Welche Dienste sollen von der Maschine erbracht werden?
   - Konfiguration beim Systemstart für persistente Server
@@ -299,7 +299,7 @@ Einschlägige Selbstmordkonfigurationen zeigen.
 
 # Was Läuft?
 
-![](2000/04/neu-system-011.jpg)
+![2000/04/neu-system-011.jpg](neu-system-011.jpg)
 
 - Welche Dienste sind auf der Maschine aktiv?
   - Welche waren aktiv?
@@ -315,7 +315,7 @@ Einschlägige Selbstmordkonfigurationen zeigen.
 
 # Welche User können rein?
 
-![](2000/04/neu-system-012.jpg)
+![2000/04/neu-system-012.jpg](neu-system-012.jpg)
 
 - Quellen von Userlisten
   - lokal, aus dem Netz
@@ -335,7 +335,7 @@ Verweis auf Folgeschulungen:
 
 # Welche User waren drin?
 
-![](2000/04/neu-system-013.jpg)
+![2000/04/neu-system-013.jpg](neu-system-013.jpg)
 
 - Auswertung des Logbuches
   - Querabgleiche mit anderen Logs
@@ -354,7 +354,7 @@ Verweis auf Folgeschulungen:
 
 Bonusfolien aus der alten Schulung
 
-![](2000/04/neu-system-014.jpg)
+![2000/04/neu-system-014.jpg](neu-system-014.jpg)
 
 - Erkläre, wer unter welchen Bedingungen in UNIX auf eine Datei zugreifen darf!
   - rwx? sst?
@@ -373,7 +373,7 @@ Bonusfolien aus der alten Schulung
 
 Bonusfolien aus der alten Schulung
 
-![](2000/04/neu-system-015.jpg)
+![2000/04/neu-system-015.jpg](neu-system-015.jpg)
 
 Die meisten Fehler entstehen nicht durch falsche Software, sondern dumme User.
 
@@ -392,7 +392,7 @@ Die meisten Fehler entstehen nicht durch falsche Software, sondern dumme User.
 
 Bonusfolien aus der alten Schulung
 
-![](2000/04/neu-system-016.jpg)
+![2000/04/neu-system-016.jpg](neu-system-016.jpg)
 
 - Auf vielen älteren kommerziellen Unices sind Gerätedateien unzureichend geschützt.
   - Beschreibbare Plattendevices, Banddevices

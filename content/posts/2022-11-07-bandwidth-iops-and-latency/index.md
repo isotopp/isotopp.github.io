@@ -11,7 +11,7 @@ aliases:
   - /2022/11/07/bandwidth-iops-and-latency.html
 ---
 
-![](2022/11/db-metrics-01.jpg)
+![2022/11/db-metrics-01.jpg](db-metrics-01.jpg)
 
 *[A harddisk](https://en.wikipedia.org/wiki/Hard_disk_drive#/media/File:Seagate_ST33232A_hard_disk_inner_view.jpg) from 1998.*
 
@@ -70,7 +70,7 @@ We monitor these batteries very closely for that reason.
 
 This is the performance we get from bare metal, for around 100 Euro/TB and 9W-25W per drive unit.
 
-![](2022/09/local-storage-09.jpg)
+![2022/09/local-storage-09.jpg](local-storage-09.jpg)
 
 *Write Completion Latency comparison between Local Storage (above) and Ceph (below) from [Database Workload and Storage]({{< relref "2022-09-27-mysql-local-and-distributed-storage.md" >}}).*
 
@@ -95,7 +95,7 @@ It is not the inverse of Latency.
 This is discussed at length in [Adventures in Storageland]({{< relref "2019-06-13-adventures-in-storageland.md" >}}).
 The distinction is extremely important for Flash Storage with NVME interfaces.
 
-![](2022/11/db-metrics-02.png)
+![2022/11/db-metrics-02.png](db-metrics-02.png)
 
 *Storage in SSD and NVME drives is made from a lot of storage chips. Writing to each takes a fixed amount of time, but there are many, and they can be used concurrently.*
 
@@ -127,7 +127,7 @@ That is, in order to get 800,000 IOPS, you will need to talk in 40 independent s
 
 Some workloads do have a high or even unlimited degree of parallelism.
 
-![](2022/11/db-metrics-03.jpg)
+![2022/11/db-metrics-03.jpg](db-metrics-03.jpg)
 
 *The CERN Atlas detector, a measurement device that delivers 10,000s of independent, concurrent metrics streams to a storage. (Image: [Cern](https://atlas.cern/Discover/Detector)).*
 
@@ -187,7 +187,7 @@ We can repeat the same with a random-read benchmark, no caching, in order to und
 
 Actual MySQL performance will be largely described by the results of this benchmark, even if the reality is slightly more nuanced.
 
-![](2021/02/class-200-lba.png)
+![2021/02/class-200-lba.png](class-200-lba.png)
 
 *Oakgate Workload Analytics shows what a database does with the disk when it is writing (Image from [MySQL from Below]({{< relref "2021-02-25-mysql-from-below.md" >}})).*
 

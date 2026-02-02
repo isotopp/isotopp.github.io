@@ -34,7 +34,7 @@ The schema in question holds metadata for a change data capture process, and tha
 
 and in memory:
 
-![](2022/09/not-the-database-01.jpg)
+![2022/09/not-the-database-01.jpg](not-the-database-01.jpg)
 
 *The mysqld process has a RES (resident set size) of only 5.9GB, even if the database is allowed to grow to a VIRT (virtual memory size) of 71.8 G.*
 
@@ -119,7 +119,7 @@ So there was one select statement that ran a whopping 14s on a database that has
 We onboard this hierarchy to Vividcortex, a monitor that collects performance data from databases, and allows to see specific queries that execute slowly. 
 It can also help in determining possible improvements.
 
-![](2022/09/not-the-database-02.jpg)
+![2022/09/not-the-database-02.jpg](not-the-database-02.jpg)
 
 *Vividcortex inventory for streaming. Normally Vividcortex does not run on all instances, but the primary and one pooled replica. We wanted a specific pooled replica in Frankfurt, though, so something with a 6000 number.*
 
@@ -130,7 +130,7 @@ In this case, we want a replica in a specific location, though: only one data ce
 This required some bespoke puppet artistry, but it worked.
 But, even then we do not get queries that are particularly interesting:
 
-![](2022/09/not-the-database-03.jpg)
+![2022/09/not-the-database-03.jpg](not-the-database-03.jpg)
 
 *We get Query Count, and Average Latency.
 But from the counts and the word average we can already see that this is not useful: we would have wanted to see high percentiles.
@@ -335,7 +335,7 @@ We have other instances of simple queries that sometimes take 14s to run, 1000x 
 
 Yeah, and that is as far as I got with my digging, when a colleague chimes in, pointing at  the machine dashboard for the machine I am on.
 
-![](2022/09/not-the-database-04.jpg)
+![2022/09/not-the-database-04.jpg](not-the-database-04.jpg)
 
 *A sick network interface is for sure messing with system performance.*
 
@@ -343,7 +343,7 @@ One of the machines in the pooled replicas for this data center location is show
 
 We experiment a bit by removing and re-adding the box to the pool, and sure enough: As soon as the system under test is in the pool the latencies are no longer production worthy.
 
-![](2022/09/not-the-database-05.jpg)
+![2022/09/not-the-database-05.jpg](not-the-database-05.jpg)
 
 *The image from the title bar: End user experience with and without the broken box in the replica pool. One bad box spoils the experience for all the users.*
 

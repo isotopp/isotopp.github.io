@@ -16,7 +16,7 @@ aliases:
 
 Foreign Keys are what links tables together and turns a set of tables into a model. Foreign Key Constraints are conditions that must be true for the content of the tables to be an internally consistent model. Foreign Key Constraints can be defined and enforced in InnoDB, but this comes at a considerable price, and for some it may hurt more than it is worth.
 
-![](2020/08/fk.png)
+![2020/08/fk.png](fk.png)
 
 *A very simple shop as an ER-model. `order_id` is the primary key of the Orders table.  `customer_id` in the Orders table is a foreign key: The primary key of another ("foreign") table in this table. Foreign keys can model relationships between tables ("entities") in an entity-relationship diagram.*
 

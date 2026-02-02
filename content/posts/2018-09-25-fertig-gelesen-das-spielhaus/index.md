@@ -14,7 +14,7 @@ aliases:
 ---
 Das Spielhaus hat viele Türen und sie führen zu vielen Orten und Zeiten auf der Erde. Gelangt man hinein, entdeckt man, daß die Spiele, die hier gespielt werden, alle auf Planung, Umsicht und Taktik basieren und nicht auf Zufall. Doch nur die besten Spieler gelangen in das Obergeschoß, in dem um die wirklich interessanten Einsätze gespielt wird: Lebensjahre, Fähigkeiten, Erinnerungen, und andere Dinge, die wirklich wichtig sind.
 
-[![](2018/09/spielhaus.jpg)](https://www.amazon.de/gp/product/B01KTM71SC)
+[![2018/09/spielhaus.jpg](spielhaus.jpg)](https://www.amazon.de/gp/product/B01KTM71SC)
 
 [Die Intrige von Venedig](https://www.amazon.de/gp/product/B01KTM71SC)
 

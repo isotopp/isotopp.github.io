@@ -40,7 +40,7 @@ Die Substeuereinheit hat dann gesagt "Nö." und ganz zu gemacht.
 
 Ab da hat das ganze System keine Energie mehr aus dem RZ raus holen können, das Wasser in den Kühlkreisläufen wurde wärmer und der Druck stieg.
 
-![](2016/05/klimaanlage.jpg)
+![2016/05/klimaanlage.jpg](klimaanlage.jpg)
 
 Als der Druck zu hoch wurde, bei (1), hat die Kältemaschine hingeschmissen und ihr Backup sprang an. Es gab keine Meldung. Maschine 2 hatte dasselbe Problem und bei (2) passierte dasselbe und Nummer 3 hat übernommen. Als die auch hingeschmissen hat (3), stieg die Zuluft-Temperatur an. Es wurde alarmiert.
 
@@ -70,7 +70,7 @@ Wir haben da eine ganze Menge Gruppen Klimatechniker (FH) durchgeführt, um die 
 
 Das System hat 21kW pro Rack in einem Raum mit 2.95 Meter Deckenhöhe (45cm Unterboden -> 2.50 Meter bis zur Decke) fahren können und den Airflow mit Kaltgang-Warmgang und Zwangsbelüftung der Racks gefahren.
 
-![](2016/05/11-racks-7kw.jpg)
+![2016/05/11-racks-7kw.jpg](11-racks-7kw.jpg)
 
 *Die alte Situation vor Ort: Rechenzentrumszelle mit 7kW Racks. Niedrige Deckenhöhe, räumlich beengte Situation. Doppelboden noch solid, und geschlossene Glastüren am Rack.*
 
@@ -88,7 +88,7 @@ In dem Fall hätte man dann einfach normale Klima von der Stange genommen und al
 
 Die Bauarbeiten zur Klimaaufrüstung und RZ-Erweiterung fanden im laufenden Betrieb statt.
 
-![](2016/05/01-plan.jpg)
+![2016/05/01-plan.jpg](01-plan.jpg)
 
 *Bauplan für die Klimaanlage, mit Rohrführungen, Pumpen und anderen Details.*
 
@@ -98,11 +98,11 @@ Unter anderem Kühlung. Hier sehen wir den Plan für drei Kältemaschinen, die i
 
 Der äußere Kühlkreislauf enthält Wasser, das dabei erwärmt wird. Dieses Wasser wird nach außen zu einer Reihe von großen Kühlkörpern geleitet, die diese Wärme nach außen an die Umgebung abgeben.
 
-![](2016/05/02-aggregate.jpg)
+![2016/05/02-aggregate.jpg](02-aggregate.jpg)
 
 *Drei Wärmepumpen, die dem inneren Kühlkreislauf Energie entziehen und in den äußeren Kreislauf bewegen.*
 
-![](2016/05/03-aggregat-einzeln.jpg)
+![2016/05/03-aggregat-einzeln.jpg](03-aggregat-einzeln.jpg)
 
 *Detailaufnahme einer Wärmepumpe. Die Technik ist dieselbe wie hinten an jedem Kühlschrank, nur größer. Das Aggregat wiegt 6 Tonnen und steht zur Schwingungsdämpfung auf einem "schwimmenden" Sockel.*
 
@@ -110,33 +110,33 @@ In der Realität sehen diese Dinger so aus und wiegen in etwa 6 Tonnen. Pro Stü
 
 Darum stehen die Dinger auch auf entkoppelten Betonfundamenten.
 
-![](2016/05/04-kuehlwasser.jpg)
+![2016/05/04-kuehlwasser.jpg](04-kuehlwasser.jpg)
 
 *Schweißarbeiten an den Kühlwasserrohren des inneren Kühlkreislaufes. Es ist ziemlich viel Wasser zu bewegen, entsprechend haben wir auch einen großen Rohrdurchmesser.*
 
-![](2016/05/05-pumpen.jpg)
+![2016/05/05-pumpen.jpg](05-pumpen.jpg)
 
 *Die Verteilerzentrale und die Pumpen für die Kühlung des Rechenzentrums (Ausschnitt) verteilt das Wasser des inneren Kühlkreislaufes in die Rechenzentrumszellen.*
 
-![](2016/05/06-rueckkuehler-cage.jpg)
+![2016/05/06-rueckkuehler-cage.jpg](06-rueckkuehler-cage.jpg)
 
 *Die Kühlkörper stehen in in einem großen Betonbunker. Links sieht man noch blau verpackt die Rohranschlüsse, mit denen Wasser zu den Kühlkörpern geleitet wird.*
 
 Dort, bei den blauen Abdeckungen, war später das motorisierte Steuerventil mit der Substeuereinheit, die den Ärger gemacht hat.
 
-![](2016/05/07-anlieferung-kuehler.jpg)
+![2016/05/07-anlieferung-kuehler.jpg](07-anlieferung-kuehler.jpg)
 
 *Die Kühler werden geliefert.*
 
-![](2016/05/08-kuehler.jpg)
+![2016/05/08-kuehler.jpg](08-kuehler.jpg)
 
 *Jeder Rückühler mit Kupferlamellen und Lüftern. Außerdem können wir Verdunstungskälte durch Versprühen von kalkfreiem Wasser erzeugen. Das ist notwendig, weil das Rechenzentrum im Rheintal steht, einem denkbar ungünstigen Ort für die Kühlung von Rechenzentren.*
 
-![](2016/05/09-kuehler-innen.jpg)
+![2016/05/09-kuehler-innen.jpg](09-kuehler-innen.jpg)
 
 *Das Schwarze da links und rechts ist im wesentlichen ein Kühlkörper mit Kühlrippen, genau wie die Kühlung auf der CPU Eures Desktop-Gamer-Rechners. Pro Kühler und Seite haben wir aber 6 qm. Und die CPU-Lüfter da oben über dem Kopf des Fotografen - naja, haltet Euren Arm da besser nicht rein.*
 
-![](2016/05/10-burn-in.jpg)
+![2016/05/10-burn-in.jpg](10-burn-in.jpg)
 
 *Die Kühlung wird getestet, bevor die Rechner ins RZ kommen. Dazu mietet man Heizlüfter an und simuliert Abwärme. Das ist ein ziemlicher Hightech-Prozeß, wie man sehen kann.*
 

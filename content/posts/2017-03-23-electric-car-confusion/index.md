@@ -50,7 +50,7 @@ here, focusing on GM and Tesla.
 What GM does with the Ampera-e looks like a compliance stunt to get fleet
 consumption down, not like a credible electric move, to some: Greenwashing?
 
-![](2017/03/Screen-Shot-2017-03-23-at-11.30.56.png)
+![2017/03/Screen-Shot-2017-03-23-at-11.30.56.png](Screen-Shot-2017-03-23-at-11.30.56.png)
 
 So what to make of it? Making cars is hard. Making self-driving, electric cars
 is even harder, because it involves the hard tasks from making large

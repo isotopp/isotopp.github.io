@@ -23,7 +23,7 @@ Das taten viele, denn das Spiel wurde von Niantic mehr oder weniger an die gesam
 Niantic hat dann versucht, Bots zu erkennen und Sicherheitsmaßnahmen in das Spiel einzubauen, die Botting schwieriger machen sollten.
 Ich habe später eine Reihe von Artikel auf Google+ zu diesem Thema geschrieben.
 
-![](2018/12/whatabotism.png)
+![2018/12/whatabotism.png](whatabotism.png)
 
 Aber Bots zu erkennen und dann zu bannen ist schwierig.
 Viel schwieriger als gedacht.

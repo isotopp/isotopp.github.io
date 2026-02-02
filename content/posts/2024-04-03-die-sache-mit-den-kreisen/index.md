@@ -18,7 +18,7 @@ Ich habe ihm ein paar Notizen gemacht.
 
 # Anatomie eines Kreises
 
-![](2024/04/kreis-01.png)
+![2024/04/kreis-01.png](kreis-01.png)
 
 Der Kreis hat einen Radius 1, einen Durchmesser von 2, das heißt, er belegt das Quadrat von `(-1, -1)` bis `(1, 1)`.
 Der Mittelpunkt **M** ist in der Mitte vom Koordinatensystem, bei `(0,0)`.
@@ -96,7 +96,7 @@ Wir können das leicht ineinander umrechnen.
 
 # Kreisfunktionen
 
-![](2024/04/kreis-02.png)
+![2024/04/kreis-02.png](kreis-02.png)
 
 Wenn wir jetzt eine Linie vom Mittelpunkt des Kreises M zum Rand zeichnen, 
 dann ist die Länge dieser Linie immer genau r, 
@@ -168,15 +168,15 @@ pygame.quit()
 
 Das Resultat mit der Schrittweite 45:
 
-![](2024/04/kreis-03.png)
+![2024/04/kreis-03.png](kreis-03.png)
 
 Das Resultat mit der Schrittweite 10 sieht schon recht rund aus:
 
-![](2024/04/kreis-04.png)
+![2024/04/kreis-04.png](kreis-04.png)
 
 # Öffnungsweite für einen Winkel alpha
 
-![](2024/04/kreis-05.png)
+![2024/04/kreis-05.png](kreis-05.png)
 
 Gegeben die Position der Punkte bei 0 Grad (1,0) (die Startposition) und bei 𝛂 Grad `(cos(𝛂),sin(𝛂))`,
 können wir nun die Linie zwischen diesen beiden Punkten zeichnen `line(start=(0,1), end=(cos(𝛂), sin(𝛂))`
@@ -205,7 +205,7 @@ Die Länge der Linie beträgt: 0.6180339887498948
 
 Als Zeichnung:
 
-![](2024/04/kreis-06.png)
+![2024/04/kreis-06.png](kreis-06.png)
 
 ```python
 import sys

@@ -331,13 +331,13 @@ check_interval = 0
 
 For easier testing, it may be useful to allow CI runs on untagged commits. This can be set up as `root` in `https://.../admin/runners` for the desired test runner.
 
-![](2020/11/gitlab-untagged.png)
+![2020/11/gitlab-untagged.png](gitlab-untagged.png)
 
 *Allowing the runner to pick up untagged jobs can be useful for testing. It needs to be disabled later.*
 
 With some random committing we can now trigger and debug the pipeline we defined earlier above. Eventually it will actually do something.
 
-![](2020/11/gitlab-runner.png)
+![2020/11/gitlab-runner.png](gitlab-runner.png)
 
 *Eventually, a testing success.*
 

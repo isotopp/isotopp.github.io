@@ -41,7 +41,7 @@ Actually,
 because people don't understand what these statuses are supposed
 to mean or the consequence of assigning a status to a tech.
 
-[![](2024/07/practice-01.png)](https://www.thoughtworks.com/insights/blog/technology-strategy/how-to-create-your-enterprise-technology-radar)
+[![2024/07/practice-01.png](practice-01.png)](https://www.thoughtworks.com/insights/blog/technology-strategy/how-to-create-your-enterprise-technology-radar)
 
 *What a Tech Radar looks like.*
 

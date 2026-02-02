@@ -121,7 +121,7 @@ def fix_images_in_body(
 
     def replace(match: re.Match) -> str:
         nonlocal copied, moved
-        inner = match.group(1)
+        inner = match.group(2)
         url, title = parse_markdown_image(inner)
         if is_remote_url(url):
             return match.group(0)

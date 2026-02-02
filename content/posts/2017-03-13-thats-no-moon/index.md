@@ -14,12 +14,12 @@ aliases:
 So Saturn has a 'moon'. At least that's what They want us to believe. But we
 know better. 
 
-[![](2017/03/Pan_by_Cassini_March_2017.jpg)](https://en.wikipedia.org/wiki/Pan_(moon))
+[![2017/03/Pan_by_Cassini_March_2017.jpg](Pan_by_Cassini_March_2017.jpg)](https://en.wikipedia.org/wiki/Pan_(moon))
 
 [Supposedly Pan](https://en.wikipedia.org/wiki/Pan_(moon)), a Saturn Moon,
 as seen by Cassini.
 
-![](2017/03/basis_rhodan.png)
+![2017/03/basis_rhodan.png](basis_rhodan.png)
 
 [BASIS](https://sketchfab.com/models/7038ac3cb7a448f1beefd523201c8263), as
 we know it from

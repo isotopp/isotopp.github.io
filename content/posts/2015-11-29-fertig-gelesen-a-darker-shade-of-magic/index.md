@@ -14,7 +14,7 @@ aliases:
 ---
 Die verschiedenen Versionen von London unterscheiden sich in fast allem außer dem Namen. Sie liegen im Multiversum nebeneinander wie die Seiten eines Buches, und unterscheiden sich insbesondere in der Stärke der Magie - Grey London, unsere Welt, Red London, eine Welt der Fae mit starker Elementarmagie, White London, in dem die Magie noch stärker und wilder ist und deswegen durch Willen und Kontrolle in Ketten gelegt worden ist.
 
-[![](2015/11/shadows.jpg)](https://www.amazon.de/Darker-Shade-Magic-V-E-Schwab-ebook/dp/B00SEU9TZK)
+[![2015/11/shadows.jpg](shadows.jpg)](https://www.amazon.de/Darker-Shade-Magic-V-E-Schwab-ebook/dp/B00SEU9TZK)
 
 [A Darker Shade Of Magic](https://www.amazon.de/Darker-Shade-Magic-V-E-Schwab-ebook/dp/B00SEU9TZK)
 

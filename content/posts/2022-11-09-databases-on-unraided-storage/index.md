@@ -29,7 +29,7 @@ The [purchase cost of a NVME drive](https://blocksandfiles.com/2020/08/24/10x-en
 
 At work, we need to run our databases in replication hierarchies, to provide the required read capacity and to provide read capacity close (in the same AZ) to the clients.
 
-![](2022/11/unraided-01.jpg)
+![2022/11/unraided-01.jpg](unraided-01.jpg)
 
 *Our database replication happens in trees, which extend across multiple AZs and backing-technologies. (bare-metal, Openstack, ...).
 They are marked in different colors.

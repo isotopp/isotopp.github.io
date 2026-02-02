@@ -14,7 +14,7 @@ aliases:
 ---
 Cary Caffrey schreibt etwas, daß vom Cover und dem Beginn der Geschichten sehr gut in ein SciFi Anime Setting passen könnte, dann aber schnell eine ganze Menge mehr Tiefe entwickelt und faszinieren kann.
 
-[![](2017/01/alcyone.jpg)](https://www.amazon.de/gp/product/B0198BOO3U)
+[![2017/01/alcyone.jpg](alcyone.jpg)](https://www.amazon.de/gp/product/B0198BOO3U)
 
 [Alcyone Book Series](https://www.amazon.de/gp/product/B0198BOO3U)
 

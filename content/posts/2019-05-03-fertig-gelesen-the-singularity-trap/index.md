@@ -15,7 +15,7 @@ aliases:
 
 [The Singularity Trap](https://www.amazon.de/Singularity-Trap-English-Dennis-Taylor-ebook/dp/B07FBRRL2Z) ist ein Buch von Dennis E. Taylor.
 
-[![](2019/05/singularity.jpg)](https://www.amazon.de/Singularity-Trap-English-Dennis-Taylor-ebook/dp/B07FBRRL2Z)
+[![2019/05/singularity.jpg](singularity.jpg)](https://www.amazon.de/Singularity-Trap-English-Dennis-Taylor-ebook/dp/B07FBRRL2Z)
 
 Stellt sich raus, Menschen können im Weltraum nicht gut überleben und auch sonst kein Leben.
 Stellt sich auch raus, daß es zwei Arten von Künstlicher Intelligenz gibt, die auf für den Weltraum entwickelter Hardware leben kann: 

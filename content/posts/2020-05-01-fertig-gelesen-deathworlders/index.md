@@ -33,7 +33,7 @@ They find a planet that looks like a pastoral paradise, and fear that humanity w
 
 ## Reddit and Deathworlders
 
-![](2020/04/deathworlders.png)
+![2020/04/deathworlders.png](deathworlders.png)
 
 As a genre, Terra-über-alles is alive and kicking in Reddit's [/r/HFY](https://www.reddit.com/r/HFY/) ("Humanity, Fuck Yeah!"), which collects writing prompts and publications from many people interested into this kind of story. One of the more popular serial publications in there is [The Deathworlders](https://deathworlders.com/) by Philip R. Johnson, now the foundation of a whole system of stories playing in the so called Jenkinsverse. The [HFY Wiki](https://www.reddit.com/r/HFY/wiki/ref/universes/jenkinsverse) gives a good introduction.
 

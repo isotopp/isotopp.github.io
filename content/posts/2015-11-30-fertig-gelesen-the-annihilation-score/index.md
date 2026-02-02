@@ -14,7 +14,7 @@ aliases:
 ---
 Laundry #6, "Superhelden und Superkräfte", aus der Perspektive von Mo. Endlich. Bob aus der Außenansicht ist auch großartig, und Mo auf Ramona und Mhari treffen zu sehen…
 
-[![](2015/11/annihilation.jpg)](https://www.amazon.de/dp/B00RW1VO14)
+[![2015/11/annihilation.jpg](annihilation.jpg)](https://www.amazon.de/dp/B00RW1VO14)
 
 [The Annihilation Score](https://www.amazon.de/dp/B00RW1VO14)
 

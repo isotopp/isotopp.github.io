@@ -14,7 +14,7 @@ aliases:
 ---
 Amy ist ein von Neumann (vN), ein Android mit der Fähigkeit, sich selbst zu replizieren. Sie ist außerdem defekt, und deswegen ein Gott: Während alle anderen vN eine Sicherheitsschaltung haben, die es ihnen unmöglich macht, gewalttätige Szenen zu denken, zu erleben oder auch nur anzusehen, ist bei Amy diese Sicherung defekt. Anders als ihre vN-Kameraden ist sie in ihren Handlungen frei und uneingeschränkt.
 
-[![](2013/09/vn.png)](https://www.amazon.de/vN-First-Machine-Dynasty-English-ebook/dp/B0076Q1J60)
+[![2013/09/vn.png](vn.png)](https://www.amazon.de/vN-First-Machine-Dynasty-English-ebook/dp/B0076Q1J60)
 
 [vN](https://www.amazon.de/vN-First-Machine-Dynasty-English-ebook/dp/B0076Q1J60)
 

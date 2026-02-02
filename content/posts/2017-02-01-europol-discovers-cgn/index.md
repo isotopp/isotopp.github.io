@@ -19,7 +19,7 @@ port numbers, as well as all NAT state tables to be stored and preserved, in
 order to be able to resolve Internet accesses to subscriber identities,
 [says Statewatch](http://www.statewatch.org/news/2017/jan/eu-europol-cgn-tech-going-dark-data-retention-note-5127-17.pdf).
 
-![](2017/01/Screen-Shot-2017-01-31-at-21.00.17.png)
+![2017/01/Screen-Shot-2017-01-31-at-21.00.17.png](Screen-Shot-2017-01-31-at-21.00.17.png)
 
 The paper in question has been submitted by EUROPOL and claims that clients
 are "going dark". The scarcity of IP v4 addresses leads to more and more

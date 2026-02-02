@@ -12,7 +12,7 @@ title: 'Fertig gelesen: Kill Process'
 aliases:
   - /2017/07/30/fertig-gelesen-kill-process.html
 ---
-[![](2017/07/30806103._UY2700_SS2700_.jpg)](https://www.amazon.de/dp/B01HANZUI6/)
+[![2017/07/30806103._UY2700_SS2700_.jpg](30806103._UY2700_SS2700_.jpg)](https://www.amazon.de/dp/B01HANZUI6/)
 
 [Kill Process](https://www.amazon.de/dp/B01HANZUI6/) is set in
 the same universe as "Avogadro Corp:, but is a freestanding

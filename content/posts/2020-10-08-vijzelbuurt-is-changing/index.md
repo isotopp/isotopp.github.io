@@ -14,7 +14,7 @@ aliases:
 ---
 Back when I was still commuting to work in an office, in the far past, I used to be in the Spaces building in Vijzelgracht in Amsterdam, every day. Mark Wagenbuur of [BicycleDutch](https://twitter.com/bicycledutch) has been there today, and [tweeted](https://twitter.com/BicycleDutch/status/1314213038908559361):
 
-[![](2020/10/bicycledutch-tweet.jpg)](https://twitter.com/BicycleDutch/status/1314213038908559361)
+[![2020/10/bicycledutch-tweet.jpg](bicycledutch-tweet.jpg)](https://twitter.com/BicycleDutch/status/1314213038908559361)
 
 *Amsterdam is changing dramatically. I was in Vijzelstraat for the first time in about 2 years and I was pleasantly surprised! Looked up the old situation in Google StreetView for some before and afters.*
 
@@ -22,7 +22,7 @@ He also linked to [an image from the  Stadsarchief](https://archief.amsterdam/be
 
 These works are documented on the [City of Amsterdam website](https://www.amsterdam.nl/projecten), which also has a page for the [Vijzelstraat: herinrichting](https://www.amsterdam.nl/projecten/vijzelstraat-herinrichting/).
 
-![](2020/10/vijzelstraat-goal.jpg)
+![2020/10/vijzelstraat-goal.jpg](vijzelstraat-goal.jpg)
 
 *The desired end state for the space in front of Spaces, Vijzelstraat 66.*
 
@@ -30,13 +30,13 @@ The works are part of [Project Rode Loper](https://nl.wikipedia.org/wiki/Rode_Lo
 
 The City of Amsterdam has a fabulous video channel on Youtube, [Het Verkeer](https://www.youtube.com/channel/UCkq8uEQ0rl4NiJnO8mL7y_w), which announces and explains all street works and renewal. The Vijzelgracht project of course [also has a video](https://www.youtube.com/watch?v=-vu-ExAlzWE).
 
-[![](2020/10/vijzelstraat-video.png)](https://www.youtube.com/watch?v=-vu-ExAlzWE)
+[![2020/10/vijzelstraat-video.png](vijzelstraat-video.png)](https://www.youtube.com/watch?v=-vu-ExAlzWE)
 
 *Video announcing the Vijzelstraat works.*
 
 Interestingly there are two more projects active that match and extend the Rode Loper in this area:
 
-[![](2020/10/vijzelgracht-garage.jpg)](https://www.amsterdam.nl/projecten/vijzelgrachtgarage/)
+[![2020/10/vijzelgracht-garage.jpg](vijzelgracht-garage.jpg)](https://www.amsterdam.nl/projecten/vijzelgrachtgarage/)
 
 [Vijzelgracht: afbouw Vijzelgrachtgarage](https://www.amsterdam.nl/projecten/vijzelgrachtgarage/) - The City is building a paid-for underground parking garage in the space between the metro station Vijzelgracht and the street level. This will provide paid-for parking space for 270 cars, similar to the Parkeergarage Museumskwartier, which is serving Frans-Hals-Buurt.
 

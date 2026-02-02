@@ -67,13 +67,13 @@ This is y=0.5x+2, a function that maps 𝐑 on 𝐑, producing a line.
 The thing that makes it a function is that for any x, we get exactly one result, exactly one y. 
 Draw a vertical line from any point on the x-axis, and it will only ever hit the line of the function in exactly one spot.
 
-![](2021/10/algebra-function.jpg)
+![2021/10/algebra-function.jpg](algebra-function.jpg)
 
 There are of course also things that for one given x give you more than one y value.
 
 An example would be y<0.5x+2, all y that are smaller than some value derived from x: That's a relation.
 
-![](2021/10/algebra-relation.jpg)
+![2021/10/algebra-relation.jpg](algebra-relation.jpg)
 
 **That's enough math for one day.** We still want to do computer science.
 
@@ -113,7 +113,7 @@ The only SQL product I know of that is different here is SQLite.
 
 ## Selection, Projection
 
-![](2021/10/algebra-ops1.jpg)
+![2021/10/algebra-ops1.jpg](algebra-ops1.jpg)
 
 *The Selection and Projection operations.*
 
@@ -141,7 +141,7 @@ We use `AS` to rename the columns from a machine selected name to a name of our 
 
 ## Join
 
-![](2021/10/algebra-ops2.jpg)
+![2021/10/algebra-ops2.jpg](algebra-ops2.jpg)
 
 *The Join operation.*
 
@@ -168,7 +168,7 @@ SELECT a.aid, b.aid, b.bid FROM a JOIN b ON a.aid = b.aid WHERE <actual constrai
 
 ## Renaming tables for self-references
 
-![](2021/10/algebra-ops3.jpg)
+![2021/10/algebra-ops3.jpg](algebra-ops3.jpg)
 
 *The Rename operation used in a self-join context.*
 
@@ -191,7 +191,7 @@ To aggregate, you project a table virtually, and pile all rows that are identica
 
 If that sounds weird, look at the drawing:
 
-![](2021/10/algebra-ops4.jpg)
+![2021/10/algebra-ops4.jpg](algebra-ops4.jpg)
 
 *The Aggregate operation.*
 

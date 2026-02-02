@@ -147,14 +147,14 @@ Stattdessen ist vollkommen ausreichend, die Namen und Nummern der Rechner zu pub
 
 ## Netzwerk-Kartierung mit Cheops
 
-![](2000/05/net.jpg)
+![2000/05/net.jpg](net.jpg)
 
 *Mit Hilfe des Gnome-Programmes Cheops bekommt man schnell einen graphischen Netzplan mit Rechnertypen und Verbindungen. 
 Das Programm kann auch eingesetzt werden, um Portscans von Rechnern durchzuführen, ist hier aber nicht so vielseitig wie nmap.*
 
 ## Unverschlüsselte Verbindung in Ethereal
 
-![](2000/05/ethereal.gif)
+![2000/05/ethereal.gif](ethereal.gif)
 
 *Mit Hilfe des Netzwerkmonitors Ethereal ist die Analyse von Netzwerkpaketen möglich. Mit Hilfe der Stromverfolgung können dabei die Klartextpaßworte in Protokollen wie TELNET, FTP, POP3 und anderen sehr gut sichtbar gemacht werden.*
 

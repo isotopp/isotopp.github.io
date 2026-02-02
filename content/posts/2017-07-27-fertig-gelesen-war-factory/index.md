@@ -12,7 +12,7 @@ title: 'Fertig gelesen: War Factory'
 aliases:
   - /2017/07/27/fertig-gelesen-war-factory.html
 ---
-[![](2017/07/war-factory.jpg)](https://www.amazon.de/War-Factory-Transformation-Book-English-ebook/dp/B018XV0AFW)
+[![2017/07/war-factory.jpg](war-factory.jpg)](https://www.amazon.de/War-Factory-Transformation-Book-English-ebook/dp/B018XV0AFW)
 
 [War Factory](https://www.amazon.de/War-Factory-Transformation-Book-English-ebook/dp/B018XV0AFW)
 is the second of three Books in Neal Ashers 

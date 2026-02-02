@@ -66,7 +66,7 @@ Why is that?
 Let's try a simple model: 
 We have users, we have hotels, and they are in a n:m relationship, the stay.
 
-![](2022/09/test-data-01.jpg)
+![2022/09/test-data-01.jpg](test-data-01.jpg)
 
 "Kris" stays in a Hotel, the "Casa".
 We select Kris into the test data set from production, and also the "Casa".

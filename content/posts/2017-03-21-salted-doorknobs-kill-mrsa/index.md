@@ -10,7 +10,7 @@ title: Salted Doorknobs kill MRSA
 aliases:
   - /2017/03/21/salted-doorknobs-kill-mrsa.html
 ---
-[![](2017/03/salty-300x225.jpg)](https://www.theatlantic.com/health/archive/2017/03/salt-vs-superbugs/518427/)
+[![2017/03/salty-300x225.jpg](salty-300x225.jpg)](https://www.theatlantic.com/health/archive/2017/03/salt-vs-superbugs/518427/)
 
 [Salted Doorknobs kill MRSA](https://www.theatlantic.com/health/archive/2017/03/salt-vs-superbugs/518427/)
 

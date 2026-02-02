@@ -14,7 +14,7 @@ aliases:
 ---
 EUR 3.80 und die war es nicht wert. Jede Menge verschenktes Potential. Irgendwo im Asteroidengürtel hängt seit Dekaden ein Alien-Schiff antriebslos rum, und endlich gelingt es einer Mission, dort hin zu kommen und es zu betreten. Doch es bleibt nicht bei einer Xeno-Archäologie-Mission, sondern es wird zu einer Erstkontakt-Mission.
 
-[![](2014/10/fluency.jpg)](http://www.amazon.de/Fluency-Confluence-Book-1-English-ebook/dp/B00L3U9OCG)
+[![2014/10/fluency.jpg](fluency.jpg)](http://www.amazon.de/Fluency-Confluence-Book-1-English-ebook/dp/B00L3U9OCG)
 
 [Fluency](http://www.amazon.de/Fluency-Confluence-Book-1-English-ebook/dp/B00L3U9OCG)
 

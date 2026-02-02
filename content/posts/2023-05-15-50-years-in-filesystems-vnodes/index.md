@@ -64,7 +64,7 @@ That is, the private data is not part of the virtual structure, but located else
 
 ## Vnodes in action
 
-![](2023/05/vfs-vnode-structures.png)
+![2023/05/vfs-vnode-structures.png](vfs-vnode-structures.png)
 *One full page in the paper is dedicated to showing the various structures pointing at each other.
 What looks confusing at first glance is actually pretty straightforward and elegant, once you trace it out.*
 

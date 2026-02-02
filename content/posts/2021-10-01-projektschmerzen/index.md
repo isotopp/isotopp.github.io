@@ -50,7 +50,7 @@ Das ist so, weil sich Verzögerungen auf dem Dienstweg, Nachrichtenverfälschung
 
 Mit einer steigenden Anzahl von Projektpartnern ("administrativen Einheiten") steigen auch die Kommunikationsbeziehungen, der Verhandlungsbedarf und die auszugleichenden Interessen an: (n * (n-1)/2 → n^2).
 
-![](2021/10/kommunikations-explosion.png)
+![2021/10/kommunikations-explosion.png](kommunikations-explosion.png)
 
 *Anzahl der Kommunikationsbeziehungen bei 3 (3), 4 (6), 5 (10) und 6 (15) Projektpartnern.*
 
@@ -61,7 +61,7 @@ Vertragsstrukturen und Kommunikations- und Verhandlungsaufwand machen es schwer,
 
 Nun mache ich diese IT-Sache schon mehr als 35 Jahre, und dort ist es meiner Erfahrung nach *immer* so, daß sich die Anforderungen im Laufe des Projektes ändern und man dann das Projekt anpassen muss.
 
-[![](2021/10/baercode.jpg)](https://baercode.de)
+[![2021/10/baercode.jpg](baercode.jpg)](https://baercode.de)
 
 Selbst bei so simplen Sachen wie [baercode.de](https://baercode.de), den ich ehrenamtlich beratend begleitet habe, und die technisch korrekt und im Zeit- und Kostenbudget waren ist es so, daß die zusammenbrechende Kontrollpraxis zeigt, daß man einen wirksamen Test- und Covid-Pass eigentlich grundsätzlich anders gestalten muss.
 
@@ -73,7 +73,7 @@ Es wäre auch nicht durchsetzbar gewesen, hätte jemand zu diesem Zeitpunkt dama
 
 In meinem Hauptberuf ist es so, daß mein Arbeitgeber deswegen unfertige Features so schnell als möglich in der Produktion testet.
 
-![](2021/10/8-rollouts-1.jpg)
+![2021/10/8-rollouts-1.jpg](8-rollouts-1.jpg)
 
 *Slideshare [8 Rollouts a Day](https://www.slideshare.net/isotopp/8-rollouts-a-day#19)*
 
@@ -82,14 +82,14 @@ Es geht darum, die Requirements zu validieren. "Ist diese Idee wirklich geeignet
 Als Webanwendung und als Anwendung, die nicht mit hoheitlichen oder medizinischen Daten arbeitet, sind wir da in einer privilegierten Position. 
 Wir können dann mit relativ wenig Aufwand früh experimentieren, solange wir uns aus PII und PCI heraushalten.
 
-![](2021/10/8-rollouts-2.png)
+![2021/10/8-rollouts-2.png](8-rollouts-2.png)
 
 *HIPPO: HIghest Paid Persons Opinion. Experiments kill HIPPOs.*
 
 Weil wir das eigentliche Feature mit so wenig Entwicklungsaufwand als möglich implementieren können wir früh sehen, welche Änderungen an der Website uns reicher machen.
 19 von 20 Ideen scheitern in dieser Experimentierphase.
 
-![](2021/10/8-rollouts-3.png)
+![2021/10/8-rollouts-3.png](8-rollouts-3.png)
 
 *Das Experiment dient dazu, eine minimale (oder Fake-) Implementation eines Features auszumessen. Dabei ist ausschließlich interessant herauszufinden, ob die Requirements bei echten Usern überhaupt Sinn ergeben.* 
 
@@ -106,7 +106,7 @@ Expertise im Haus ist wichtig, um beurteilen zu können, was Dienstleister mache
 
 Eigene Experten sind jedoch noch wichtiger, wenn man neue Dinge ausprobiert, und man deswegen das Projekt eng steuern muss.
 
-![](2021/10/go-away-1.jpg)
+![2021/10/go-away-1.jpg](go-away-1.jpg)
 
 *Slideshare "[Go away or I will replace you with a very tiny shell script](https://www.slideshare.net/isotopp/go-away-or-i-will-replace-you-with-a-little-shell-script#12)", Marktreife und Prozessreife*
 
@@ -126,7 +126,7 @@ Idealerweise hat man zwei oder drei konkurrierende Ansätze mit überlappenden Z
 Aus dieser bekommt man dann einen Satz Handlungsanweisungen ("Wiederholbare Practice") und gute Ratschläge ("das da ist kritisch!"). Das kann man dann schrittweise Ausrollen und mit Feinkorrekturen in die Fläche bringen. 
 Dabei kommen auch Dienstleister und deren Training ins Spiel.
 
-![](2021/10/go-away-2.jpg)
+![2021/10/go-away-2.jpg](go-away-2.jpg)
 
 *Prozessreife: Ohne quantitative Metriken ist Outsourcing meist zum Scheitern verurteilt.*
 

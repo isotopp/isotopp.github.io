@@ -12,7 +12,7 @@ title: 'Fertig gelesen: The Steerswoman Series'
 aliases:
   - /2017/07/29/fertig-gelesen-the-steerswoman-series.html
 ---
-![](2017/07/the-steerswoman.jpg)
+![2017/07/the-steerswoman.jpg](the-steerswoman.jpg)
 
 The story begins as a Fantasy novel in a magical universe: We
 have two warring factions of magicians, a dragon attack, Gnomes

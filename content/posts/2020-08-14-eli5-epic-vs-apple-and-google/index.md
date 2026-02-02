@@ -14,7 +14,7 @@ aliases:
 ---
 [@jpmens asked](https://twitter.com/jpmens/status/1294156181100007425) on Twitter:
 
-[![](2020/08/fortnite.jpg)](https://twitter.com/jpmens/status/1294156181100007425)
+[![2020/08/fortnite.jpg](fortnite.jpg)](https://twitter.com/jpmens/status/1294156181100007425)
 
 *What is Fortnite? #outingmyself*
 

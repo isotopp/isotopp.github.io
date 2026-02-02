@@ -14,7 +14,7 @@ aliases:
 ---
 Das Buch ist der 2. Teil von [Nexus]({{< relref "2013-09-04-fertig-gelesen-nexus-mankind-gets-an-upgrade-ramez-naam.md" >}}). Entsprechend macht das Buch dort weiter, wo der erste Teil aufgehört hat:
 
-[![](2013/09/crux.png)](https://www.amazon.de/gp/product/B00TOZI7J8)
+[![2013/09/crux.png](crux.png)](https://www.amazon.de/gp/product/B00TOZI7J8)
 
 [Crux](https://www.amazon.de/gp/product/B00TOZI7J8)
 

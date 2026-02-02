@@ -15,7 +15,7 @@ Deutschland ist im Lockdown, die Schulen sind endlich geschlossen und es wird re
 
 In Bawü wird eine getrennte Moodle-Instanz pro Schule installiert, aber halt viele Instanzen pro Server, weil Server recht groß sind. In Summe muß man bummelig [940.000 Schüler](http://www.statistik.baden-wuerttemberg.de/Service/Veroeff/Statistik_AKTUELL/803420002.pdf) abfrühstücken. Die Strukturen in Moodle sind kleinräumig (Klassen, Jahrgänge, Schulen) und nicht stark quer verbunden, sodaß sich das im Grunde relativ leicht skalieren lassen sollte. Dennoch kam es im Frühjahr zum Engpässen, weil das Moodle-Projekt auf andere Projektziele und -größen geplant war ("Pilotschulen") als es gebraucht wurde ("Lockdown").
 
-[![](2021/01/moodle-1.jpg)](https://twitter.com/neunerseb/status/1242093498859388928)
+[![2021/01/moodle-1.jpg](moodle-1.jpg)](https://twitter.com/neunerseb/status/1242093498859388928)
 
 *"Samstags Nachts um 1: Moodle Server Einbau Selfie!" -- [Sebastian Neuner](https://twitter.com/neunerseb/status/1242093498859388928), 23-Mar-2020*
 
@@ -23,7 +23,7 @@ Das Selfie oben zeigt Sebastian Neuner beim Aufrüsten der Hardware im Rechenzen
 
 Im Sommer hat man dann noch einmal nachgerüstet und am 7-Jan-2021 kam dann die [letzte Nachlieferung](https://twitter.com/belwue/status/1347255528783814661):
 
-[![](2021/01/moodle-2.jpg)](https://twitter.com/neunerseb/status/1242093498859388928)
+[![2021/01/moodle-2.jpg](moodle-2.jpg)](https://twitter.com/neunerseb/status/1242093498859388928)
 
 *"Heute morgen wurden 2 Paletten mit 7 weiteren Servern für Moodle geliefert." -- [BelWü](https://twitter.com/neunerseb/status/1242093498859388928), 07-Jan-2021*
 
@@ -94,7 +94,7 @@ In einem Rechenzentrum hat man nicht nur eine für Rechner geeignete Umgebung mi
 
 Wen es interessiert: [OptiX OSN 6800](https://www.alibaba.com/product-detail/Huawei-dwdm-equipment-OSN-6800_60174956247.html), ein Stück Huawei DWDM Hardware zum Ausleuchten einer Langstrecken-Glasfaser mit bis zu 80 Kanälen (40 Frequenzen x 2 Polarisierungen) und 100 GBit/s pro Kanal - 8 TBit, pro Faser. Es ist eine Frage von Bedarf und Geld, aber nicht wirklich ein technisches Problem. Innerhalb des Rechenzentrums nimmt man billigeres Glas, billigere Laser mit niedrigerer Leistung und hat dafür wesentlich mehr Fasern. Glas liegt durchgehend, mindestens bis zur "DSL Anschlußbox" auf dem Gehsteig, und ab da ist in Deutschland dann alles schwierig.
 
-![](2021/01/speedtest.png)
+![2021/01/speedtest.png](speedtest.png)
 
 *Mein Jitsi ruckelt nicht, Tweak.nl sei Dank!*
 
@@ -104,47 +104,47 @@ Jedenfalls ist es, Cloud oder nicht, [sinnvoller Netz in die Schule zu legen]({{
 
 Nun habe ich mit dem Netz und dem Moodle in Bawü nichts zu tun, aber ich habe in meiner Arbeit gelegentlich mit Computern oder Rechenzentrums-Ausstattungen zu tun, und dabei auch einige Fotos machen können.
 
-![](2021/01/delivery-1Q19-1.jpg)
+![2021/01/delivery-1Q19-1.jpg](delivery-1Q19-1.jpg)
 
 *2. Januar 2019: Anlieferung neuer Hardware für einen neuen Rechenzentrumsraum, ein LKW alle 2 Stunden.*
 
-![](2021/01/delivery-1Q19-2.jpg)
+![2021/01/delivery-1Q19-2.jpg](delivery-1Q19-2.jpg)
 
 *Wir haben ein Staging Area zum Auspacken und Organisieren der Hardware. Noch ist es leer.*
 
-![](2021/01/delivery-1Q19-3.jpg)
+![2021/01/delivery-1Q19-3.jpg](delivery-1Q19-3.jpg)
 
 *Dann: Auspacken, Verpackungsmaterial shreddern, und die Geräte in den eigentlichen Rechnerraum fahren, wo sie geracked werden.*
 
-![](2021/01/delivery-1Q19-4.jpg)
+![2021/01/delivery-1Q19-4.jpg](delivery-1Q19-4.jpg)
 
 *Jedes Gerät kommt mit Verpackung, Palette, Handbüchern und Stromkabeln für unterschiedliche Nationen. So viel Holz in der IT!*
 
-![](2021/01/delivery-1Q19-5.jpg)
+![2021/01/delivery-1Q19-5.jpg](delivery-1Q19-5.jpg)
 
 *Vorne die Hardware, hinten der Müll.*
 
-![](2021/01/delivery-1Q19-6.jpg)
+![2021/01/delivery-1Q19-6.jpg](delivery-1Q19-6.jpg)
 
 *Rackrückseite. bis zu 16 Blades pro Chassis, 4 Chasis pro Rack. Bitte beim Verkabeln keine Fehler machen!*
 
-![](2021/01/delivery-1Q19-7.jpg)
+![2021/01/delivery-1Q19-7.jpg](delivery-1Q19-7.jpg)
 
 *Leere Racks im eigentlichen RZ-Raum, warten auf die Hardware.*
 
-![](2021/01/delivery-1Q19-8.jpg)
+![2021/01/delivery-1Q19-8.jpg](delivery-1Q19-8.jpg)
 
 *"Laser" (SPF-Module), für das Netzwerk.*
 
-![](2021/01/delivery-1Q19-9.jpg)
+![2021/01/delivery-1Q19-9.jpg](delivery-1Q19-9.jpg)
 
 *Es ist noch viel zu tun.*
 
-![](2021/01/delivery-1Q19-10.jpg)
+![2021/01/delivery-1Q19-10.jpg](delivery-1Q19-10.jpg)
 
 *Gerätefront nach Einbau: Ein Dell Bladecenter Chasis mit 14/16 Blades bestückt. Jede Blade hat 2 CPUs, einige hundert GB Speicher, 2 SSDs und 10 GBit/s Netzwerk.*
 
-![](2021/01/delivery-1Q19-11.png)
+![2021/01/delivery-1Q19-11.png](delivery-1Q19-11.png)
 
 *Nach 3 Tagen sind die ersten Geräte grün (Provisionierbar - nach Burn In, Firmware Update und Base OS Install). Es wird noch 2 weitere Tage dauern, bis der Rest nachkommt.*
 
@@ -163,7 +163,7 @@ Nach dem, was mir berichtet wurde, ist ein guter Datenbank-Admin wohl mehr wert 
 
 Der Effekt ist an der Heatmap zu sehen:
 
-![](2021/01/moodle-response.png)
+![2021/01/moodle-response.png](moodle-response.png)
 
 *Response Time Heatmap vom Bawü Moodle für den 12. Januar 2021. Die X-Achse zeigt die Uhrzeit. Die Y-Ache zeigt logarithmisch die Antwortzeit. Die meisten Antworten kommen in weniger als einer Zehntelsekunde, jetzt wo die Datenbank optimiert ist. (via [Dennnis Urban](https://twitter.com/dpunkturban)*
 
@@ -193,7 +193,7 @@ Doch es ist noch "komplizierter":
 
 Ein Benutzer hat sich über die Performance von BBB beschwert und zeigte einen Screenshot.
 
-![](2021/01/moodle-nope-bbb.jpg)
+![2021/01/moodle-nope-bbb.jpg](moodle-nope-bbb.jpg)
 
 *Screenshot mit nicht funktionierendem BBB: Auf demo2.bigbluebutton.org allerdings.*
 

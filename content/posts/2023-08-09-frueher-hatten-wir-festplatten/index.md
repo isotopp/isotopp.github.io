@@ -18,7 +18,7 @@ und auf dem wir mit einem Kamm voller Schreib-Lese-Köpfe Teile magnetisieren od
 Platten hatten CHS-Adressen für Sektoren, also Cylinder (drinnen, weiter draußen), Head (Scheibe) und Sektor (also welches Stück Scheibe).
 Diese CHS-Adressen waren für das Betriebssystem sichtbar und das hat damit optimiert.
 
-![](2023/08/disk.jpg)
+![2023/08/disk.jpg](disk.jpg)
 
 Platten wurden dann schnell kompliziert.
 Der Radius einer Spur auf einer drehenden Platte wächst, wenn man die Köpfe nach draußen schiebt. 
@@ -30,7 +30,7 @@ Stattdessen hat die Platte einen eigenen Computer, den Controller, die Elektroni
 Der kennt die Geometrie. 
 Das OS nicht.
 
-![](2023/08/disk-02.jpg)
+![2023/08/disk-02.jpg](disk-02.jpg)
 
 Für das OS ist die Platte nun sehr viel einfacher: ein Array aus Sektoren.
 Diese auf die wie auch immer geartete Plattengeometrie abzubilden ist Sache des Controllers, 
@@ -71,7 +71,7 @@ Wenn man nun mehr als 4 haben will?
 Sehr einfach:
 macht man sich eine "Erweiterte Partition", die den ganzen Rest der Platte abdeckt und kann darin dann weitere Partitionen einrichten.
 
-![](2023/08/disk-03.jpg)
+![2023/08/disk-03.jpg](disk-03.jpg)
 
 Das ist dann eine lineare Liste.
 Die Nummern der logischen Partitionen in der erweiterten Partition fangen immer bei 5 an.
@@ -92,12 +92,12 @@ Die VG ist also ein Sack voll PEs, alle gleich groß, die auf unterschiedlichen 
 Man will so um die 1000 bis 10.000 PEs in seiner VG haben.
 Dann hantiert man mit Platz in Units von 1 Promille bis 0.1 Promille -- das ist genau genug.
 
-![](2023/08/disk-04.jpg)
+![2023/08/disk-04.jpg](disk-04.jpg)
 
 Wir können uns so Logical Volumes, also Laufwerke, zusammenbauen, die ein ganzes Vielfaches eines Extents groß sind und die aus LEs bestehen, Logical Extents.
 Jedem LE wird mindestens ein PE als Backing Storage zugewiesen, aber da dies über eine Lookup-Tabelle passiert, können die PEs von irgendwoher kommen.
 
-![](2023/08/disk-05.jpg)
+![2023/08/disk-05.jpg](disk-05.jpg)
 
 Das Subsystem in Linux, das das macht, heißt LVM2, der Logical Volume Manager.
 Er kann noch mehr:
@@ -118,7 +118,7 @@ Das Gerät hat aber einen Haufen Chips, die man alle parallel anblasen könnte,
 wenn das SSSSSSSATA nicht Zugriffe sssssserialsierte.
 Also weg damit!
 
-![](2023/08/disk-06.jpg)
+![2023/08/disk-06.jpg](disk-06.jpg)
 
 Flash Storage hat nun noch ein anderes Problem.
 Flash beschreibt "gelöschte" Blöcke in Sektoren von 512 Byte oder – neuerdings - 4096 Bytes.
@@ -128,7 +128,7 @@ Die eigentliche Löschung dauert recht lange und passiert in recht großen Erase
 
 Daher gibt es einen Hintergrundprozeß, der auf dem Controller läuft und guckt, ob valide Daten umsortiert werden können, sodaß ganze Erase Segmente frei werden.
 
-![](2023/08/disk-07.png)
+![2023/08/disk-07.png](disk-07.png)
 
 Dieser Hintergrundprozeß ist die Flash Translation Layer (FTL).
 
@@ -202,7 +202,7 @@ und die anderen sind alle Cloudbetreiber, die ihre Hardware oder gar – wie Ama
 Dann gehen auf einmal ein Haufen Abkürzungen und man kann so Sachen wie kaputte Hypervisoren und SR-IOV direkt selbst fixen.
 Und das ist, warum Amazon schöne Dinge haben kann, aber ein "Private Cloud" Openstack nicht.
 
-![](2023/08/disk-08.png)
+![2023/08/disk-08.png](disk-08.png)
 
 *Jan schreibt: "Was Betriebssysteme noch nicht verstanden haben, ist das es nur noch Memory gibt.
 In unterschiedlichen Geschwindigkeitsklassen.

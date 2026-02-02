@@ -21,7 +21,7 @@ A sample question (based on [a Twitter thread](https://twitter.com/isotopp/statu
 > Writes go to the primary of a replication tree, and are being replicated to the read instance of the database in each cell.
 > Reads go to the database instance that is a fixed part of the cell.
 
-![](2021/09/mysql-2010-1.jpg)
+![2021/09/mysql-2010-1.jpg](mysql-2010-1.jpg)
 
 *Read and write handles are split in the application. Clients write to a primary MySQL database, which then replicates to a database instance that is fixed part of a cell. Clients from a cell read from this fixed replica.*
 

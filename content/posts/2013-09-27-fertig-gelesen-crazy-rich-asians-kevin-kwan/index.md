@@ -13,7 +13,7 @@ aliases:
 ---
 In einem Tumblr-Feed ein Pinterest-Link und ein Hinweis des Autors, daß er einige Sachen in seinem Buch hat entschärfen müssen, weil es sonst 'unglaubwürdig' gewesen wäre. Und einundachzig Cent. Ein überschaubares Risiko.
 
-[![](2013/09/crazy-rich.png)](http://www.amazon.de/Crazy-Rich-Asians-ebook/dp/B00CNVOLSQ)
+[![2013/09/crazy-rich.png](crazy-rich.png)](http://www.amazon.de/Crazy-Rich-Asians-ebook/dp/B00CNVOLSQ)
 
 [Crazy Rich Asians](http://www.amazon.de/Crazy-Rich-Asians-ebook/dp/B00CNVOLSQ)
 

@@ -18,7 +18,7 @@ Systems that emit this kind of events are called Entity Services and are kind of
 
 In our sample reservation system from earlier in this blog, we get this schema:
 
-![](2022/11/snowflake-01.png)
+![2022/11/snowflake-01.png](snowflake-01.png)
 
 *In an OLTP database, a reservation is a `(resid, userid, thingid, date)`. It references the `user` data by `userid`, and the `thing` data by `thingid`.*
 

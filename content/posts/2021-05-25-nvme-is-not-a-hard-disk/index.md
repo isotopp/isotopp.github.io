@@ -134,7 +134,7 @@ Distributed storage is storage at the other kind of the network cable. Every dis
 
 Brad Hedlund wrote about [leaf-and-spine](https://bradhedlund.com/2012/01/25/construct-a-leaf-spine-design-with-40g-or-10g-an-observation-in-scaling-the-fabric/) in the context of Hadoop in 2012, but the first builds happened earlier, at Google, using specialized hardware. These days, it can be done with standard off the shelf hardware, from Arista or Juniper, for example.
 
-[![](2021/05/clos-40G.png)](https://bradhedlund.com/2012/01/25/construct-a-leaf-spine-design-with-40g-or-10g-an-observation-in-scaling-the-fabric/)
+[![2021/05/clos-40G.png](clos-40G.png)](https://bradhedlund.com/2012/01/25/construct-a-leaf-spine-design-with-40g-or-10g-an-observation-in-scaling-the-fabric/)
 
 *Leaf-and-spine as shown by [Brad Hedlund](https://bradhedlund.com/2012/01/25/construct-a-leaf-spine-design-with-40g-or-10g-an-observation-in-scaling-the-fabric/). Today you'd use different hardware, but the design principle is still the same.*
 

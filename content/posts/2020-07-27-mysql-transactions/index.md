@@ -34,7 +34,7 @@ Setting things up this way, we can use lsof and strace to see things. But before
 
 ## The Log/Data Memory/Storage quadrants
 
-![](2020/07/transactions-quadrants.png)
+![2020/07/transactions-quadrants.png](transactions-quadrants.png)
 
 *Upper half: Log structures, Lower half: Data structures. Left half: Memory, Right Half: On Disk.*
 
@@ -251,7 +251,7 @@ INSERT INTO t (id, data) VALUES (NULL, RANDOM_BYTES(255))
 
 and then go to lunch, purging of the Undo-Log stops until this transaction vanishes by ROLLBACK (or disconnect or timeout) or COMMIT. The database will slow down a lot until it becomes barely usable.
 
-![](2020/07/transactions-undo-log.png)
+![2020/07/transactions-undo-log.png](transactions-undo-log.png)
 
 *As we build Undo-Log, the database slows down. A lot. We kill the connection, the offender returns, and things slow down again, until the root cause is removed.*
 

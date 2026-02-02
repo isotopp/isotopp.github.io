@@ -63,11 +63,11 @@ und in der Berechnung von Antworten auf Benutzeranfragen verwendet werden.
 Nun, jeder dieser Vektoren braucht eine gewisse Menge Speicherplatz und wenn man "Milliarden von Parametern" haben will,
 dann braucht man schnell auch einmal zweistellige Mengen an Gigabyte RAM zum Ausrechnen der Antwort.
 
-![](2024/06/apple-01.png)
+![2024/06/apple-01.png](apple-01.png)
 
 *Eine Auswahl von Größenangaben beliebter öffentlicher LLMs.*
 
-![](2024/06/apple-02.png)
+![2024/06/apple-02.png](apple-02.png)
 
 *Standardversion von Metas llama3 mit 70 Milliarden Parametern und 40 GB Größe.*
 
@@ -117,7 +117,7 @@ Die lineare Algebra in Computerspielen und die Mathematik in LLMs sind zum Groß
 Daher werden Grafikkarten, superschnelle Matrix-Multiplizierer, vielfach für LLMs "mißbraucht".
 Sie implementieren die benötigte Operation sehr flink, in Hardware und parallel ausführbar.
 
-[![](2024/06/apple-03.jpg)](https://www.youtube.com/watch?v=-P28LKWTzrI)
+[![2024/06/apple-03.jpg](apple-03.jpg)](https://www.youtube.com/watch?v=-P28LKWTzrI)
 
 *[Nvidia Werbevideo mit den Mythbusters](https://www.youtube.com/watch?v=-P28LKWTzrI),
 das die Parallelität von Grafikkarten korrekt veranschaulicht.*
@@ -133,7 +133,7 @@ Es ist ein Link-Artikel, ihr müßt die blauen Dinger auch anklicken.
 Wikipedia erklärt 
 [Matrix-Multiplikation als superlange Summe von Produkten](https://de.wikipedia.org/wiki/Matrizenmultiplikation#Beispiel).
 
-![](2024/06/apple-04.png)
+![2024/06/apple-04.png](apple-04.png)
 
 *Relevanter Auszug aus der Wikipedia, der Matrix-Multiplikation erläutert.*
 

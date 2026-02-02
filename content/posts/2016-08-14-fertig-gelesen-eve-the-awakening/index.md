@@ -14,7 +14,7 @@ aliases:
 ---
 Kindle unlimited ist ja komplett risikolos und so kann man dann auch mal zu wilderen Ideen greifen und Dinge ausprobieren.
 
-[![](2016/08/eve-awakening.jpg)](https://www.amazon.de/dp/B00XKSLHPQ)
+[![2016/08/eve-awakening.jpg](eve-awakening.jpg)](https://www.amazon.de/dp/B00XKSLHPQ)
 
 [EVE: The Awakening](https://www.amazon.de/dp/B00XKSLHPQ)
 

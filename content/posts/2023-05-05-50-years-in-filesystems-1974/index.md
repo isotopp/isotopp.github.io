@@ -113,7 +113,7 @@ for a total size of 64 bytes.
 The `addr` array contains 40 bytes, but it stores 13 disk block addresses, each using 3 bytes.
 This is good for 24 bits, or 16 megablocks of 512 bytes, each, for a total filesystem size of 8M kilobytes, or 8 GB.
 
-![](2023/05/rl02-front.jpg)
+![2023/05/rl02-front.jpg](rl02-front.jpg)
 *Front panel of a PDP-11 RL02 disk drive, from [pdp-11.nl](https://www.pdp-11.nl/peripherals/disk/rl-info.html)*.
 
 For comparison, a [PDP-11 RL02K disk cartridge](https://www.pdp-11.nl/peripherals/disk/rl-info.html) held 10.4 MB,
@@ -135,7 +135,7 @@ and then [resolve the indirection](https://github.com/dspinellis/unix-history-re
 
 This results in the following famous picture:
 
-![](1994/02/filestructure.gif)
+![1994/02/filestructure.gif](filestructure.gif)
 
 *Original Unix file structure with increasing numbers of indirect accesses for increasingly larger files.
 This forms a compressed array, where short files can be accessed directly with data from the inode, whereas larger files are using increasingly indirect access.

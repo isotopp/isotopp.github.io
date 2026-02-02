@@ -28,13 +28,13 @@ I wrote into a company forum one year ago:
 
 Anyway, this is the cluttered mess of my Desk at home:
 
-![](2022/02/spaces-1.jpg)
+![2022/02/spaces-1.jpg](spaces-1.jpg)
 
 *Home machine, and lab equipment to the left, company Mac on the desk during the daytime, bunch of books left and right. On top, the stick for my Internet Spaceship. Under the desk to the right, the file server and gaming box.*
 
 It is very… lived in. I do change things too often for any pretty cabling or other cleanup to hold up.
 
-![](2022/02/spaces-2.jpg)
+![2022/02/spaces-2.jpg](spaces-2.jpg)
 
 *At least it has a decent view. That one hour commute to Spaces did pay off with a much more rural and spacious environment for home.*
 
@@ -49,7 +49,7 @@ Never has been, actually.
 
 Going back, I always had a desk to work on at home. In Berlin, an entire room (which also had an office desk for my wife).
 
-![](2022/02/spaces-3.jpg)
+![2022/02/spaces-3.jpg](spaces-3.jpg)
 
 *Geek wife doing geek wifey things on her Berlin desk.*
 
@@ -60,7 +60,7 @@ In Kiel we had an office/living room double room, but the living room really saw
 
 And even as a student, having a working desk was more important than a proper living room, actually.
 
-![](2022/02/spaces-4.jpg)
+![2022/02/spaces-4.jpg](spaces-4.jpg)
 
 *1996 computer science student desk (see below -- 1)*
 

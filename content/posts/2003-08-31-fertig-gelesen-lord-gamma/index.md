@@ -13,7 +13,7 @@ aliases:
 ---
 [Lord Gamma](https://www.amazon.de/exec/obidos/ASIN/3404243013) hätte so cool sein können. Ein Typ, Stan, in einem Pontiac ohne Motor, fährt eine schnurgerade Gefällestrecke runter, in der sich die Landschaft alle 180 km wiederholt.
 
-![](2003/08/lord_gamma.jpg)
+![2003/08/lord_gamma.jpg](lord_gamma.jpg)
 
 Alle 180 km steigt er aus, dringt in einen Atombunker ein, in dem sich immer eine andere Gesellschaftsform gebildet hat, und befreit einen Klon seiner Frau, um ihn am Ende zu erschießen. Zwischen den Kapiteln Rück-, Fremd- und Zwischenblenden, die direkt aus einem Drogentraum hätten kommen können. Und spannend obendrein.
 

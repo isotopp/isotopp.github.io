@@ -18,7 +18,7 @@ It also needs to be able to build some structure, and some gateway to level up t
 
 Let's have a chat about chats, and what properties they have. 
 
-![](2022/10/groups-places-01.png)
+![2022/10/groups-places-01.png](groups-places-01.png)
 
 *Historically, chat was lines of text, without much structure. Even today, many geeks often propose IRC when chat solutions are being discussed in a corporate context. That is a very myopic way of thinking.*
 
@@ -31,7 +31,7 @@ the now defunct Google Wave (alias Apache Wave, now also mostly defunct), and it
 
 All these applications and chat systems are different, but they can be evaluated along a number of dimensions to understand chat systems better.
 
-![](2022/10/groups-places-02.jpg)
+![2022/10/groups-places-02.jpg](groups-places-02.jpg)
 
 *A screenshot of my chat desktop from 2016. There are many like it, but this is mine.*
 
@@ -49,7 +49,7 @@ They are invitation only.
 A member of the group must have knowledge of you looking for the group, and then invite you to it.
 In some messengers this will also form a new group, destroying the messaging history of the older group, in order to protect the privacy of the conversation happening before the new member joined.
 
-![](2022/10/groups-places-03.jpg)
+![2022/10/groups-places-03.jpg](groups-places-03.jpg)
 
 *The Discord chat system allows you to form small scale groups with fixed membership, even without having a "Discord Server".*
 
@@ -59,7 +59,7 @@ A place is discoverable, you can "find" it, "go" to it, and "join" without being
 Since Places tend to proliferate, mechanism to group, order, tag and search them often exist.
 In Discord, for example, Channels can be grouped into Categories, which are then grouped into "Servers", the server having an owner, and often a purpose.
 
-![](2022/10/groups-places-04.jpg)
+![2022/10/groups-places-04.jpg](groups-places-04.jpg)
 
 *The Discord chat system, showing the "heiseonline" discord server, with a channel named `#tierbilder` (Animal Pictures) selected. Below that, a Category for `Sprachkanäle` (Voice Channels) is seen.* 
 
@@ -85,7 +85,7 @@ If they are blocked, they might need you, and it would help them to have some ex
 
 All modern chat systems have a presence mechanism, a semi-automatic status tagline, and the more thoughtfully engineered ones also know your timezone and show it to your peers.
 
-![](2022/10/groups-places-05.jpg)
+![2022/10/groups-places-05.jpg](groups-places-05.jpg)
 
 *The Slack chat system allows users to set a status in the form of an Emoji and a tagline. These are automatically cleared after some preset time, if desired. Slack also understands time zones, and will show you out-of-office times of communication partners, when necessary. Clicking on a user will also reveal their location and local time. On the right hand side, a number of status bubble examples are shown.*
 
@@ -118,7 +118,7 @@ This usually includes new devices, to facilitate moving to new laptops or cellph
 
 This often clashes with old standards, badly designed security mechanisms and other implementation details.
 
-![](2022/10/groups-places-06.jpg)
+![2022/10/groups-places-06.jpg](groups-places-06.jpg)
 
 *A Google Talk log, with OTR encryption, viewed in a different Jabber client. The history is truncated, and OTR encrypted messages are not available in readable form in this client.*
 
@@ -141,7 +141,7 @@ Other users could comment on an item in a hierarchic comments-on-comment tree li
 Changes were recorded and were undoable and replayable.
 This allowed users to view the end result of a Wave, or review the process of building that result after the fact.
 
-![](2022/10/groups-places-07.jpg)
+![2022/10/groups-places-07.jpg](groups-places-07.jpg)
 
 *Google Wave being used to collaboratively work on a shared document. The Wave contains the final document, but also the process that led to the end result.*
 
@@ -157,7 +157,7 @@ One could use Wave to manage a world building and game session in a role playing
 So Wave needed explanation and contextualisation - and above all, a purpose, but none was given.
 Wave died, because it confused users.
 
-![](2022/10/groups-places-08.jpg)
+![2022/10/groups-places-08.jpg](groups-places-08.jpg)
 
 *A collaboratively edited document. Multiple watchers are shown as icons at the top of the screen. A chat window is open. Cursors and collaborators edits would be visible simultaneously editing the document in many places while it has been initially created.*
 

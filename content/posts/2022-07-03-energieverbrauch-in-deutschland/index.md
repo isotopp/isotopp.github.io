@@ -16,7 +16,7 @@ Der Wikipedia-Artikel zum Thema [Energieverbrauch](https://de.wikipedia.org/wiki
 
 Schaut man sich zum Beispiel diese Grafik (oder die Tabelle, auf der sie basiert) an, dann sieht man:
 
-![](2022/07/germany-primary-energy.png)
+![2022/07/germany-primary-energy.png](germany-primary-energy.png)
 
 *Primärenergieverbrauch Deutschland 1990 bis jetzt*
 
@@ -43,7 +43,7 @@ Und: 15 kWh Hausakku entsprechen auch bei sehr großen Häusern 1-2 Tagen Autono
 
 Das ist wunderbar, denn Solar und Wind sind in Deutschland jahreszeitlich in etwa konstant.
 
-![](2022/07/germany-solar-und-wind.jpg)
+![2022/07/germany-solar-und-wind.jpg](germany-solar-und-wind.jpg)
 
 *Die Summe aus Solar und Wind ist in etwa konstant.*
 

@@ -12,7 +12,7 @@ title: 'Fertig gelesen: The Zombie Survival Guide'
 aliases:
   - /2017/11/09/fertig-gelesen-the-zombie-survival-guide.html
 ---
-[![](2017/11/zombie-survival.jpg)](https://www.amazon.de/Zombie-Survival-Guide-Complete-Protection-ebook/dp/B00YLQY8K2)
+[![2017/11/zombie-survival.jpg](zombie-survival.jpg)](https://www.amazon.de/Zombie-Survival-Guide-Complete-Protection-ebook/dp/B00YLQY8K2)
 
 Max Brooks, author of World War Z, delivers a straight on, zero
 tongue in cheek, nitty-gritty survival guide for the coming

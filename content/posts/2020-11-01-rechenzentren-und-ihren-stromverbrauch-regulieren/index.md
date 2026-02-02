@@ -50,7 +50,7 @@ Dazu kommt, wie oben auch dargestellt, daß ein ausgelasteter Rechner energieeff
 
 Maschinen auszulasten und Workloads dynamisch zu skalieren ist etwas, für das "die Cloud", also die API-gesteuerten Rechenzentren der Hyperscaler, gebaut worden sind. Hyperscale Clouds haben "sellable cores per provisioned cores" als eine zentrale Optimierungsmetrik, sie wollen ausgelastete Rechner, weil das die Einnahmen definiert.
 
-![](2017/07/watt-thread.jpg)
+![2017/07/watt-thread.jpg](watt-thread.jpg)
 
 *Watts per Thread (Dell R630, Dual Xeon 6132)*
 

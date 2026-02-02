@@ -14,13 +14,13 @@ aliases:
 
 # Enterprise Mail
 
-![](2002/02/enterprise-mail.001.jpg)
+![2002/02/enterprise-mail.001.jpg](enterprise-mail.001.jpg)
 
 Folien für eine interne Mitarbeiterschulung: Umzug und Erweiterung des Mailsystems bei mobilcom.de; für die evangelische Landeskirche Schleswig-Holstein; für Ver.di.
 
 # Was ist Enterprise Level?
 
-![](2002/02/enterprise-mail.002.jpg)
+![2002/02/enterprise-mail.002.jpg](enterprise-mail.002.jpg)
 
 Ausfallsicher
 - bei Hardwareschaden
@@ -47,7 +47,7 @@ bessere Skalierbarkeit, bessere Erweiterbarkeit, bessere Integrierbarkeit ins Ba
 
 # Hardwarekonzept
 
-![](2002/02/enterprise-mail.003.jpg)
+![2002/02/enterprise-mail.003.jpg](enterprise-mail.003.jpg)
 
 Mailserver doppelt
 - Jede Maschine kann für beide übernehmen
@@ -75,7 +75,7 @@ Ausfallszenarien:
 
 # Softwarekonzept
 
-![](2002/02/enterprise-mail.004.jpg)
+![2002/02/enterprise-mail.004.jpg](enterprise-mail.004.jpg)
 
 Einsatz von Standardprotokollen
 - POP3, IMAP4, LMTP, SMTP, LDAP
@@ -103,7 +103,7 @@ eigentliche Arbeitstiere sind freie Software:
 
 # Skalierbarkeit
 
-![](2002/02/enterprise-mail.005.jpg)
+![2002/02/enterprise-mail.005.jpg](enterprise-mail.005.jpg)
 
 Sizing
 - per User: 1 MB RAM, 2 MB Swap, 1 MHz
@@ -120,7 +120,7 @@ Wieviel Plattenplatz ist angemessen?
 
 # Skalierbarkeit II
 
-![](2002/02/enterprise-mail.006.jpg)
+![2002/02/enterprise-mail.006.jpg](enterprise-mail.006.jpg)
 
 Anwendungsbeispiel: ~5000 User
 - 700 zugleich verbunden, 100 davon mit IMAP
@@ -137,7 +137,7 @@ Zahlen wurden auf Linux/Intel ermittelt, und an eigener Cyrus-Installation valid
 
 # Migration
 
-![](2002/02/enterprise-mail.007.jpg)
+![2002/02/enterprise-mail.007.jpg](enterprise-mail.007.jpg)
 
 Konvertierung
 - des vorhandenen Mailstore, der vorhandenen Aliases, der vorhandenen Listeninfrastruktur, der vorhandenen Routingstruktur
@@ -155,7 +155,7 @@ System ist grundsätzlich funktionsfähig; Umstellung ist wesentlich holperiger 
 
 # Migration II
 
-![](2002/02/enterprise-mail.008.jpg)
+![2002/02/enterprise-mail.008.jpg](enterprise-mail.008.jpg)
 
 Typische Probleme:
 - lustige Ordernamen (IMAP)
@@ -183,7 +183,7 @@ Unterschätze niemals die tägliche Zielverschiebung durch das Tagesgeschäft.
 
 # Weitere Szenarien
 
-![](2002/02/enterprise-mail.009.jpg)
+![2002/02/enterprise-mail.009.jpg](enterprise-mail.009.jpg)
 
 Verteiltes Setup: 50+ Standorte, Workgroup-Size pro Standort, zentrale Administration, Begrenzte Hardwarekapazität
 
@@ -200,7 +200,7 @@ Großes Setup
 
 # Weitere Szenarien II
 
-![](2002/02/enterprise-mail.010.jpg)
+![2002/02/enterprise-mail.010.jpg](enterprise-mail.010.jpg)
 
 Zu erwartende Ausbaumöglichkeiten:
 - Calendaring
