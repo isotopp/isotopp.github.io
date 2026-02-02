@@ -9,7 +9,6 @@ tags:
 - lang_de
 title: Internetpiraten in der Netzwerk-Ökonomie
 ---
-![](/uploads/piraten.jpg)
 
 Nachdem
 [Internetpiraten in der Netzwerk-Ökonomie](http://www.heise.de/tp/r4/artikel/19/19679/1.html) seit
