@@ -4,10 +4,10 @@ title: "ETL from a Django Model"
 date: "2022-11-20T06:07:08Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
-- data warehouse
+  - lang_en
+  - mysql
+  - mysqldev
+  - data warehouse
 aliases:
   - /2022/11/20/etl-from-a-django-model.html
 ---

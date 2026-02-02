@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-12-13T14:02:59Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: The Astounding Antagonists'
 aliases:
   - /2014/12/13/fertig-gelesen-the-astounding-antagonists.html

@@ -4,10 +4,10 @@ date: "2001-05-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Filtersysteme, Dongles und Co."
 tags:
-- lang_de
-- talk
-- publication
-- internet
+  - lang_de
+  - talk
+  - publication
+  - internet
 aliases:
   - /2001/05/01/filtersysteme-dongles-und-co.html
 ---

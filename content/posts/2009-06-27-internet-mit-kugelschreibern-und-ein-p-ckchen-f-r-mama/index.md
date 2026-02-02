@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-06-27T13:05:54Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- erklaerbaer
-- lang_de
+  - internet
+  - erklaerbaer
+  - lang_de
 title: Internet mit Kugelschreibern (und ein Päckchen für Mama)
 aliases:
   - /2009/06/27/internet-mit-kugelschreibern-und-ein-p-ckchen-f-r-mama.html

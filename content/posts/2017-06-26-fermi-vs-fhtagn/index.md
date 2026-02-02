@@ -4,8 +4,8 @@ date: "2017-06-26T12:25:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- science
-- cthulhu
+  - science
+  - cthulhu
 title: Fermi vs. Fhtagn
 aliases:
   - /2017/06/26/fermi-vs-fhtagn.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2011-07-17T04:23:38Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- damals
-- commodore
-- lang_de
+  - damals
+  - commodore
+  - lang_de
 title: FCopy (Commodore 64)
 aliases:
   - /2011/07/17/fcopy-commodore-64.html

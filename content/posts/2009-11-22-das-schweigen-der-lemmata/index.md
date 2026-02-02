@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-11-22T13:12:28Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- wikipedia
-- lang_de
+  - internet
+  - wikipedia
+  - lang_de
 title: Das Schweigen der Lemmata
 aliases:
   - /2009/11/22/das-schweigen-der-lemmata.html

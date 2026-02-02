@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-10-07T14:52:04Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- database
-- erklaerbaer
-- mysqldev
+  - lang_en
+  - mysql
+  - database
+  - erklaerbaer
+  - mysqldev
 title: An unexpected pool size increase
 aliases:
   - /2020/10/07/an-unexpeced-pool-size-increase.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2006-07-30T08:14:22Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- blog
-- review
-- lang_de
+  - blog
+  - review
+  - lang_de
 title: 'Fertig gelesen: Deutsch für Profis - Wege zu gutem Stil'
 aliases:
   - /2006/07/30/fertig-gelesen-deutsch-fuer-profis.html

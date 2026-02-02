@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-08-23T07:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- review
-- media
+  - lang_de
+  - book
+  - review
+  - media
 title: 'Fertig gelesen: A confusion of princes'
 aliases:
   - /2012/08/23/fertig-gelesen-a-confusion-of-princes.html

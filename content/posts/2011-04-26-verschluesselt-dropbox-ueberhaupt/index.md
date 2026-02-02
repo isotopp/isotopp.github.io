@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-04-26T17:32:36Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- cloud
-- dropbox
-- internet
-- security
-- lang_de
+  - cloud
+  - dropbox
+  - internet
+  - security
+  - lang_de
 title: Verschlüsselt Dropbox überhaupt?
 aliases:
   - /2011/04/26/verschluesselt-dropbox-ueberhaupt.html

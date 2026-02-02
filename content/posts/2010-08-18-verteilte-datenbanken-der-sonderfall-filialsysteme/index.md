@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-08-18T13:04:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- database
-- lang_de
+  - mysql
+  - database
+  - lang_de
 title: 'Verteilte Datenbanken: Der Sonderfall Filialsysteme'
 aliases:
   - /2010/08/18/verteilte-datenbanken-der-sonderfall-filialsysteme.html

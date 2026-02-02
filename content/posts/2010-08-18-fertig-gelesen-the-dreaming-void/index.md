@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-08-18T06:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: The Dreaming Void'
 aliases:
   - /2010/08/18/fertig-gelesen-the-dreaming-void.html

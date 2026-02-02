@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-05-06T08:21:02Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- microsoft
-- lang_de
+  - computer
+  - microsoft
+  - lang_de
 title: Microsoft, Yahoo! und was nun?
 aliases:
   - /2008/05/06/microsoft-yahoo-und-was-nun.html

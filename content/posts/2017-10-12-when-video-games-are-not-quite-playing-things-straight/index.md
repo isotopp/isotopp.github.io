@@ -4,9 +4,9 @@ date: "2017-10-12T22:26:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- media
-- gaming
-- lang_en
+  - media
+  - gaming
+  - lang_en
 title: When Video Games are not quite playing things straight…
 aliases:
   - /2017/10/12/when-video-games-are-not-quite-playing-things-straight.html

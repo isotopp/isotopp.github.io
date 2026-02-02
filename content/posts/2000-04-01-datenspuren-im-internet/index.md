@@ -4,9 +4,9 @@ date: "2000-04-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Datenspuren im Internet"
 tags:
-- lang_de
-- publication
-- internet
+  - lang_de
+  - publication
+  - internet
 aliases:
   - /2000/04/01/datenspuren-im-internet.html
 ---

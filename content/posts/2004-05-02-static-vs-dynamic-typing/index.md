@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-05-02T10:50:02Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- lang_de
+  - computer
+  - lang_de
 title: Static vs. dynamic typing
 aliases:
   - /2004/05/02/static-vs-dynamic-typing.html

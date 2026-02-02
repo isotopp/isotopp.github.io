@@ -4,9 +4,9 @@ title: "MySQL: Moving Average"
 date: 2021-11-24T22:28:27+01:00
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 aliases:
   - /2021/11/24/mysql-moving-average.html
 ---

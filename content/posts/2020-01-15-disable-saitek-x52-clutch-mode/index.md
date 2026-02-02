@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-01-15T18:21:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- gaming
-- elite dangerous
+  - lang_en
+  - gaming
+  - elite dangerous
 title: Disable Saitek X.52 pro Clutch Mode
 aliases:
   - /2020/01/15/disable-saitek-x52-clutch-mode.html

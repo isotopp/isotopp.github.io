@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-08-06T07:49:29Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- google
-- mobiltelefon
-- lang_de
+  - google
+  - mobiltelefon
+  - lang_de
 title: Branding gestoppt wegen Benutzerprotesten
 aliases:
   - /2010/08/06/branding-gestoppt-wegen-benutzerprotesten.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2019-12-02T15:01:41Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- erklaerbaer
-- storage
+  - lang_en
+  - erklaerbaer
+  - storage
 title: Cloning and splitting logical volumes
 aliases:
   - /2019/12/02/cloning-and-splitting-logical-volumes.html

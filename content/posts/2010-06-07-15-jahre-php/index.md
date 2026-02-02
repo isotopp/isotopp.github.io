@@ -3,8 +3,8 @@ author: isotopp
 date: "2010-06-07T12:01:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- php
-- lang_de
+  - php
+  - lang_de
 title: 15 Jahre PHP
 aliases:
   - /2010/06/07/15-jahre-php.html

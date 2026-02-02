@@ -4,7 +4,7 @@ date: "2017-07-07T09:26:02Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- container
+  - container
 title: The Data Center in the Age of Abundance
 aliases:
   - /2017/07/07/the-data-center-in-the-age-of-abundance.html

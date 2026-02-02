@@ -3,10 +3,10 @@ author: isotopp
 date: "2008-11-08T08:16:27Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- identity
-- politik
-- security
-- lang_de
+  - identity
+  - politik
+  - security
+  - lang_de
 title: IP-Nummern und elektronische Personalausweise
 aliases:
   - /2008/11/08/ip-nummern-und-elektronische-personalausweise.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-05-01T08:59:10Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- media
-- book
-- review
+  - lang_en
+  - media
+  - book
+  - review
 title: 'Fertig gelesen: Die Krone der Sterne: Hexenmacht/Maschinengötter'
 aliases:
   - /2020/05/01/fertig-gelesen-die-krone-der-sterne.html

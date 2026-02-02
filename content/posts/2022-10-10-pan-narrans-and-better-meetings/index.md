@@ -4,9 +4,9 @@ title: "Pan Narrans and Better Meetings"
 date: "2022-10-10T12:13:14Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- remote first
-- work
+  - lang_en
+  - remote first
+  - work
 aliases:
   - /2022/10/10/pan-narrans-and-better-meetings.html
 ---

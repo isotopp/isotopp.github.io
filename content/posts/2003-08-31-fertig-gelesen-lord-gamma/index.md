@@ -3,10 +3,10 @@ author: isotopp
 date: "2003-08-31T11:36:17Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- media
-- review
-- lang_de
+  - book
+  - media
+  - review
+  - lang_de
 title: 'Fertig gelesen: Lord Gamma'
 aliases:
   - /2003/08/31/fertig-gelesen-lord-gamma.html

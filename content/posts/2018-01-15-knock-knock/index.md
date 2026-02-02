@@ -4,9 +4,9 @@ date: "2018-01-15T20:14:50Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- macos
-- apple
-- lang_en
+  - macos
+  - apple
+  - lang_en
 title: Knock, Knock
 aliases:
   - /2018/01/15/knock-knock.html

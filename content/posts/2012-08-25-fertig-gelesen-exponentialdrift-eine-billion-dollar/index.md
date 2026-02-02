@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-08-25T07:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- lang_de
+  - book
+  - review
+  - media
+  - lang_de
 title: 'Fertig gelesen: Exponentialdrift, Eine Billion Dollar'
 aliases:
   - /2012/08/25/fertig-gelesen-exponentialdrift-eine-billion-dollar.html

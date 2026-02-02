@@ -4,8 +4,8 @@ date: "2017-01-26T20:48:26Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- fluffy fluff
-- lang_en
+  - fluffy fluff
+  - lang_en
 title: Bielefeld Conspiracy hits Facebook
 aliases:
   - /2017/01/26/bielefeld-conspiracy-hits-facebook.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2017-01-02T13:42:12Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: The Box'
 aliases:
   - /2017/01/02/fertig-gelesen-the-box.html

@@ -4,8 +4,8 @@ title: "ChatGPT and Limits"
 date: "2022-12-11T06:07:08Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- security
+  - lang_en
+  - security
 aliases:
   - /2022/12/11/chatgpt-and-limits.html
 ---

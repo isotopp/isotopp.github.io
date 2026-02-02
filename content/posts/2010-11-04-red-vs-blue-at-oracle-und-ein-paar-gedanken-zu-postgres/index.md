@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-11-04T18:00:57Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- postgres
-- database
-- development
-- lang_de
+  - mysql
+  - postgres
+  - database
+  - development
+  - lang_de
 title: Red vs Blue at Oracle, und ein paar Gedanken zu Postgres
 aliases:
   - /2010/11/04/red-vs-blue-at-oracle-und-ein-paar-gedanken-zu-postgres.html

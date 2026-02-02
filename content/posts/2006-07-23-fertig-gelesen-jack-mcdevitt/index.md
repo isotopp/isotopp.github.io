@@ -3,9 +3,9 @@ author: isotopp
 date: "2006-07-23T14:35:17Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- media
-- review
-- lang_de
+  - media
+  - review
+  - lang_de
 title: 'Fertig gelesen: Jack McDevitt'
 aliases:
   - /2006/07/23/fertig-gelesen-jack-mcdevitt.html

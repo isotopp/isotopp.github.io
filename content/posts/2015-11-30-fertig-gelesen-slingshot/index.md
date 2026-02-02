@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-11-30T20:22:12Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Slingshot'
 aliases:
   - /2015/11/30/fertig-gelesen-slingshot.html

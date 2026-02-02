@@ -5,9 +5,9 @@ feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 title: Harebrained Battletech
 tags:
-- gaming
-- review
-- lang_en
+  - gaming
+  - review
+  - lang_en
 aliases:
   - /2018/04/26/harebrained-battletech.html
 ---

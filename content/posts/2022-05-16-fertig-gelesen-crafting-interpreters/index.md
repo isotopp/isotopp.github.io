@@ -4,10 +4,10 @@ date: "2022-05-16T07:47:06Z"
 feature-img: assets/img/background/book.jpg
 title: 'Fertig gelesen: Crafting Interpreters'
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 aliases:
   - /2022/05/16/fertig-gelesen-crafting-interpreters.html
 ---

@@ -4,10 +4,10 @@ date: "2017-12-08T06:11:56Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: The Apollo Guidance Computer: Architecture and Operation'
 aliases:
   - /2017/12/08/fertig-gelesen-the-apollo-guidance-computer-architecture-and-operation.html

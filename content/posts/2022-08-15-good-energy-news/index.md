@@ -4,10 +4,10 @@ date: "2022-08-15T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Good Energy News"
 tags:
-- lang_en
-- netherlands
-- energy
-- climate
+  - lang_en
+  - netherlands
+  - energy
+  - climate
 aliases:
   - /2022/08/15/good-energy-news.html
 ---

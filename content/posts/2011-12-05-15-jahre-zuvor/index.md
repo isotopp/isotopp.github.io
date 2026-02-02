@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-12-05T21:40:23Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- damals
-- kiel
-- linux
-- usenet
-- lang_de
+  - damals
+  - kiel
+  - linux
+  - usenet
+  - lang_de
 title: 15 Jahre zuvor...
 aliases:
   - /2011/12/05/15-jahre-zuvor.html

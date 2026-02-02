@@ -5,9 +5,9 @@ date: "2023-09-18T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_en
-- mastodon
-- usenet
+  - lang_en
+  - mastodon
+  - usenet
 aliases:
   - /2023/09/18/the-need-for-smarter-clients.html
 ---

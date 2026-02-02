@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-06-01T17:47:36Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysqldev
-- mysql
-- erklaerbaer
-- reddit
+  - lang_en
+  - mysqldev
+  - mysql
+  - erklaerbaer
+  - reddit
 title: MySQL store_result and use_result
 aliases:
   - /2020/06/01/mysql-storeresult-and-useresult.html

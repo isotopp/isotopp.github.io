@@ -3,9 +3,9 @@ author: isotopp
 date: "2022-02-16T14:35:00Z"
 feature-img: assets/img/background/mysql.jpg 
 tags:
-- mysql
-- mysqldev
-- lang_en
+  - mysql
+  - mysqldev
+  - lang_en
 title: "Databases: How large is too large?"
 aliases:
   - /2022/02/16/databases-how-large-is-too-large.html

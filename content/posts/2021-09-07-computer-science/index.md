@@ -3,8 +3,8 @@ author: isotopp
 date: "2021-09-07T18:24:48Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- computer
+  - lang_en
+  - computer
 title: Computer science
 aliases:
   - /2021/09/07/computer-science.html

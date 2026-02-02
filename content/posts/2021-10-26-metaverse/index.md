@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-10-26T20:55:51Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- computer
-- technik
-- media
+  - lang_de
+  - computer
+  - technik
+  - media
 title: Metaverse
 aliases:
   - /2021/10/26/metaverse.html

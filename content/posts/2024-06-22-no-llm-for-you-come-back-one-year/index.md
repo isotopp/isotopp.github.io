@@ -5,10 +5,10 @@ date: "2024-06-22T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_de
-- erklaerbaer
-- apple
-- computer
+  - lang_de
+  - erklaerbaer
+  - apple
+  - computer
 aliases:
   - /2024/06/22/no-llm-for-you-come-back-one-year.html
 ---

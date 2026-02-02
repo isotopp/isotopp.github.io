@@ -4,13 +4,13 @@ date: "2000-04-14T09:00:00Z"
 feature-img: assets/img/background/schloss.jpg
 title: "Neu auf einem fremden System"
 tags:
-- lang_de
-- linux
-- unix
-- security
-- devops
-- talk
-- publication
+  - lang_de
+  - linux
+  - unix
+  - security
+  - devops
+  - talk
+  - publication
 aliases:
   - /2000/04/14/neu-auf-einem-fremden-system.html
 ---

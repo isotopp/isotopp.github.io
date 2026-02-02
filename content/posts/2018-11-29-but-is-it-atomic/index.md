@@ -3,11 +3,11 @@ author: isotopp
 date: "2018-11-29T15:38:05Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- erklaerbaer
-- unix
-- linux
-- kernel
+  - lang_en
+  - erklaerbaer
+  - unix
+  - linux
+  - kernel
 title: But is it atomic?
 aliases:
   - /2018/11/29/but-is-it-atomic.html

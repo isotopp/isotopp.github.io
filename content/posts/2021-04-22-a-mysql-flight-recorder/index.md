@@ -3,8 +3,8 @@ author: isotopp
 date: "2021-04-22T23:59:39Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
+  - lang_en
+  - mysql
 title: A MySQL flight recorder
 aliases:
   - /2021/04/22/a-mysql-flight-recorder.html

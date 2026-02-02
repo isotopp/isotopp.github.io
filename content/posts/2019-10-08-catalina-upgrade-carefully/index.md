@@ -3,9 +3,9 @@ author: isotopp
 date: "2019-10-08T09:20:08Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- apple
-- macos
-- lang_en
+  - apple
+  - macos
+  - lang_en
 title: 'Catalina: Upgrade carefully.'
 aliases:
   - /2019/10/08/catalina-upgrade-carefully.html

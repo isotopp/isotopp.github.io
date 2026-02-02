@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-12-08T16:03:47Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- blog
-- lang_de
+  - blog
+  - lang_de
 title: Firma mit Blogs
 aliases:
   - /2004/12/08/firma-mit-blogs.html

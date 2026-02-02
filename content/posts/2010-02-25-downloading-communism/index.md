@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-02-25T11:47:02Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- free software
-- politik
-- lang_de
+  - copyright
+  - free software
+  - politik
+  - lang_de
 title: Downloading communism...
 aliases:
   - /2010/02/25/downloading-communism.html

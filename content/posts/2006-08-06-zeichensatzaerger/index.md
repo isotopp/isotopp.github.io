@@ -3,8 +3,8 @@ author: isotopp
 date: "2006-08-06T19:22:14Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- lang_de
+  - mysql
+  - lang_de
 title: Zeichensatzärger
 aliases:
   - /2006/08/06/zeichensatzaerger.html

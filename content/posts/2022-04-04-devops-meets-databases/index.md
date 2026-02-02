@@ -4,9 +4,9 @@ date: "2022-04-04T08:42:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "DevOps meets Databases"
 tags:
-- database
-- mysql
-- lang_en
+  - database
+  - mysql
+  - lang_en
 aliases:
   - /2022/04/04/devops-meets-databases.html
 ---

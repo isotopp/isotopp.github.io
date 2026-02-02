@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-03-07T12:42:40Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- identity
-- piraten
-- lang_de
+  - identity
+  - piraten
+  - lang_de
 title: Das gespaltene piratische Verhältnis zur Identität
 aliases:
   - /2010/03/07/das-gespaltene-piratische-verh-ltnis-zur-identit-t.html

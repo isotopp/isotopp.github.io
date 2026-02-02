@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-11-30T20:51:26Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- steampunk
+  - lang_de
+  - book
+  - media
+  - review
+  - steampunk
 title: 'Fertig gelesen: Rheingold'
 aliases:
   - /2015/11/30/fertig-gelesen-rheingold.html

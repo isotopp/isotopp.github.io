@@ -6,10 +6,10 @@ description: "Graphical visualization of the amount of power (Watts) various thi
 title: "Power (and Energy)"
 toc: true
 tags:
-- lang_en
-- energy
-- climate
-- erklaerbaer
+  - lang_en
+  - energy
+  - climate
+  - erklaerbaer
 aliases:
   - /2024/07/16/energy.html
 ---

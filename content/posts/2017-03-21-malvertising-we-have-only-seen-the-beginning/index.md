@@ -4,9 +4,9 @@ date: "2017-03-21T10:50:16Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- copyright
-- advertising
-- lang_en
+  - copyright
+  - advertising
+  - lang_en
 title: Malvertising - we have only seen the beginning
 aliases:
   - /2017/03/21/malvertising-we-have-only-seen-the-beginning.html

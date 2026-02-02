@@ -4,8 +4,8 @@ date: "2017-06-29T10:31:50Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- security
-- lang_en
+  - security
+  - lang_en
 title: Project Zero
 aliases:
   - /2017/06/29/project-zero.html

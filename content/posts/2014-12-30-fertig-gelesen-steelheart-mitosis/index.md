@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-12-30T18:42:37Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Steelheart, Mitosis'
 aliases:
   - /2014/12/30/fertig-gelesen-steelheart-mitosis.html

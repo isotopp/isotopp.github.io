@@ -5,9 +5,9 @@ date: "2024-04-18T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_de
-- erklaerbaer
-- work
+  - lang_de
+  - erklaerbaer
+  - work
 aliases:
   - /2024/04/18/operations-review-meeting-deutsch.html
 ---

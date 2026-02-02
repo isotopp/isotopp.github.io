@@ -3,12 +3,12 @@ author: isotopp
 date: "2020-09-07T09:18:16Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- database
-- innodb
-- erklaerbaer
-- mysqldev
+  - lang_en
+  - mysql
+  - database
+  - innodb
+  - erklaerbaer
+  - mysqldev
 title: MySQL from a Developers Perspective
 aliases:
   - /2020/09/07/mysql-from-a-developers-perspective.html

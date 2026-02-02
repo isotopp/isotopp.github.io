@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-02-18T20:45:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- blog
-- lang_de
+  - blog
+  - lang_de
 title: URLs sind keine IDs
 aliases:
   - /2004/02/18/urls-sind-keine-ids.html

@@ -3,8 +3,8 @@ author: isotopp
 date: "2005-08-13T10:10:43Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- kiel
-- lang_de
+  - kiel
+  - lang_de
 title: Über Umzüge
 aliases:
   - /2005/08/13/ueber-umzuege.html

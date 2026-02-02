@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-07-22T09:54:00Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- demail
-- internet
-- politik
-- security
-- lang_de
+  - demail
+  - internet
+  - politik
+  - security
+  - lang_de
 title: DE-Mail - Wieso Sicherheit?
 aliases:
   - /2010/07/22/de-mail-wieso-sicherheit.html

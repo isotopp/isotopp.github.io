@@ -3,11 +3,11 @@ author: isotopp
 date: "2013-09-27T18:32:58Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: vN'
 aliases:
   - /2013/09/27/fertig-gelesen-vn-madeline-ashby.html

@@ -4,9 +4,9 @@ date: "2000-11-03T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Cisco IP Phone XML"
 tags:
-- lang_de
-- talk
-- publication
+  - lang_de
+  - talk
+  - publication
 aliases:
   - /2000/11/03/xml-cisco.html
 ---

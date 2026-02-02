@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-12-15T12:35:13Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- google
-- internet
-- lang_de
+  - google
+  - internet
+  - lang_de
 title: Google baut ein Telefon
 aliases:
   - /2009/12/15/google-baut-ein-telefon.html

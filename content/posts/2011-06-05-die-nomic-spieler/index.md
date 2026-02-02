@@ -3,9 +3,9 @@ author: isotopp
 date: "2011-06-05T10:26:13Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- community
-- piraten
-- lang_de
+  - community
+  - piraten
+  - lang_de
 title: Die NOMIC-Spieler
 aliases:
   - /2011/06/05/die-nomic-spieler.html

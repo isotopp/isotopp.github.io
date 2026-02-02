@@ -4,10 +4,10 @@ date: "2006-05-04T03:02:01Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "SQL vs. LDAP (Kai Voigt)"
 tags:
-- lang_en
-- talk
-- publication
-- internet
+  - lang_en
+  - talk
+  - publication
+  - internet
 aliases:
   - /2006/05/04/sql-vs-ldap-kai-voigt.html
 ---

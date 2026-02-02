@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-06-13T10:47:50Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- filesystems
-- php
-- s9y
-- lang_de
+  - filesystems
+  - php
+  - s9y
+  - lang_de
 title: Webanwendungen und der FHS
 aliases:
   - /2005/06/13/webanwendungen-und-der-fhs.html

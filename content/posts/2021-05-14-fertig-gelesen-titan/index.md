@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-05-14T15:06:52Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- review
-- book
-- media
+  - lang_en
+  - review
+  - book
+  - media
 title: 'Fertig gelesen: Titan'
 aliases:
   - /2021/05/14/fertig-gelesen-titan.html

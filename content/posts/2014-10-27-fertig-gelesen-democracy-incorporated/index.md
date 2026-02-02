@@ -3,10 +3,10 @@ author: isotopp
 date: "2014-10-27T08:25:27Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Democracy Incorporated'
 aliases:
   - /2014/10/27/fertig-gelesen-democracy-incorporated.html

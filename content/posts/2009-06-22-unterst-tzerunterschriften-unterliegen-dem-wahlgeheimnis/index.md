@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-06-22T11:22:36Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- piraten
-- politik
-- wahl
-- lang_de
+  - piraten
+  - politik
+  - wahl
+  - lang_de
 title: Unterstützerunterschriften unterliegen dem Wahlgeheimnis
 aliases:
   - /2009/06/22/unterst-tzerunterschriften-unterliegen-dem-wahlgeheimnis.html

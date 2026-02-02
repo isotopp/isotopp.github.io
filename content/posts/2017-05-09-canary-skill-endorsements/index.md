@@ -4,8 +4,8 @@ date: "2017-05-09T09:11:18Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- work
-- lang_en
+  - work
+  - lang_en
 title: Canary Skill Endorsements
 aliases:
   - /2017/05/09/canary-skill-endorsements.html

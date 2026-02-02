@@ -3,10 +3,10 @@ author: isotopp
 date: "2014-08-11T19:52:20Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: "101 Cthulhu Mythos Haiku"'
 aliases:
   - /2014/08/11/fertig-gelesen-101-cthulhu-mythos-haiku.html

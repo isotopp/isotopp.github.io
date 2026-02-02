@@ -3,10 +3,10 @@ author: isotopp
 date: "2019-11-14T11:42:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- unix
-- computer
-- damals
-- lang_en
+  - unix
+  - computer
+  - damals
+  - lang_en
 title: Everything was a file, but we got better
 aliases:
   - /2019/11/14/everything-was-a-file-but-we-got-better.html

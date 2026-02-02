@@ -3,11 +3,11 @@ author: isotopp
 date: "2013-09-04T19:15:07Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Nexus - Mankind gets an upgrade'
 aliases:
   - /2013/09/04/fertig-gelesen-nexus-mankind-gets-an-upgrade-ramez-naam.html

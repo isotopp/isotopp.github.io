@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-02-28T16:25:42Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- steampunk
+  - lang_de
+  - book
+  - media
+  - review
+  - steampunk
 title: 'Fertig gelesen: The Invisible Library'
 aliases:
   - /2016/02/28/fertig-gelesen-the-invisible-library.html

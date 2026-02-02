@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-09-16T17:21:23Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- lang_de
+  - security
+  - lang_de
 title: Ein komplett überflüssiger Artikel
 aliases:
   - /2004/09/16/ein-komplett-ueberfluessiger-artikel.html

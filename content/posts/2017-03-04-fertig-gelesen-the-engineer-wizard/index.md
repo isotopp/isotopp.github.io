@@ -4,10 +4,10 @@ date: "2017-03-04T22:00:56Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- lang_en
+  - review
+  - media
+  - book
+  - lang_en
 title: 'Fertig gelesen: The Engineer Wizard'
 aliases:
   - /2017/03/04/fertig-gelesen-the-engineer-wizard.html

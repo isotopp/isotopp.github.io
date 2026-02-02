@@ -3,9 +3,9 @@ author: isotopp
 date: "1993-04-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- publication
-- internet
+  - lang_de
+  - publication
+  - internet
 title: "TCP/IP Technik"
 aliases:
   - /1993/04/01/tcpip-technik.html

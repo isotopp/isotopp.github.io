@@ -3,10 +3,10 @@ author: isotopp
 date: "2006-09-22T07:10:33Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- media
-- politik
-- web
-- lang_de
+  - media
+  - politik
+  - web
+  - lang_de
 title: Gesetz über die Deutsche Nationalbibliothek
 aliases:
   - /2006/09/22/gesetz-ber-die-deutsche-nationalbibliothek.html

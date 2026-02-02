@@ -3,10 +3,10 @@ author: isotopp
 date: "2006-07-30T07:52:20Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- free software
-- lizenz
-- politik
-- lang_de
+  - free software
+  - lizenz
+  - politik
+  - lang_de
 title: GPL V3 (2nd draft)
 aliases:
   - /2006/07/30/gpl-v3-2nd-draft.html

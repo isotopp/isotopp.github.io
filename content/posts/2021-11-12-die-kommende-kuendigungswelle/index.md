@@ -4,10 +4,10 @@ title: "Die kommende Kündigungswelle"
 date: 2021-11-07T11:28:27+01:00
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- remote first
-- politik
-- work
+  - lang_de
+  - remote first
+  - politik
+  - work
 aliases:
   - /2021/11/12/die-kommende-kuendigungswelle.html
 ---

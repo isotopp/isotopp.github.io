@@ -3,10 +3,10 @@ author: isotopp
 date: "2019-09-26T10:16:36Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- elite dangerous
-- gaming
-- media
-- lang_en
+  - elite dangerous
+  - gaming
+  - media
+  - lang_en
 title: The Rockforth Fertilizer Incident
 aliases:
   - /2019/09/26/how-not-to-handle-an-ingame-incident.html

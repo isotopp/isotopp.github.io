@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-09-09T17:01:06Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 title: 'MySQL: The table ''../tmp/#sql…'' is full'
 aliases:
   - /2021/09/09/tmp-file-full.html

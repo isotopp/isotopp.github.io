@@ -4,10 +4,10 @@ date: "2017-07-26T11:40:36Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- energy
-- climate
-- lang_en
+  - mobility
+  - energy
+  - climate
+  - lang_en
 title: 'Renewables: Energy is free, guarantees cost money'
 aliases:
   - /2017/07/26/renewables-energy-is-free-guarantees-cost-money.html

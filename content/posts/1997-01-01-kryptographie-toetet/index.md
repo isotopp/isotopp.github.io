@@ -4,9 +4,9 @@ date: "1999-01-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Kryptographie tötet - na und?"
 tags:
-- lang_de
-- publication
-- internet
+  - lang_de
+  - publication
+  - internet
 aliases:
   - /1997/01/01/kryptographie-toetet.html
 ---

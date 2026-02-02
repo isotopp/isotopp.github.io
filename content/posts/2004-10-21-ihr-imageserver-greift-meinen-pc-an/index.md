@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-10-21T07:44:07Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- lang_de
+  - security
+  - lang_de
 title: Ihr Imageserver greift meinen PC an
 aliases:
   - /2004/10/21/ihr-imageserver-greift-meinen-pc-an.html

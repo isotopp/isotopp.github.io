@@ -4,8 +4,8 @@ date: "2017-10-10T17:05:31Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- security
-- lang_en
+  - security
+  - lang_en
 title: A (sad) security user story
 aliases:
   - /2017/10/10/a-sad-security-user-story.html

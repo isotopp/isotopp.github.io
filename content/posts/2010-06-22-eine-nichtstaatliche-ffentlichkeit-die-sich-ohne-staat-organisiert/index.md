@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-06-22T14:25:54Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- politik
-- lang_de
+  - internet
+  - politik
+  - lang_de
 title: Eine nichtstaatliche Öffentlichkeit, die sich ohne Staat organisiert
 aliases:
   - /2010/06/22/eine-nichtstaatliche-ffentlichkeit-die-sich-ohne-staat-organisiert.html

@@ -4,10 +4,10 @@ title: "Du weisst nichts von Homeoffice"
 date: "2019-01-07T09:14:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- pluspora_import
-- remote first
-- lang_de
-- work
+  - pluspora_import
+  - remote first
+  - lang_de
+  - work
 aliases:
   - /2019/01/07/du-weisst-nichts-von-homeoffice.html
 ---

@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-08-14T19:00:26Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: The Case of the Toxic Spell Dump'
 aliases:
   - /2016/08/14/fertig-gelesen-the-case-of-the-toxic-spell-dump.html

@@ -4,10 +4,10 @@ date: "2022-12-30T01:02:03Z"
 title: "Was mein Kind in der Schule so macht"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- schnuppel
-- bildung
-- security
+  - lang_de
+  - schnuppel
+  - bildung
+  - security
 aliases:
   - /2022/12/30/was-mein-kind-in-der-schule-so-macht.html
 ---

@@ -3,10 +3,10 @@ author: isotopp
 date: "2008-06-11T08:24:20Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- apple
-- computer
-- hardware
-- lang_de
+  - apple
+  - computer
+  - hardware
+  - lang_de
 title: Neues Werkzeug
 aliases:
   - /2008/06/11/neues-werkzeug.html

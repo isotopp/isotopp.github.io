@@ -3,10 +3,10 @@ author: isotopp
 date: "2008-09-09T13:32:24Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- privacy
-- identity
-- security
-- lang_de
+  - privacy
+  - identity
+  - security
+  - lang_de
 title: "Daten - löschen, verschlüsseln, diversifizieren"
 aliases:
   - /2008/09/09/daten-loeschen-verschluesseln-diversifizieren.html

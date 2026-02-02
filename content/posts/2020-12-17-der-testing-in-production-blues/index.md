@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-12-17T21:45:51Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- bildung
-- politik
+  - lang_de
+  - bildung
+  - politik
 title: Der Testing-in-Production-Blues
 aliases:
   - /2020/12/17/der-testing-in-production-blues.html

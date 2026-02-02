@@ -5,10 +5,10 @@ date: "2025-05-13T05:06:07Z"
 feature-img: assets/img/background/mysql.jpg
 toc: true
 tags:
-- lang_en
-- database
-- mysql
-- mysqldev
+  - lang_en
+  - database
+  - mysql
+  - mysqldev
 aliases:
   - /2025/05/13/mysql-flush-hosts.html
 ---

@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-07-13T19:51:59Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 title: 'MySQL: A job queue in Python'
 aliases:
   - /2021/07/13/mysql-a-job-queue-in-python.html

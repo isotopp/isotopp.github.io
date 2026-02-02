@@ -5,9 +5,9 @@ date: "2023-08-17T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_en
-- apple
-- unix
+  - lang_en
+  - apple
+  - unix
 aliases:
   - /2023/08/17/macos-vim-git-and-exit.html
 ---

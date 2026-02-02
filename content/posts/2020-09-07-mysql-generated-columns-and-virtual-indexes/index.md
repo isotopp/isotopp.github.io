@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-09-07T18:52:18Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
-- database
-- erklaerbaer
+  - lang_en
+  - mysql
+  - mysqldev
+  - database
+  - erklaerbaer
 title: 'MySQL: Generated Columns and virtual indexes'
 aliases:
   - /2020/09/07/mysql-generated-columns-and-virtual-indexes.html

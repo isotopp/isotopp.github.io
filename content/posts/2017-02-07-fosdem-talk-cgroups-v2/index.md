@@ -4,9 +4,9 @@ date: "2017-02-07T14:43:21Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- container
-- erklaerbaer
-- lang_en
+  - container
+  - erklaerbaer
+  - lang_en
 title: 'FOSDEM Talk: cgroups-v2'
 aliases:
   - /2017/02/07/fosdem-talk-cgroups-v2.html

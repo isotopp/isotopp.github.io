@@ -3,11 +3,11 @@ author: isotopp
 date: "2007-01-07T09:06:13Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- c
-- linux
-- schulung
-- unix
-- lang_de
+  - c
+  - linux
+  - schulung
+  - unix
+  - lang_de
 title: fork und exec vs. CreateProcess
 aliases:
   - /2007/01/07/fork-und-exec-vs-createprocess.html

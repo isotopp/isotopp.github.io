@@ -4,10 +4,10 @@ date: "2023-09-29T01:02:03Z"
 feature-img: assets/img/background/book.jpg
 title: 'Fertig gelesen: Combat Ready Kitchen'
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 aliases:
   - /2023/09/29/fertig-gelesen-combat-ready-kitchen.html
 ---

@@ -4,9 +4,9 @@ title: "MySQL: Boiling JFrogs"
 date: "2022-08-25T11:13:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 aliases:
   - /2022/08/25/mysql-boiling-jfrogs.html
 ---

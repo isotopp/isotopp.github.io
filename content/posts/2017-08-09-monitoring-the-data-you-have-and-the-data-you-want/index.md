@@ -4,10 +4,10 @@ date: "2017-08-09T19:35:44Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- erklaerbaer
-- monitoring
-- data center
-- lang_en
+  - erklaerbaer
+  - monitoring
+  - data center
+  - lang_en
 title: Monitoring - the data you have and the data you want
 aliases:
   - /2017/08/09/monitoring-the-data-you-have-and-the-data-you-want.html

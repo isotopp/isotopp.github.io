@@ -3,8 +3,8 @@ author: isotopp
 date: "2006-07-26T08:08:58Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- free software
-- lang_de
+  - free software
+  - lang_de
 title: GPL - ja oder nein
 aliases:
   - /2006/07/26/gpl-ja-oder-nein.html

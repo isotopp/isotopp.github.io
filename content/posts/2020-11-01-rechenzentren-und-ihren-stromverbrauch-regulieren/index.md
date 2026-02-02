@@ -3,12 +3,12 @@ author: isotopp
 date: "2020-11-01T13:04:46Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- computer
-- data center
-- energy
-- cloud
-- climate
+  - lang_de
+  - computer
+  - data center
+  - energy
+  - cloud
+  - climate
 title: Rechenzentren und ihren Stromverbrauch regulieren
 aliases:
   - /2020/11/01/rechenzentren-und-ihren-stromverbrauch-regulieren.html

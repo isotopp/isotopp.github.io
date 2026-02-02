@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-12-26T16:37:59Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysqldev
-- mysql
+  - lang_en
+  - mysqldev
+  - mysql
 title: SQL Clause is coming to town
 aliases:
   - /2020/12/26/sql-clause-is-coming-to-town.html

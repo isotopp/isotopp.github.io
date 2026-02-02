@@ -3,11 +3,11 @@ author: isotopp
 date: "2021-06-05T20:54:40Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- review
-- book
-- media
-- scifi
+  - lang_de
+  - review
+  - book
+  - media
+  - scifi
 title: 'Fertig gelesen: Montecrypto'
 aliases:
   - /2021/06/05/fertig-gelesen-montecrypto.html

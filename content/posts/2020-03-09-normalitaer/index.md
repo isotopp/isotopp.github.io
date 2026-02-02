@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-03-09T20:49:37Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- politik
-- germany
+  - lang_de
+  - politik
+  - germany
 title: Normalitär
 aliases:
   - /2020/03/09/normalitaer.html

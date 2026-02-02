@@ -4,9 +4,9 @@ date: "2022-07-01T14:30:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "I have met the enemy, and they are us"
 tags:
-- database
-- mysql
-- lang_en
+  - database
+  - mysql
+  - lang_en
 aliases:
   - /2022/07/01/i-have-met-the-enemy-and-they-are-us.html
 ---

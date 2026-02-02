@@ -4,8 +4,8 @@ date: "2017-03-27T13:43:47Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- work
-- lang_en
+  - work
+  - lang_en
 title: The Interview in the Enterprise
 aliases:
   - /2017/03/27/the-interview-in-the-enterprise.html

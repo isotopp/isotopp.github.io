@@ -6,10 +6,10 @@ feature-img: assets/img/background/rijksmuseum.jpg
 description: How to build a culture that builds and defines Best Practice
 toc: true
 tags:
-- lang_en
-- erklaerbaer
-- work
-- computer
+  - lang_en
+  - erklaerbaer
+  - work
+  - computer
 aliases:
   - /2024/07/01/practice.html
 ---

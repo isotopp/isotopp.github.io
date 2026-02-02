@@ -3,10 +3,10 @@ author: isotopp
 date: "2008-05-06T07:46:14Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- media
-- politik
-- tv
-- lang_de
+  - media
+  - politik
+  - tv
+  - lang_de
 title: "Die Grauen Herren vs. das Internet"
 aliases:
   - /2008/05/06/die-grauen-herren-vs-das-internet.html

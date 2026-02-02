@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-04-27T12:06:55Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- hack
-- security
-- sony
-- lang_de
+  - hack
+  - security
+  - sony
+  - lang_de
 title: Wenn man Sony ist, hat man es nicht leicht
 aliases:
   - /2011/04/27/wenn-man-sony-ist-hat-man-es-nicht-leicht.html

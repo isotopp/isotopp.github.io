@@ -5,9 +5,9 @@ feature-img: assets/img/background/rijksmuseum.jpg
 title: "PHPLIB"
 toc: true
 tags:
-- lang_de
-- publication
-- php
+  - lang_de
+  - publication
+  - php
 aliases:
   - /1999/04/01/phplib-deutsch.html
 ---

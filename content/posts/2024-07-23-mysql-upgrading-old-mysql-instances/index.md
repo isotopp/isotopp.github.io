@@ -10,9 +10,9 @@ date: "2024-07-23T05:06:07Z"
 feature-img: assets/img/background/mysql.jpg
 toc: true
 tags:
-- lang_en
-- database
-- mysql
+  - lang_en
+  - database
+  - mysql
 aliases:
   - /2024/07/23/mysql-upgrading-old-mysql-instances.html
 ---

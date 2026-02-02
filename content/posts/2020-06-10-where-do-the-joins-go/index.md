@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-06-10T21:38:32Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- database
-- development
+  - lang_en
+  - database
+  - development
 title: Where do the JOINs go?
 aliases:
   - /2020/06/10/where-do-the-joins-go.html

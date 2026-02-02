@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-02-06T16:34:20Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- filesystems
-- free software
-- linux
-- lang_de
+  - filesystems
+  - free software
+  - linux
+  - lang_de
 title: 'Neue Ideen in Dateisystemen (oder: BTRFS in Fedora 11)'
 aliases:
   - /2009/02/06/neue-ideen-in-dateisystemen-oder-btrfs-in-fedora-11.html

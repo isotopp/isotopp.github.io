@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-03-09T15:47:19Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- hack
-- mysql
-- sql
-- lang_de
+  - hack
+  - mysql
+  - sql
+  - lang_de
 title: 'Gruppenweises TOP N in MySQL: Der Tabellengrößenreport'
 aliases:
   - /2010/03/09/gruppenweises-top-n-in-mysql-der-tabellengr-enreport.html

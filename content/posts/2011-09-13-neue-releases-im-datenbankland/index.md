@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-09-13T17:40:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- mongodb
-- mysql
-- postgres
-- lang_de
+  - database
+  - mongodb
+  - mysql
+  - postgres
+  - lang_de
 title: Neue Releases im Datenbankland
 aliases:
   - /2011/09/13/neue-releases-im-datenbankland.html

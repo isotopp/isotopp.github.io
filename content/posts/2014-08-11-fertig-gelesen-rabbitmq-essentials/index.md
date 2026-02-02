@@ -3,10 +3,10 @@ author: isotopp
 date: "2014-08-11T19:45:57Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: "RabbitMQ Essentials"'
 aliases:
   - /2014/08/11/fertig-gelesen-rabbitmq-essentials.html

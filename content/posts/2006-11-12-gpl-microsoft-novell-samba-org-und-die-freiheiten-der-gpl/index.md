@@ -3,9 +3,9 @@ author: isotopp
 date: "2006-11-12T23:51:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- free software
-- lang_de
+  - copyright
+  - free software
+  - lang_de
 title: 'GPL: Microsoft, Novell, Samba.org und die Freiheiten der GPL'
 aliases:
   - /2006/11/12/gpl-microsoft-novell-samba-org-und-die-freiheiten-der-gpl.html

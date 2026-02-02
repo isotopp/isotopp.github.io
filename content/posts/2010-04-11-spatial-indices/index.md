@@ -3,8 +3,8 @@ author: isotopp
 date: "2010-04-11T10:34:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- lang_de
+  - mysql
+  - lang_de
 title: Spatial Indices
 aliases:
   - /2010/04/11/spatial-indices.html

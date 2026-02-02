@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-08-23T08:31:50Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- kultur
-- media
-- privacy
-- lang_de
+  - kultur
+  - media
+  - privacy
+  - lang_de
 title: 'Discoverable culture: Das Buch als Konversationsstück'
 aliases:
   - /2012/08/23/discoverable-culture-das-buch-als-konversationsst-ck.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-08-03T12:51:44Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- review
-- media
-- book
+  - lang_de
+  - review
+  - media
+  - book
 title: 'Fertig gelesen: Mara und der Feuerbringer'
 aliases:
   - /2021/08/03/fertig-gelesen-mara-und-der-feuerbringer.html

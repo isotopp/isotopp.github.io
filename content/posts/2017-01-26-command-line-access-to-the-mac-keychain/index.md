@@ -4,9 +4,9 @@ date: "2017-01-26T20:34:42Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- erklaerbaer
-- macos
-- apple
+  - erklaerbaer
+  - macos
+  - apple
 title: Command line access to the Mac keychain
 aliases:
   - /2017/01/26/command-line-access-to-the-mac-keychain.html

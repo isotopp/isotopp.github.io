@@ -3,8 +3,8 @@ author: isotopp
 date: "2010-04-21T12:49:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- lang_de
+  - mysql
+  - lang_de
 title: Zählen von Aktionen
 aliases:
   - /2010/04/21/z-hlen-von-aktionen.html

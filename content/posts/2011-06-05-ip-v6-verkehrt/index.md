@@ -3,13 +3,13 @@ author: isotopp
 date: "2011-06-05T12:41:40Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- identity
-- internet
-- ipv6
-- politik
-- privacy
-- spackeria
-- lang_de
+  - identity
+  - internet
+  - ipv6
+  - politik
+  - privacy
+  - spackeria
+  - lang_de
 title: IP V6 verkehrt
 aliases:
   - /2011/06/05/ip-v6-verkehrt.html

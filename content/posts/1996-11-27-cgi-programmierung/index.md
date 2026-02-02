@@ -5,9 +5,9 @@ date: "1996-11-27T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_de
-- web
-- development
+  - lang_de
+  - web
+  - development
 aliases:
   - /1996/11/27/cgi-programmierung.html
 ---

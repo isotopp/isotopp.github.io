@@ -4,8 +4,8 @@ date: "2017-03-21T08:47:17Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- science
-- lang_en
+  - science
+  - lang_en
 title: No such thing as a wilderness, part II
 aliases:
   - /2017/03/21/no-such-thing-as-a-wilderness-part-ii.html

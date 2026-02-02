@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-10-22T17:06:17Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- cycling
-- mobility
-- netherlands
+  - lang_en
+  - cycling
+  - mobility
+  - netherlands
 title: 'Safe Biking: It''s not the right of way that''s wrong'
 aliases:
   - /2020/10/22/safe-biking-its-not-the-right-of-way-thats-wrong.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-08-21T17:11:35Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- politik
-- security
-- lang_de
+  - politik
+  - security
+  - lang_de
 title: Was bedeutet eigentlich "Never check for an error condition you don't know how to handle"
 aliases:
   - /2009/08/21/was-bedeutet-eigentlich-never-check-for-an-error-condition-you-don-t-know-how-to-handle.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-09-28T11:26:04Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- performance
-- replication
-- lang_de
+  - mysql
+  - performance
+  - replication
+  - lang_de
 title: MySQL Replication Load Monitor
 aliases:
   - /2012/09/28/mysql-replication-load-monitor.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2015-02-08T15:03:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: The Boss'
 aliases:
   - /2015/02/08/fertig-gelesen-the-boss.html

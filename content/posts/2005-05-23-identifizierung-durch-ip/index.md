@@ -3,11 +3,11 @@ author: isotopp
 date: "2005-05-23T10:47:51Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- authentication
-- identity
-- politik
-- security
-- lang_de
+  - authentication
+  - identity
+  - politik
+  - security
+  - lang_de
 title: Identifizierung durch IP
 aliases:
   - /2005/05/23/identifizierung-durch-ip.html

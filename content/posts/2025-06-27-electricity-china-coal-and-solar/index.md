@@ -5,9 +5,9 @@ feature-img: assets/img/background/rijksmuseum.jpg
 title: "Electricity, China, Coal and Solar"
 toc: true
 tags:
-- lang_en
-- energy
-- climate
+  - lang_en
+  - energy
+  - climate
 aliases:
   - /2025/06/27/electricity-china-coal-and-solar.html
 ---

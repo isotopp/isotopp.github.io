@@ -4,10 +4,10 @@ date: "2017-11-25T20:44:52Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- performance
-- hardware
-- computer
-- lang_en
+  - performance
+  - hardware
+  - computer
+  - lang_en
 title: d = a*b+c at scale
 aliases:
   - /2017/11/25/d-abc-at-scale.html

@@ -4,10 +4,10 @@ date: "2017-02-13T16:49:23Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: Die Krone der Sterne'
 aliases:
   - /2017/02/13/fertig-gelesen-die-krone-der-sterne.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2006-08-07T18:24:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- data center
-- lang_de
+  - computer
+  - data center
+  - lang_de
 title: The Heat Is On
 aliases:
   - /2006/08/07/the-heat-is-on.html

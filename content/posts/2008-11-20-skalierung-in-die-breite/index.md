@@ -3,10 +3,10 @@ author: isotopp
 date: "2008-11-20T10:59:41Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- distributed computing
-- free software
-- lang_de
+  - computer
+  - distributed computing
+  - free software
+  - lang_de
 title: Skalierung in die Breite
 aliases:
   - /2008/11/20/skalierung-in-die-breite.html

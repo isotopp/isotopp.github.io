@@ -3,8 +3,8 @@ author: isotopp
 date: "2006-12-26T11:18:50Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- lang_de
+  - security
+  - lang_de
 title: Bundestrojaner
 aliases:
   - /2006/12/26/bundestrojaner.html

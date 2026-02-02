@@ -3,9 +3,9 @@ author: isotopp
 date: "2005-06-07T18:44:05Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- kiel
-- php
-- lang_de
+  - kiel
+  - php
+  - lang_de
 title: Zehn Jahre PHP
 aliases:
   - /2005/06/07/zehn-jahre-php.html

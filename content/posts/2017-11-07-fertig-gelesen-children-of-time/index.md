@@ -4,10 +4,10 @@ date: "2017-11-07T08:38:34Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: Children of Time'
 aliases:
   - /2017/11/07/fertig-gelesen-children-of-time.html

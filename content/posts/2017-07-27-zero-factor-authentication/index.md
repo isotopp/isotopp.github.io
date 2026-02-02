@@ -4,9 +4,9 @@ date: "2017-07-27T11:10:10Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- security
-- erklaerbaer
-- lang_en
+  - security
+  - erklaerbaer
+  - lang_en
 title: Zero Factor Authentication
 aliases:
   - /2017/07/27/zero-factor-authentication.html

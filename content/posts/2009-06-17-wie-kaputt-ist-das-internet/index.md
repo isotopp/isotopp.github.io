@@ -3,8 +3,8 @@ author: isotopp
 date: "2009-06-17T08:35:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- lang_de
+  - internet
+  - lang_de
 title: Wie 'kaputt' ist das Internet?
 aliases:
   - /2009/06/17/wie-kaputt-ist-das-internet.html

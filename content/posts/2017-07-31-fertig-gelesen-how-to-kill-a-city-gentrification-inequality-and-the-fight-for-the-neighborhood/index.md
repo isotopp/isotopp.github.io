@@ -4,10 +4,10 @@ date: "2017-07-31T08:06:21Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: How to Kill a City, Gentrification, Inequality and the Fight for the Neighborhood'
 aliases:
   - /2017/07/31/fertig-gelesen-how-to-kill-a-city-gentrification-inequality-and-the-fight-for-the-neighborhood.html

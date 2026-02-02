@@ -3,9 +3,9 @@ author: isotopp
 date: "2019-10-15T11:50:23Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- apple
-- macos
+  - lang_en
+  - apple
+  - macos
 title: Ignoring Catalina nags
 aliases:
   - /2019/10/15/ignoring-catalina-nags.html

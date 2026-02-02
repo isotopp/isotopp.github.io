@@ -3,10 +3,10 @@ author: isotopp
 date: "2008-01-07T14:57:36Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- ccc
-- hack
-- politik
-- lang_de
+  - ccc
+  - hack
+  - politik
+  - lang_de
 title: Warum Hacker sich als Bürgerrechtler verstehen
 aliases:
   - /2008/01/07/warum-hacker-sich-als-b-rgerrechtler-verstehen.html

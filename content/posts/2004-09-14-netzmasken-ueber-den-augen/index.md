@@ -3,9 +3,9 @@ author: isotopp
 date: "2004-09-14T17:52:53Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- erklaerbaer
-- computer
-- lang_de
+  - erklaerbaer
+  - computer
+  - lang_de
 title: Netzmasken über den Augen
 aliases:
   - /2004/09/14/netzmasken-ueber-den-augen.html

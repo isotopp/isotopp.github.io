@@ -3,9 +3,9 @@ author: isotopp
 date: "2011-03-28T07:29:09Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- media
-- lang_de
+  - book
+  - media
+  - lang_de
 title: Was Kindle so alles verändert
 aliases:
   - /2011/03/28/was-kindle-so-alles-ver-ndert.html

@@ -4,9 +4,9 @@ date: "2022-06-07T09:42:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "Binlog Compression and Large Transactions"
 tags:
-- database
-- mysql
-- lang_en
+  - database
+  - mysql
+  - lang_en
 aliases:
   - /2022/06/07/mysql-binlog-compression-and-large-transactions.html
 ---

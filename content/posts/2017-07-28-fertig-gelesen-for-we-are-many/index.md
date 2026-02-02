@@ -4,10 +4,10 @@ date: "2017-07-28T07:58:49Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: For We Are Many'
 aliases:
   - /2017/07/28/fertig-gelesen-for-we-are-many.html

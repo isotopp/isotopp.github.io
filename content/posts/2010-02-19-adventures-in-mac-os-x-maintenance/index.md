@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-02-19T14:17:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- apple
-- computer
-- macos
-- lang_de
+  - apple
+  - computer
+  - macos
+  - lang_de
 title: Adventures in Mac OS X maintenance
 aliases:
   - /2010/02/19/adventures-in-mac-os-x-maintenance.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-07-21T15:15:02Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- politik
-- lang_de
+  - internet
+  - politik
+  - lang_de
 title: Das Internet macht die Politik schwerer... Menno.
 aliases:
   - /2010/07/21/das-internet-macht-die-politik-schwerer-menno.html

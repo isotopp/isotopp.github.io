@@ -3,12 +3,12 @@ author: isotopp
 date: "2012-09-24T19:24:19Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- monitoring
-- replication
-- mysql
-- performance
-- lang_de
+  - database
+  - monitoring
+  - replication
+  - mysql
+  - performance
+  - lang_de
 title: Der Herr House und der Herr Heisenberg haben Replication Delay
 aliases:
   - /2012/09/24/der-herr-house-und-der-herr-heisenberg-haben-replication-delay.html

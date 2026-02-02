@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-11-29T17:55:46Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Poseidon''s Wake'
 aliases:
   - /2015/11/29/fertig-gelesen-poseidons-wake.html

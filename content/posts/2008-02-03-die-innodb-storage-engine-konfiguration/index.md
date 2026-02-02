@@ -3,8 +3,8 @@ author: isotopp
 date: "2008-02-03T11:50:57Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- lang_de
+  - mysql
+  - lang_de
 title: 'Die InnoDB Storage Engine: Konfiguration'
 aliases:
   - /2008/02/03/die-innodb-storage-engine-konfiguration.html

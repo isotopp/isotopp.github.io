@@ -4,9 +4,9 @@ date: "2017-05-09T15:52:02Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- internet
-- networking
-- lang_en
+  - internet
+  - networking
+  - lang_en
 title: RTT-based vs. drop based congestion management
 aliases:
   - /2017/05/09/rtt-based-vs-drop-based-congestion-management.html

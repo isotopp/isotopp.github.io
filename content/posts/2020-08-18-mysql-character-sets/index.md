@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-08-18T08:57:10Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
-- database
-- erklaerbaer
+  - lang_en
+  - mysql
+  - mysqldev
+  - database
+  - erklaerbaer
 title: 'MySQL: Some Character Set Basics'
 aliases:
   - /2020/08/18/mysql-character-sets.html

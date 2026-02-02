@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-10-28T14:06:51Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 title: 'MySQL: Python and WHERE ... IN ()'
 aliases:
   - /2021/10/28/python-where-in.html

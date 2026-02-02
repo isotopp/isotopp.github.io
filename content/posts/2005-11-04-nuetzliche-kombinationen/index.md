@@ -3,11 +3,11 @@ author: isotopp
 date: "2005-11-04T07:52:53Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- hack
-- media
-- musik
-- security
-- lang_de
+  - hack
+  - media
+  - musik
+  - security
+  - lang_de
 title: Nützliche Kombinationen
 aliases:
   - /2005/11/04/nuetzliche-kombinationen.html

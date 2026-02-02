@@ -4,10 +4,10 @@ title: "Tying the BI pipeline together"
 date: "2022-12-22T06:07:08Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
-- data warehouse
+  - lang_en
+  - mysql
+  - mysqldev
+  - data warehouse
 aliases:
   - /2022/12/22/tying-the-bi-pipeline-together.html
 ---

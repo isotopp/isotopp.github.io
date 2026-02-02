@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-11-29T18:58:10Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: Mistborn, The Final Empire, The Well of Ascension, The Hero of Ages'
 aliases:
   - /2015/11/29/fertig-gelesen-mistborn-the-final-empire-the-well-of-ascension-the-hero-of-ages.html

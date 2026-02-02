@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-08-03T14:18:06Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 title: 'Fertig gelesen: 88 Names'
 aliases:
   - /2021/08/03/fertig-gelesen-88-names.html

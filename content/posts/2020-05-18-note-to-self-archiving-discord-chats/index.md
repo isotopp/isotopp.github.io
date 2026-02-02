@@ -3,8 +3,8 @@ author: isotopp
 date: "2020-05-18T12:59:37Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- discord
+  - lang_en
+  - discord
 title: 'Note to self: Archiving Discord Chats'
 aliases:
   - /2020/05/18/note-to-self-archiving-discord-chats.html

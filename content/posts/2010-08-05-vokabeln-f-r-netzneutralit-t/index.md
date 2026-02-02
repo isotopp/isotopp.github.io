@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-08-05T15:14:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- google
-- internet
-- mobiltelefon
-- netzneutralität
-- lang_de
+  - google
+  - internet
+  - mobiltelefon
+  - netzneutralität
+  - lang_de
 title: Vokabeln für Netzneutralität
 aliases:
   - /2010/08/05/vokabeln-f-r-netzneutralit-t.html

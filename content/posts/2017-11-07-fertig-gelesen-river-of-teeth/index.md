@@ -4,10 +4,10 @@ date: "2017-11-07T15:56:04Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- lang_en
+  - review
+  - media
+  - book
+  - lang_en
 title: 'Fertig gelesen: River of Teeth'
 aliases:
   - /2017/11/07/fertig-gelesen-river-of-teeth.html

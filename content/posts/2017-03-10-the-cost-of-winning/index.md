@@ -4,9 +4,9 @@ date: "2017-03-10T18:50:38Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- security
-- performance
-- lang_en
+  - security
+  - performance
+  - lang_en
 title: The cost of winning…
 aliases:
   - /2017/03/10/the-cost-of-winning.html

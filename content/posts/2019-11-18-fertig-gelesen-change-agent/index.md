@@ -3,10 +3,10 @@ author: isotopp
 date: "2019-11-18T19:20:56Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- media
-- book
-- review
-- lang_en
+  - media
+  - book
+  - review
+  - lang_en
 title: 'Fertig gelesen: Change Agent'
 aliases:
   - /2019/11/18/fertig-gelesen-change-agent.html

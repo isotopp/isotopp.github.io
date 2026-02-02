@@ -4,9 +4,9 @@ date: "2022-06-08T04:47:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "How to buy an e-Bike"
 tags:
-- lang_en
-- mobility
-- bike
+  - lang_en
+  - mobility
+  - bike
 aliases:
   - /2022/06/08/how-to-buy-an-ebike.html
 ---

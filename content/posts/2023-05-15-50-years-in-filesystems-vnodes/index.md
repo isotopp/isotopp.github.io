@@ -5,9 +5,9 @@ date: "2023-05-15T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- unix
-- filesystems
+  - lang_en
+  - unix
+  - filesystems
 aliases:
   - /2023/05/15/50-years-in-filesystems-vnodes.html
 ---

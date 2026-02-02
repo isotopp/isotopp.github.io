@@ -4,8 +4,8 @@ date: "2017-07-03T09:01:29Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- lang_en
+  - computer
+  - lang_en
 title: Friday Deploys, and other harmful BOFH memes
 aliases:
   - /2017/07/03/friday-deploys-and-other-harmful-bofh-memes.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-09-14T17:59:34Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- politik
-- privacy
-- spackeria
-- lang_de
+  - politik
+  - privacy
+  - spackeria
+  - lang_de
 title: 'Datenschutztheater: Opt-Out für WLAN Access Points'
 aliases:
   - /2011/09/14/datenschutztheater-opt-out-f-r-wlan-access-points.html

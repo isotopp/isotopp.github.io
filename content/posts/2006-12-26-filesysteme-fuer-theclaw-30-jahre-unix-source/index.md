@@ -3,10 +3,10 @@ author: isotopp
 date: "2006-12-26T19:09:59Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- filesystems
-- erklaerbaer
-- unix
-- lang_de
+  - filesystems
+  - erklaerbaer
+  - unix
+  - lang_de
 title: Filesysteme für theclaw (30 Jahre Unix Source)
 aliases:
   - /2006/12/26/filesysteme-fuer-theclaw-30-jahre-unix-source.html

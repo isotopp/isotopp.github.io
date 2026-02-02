@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-05-06T07:27:00Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- review
-- security
-- lang_de
+  - review
+  - security
+  - lang_de
 title: 'Fertig gelesen: Security Engineering, 2nd edition'
 aliases:
   - /2008/05/06/fertig-gelesen-security-engineering-2nd-edition.html

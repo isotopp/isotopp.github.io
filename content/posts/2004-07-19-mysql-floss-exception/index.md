@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-07-19T14:14:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- php
-- lang_de
+  - php
+  - lang_de
 title: MySQL FLOSS Exception
 aliases:
   - /2004/07/19/mysql-floss-exception.html

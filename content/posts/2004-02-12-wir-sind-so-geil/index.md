@@ -3,9 +3,9 @@ author: isotopp
 date: "2004-02-12T18:01:46Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- blog
-- usenet
-- lang_de
+  - blog
+  - usenet
+  - lang_de
 title: Wir sind so geil, ...
 aliases:
   - /2004/02/12/wir-sind-so-geil.html

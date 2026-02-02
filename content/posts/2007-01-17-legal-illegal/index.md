@@ -3,10 +3,10 @@ author: isotopp
 date: "2007-01-17T15:22:20Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- media
-- film
-- lang_de
+  - copyright
+  - media
+  - film
+  - lang_de
 title: Legal, Illegal, ...
 aliases:
   - /2007/01/17/legal-illegal.html

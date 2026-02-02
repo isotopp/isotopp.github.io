@@ -3,11 +3,11 @@ author: isotopp
 date: "2018-09-25T18:47:20Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- book
-- media
-- review
-- scifi
+  - lang_en
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Reflex, Impulse, Exo + Griffin'
 aliases:
   - /2018/09/25/fertig-gelesen-reflex-impulse-exo-griffin.html

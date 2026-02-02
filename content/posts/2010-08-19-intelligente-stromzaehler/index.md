@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-08-19T09:27:09Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- energy
-- lang_de
+  - computer
+  - energy
+  - lang_de
 title: '"Intelligente" Stromzähler'
 aliases:
   - /2010/08/19/intelligente-stromzaehler.html

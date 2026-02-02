@@ -3,12 +3,12 @@ author: isotopp
 date: "2020-09-24T21:39:24Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- database
-- innodb
-- erklaerbaer
-- mysqldev
+  - lang_en
+  - mysql
+  - database
+  - innodb
+  - erklaerbaer
+  - mysqldev
 title: 'MySQL: Deleting data'
 aliases:
   - /2020/09/24/mysql-deleting-data.html

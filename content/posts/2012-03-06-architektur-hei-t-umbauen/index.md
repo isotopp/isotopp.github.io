@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-03-06T13:42:47Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- development
-- software
-- lang_de
+  - computer
+  - development
+  - software
+  - lang_de
 title: Architektur heißt umbauen
 aliases:
   - /2012/03/06/architektur-hei-t-umbauen.html

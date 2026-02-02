@@ -4,10 +4,10 @@ date: "2023-09-26T01:02:03Z"
 feature-img: assets/img/background/book.jpg
 title: 'Fertig gelesen: Blue Machine'
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 aliases:
   - /2023/09/26/fertig-gelesen-blue-machine.html
 ---

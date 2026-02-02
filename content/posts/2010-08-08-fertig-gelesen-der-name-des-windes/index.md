@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-08-08T06:15:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- media
-- review
-- lang_de
+  - book
+  - media
+  - review
+  - lang_de
 title: 'Fertig gelesen: Der Name des Windes'
 aliases:
   - /2010/08/08/fertig-gelesen-der-name-des-windes.html

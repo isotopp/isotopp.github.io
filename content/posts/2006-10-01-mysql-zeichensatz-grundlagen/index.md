@@ -3,8 +3,8 @@ author: isotopp
 date: "2006-10-01T14:28:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- lang_de
+  - mysql
+  - lang_de
 title: 'MySQL: Zeichensatz-Grundlagen'
 aliases:
   - /2006/10/01/mysql-zeichensatz-grundlagen.html

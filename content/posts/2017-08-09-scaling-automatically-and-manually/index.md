@@ -4,9 +4,9 @@ date: "2017-08-09T10:19:30Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- erklaerbaer
-- performance
-- container
+  - erklaerbaer
+  - performance
+  - container
 title: Scaling, automatically and manually
 aliases:
   - /2017/08/09/scaling-automatically-and-manually.html

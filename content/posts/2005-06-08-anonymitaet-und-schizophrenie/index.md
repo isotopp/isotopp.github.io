@@ -3,11 +3,11 @@ author: isotopp
 date: "2005-06-08T15:39:52Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- authentication
-- identity
-- politik
-- security
-- lang_de
+  - authentication
+  - identity
+  - politik
+  - security
+  - lang_de
 title: Anonymität und Schizophrenie
 aliases:
   - /2005/06/08/anonymitaet-und-schizophrenie.html

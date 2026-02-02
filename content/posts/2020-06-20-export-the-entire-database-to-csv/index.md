@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-06-20T16:16:38Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysqldev
-- mysql
-- erklaerbaer
-- reddit
+  - lang_en
+  - mysqldev
+  - mysql
+  - erklaerbaer
+  - reddit
 title: Export the entire database to CSV
 aliases:
   - /2020/06/20/export-the-entire-database-to-csv.html

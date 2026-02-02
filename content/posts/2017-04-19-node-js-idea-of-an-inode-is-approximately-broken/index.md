@@ -4,9 +4,9 @@ date: "2017-04-19T08:35:21Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- erklaerbaer
-- lang_en
+  - computer
+  - erklaerbaer
+  - lang_en
 title: node.js idea of an inode is approximately broken
 aliases:
   - /2017/04/19/node-js-idea-of-an-inode-is-approximately-broken.html

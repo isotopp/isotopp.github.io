@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-07-25T13:15:37Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- media
-- musik
-- lang_de
+  - media
+  - musik
+  - lang_de
 title: Yahoo! schaltet Yahoo Music ab
 aliases:
   - /2008/07/25/yahoo-schaltet-yahoo-music-ab.html

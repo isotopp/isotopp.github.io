@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-09-09T17:34:33Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- mysql
-- blog
+  - lang_en
+  - mysql
+  - blog
 title: Feeds tagged, and a MySQL feed
 aliases:
   - /2020/09/09/feeds-tagged-and-a-mysql-feed.html

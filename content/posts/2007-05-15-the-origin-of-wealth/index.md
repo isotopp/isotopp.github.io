@@ -3,10 +3,10 @@ author: isotopp
 date: "2007-05-15T06:57:13Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- media
-- book
-- review
-- lang_de
+  - media
+  - book
+  - review
+  - lang_de
 title: 'Fertig gelesen: The Origin Of Wealth, Growing Artificial Societies, The Quark and the Jaguar'
 aliases:
   - /2007/05/15/the-origin-of-wealth.html

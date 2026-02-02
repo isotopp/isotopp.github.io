@@ -3,10 +3,10 @@ author: isotopp
 date: "2004-12-30T13:12:47Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- media
-- review
-- lang_de
+  - book
+  - media
+  - review
+  - lang_de
 title: 'Fertig gelesen: Alastair Reynolds'
 aliases:
   - /2004/12/30/alastair-reynolds.html

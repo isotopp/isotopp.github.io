@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-02-14T19:09:43Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: Indexing'
 aliases:
   - /2015/02/14/fertig-gelesen-indexing.html

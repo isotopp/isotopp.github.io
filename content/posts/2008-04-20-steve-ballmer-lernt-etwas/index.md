@@ -3,10 +3,10 @@ author: isotopp
 date: "2008-04-20T05:04:52Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- microsoft
-- software
-- lang_de
+  - computer
+  - microsoft
+  - software
+  - lang_de
 title: Steve Ballmer lernt etwas
 aliases:
   - /2008/04/20/steve-ballmer-lernt-etwas.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2011-01-04T14:58:51Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- devops
-- security
-- lang_de
+  - devops
+  - security
+  - lang_de
 title: Der Managementansatz zum Thema Sicherheit...
 aliases:
   - /2011/01/04/der-managementansatz-zum-thema-sicherheit.html

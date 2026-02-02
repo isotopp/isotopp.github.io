@@ -4,10 +4,10 @@ date: "2017-02-28T22:14:44Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: Galactic Exploration'
 aliases:
   - /2017/02/28/fertig-gelesen-galactic-exploration.html

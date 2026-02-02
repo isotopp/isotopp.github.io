@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-01-28T08:02:20Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 title: Database as a Queue
 aliases:
   - /2021/01/28/database-as-a-queue.html

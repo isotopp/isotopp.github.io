@@ -3,11 +3,11 @@ author: isotopp
 date: "2018-07-31T17:06:53Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: Anathema'
 aliases:
   - /2018/07/31/fertig-gelesen-anathema.html

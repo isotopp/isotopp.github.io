@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-01-29T14:25:18Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: "Neptune''s Brood"'
 aliases:
   - /2014/01/29/fertig-gelesen-neptunes-brood.html

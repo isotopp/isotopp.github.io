@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-04-07T21:20:19Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: Children of Ruin'
 aliases:
   - /2021/04/07/fertig-gelesen-children-of-ruin.html

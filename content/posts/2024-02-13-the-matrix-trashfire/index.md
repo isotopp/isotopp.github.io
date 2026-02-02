@@ -5,10 +5,10 @@ date: "2023-12-05T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- chat
-- remote first
-- work
+  - lang_en
+  - chat
+  - remote first
+  - work
 aliases:
   - /2024/02/13/the-matrix-trashfire.html
 ---

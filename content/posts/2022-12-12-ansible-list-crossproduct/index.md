@@ -4,9 +4,9 @@ title: "Ansible: List Cross-Join"
 date: "2022-12-12T21:22:23Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- devops
-- python
+  - lang_en
+  - devops
+  - python
 aliases:
   - /2022/12/12/ansible-list-crossproduct.html
 ---

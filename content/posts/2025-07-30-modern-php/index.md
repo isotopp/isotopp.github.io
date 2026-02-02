@@ -4,8 +4,8 @@ date: "2025-07-30T03:04:05Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- php
-- lang_en
+  - php
+  - lang_en
 title: Modern PHP (7.x)
 aliases:
   - /2025/07/30/modern-php.html

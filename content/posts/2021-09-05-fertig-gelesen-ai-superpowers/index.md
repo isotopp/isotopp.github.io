@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-09-05T16:19:51Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 title: 'Fertig gelesen: AI Superpowers'
 aliases:
   - /2021/09/05/fertig-gelesen-ai-superpowers.html

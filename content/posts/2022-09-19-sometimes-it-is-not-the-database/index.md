@@ -4,8 +4,8 @@ title: "MySQL: Sometimes it is not the database"
 date: "2022-09-19T12:13:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
+  - lang_en
+  - mysql
 aliases:
   - /2022/09/19/sometimes-it-is-not-the-database.html
 ---

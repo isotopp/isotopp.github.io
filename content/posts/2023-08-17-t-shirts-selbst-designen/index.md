@@ -5,9 +5,9 @@ date: "2023-08-21T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_de
-- erklaerbaer
-- fluffy fluff
+  - lang_de
+  - erklaerbaer
+  - fluffy fluff
 aliases:
   - /2023/08/17/t-shirts-selbst-designen.html
 ---

@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-03-15T10:43:28Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- piraten
-- blog
-- privacy
-- lang_de
+  - piraten
+  - blog
+  - privacy
+  - lang_de
 title: Persona - was Julia Seeliger mit Marcel D'Avis verbindet
 aliases:
   - /2010/03/15/persona-was-julia-seeliger-mit-marcel-d-avis-verbindet.html

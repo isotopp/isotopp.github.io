@@ -4,9 +4,9 @@ title: "Service Directories, and what they are good for"
 date: "2023-02-06T06:07:08Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- lang_en
-- devops
-- security
+  - lang_en
+  - devops
+  - security
 aliases:
   - /2023/02/06/service-directories-and-what-they-are-good-for.html
 ---

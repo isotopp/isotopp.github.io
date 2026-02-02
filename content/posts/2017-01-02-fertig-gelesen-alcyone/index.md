@@ -3,11 +3,11 @@ author: isotopp
 date: "2017-01-02T14:11:01Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Alcyone'
 aliases:
   - /2017/01/02/fertig-gelesen-alcyone.html

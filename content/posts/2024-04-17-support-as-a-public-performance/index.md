@@ -5,9 +5,9 @@ date: "2024-04-17T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- erklaerbaer
-- work
+  - lang_en
+  - erklaerbaer
+  - work
 aliases:
   - /2024/04/17/support-as-a-public-performance.html
 ---

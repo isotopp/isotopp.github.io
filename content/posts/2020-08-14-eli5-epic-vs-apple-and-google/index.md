@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-08-14T10:21:56Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- gaming
-- apple
-- google
-- erklaerbaer
+  - lang_en
+  - gaming
+  - apple
+  - google
+  - erklaerbaer
 title: 'ELI5: Epic vs Apple and Google'
 aliases:
   - /2020/08/14/eli5-epic-vs-apple-and-google.html

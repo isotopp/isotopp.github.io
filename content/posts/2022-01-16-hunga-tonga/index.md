@@ -4,9 +4,9 @@ title: "Hunga Tonga"
 date: 2022-01-16T06:28:00+01:00
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- anderswo
-- iot
+  - lang_en
+  - anderswo
+  - iot
 aliases:
   - /2022/01/16/hunga-tonga.html
 ---

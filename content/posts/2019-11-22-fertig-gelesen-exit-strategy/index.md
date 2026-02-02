@@ -3,10 +3,10 @@ author: isotopp
 date: "2019-11-22T21:54:27Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- media
-- review
-- book
-- lang_en
+  - media
+  - review
+  - book
+  - lang_en
 title: 'Fertig gelesen: Exit Strategy'
 aliases:
   - /2019/11/22/fertig-gelesen-exit-strategy.html

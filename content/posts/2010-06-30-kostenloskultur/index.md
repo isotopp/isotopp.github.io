@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-06-30T14:57:18Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- media
-- lang_de
+  - internet
+  - media
+  - lang_de
 title: Kostenloskultur
 aliases:
   - /2010/06/30/kostenloskultur.html

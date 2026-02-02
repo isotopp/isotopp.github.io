@@ -3,11 +3,11 @@ author: isotopp
 date: "2017-01-02T14:55:04Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- steampunk
+  - lang_de
+  - book
+  - media
+  - review
+  - steampunk
 title: 'Fertig gelesen: The Aeronaut''s Windlass'
 aliases:
   - /2017/01/02/fertig-gelesen-the-aeronauts-windlass.html

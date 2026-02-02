@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-01-26T10:30:40Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- blog
-- jugendschutz
-- politik
-- zensur
-- lang_de
+  - blog
+  - jugendschutz
+  - politik
+  - zensur
+  - lang_de
 title: Ab 18
 aliases:
   - /2010/01/26/ab-18.html

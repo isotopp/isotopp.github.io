@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-04-07T20:18:18Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 title: 'Fertig gelesen: The Vanishing Middle Class'
 aliases:
   - /2021/04/07/fertig-gelesen-the-vanishing-middle-class.html

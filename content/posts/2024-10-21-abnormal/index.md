@@ -4,8 +4,8 @@ date: "2024-10-21T04:05:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_ede
-- media
+  - lang_ede
+  - media
 title: "Abnormal"
 aliases:
   - /2024/10/21/abnormal.html

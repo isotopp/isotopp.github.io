@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-07-01T03:29:11Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- karlsruhe
-- lang_de
+  - karlsruhe
+  - lang_de
 title: Kilowattstunden
 aliases:
   - /2004/07/01/kilowattstunden.html

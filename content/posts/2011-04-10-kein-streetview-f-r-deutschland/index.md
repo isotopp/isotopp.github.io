@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-04-10T21:31:27Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- google
-- internet
-- privacy
-- spackeria
-- lang_de
+  - google
+  - internet
+  - privacy
+  - spackeria
+  - lang_de
 title: Kein Streetview für Deutschland
 aliases:
   - /2011/04/10/kein-streetview-f-r-deutschland.html

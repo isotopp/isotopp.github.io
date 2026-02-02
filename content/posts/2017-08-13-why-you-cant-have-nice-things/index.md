@@ -4,9 +4,9 @@ date: "2017-08-13T10:07:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- media
-- copyright
-- lang_en
+  - media
+  - copyright
+  - lang_en
 title: Why you can't have nice things…
 aliases:
   - /2017/08/13/why-you-cant-have-nice-things.html

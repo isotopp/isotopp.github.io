@@ -3,10 +3,10 @@ author: isotopp
 date: "2006-07-30T08:33:10Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- media
-- review
-- lang_de
+  - book
+  - media
+  - review
+  - lang_de
 title: 'Fertig gelesen: Greg Bear: Vitals'
 aliases:
   - /2006/07/30/greg-bear-vitals.html

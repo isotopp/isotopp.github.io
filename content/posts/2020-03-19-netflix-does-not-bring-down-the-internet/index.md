@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-03-19T10:35:39Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- media
-- internet
+  - lang_en
+  - media
+  - internet
 title: Netflix does not bring down the Internet
 aliases:
   - /2020/03/19/netflix-does-not-bring-down-the-internet.html

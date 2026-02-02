@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-04-27T21:24:02Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- spam
-- virus
-- lang_de
+  - security
+  - spam
+  - virus
+  - lang_de
 title: Alle vier Stunden - zum Nutzen von Antivirus und zum Nutzen von Testverfahren
 aliases:
   - /2012/04/27/alle-vier-stunden-zum-nutzen-von-antivirus-und-zum-nutzen-von-testverfahren.html

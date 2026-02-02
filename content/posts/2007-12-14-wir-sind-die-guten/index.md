@@ -3,10 +3,10 @@ author: isotopp
 date: "2007-12-14T05:09:24Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- politik
-- security
-- terror
-- lang_de
+  - politik
+  - security
+  - terror
+  - lang_de
 title: Wir sind die Guten!
 aliases:
   - /2007/12/14/wir-sind-die-guten.html

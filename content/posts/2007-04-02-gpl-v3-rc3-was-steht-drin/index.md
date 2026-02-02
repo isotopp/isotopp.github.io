@@ -3,11 +3,11 @@ author: isotopp
 date: "2007-04-02T09:36:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- free software
-- lizenz
-- patent
-- lang_de
+  - copyright
+  - free software
+  - lizenz
+  - patent
+  - lang_de
 title: GPL V3 RC3 - Was steht drin?
 aliases:
   - /2007/04/02/gpl-v3-rc3-was-steht-drin.html

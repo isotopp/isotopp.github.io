@@ -4,9 +4,9 @@ title: "MySQL: Ways to run mysqldump"
 date: "2023-01-03T01:02:03Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 aliases:
   - /2023/01/03/mysql-ways-to-run-mysqldump.html
 ---

@@ -3,10 +3,10 @@ author: isotopp
 date: "2014-08-11T19:18:19Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Empire of the Summer Moon'
 aliases:
   - /2014/08/11/fertig-gelesen-empire-of-the-summer-moon.html

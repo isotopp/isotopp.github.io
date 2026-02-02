@@ -5,9 +5,9 @@ feature-img: assets/img/background/rijksmuseum.jpg
 title: "Not being federated and E2E as an advantage"
 toc: true
 tags:
-- lang_en
-- chat
-- security
+  - lang_en
+  - chat
+  - security
 aliases:
   - /2025/06/17/no-federation-no-e2e.html
 ---

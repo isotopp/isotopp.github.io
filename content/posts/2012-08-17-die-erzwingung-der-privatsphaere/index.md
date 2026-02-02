@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-08-17T07:26:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- politik
-- privacy
-- spackeria
-- lang_de
+  - internet
+  - politik
+  - privacy
+  - spackeria
+  - lang_de
 title: Die Erzwingung der Privatsphäre
 aliases:
   - /2012/08/17/die-erzwingung-der-privatsphaere.html

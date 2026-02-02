@@ -3,8 +3,8 @@ author: isotopp
 date: "2008-06-01T04:30:35Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- free software
-- lang_de
+  - free software
+  - lang_de
 title: "CS101: From NAND to Tetris in 14 simple steps"
 aliases:
   - /2008/06/01/cs101-from-nand-to-tetris-in-14-simple-steps.html

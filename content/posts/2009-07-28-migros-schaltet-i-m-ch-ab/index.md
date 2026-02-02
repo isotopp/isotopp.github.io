@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-07-28T08:26:45Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- media
-- musik
-- lang_de
+  - media
+  - musik
+  - lang_de
 title: Migros schaltet i-m.ch ab
 aliases:
   - /2009/07/28/migros-schaltet-i-m-ch-ab.html

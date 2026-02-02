@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-01-25T17:06:42Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- film
-- media
-- fluffy fluff
-- lang_de
+  - film
+  - media
+  - fluffy fluff
+  - lang_de
 title: Der Lauf der Dinge
 aliases:
   - /2005/01/25/der-lauf-der-dinge.html

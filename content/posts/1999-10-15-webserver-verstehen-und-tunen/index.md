@@ -4,9 +4,9 @@ date: "1999-10-15T09:00:00Z"
 feature-img: assets/img/background/schloss.jpg
 title: "Webserver verstehen und tunen"
 tags:
-- lang_de
-- php
-- web 
+  - lang_de
+  - php
+  - web
 aliases:
   - /1999/10/15/webserver-verstehen-und-tunen.html
 ---

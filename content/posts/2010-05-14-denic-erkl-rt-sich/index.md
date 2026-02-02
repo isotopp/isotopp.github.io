@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-05-14T15:14:05Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- devops
-- internet
-- lang_de
+  - devops
+  - internet
+  - lang_de
 title: DENIC erklärt sich
 aliases:
   - /2010/05/14/denic-erkl-rt-sich.html

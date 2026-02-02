@@ -4,10 +4,10 @@ date: "2002-06-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Enterprise Intranet Integration"
 tags:
-- lang_de
-- talk
-- publication
-- internet
+  - lang_de
+  - talk
+  - publication
+  - internet
 aliases:
   - /2002/06/01/enterprise-intranet-integration.html
 ---

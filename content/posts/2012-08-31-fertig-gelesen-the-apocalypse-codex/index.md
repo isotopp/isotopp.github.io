@@ -3,12 +3,12 @@ author: isotopp
 date: "2012-08-31T07:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- cthulhu
-- media
-- stross
-- lang_de
+  - book
+  - review
+  - cthulhu
+  - media
+  - stross
+  - lang_de
 title: 'Fertig gelesen: The Apocalypse Codex'
 aliases:
   - /2012/08/31/fertig-gelesen-the-apocalypse-codex.html

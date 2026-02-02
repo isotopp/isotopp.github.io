@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-06-21T14:21:28Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysqldev
-- mysql
-- erklaerbaer
-- reddit
+  - lang_en
+  - mysqldev
+  - mysql
+  - erklaerbaer
+  - reddit
 title: MySQL Window Functions
 aliases:
   - /2020/06/21/mysql-window-functions.html

@@ -4,9 +4,9 @@ date: "2022-06-20T15:20:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "Breaking replication with ALGORITHM = INSTANT"
 tags:
-- database
-- mysql
-- lang_en
+  - database
+  - mysql
+  - lang_en
 aliases:
   - /2022/06/20/mysql-breaking-replication-with-algorithm-instant.html
 ---

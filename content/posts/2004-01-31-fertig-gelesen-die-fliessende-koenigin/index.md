@@ -3,10 +3,10 @@ author: isotopp
 date: "2004-01-31T05:36:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- media
-- review
-- lang_de
+  - book
+  - media
+  - review
+  - lang_de
 title: 'Fertig gelesen: Die fließende Königin'
 aliases:
   - /2004/01/31/fertig-gelesen-die-fliessende-koenigin.html

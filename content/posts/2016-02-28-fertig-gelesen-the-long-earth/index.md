@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-02-28T16:19:05Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: The Long Earth'
 aliases:
   - /2016/02/28/fertig-gelesen-the-long-earth.html

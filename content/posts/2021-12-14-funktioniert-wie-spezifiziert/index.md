@@ -4,8 +4,8 @@ title: "Es funktioniert wie spezifiziert"
 date: 2021-12-14T20:32:00+01:00
 feature-img: assets/img/background/schloss.jpg
 tags:
-- lang_de
-- security
+  - lang_de
+  - security
 aliases:
   - /2021/12/14/funktioniert-wie-spezifiziert.html
 ---

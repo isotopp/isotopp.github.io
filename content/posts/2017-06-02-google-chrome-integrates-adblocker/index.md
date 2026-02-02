@@ -4,9 +4,9 @@ date: "2017-06-02T08:37:56Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- security
-- copyright
-- lang_en
+  - security
+  - copyright
+  - lang_en
 title: Google Chrome integrates Adblocker
 aliases:
   - /2017/06/02/google-chrome-integrates-adblocker.html

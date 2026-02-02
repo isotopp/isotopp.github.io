@@ -4,11 +4,11 @@ title: Bashismen
 date: "2019-03-04T11:36:29Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- pluspora_import
-- lang_de
-- computer
-- linux
-- unix
+  - pluspora_import
+  - lang_de
+  - computer
+  - linux
+  - unix
 aliases:
   - /2019/03/04/bashismen.html
 ---

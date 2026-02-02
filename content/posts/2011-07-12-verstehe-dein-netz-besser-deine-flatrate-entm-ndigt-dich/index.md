@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-07-12T07:44:42Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- netzneutralität
-- politik
-- lang_de
+  - internet
+  - netzneutralität
+  - politik
+  - lang_de
 title: Verstehe Dein Netz besser - Deine Flatrate entmündigt Dich!
 aliases:
   - /2011/07/12/verstehe-dein-netz-besser-deine-flatrate-entm-ndigt-dich.html

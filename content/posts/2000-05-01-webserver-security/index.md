@@ -3,10 +3,10 @@ author: isotopp
 date: "2000-05-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- publication
-- talk
-- internet
+  - lang_de
+  - publication
+  - talk
+  - internet
 title: "Webserver Security"
 aliases:
   - /2000/05/01/webserver-security.html

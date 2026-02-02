@@ -3,11 +3,11 @@ author: isotopp
 date: "2018-09-25T19:56:35Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: Die vielen Leben des Harry August'
 aliases:
   - /2018/09/25/fertig-gelesen-die-vielen-leben-des-harry-august.html

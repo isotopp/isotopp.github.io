@@ -4,11 +4,11 @@ date: "2017-02-01T05:18:00Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- security
-- internet
-- networking
-- politik
-- lang_en
+  - security
+  - internet
+  - networking
+  - politik
+  - lang_en
 title: Europol discovers CGN
 aliases:
   - /2017/02/01/europol-discovers-cgn.html

@@ -4,8 +4,8 @@ title: "A01:2021 - Broken Access Control (en)"
 date: 2021-11-23T23:34:33+01:00
 feature-img: assets/img/background/schloss.jpg
 tags:
-- lang_en
-- security
+  - lang_en
+  - security
 aliases:
   - /2021/11/16/a01-2021-broken-access-control-en.html
 ---

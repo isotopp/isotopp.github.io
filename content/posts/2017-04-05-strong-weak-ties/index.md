@@ -4,10 +4,10 @@ date: "2017-04-05T11:42:32Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- netherlands
-- neuland
-- lang_en
+  - mobility
+  - netherlands
+  - neuland
+  - lang_en
 title: Strong weak ties
 aliases:
   - /2017/04/05/strong-weak-ties.html

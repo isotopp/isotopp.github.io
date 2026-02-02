@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-02-28T20:38:55Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: The Alloy of Law, Shadows of Self, The Bands of Mourning'
 aliases:
   - /2016/02/28/fertig-gelesen-the-alloy-of-law-shadows-of-self-the-bands-of-mourning.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-12-02T18:55:45Z"
 feature-img: assets/img/background/baellebad.jpg
 tags:
-- computer
-- development
-- software
-- testing
-- lang_de
+  - computer
+  - development
+  - software
+  - testing
+  - lang_de
 title: Testing in Production
 aliases:
   - /2011/12/02/testing-in-production.html

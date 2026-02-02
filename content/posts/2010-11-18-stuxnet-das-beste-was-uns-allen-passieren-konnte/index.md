@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-11-18T21:24:16Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- internet
-- security
-- lang_de
+  - internet
+  - security
+  - lang_de
 title: Stuxnet - das Beste, was uns allen passieren konnte
 aliases:
   - /2010/11/18/stuxnet-das-beste-was-uns-allen-passieren-konnte.html

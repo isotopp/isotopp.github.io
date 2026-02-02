@@ -5,9 +5,9 @@ date: "2024-01-09T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- linux
-- devops
+  - lang_en
+  - linux
+  - devops
 aliases:
   - /2024/01/09/deploying-websites.html
 ---

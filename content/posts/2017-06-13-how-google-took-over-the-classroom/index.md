@@ -4,8 +4,8 @@ date: "2017-06-13T09:07:37Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- neuland
-- lang_en
+  - neuland
+  - lang_en
 title: How Google took over the classroom
 aliases:
   - /2017/06/13/how-google-took-over-the-classroom.html

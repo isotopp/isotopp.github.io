@@ -3,9 +3,9 @@ author: isotopp
 date: "2011-05-10T10:23:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- mobiltelefon
-- lang_de
+  - internet
+  - mobiltelefon
+  - lang_de
 title: Handyrechnung
 aliases:
   - /2011/05/10/handyrechnung.html

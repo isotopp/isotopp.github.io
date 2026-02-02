@@ -3,12 +3,12 @@ author: isotopp
 date: "2019-12-28T19:42:16Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- climate
-- data center
-- cloud
-- energy
-- erklaerbaer
-- lang_en
+  - climate
+  - data center
+  - cloud
+  - energy
+  - erklaerbaer
+  - lang_en
 title: Streaming and Energy
 aliases:
   - /2019/12/28/streaming-and-energy.html

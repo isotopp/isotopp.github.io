@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-11-12T12:21:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- wikipedia
-- lang_de
+  - internet
+  - wikipedia
+  - lang_de
 title: 'Update: Der alljährliche Wikimedia-Spendenaufruf'
 aliases:
   - /2009/11/12/update-der-allj-hrliche-wikimedia-spendenaufruf.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-08-19T07:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: The Frozen Sky'
 aliases:
   - /2012/08/19/fertig-gelesen-the-frozen-sky.html

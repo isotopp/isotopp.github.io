@@ -4,9 +4,9 @@ date: "2017-02-10T04:07:54Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- performance
-- mongodb
-- lang_en
+  - performance
+  - mongodb
+  - lang_en
 title: Hipsterdoom with Mongobingo
 aliases:
   - /2017/02/10/hipsterdoom-at-mongobingo.html

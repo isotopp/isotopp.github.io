@@ -4,10 +4,10 @@ date: "2017-06-23T14:12:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- performance
-- hadoop
-- database
-- lang_en
+  - performance
+  - hadoop
+  - database
+  - lang_en
 title: On cache problems, and what they mean for the future
 aliases:
   - /2017/06/23/on-cache-problems-and-what-they-mean-for-the-future.html

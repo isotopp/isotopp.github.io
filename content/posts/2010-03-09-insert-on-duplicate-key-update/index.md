@@ -3,8 +3,8 @@ author: isotopp
 date: "2010-03-09T17:51:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- lang_de
+  - mysql
+  - lang_de
 title: INSERT  ON DUPLICATE KEY UPDATE
 aliases:
   - /2010/03/09/insert-on-duplicate-key-update.html

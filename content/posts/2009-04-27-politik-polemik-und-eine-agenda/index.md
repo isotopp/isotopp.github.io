@@ -3,12 +3,12 @@ author: isotopp
 date: "2009-04-27T09:48:37Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- internet
-- kultur
-- media
-- politik
-- lang_de
+  - copyright
+  - internet
+  - kultur
+  - media
+  - politik
+  - lang_de
 title: Politik, Polemik und eine Agenda.
 aliases:
   - /2009/04/27/politik-polemik-und-eine-agenda.html

@@ -4,8 +4,8 @@ date: "2017-02-06T13:41:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- science
+  - computer
+  - science
 title: Unlearning Descriptive Statistics
 aliases:
   - /2017/02/06/unlearning-descriptive-statistics.html

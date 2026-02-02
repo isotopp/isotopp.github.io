@@ -4,10 +4,10 @@ date: "2003-11-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Mobile Devices - Der Feind in meiner Tasche"
 tags:
-- lang_de
-- talk
-- publication
-- internet
+  - lang_de
+  - talk
+  - publication
+  - internet
 aliases:
   - /2003/11/01/mobile-devices.html
 ---

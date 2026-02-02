@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-03-09T20:40:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- internet
-- media
-- piraten
-- lang_de
+  - copyright
+  - internet
+  - media
+  - piraten
+  - lang_de
 title: 'Sam spielt es noch einmal: Das Lied vom Urheberrecht'
 aliases:
   - /2012/03/09/sam-spielt-es-noch-einmal-das-lied-vom-urheberrecht.html

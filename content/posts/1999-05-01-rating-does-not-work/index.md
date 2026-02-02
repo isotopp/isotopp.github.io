@@ -4,10 +4,10 @@ date: "1999-05-02T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Rating does not work"
 tags:
-- lang_de
-- publication
-- internet
-- jugendschutz
+  - lang_de
+  - publication
+  - internet
+  - jugendschutz
 aliases:
   - /1999/05/01/rating-does-not-work.html
 ---

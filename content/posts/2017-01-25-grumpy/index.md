@@ -4,10 +4,10 @@ date: "2017-01-25T16:19:22Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- golang
-- python
-- computer
-- lang_en
+  - golang
+  - python
+  - computer
+  - lang_en
 title: Grumpy
 aliases:
   - /2017/01/25/grumpy.html

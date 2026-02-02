@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-12-15T21:11:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- community
-- cyborg
-- internet
-- work
-- lang_de
+  - community
+  - cyborg
+  - internet
+  - work
+  - lang_de
 title: Schnitzeljagd 2010 - Die Rache der Cyborgs
 aliases:
   - /2010/12/15/schnitzeljagd-2010-die-rache-der-cyborgs.html

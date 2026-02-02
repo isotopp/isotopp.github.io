@@ -4,11 +4,11 @@ author: isotopp
 date: "2019-05-03T10:25:52Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- pluspora_import
-- media
-- review
-- book
-- lang_de
+  - pluspora_import
+  - media
+  - review
+  - book
+  - lang_de
 aliases:
   - /2019/05/03/fertig-gelesen-the-singularity-trap.html
 ---

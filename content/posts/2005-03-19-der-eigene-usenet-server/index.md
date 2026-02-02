@@ -3,9 +3,9 @@ author: isotopp
 date: "2005-03-19T20:08:30Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- usenet
-- lang_de
+  - computer
+  - usenet
+  - lang_de
 title: "Der eigene USENET Server"
 toc: true
 aliases:

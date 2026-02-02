@@ -4,7 +4,7 @@ title: Kinder und visuelle Medien
 date: "2019-05-28T11:25:12Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- pluspora_import
+  - pluspora_import
 aliases:
   - /2019/05/28/kinder-und-visuelle-medien.html
 ---

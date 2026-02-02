@@ -3,9 +3,9 @@ author: isotopp
 date: "2022-01-10T07:11:35Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- politik
-- security
-- lang_en
+  - politik
+  - security
+  - lang_en
 title: "Never check for an error condition you don't know how to handle"
 aliases:
   - /2022/01/10/never-check-for-an-error-condition.html

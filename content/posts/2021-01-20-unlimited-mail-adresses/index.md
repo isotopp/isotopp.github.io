@@ -3,8 +3,8 @@ author: isotopp
 date: "2021-01-20T08:02:20Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- mail
+  - lang_en
+  - mail
 title: Unlimited Mail Addresses
 aliases:
   - /2021/01/20/unlimited-mail-adresses.html

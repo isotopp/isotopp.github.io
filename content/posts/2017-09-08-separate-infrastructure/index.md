@@ -4,9 +4,9 @@ date: "2017-09-08T20:31:47Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- netherlands
-- lang_en
+  - mobility
+  - netherlands
+  - lang_en
 title: Separate Infrastructure
 aliases:
   - /2017/09/08/separate-infrastructure.html

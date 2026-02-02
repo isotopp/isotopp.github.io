@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-02-28T12:40:33Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- python
-- schulung
+  - lang_de
+  - python
+  - schulung
 title: Rechenaufgaben lösen
 aliases:
   - /2021/02/28/rechenaufgaben-loesen.html

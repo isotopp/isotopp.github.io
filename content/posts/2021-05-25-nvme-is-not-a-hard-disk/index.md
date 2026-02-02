@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-05-25T14:41:50Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- storage
-- networking
-- data center
+  - lang_en
+  - storage
+  - networking
+  - data center
 title: NVME is not a hard disk
 aliases:
   - /2021/05/25/nvme-is-not-a-hard-disk.html

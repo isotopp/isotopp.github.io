@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-08-14T11:37:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- netzneutralität
-- politik
-- lang_de
+  - internet
+  - netzneutralität
+  - politik
+  - lang_de
 title: Netzneutralität - was ist okay und was ist es nicht?
 aliases:
   - /2010/08/14/netzneutralit-t-was-ist-okay-und-was-ist-es-nicht.html

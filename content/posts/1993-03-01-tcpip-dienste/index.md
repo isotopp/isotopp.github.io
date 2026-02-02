@@ -3,9 +3,9 @@ author: isotopp
 date: "1993-03-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- publication
-- internet
+  - lang_de
+  - publication
+  - internet
 title: "TCP/IP Dienste"
 aliases:
   - /1993/03/01/tcpip-dienste.html

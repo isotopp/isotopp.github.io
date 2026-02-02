@@ -4,8 +4,8 @@ title: "Meditations on Quitting"
 date: "2022-12-23T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- work
+  - lang_en
+  - work
 aliases:
   - /2022/12/27/meditations-on-quitting.html
 ---

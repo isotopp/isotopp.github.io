@@ -3,11 +3,11 @@ author: isotopp
 date: "2021-09-05T13:53:05Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- review
-- media
-- book
-- scifi
+  - lang_en
+  - review
+  - media
+  - book
+  - scifi
 title: 'Fertig gelesen: Old Man''s War'
 aliases:
   - /2021/09/05/fertig-gelesen-old-mans-war.html

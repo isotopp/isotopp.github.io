@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-11-24T14:43:59Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- social networking
-- lang_de
+  - internet
+  - social networking
+  - lang_de
 title: '"Freunde" und soziale Netzwerke'
 aliases:
   - /2010/11/24/freunde-und-soziale-netzwerke.html

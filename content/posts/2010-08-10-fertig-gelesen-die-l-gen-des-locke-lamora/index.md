@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-08-10T06:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- lang_de
+  - book
+  - review
+  - media
+  - lang_de
 title: 'Fertig gelesen: Die Lügen des Locke Lamora'
 aliases:
   - /2010/08/10/fertig-gelesen-die-l-gen-des-locke-lamora.html

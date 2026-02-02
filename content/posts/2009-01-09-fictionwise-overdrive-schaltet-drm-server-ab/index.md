@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-01-09T16:47:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- media
-- copyright
-- lang_de
+  - media
+  - copyright
+  - lang_de
 title: Fictionwise/Overdrive schaltet DRM-Server ab
 aliases:
   - /2009/01/09/fictionwise-overdrive-schaltet-drm-server-ab.html

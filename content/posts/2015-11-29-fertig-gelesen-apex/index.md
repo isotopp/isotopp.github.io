@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-11-29T18:13:33Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Apex'
 aliases:
   - /2015/11/29/fertig-gelesen-apex.html

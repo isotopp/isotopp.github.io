@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-02-28T16:35:43Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: The Stepsister Scheme'
 aliases:
   - /2016/02/28/fertig-gelesen-the-stepsister-scheme.html

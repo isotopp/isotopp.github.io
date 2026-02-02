@@ -5,9 +5,9 @@ date: "2023-11-11T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- publication
-- free software
+  - lang_en
+  - publication
+  - free software
 aliases:
   - /2023/11/11/a-revolution-devours-its-children.html
 ---

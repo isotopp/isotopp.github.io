@@ -3,11 +3,11 @@ author: isotopp
 date: "2018-07-15T15:56:09Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- book
-- media
-- review
-- scifi
+  - lang_en
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Good Taste'
 aliases:
   - /2018/07/15/fertig-gelesen-good-taste-isaac-asimov-1976.html

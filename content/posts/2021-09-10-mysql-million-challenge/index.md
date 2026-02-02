@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-09-10T16:01:06Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 title: 'MySQL: The Million Challenge'
 aliases:
   - /2021/09/10/mysql-million-challenge.html

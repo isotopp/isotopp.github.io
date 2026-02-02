@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-11-17T19:52:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- architektur
-- mysql
-- lang_de
+  - architektur
+  - mysql
+  - lang_de
 title: Das MySQL-Sun-Dilemma
 aliases:
   - /2008/11/17/das-mysql-sun-dilemma.html

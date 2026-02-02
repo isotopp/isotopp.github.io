@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-07-27T15:32:03Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- hack
-- hardware
-- security
-- lang_de
+  - hack
+  - hardware
+  - security
+  - lang_de
 title: Was ist eigentlich Firewire DMA?
 aliases:
   - /2011/07/27/was-ist-eigentlich-firewire-dma.html

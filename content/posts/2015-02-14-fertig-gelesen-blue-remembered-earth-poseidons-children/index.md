@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-02-14T19:26:08Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Blue Remembered Earth (Poseidons Children)'
 aliases:
   - /2015/02/14/fertig-gelesen-blue-remembered-earth-poseidons-children.html

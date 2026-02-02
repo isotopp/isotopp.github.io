@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-09-14T16:03:47Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 title: 'MySQL: Page compression revisited'
 aliases:
   - /2021/09/14/mysql-page-compression-revisited.html

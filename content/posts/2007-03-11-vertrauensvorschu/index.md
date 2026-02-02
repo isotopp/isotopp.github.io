@@ -3,10 +3,10 @@ author: isotopp
 date: "2007-03-11T15:01:32Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- terror
-- überwachung
-- lang_de
+  - security
+  - terror
+  - überwachung
+  - lang_de
 title: Vertrauensvorschuß
 aliases:
   - /2007/03/11/vertrauensvorschu.html

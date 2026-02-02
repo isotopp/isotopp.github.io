@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-12-04T09:21:15Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- internet
-- google
+  - lang_de
+  - internet
+  - google
 title: Google DNS
 aliases:
   - /2009/12/04/google-dns.html

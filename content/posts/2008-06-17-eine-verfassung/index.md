@@ -3,8 +3,8 @@ author: isotopp
 date: "2008-06-17T18:05:25Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- politik
-- lang_de
+  - politik
+  - lang_de
 title: Eine Verfassung
 aliases:
   - /2008/06/17/eine-verfassung.html

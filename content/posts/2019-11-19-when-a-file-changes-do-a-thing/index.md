@@ -3,9 +3,9 @@ author: isotopp
 date: "2019-11-19T12:49:53Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- filesystems
-- lang_en
+  - computer
+  - filesystems
+  - lang_en
 title: When a file changes, do a thing
 aliases:
   - /2019/11/19/when-a-file-changes-do-a-thing.html

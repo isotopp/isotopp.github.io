@@ -4,9 +4,9 @@ date: "2017-07-19T14:19:44Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- data center
-- computer
-- lang_en
+  - data center
+  - computer
+  - lang_en
 title: Threads vs. Watts
 aliases:
   - /2017/07/19/threads-vs-watts.html

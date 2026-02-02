@@ -4,10 +4,10 @@ title: "Mastodon Interaction Counters"
 date: "2023-01-25T06:07:08Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- mastodon
-- fediverse
-- social-networking
+  - lang_en
+  - mastodon
+  - fediverse
+  - social-networking
 aliases:
   - /2023/01/25/mastodon-interaction-counters.html
 ---

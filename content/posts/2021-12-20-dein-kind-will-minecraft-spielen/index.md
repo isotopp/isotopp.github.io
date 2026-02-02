@@ -4,10 +4,10 @@ title: "Dein Kind will Minecraft spielen"
 date: 2021-12-20T13:32:00+01:00
 feature-§img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- gaming
-- microsoft
-- minecraft
+  - lang_de
+  - gaming
+  - microsoft
+  - minecraft
 aliases:
   - /2021/12/20/dein-kind-will-minecraft-spielen.html
 ---

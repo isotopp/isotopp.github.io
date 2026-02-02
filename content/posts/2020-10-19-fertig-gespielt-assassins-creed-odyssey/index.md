@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-10-19T17:14:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- review
-- gaming
-- media
-- lang_en
+  - review
+  - gaming
+  - media
+  - lang_en
 title: 'Fertig gespielt: Assassins Creed: Odyssey'
 aliases:
   - /2020/10/19/fertig-gespielt-assassins-creed-odyssey.html

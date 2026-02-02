@@ -5,10 +5,10 @@ date: "2024-05-31T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- linux
-- erklaerbaer
-- filesystems
+  - lang_en
+  - linux
+  - erklaerbaer
+  - filesystems
 aliases:
   - /2024/06/07/beyond-rwx.html
 ---

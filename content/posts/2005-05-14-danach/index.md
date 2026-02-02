@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-05-14T07:15:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- image
-- karlsruhe
-- work
-- lang_de
+  - image
+  - karlsruhe
+  - work
+  - lang_de
 title: Danach...
 aliases:
   - /2005/05/14/danach.html

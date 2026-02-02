@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-10-29T07:41:13Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- mail
-- lang_de
+  - mail
+  - lang_de
 title: Submission (Port 587)
 aliases:
   - /2004/10/29/submission-port-587.html

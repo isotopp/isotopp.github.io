@@ -3,8 +3,8 @@ author: isotopp
 date: "2009-10-08T18:28:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- lang_de
+  - mysql
+  - lang_de
 title: Ein kurzer, aber heftiger Schlagabtausch mit SQL_MODE
 aliases:
   - /2009/10/08/ein-kurzer-aber-heftiger-schlagabtausch-mit-sql-mode.html

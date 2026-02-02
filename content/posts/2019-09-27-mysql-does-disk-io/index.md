@@ -3,9 +3,9 @@ author: isotopp
 date: "2019-09-27T09:49:03Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- database
-- lang_en
+  - mysql
+  - database
+  - lang_en
 title: MySQL Does Disk I/O
 aliases:
   - /2019/09/27/mysql-does-disk-io.html

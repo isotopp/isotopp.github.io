@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-06-09T09:18:28Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- media
-- sonos
+  - lang_en
+  - media
+  - sonos
 title: Sonos just got complicated
 aliases:
   - /2020/06/09/sonos-just-got-complicated.html

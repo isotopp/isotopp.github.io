@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-08-19T13:36:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- anderswo
-- google
-- lang_de
+  - anderswo
+  - google
+  - lang_de
 title: 'Erst Dienste wie Street View machen den öffentlichen Raum wirklich öffentlich '
 aliases:
   - /2010/08/19/erst-dienste-wie-street-view-machen-den-ffentlichen-raum-wirklich-ffentlich.html

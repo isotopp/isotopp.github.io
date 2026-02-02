@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-05-13T13:08:08Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- media
-- schulung
-- wikipedia
-- lang_de
+  - internet
+  - media
+  - schulung
+  - wikipedia
+  - lang_de
 title: Wikipedia - Quellenkritik
 aliases:
   - /2010/05/13/wikipedia-quellenkritik.html

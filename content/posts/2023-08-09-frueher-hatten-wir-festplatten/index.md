@@ -5,9 +5,9 @@ date: "2023-08-09T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_de
-- filesystems
-- computer
+  - lang_de
+  - filesystems
+  - computer
 aliases:
   - /2023/08/09/frueher-hatten-wir-festplatten.html
 ---

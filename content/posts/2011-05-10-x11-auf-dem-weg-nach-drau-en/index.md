@@ -3,9 +3,9 @@ author: isotopp
 date: "2011-05-10T13:15:38Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- linux
-- lang_de
+  - computer
+  - linux
+  - lang_de
 title: X11 auf dem Weg nach draußen
 aliases:
   - /2011/05/10/x11-auf-dem-weg-nach-drau-en.html

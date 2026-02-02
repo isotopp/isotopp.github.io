@@ -3,11 +3,11 @@ author: isotopp
 date: "2008-05-27T08:08:46Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- free software
-- linux
-- unix
-- lang_de
+  - computer
+  - free software
+  - linux
+  - unix
+  - lang_de
 title: Historische Kernelsourcen
 aliases:
   - /2008/05/27/historische-kernelsourcen.html

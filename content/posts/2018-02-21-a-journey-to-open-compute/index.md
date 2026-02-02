@@ -4,11 +4,11 @@ date: "2018-02-21T09:55:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- data center
-- energy
-- erklaerbaer
-- talk
-- lang_en
+  - data center
+  - energy
+  - erklaerbaer
+  - talk
+  - lang_en
 title: A Journey to Open Compute
 aliases:
   - /2018/02/21/a-journey-to-open-compute.html

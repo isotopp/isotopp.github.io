@@ -4,8 +4,8 @@ date: "2022-06-27T04:48:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Jetbrains Remote Development"
 tags:
-- lang_en
-- development
+  - lang_en
+  - development
 aliases:
   - /2022/06/27/jetbrains-remote-development.html
 ---

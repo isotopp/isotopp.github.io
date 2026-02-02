@@ -3,11 +3,11 @@ author: isotopp
 date: "2021-09-05T16:01:24Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- review
-- media
-- book
-- scifi
+  - lang_en
+  - review
+  - media
+  - book
+  - scifi
 title: 'Fertig gelesen: This Is How You Lose The Time War'
 aliases:
   - /2021/09/05/fertig-gelesen-this-is-how-you-lose-the-time-war.html

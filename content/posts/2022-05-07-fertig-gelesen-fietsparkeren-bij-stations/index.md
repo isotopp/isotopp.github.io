@@ -4,10 +4,10 @@ date: "2022-05-07T07:47:06Z"
 feature-img: assets/img/background/book.jpg
 title: 'Fertig gelesen: Fietsparkeren bij Stations'
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 aliases:
   - /2022/05/07/fertig-gelesen-fietsparkeren-bij-stations.html
 ---

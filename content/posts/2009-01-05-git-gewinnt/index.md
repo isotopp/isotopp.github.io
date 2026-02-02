@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-01-05T08:52:56Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- free software
-- git
-- software
-- lang_de
+  - free software
+  - git
+  - software
+  - lang_de
 title: Git "gewinnt"
 aliases:
   - /2009/01/05/git-gewinnt.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2006-01-25T16:08:31Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- sony
-- media
-- lang_de
+  - copyright
+  - sony
+  - media
+  - lang_de
 title: Ist Sony schizophren?
 aliases:
   - /2006/01/25/ist-sony-schizophren.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2019-12-30T15:02:23Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- media
-- sonos
+  - lang_en
+  - media
+  - sonos
 title: Sonos Recycle Mode
 aliases:
   - /2019/12/30/sonos-recycle-mode.html

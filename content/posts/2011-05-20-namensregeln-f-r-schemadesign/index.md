@@ -3,8 +3,8 @@ author: isotopp
 date: "2011-05-20T14:24:26Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- lang_de
+  - mysql
+  - lang_de
 title: Namensregeln für Schemadesign
 aliases:
   - /2011/05/20/namensregeln-f-r-schemadesign.html

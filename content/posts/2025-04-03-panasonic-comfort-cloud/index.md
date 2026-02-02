@@ -5,10 +5,10 @@ feature-img: assets/img/background/rijksmuseum.jpg
 title: "Panasonic Comfort Cloud"
 toc: true
 tags:
-- lang_en
-- netherlands
-- energy
-- climate
+  - lang_en
+  - netherlands
+  - energy
+  - climate
 aliases:
   - /2025/04/03/panasonic-comfort-cloud.html
 ---

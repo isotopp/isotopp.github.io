@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-08-19T17:05:47Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- lang_en
-- security
-- unix
+  - lang_en
+  - security
+  - unix
 title: Why do Ops and Sec people wear black
 aliases:
   - /2020/08/19/why-do-ops-and-sec-people-wear-black.html

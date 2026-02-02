@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-06-04T09:00:01Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysqldev
-- mysql
-- erklaerbaer
-- reddit
+  - lang_en
+  - mysqldev
+  - mysql
+  - erklaerbaer
+  - reddit
 title: Optimistic locking
 aliases:
   - /2020/06/04/optimistic-locking.html

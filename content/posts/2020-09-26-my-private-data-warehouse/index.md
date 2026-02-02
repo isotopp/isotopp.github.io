@@ -3,12 +3,12 @@ author: isotopp
 date: "2020-09-26T09:50:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- database
-- data warehouse
-- erklaerbaer
-- mysqldev
+  - lang_en
+  - mysql
+  - database
+  - data warehouse
+  - erklaerbaer
+  - mysqldev
 title: Importing account statements and building a data warehouse
 aliases:
   - /2020/09/26/my-private-data-warehouse.html

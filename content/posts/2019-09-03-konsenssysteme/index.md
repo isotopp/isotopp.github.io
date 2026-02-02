@@ -3,9 +3,9 @@ author: isotopp
 date: "2019-09-03T21:31:01Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- erklaerbaer
-- distributed computing
+  - lang_de
+  - erklaerbaer
+  - distributed computing
 title: Konsenssysteme
 aliases:
   - /2019/09/03/konsenssysteme.html

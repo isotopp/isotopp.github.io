@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-11-30T21:00:14Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- steampunk
+  - lang_de
+  - book
+  - media
+  - review
+  - steampunk
 title: 'Fertig gelesen: Waistcoats and Weaponry'
 aliases:
   - /2015/11/30/fertig-gelesen-waistcoats-and-weaponry.html

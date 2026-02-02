@@ -4,9 +4,9 @@ date: "2018-02-26T15:02:37Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- security
-- data center
-- lang_en
+  - security
+  - data center
+  - lang_en
 title: 'Spectre #2 Mitigation - Retpolines'
 aliases:
   - /2018/02/26/spectre-2-mitigation-retpolines.html

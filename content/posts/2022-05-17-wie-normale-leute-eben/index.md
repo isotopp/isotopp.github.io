@@ -4,8 +4,8 @@ date: "2022-05-16T19:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: 'Wie normale Leute eben...'
 tags:
-- lang_de
-- schnuppel
+  - lang_de
+  - schnuppel
 aliases:
   - /2022/05/17/wie-normale-leute-eben.html
 ---

@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-08-06T10:17:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- google
-- internet
-- netzneutralität
-- politik
-- lang_de
+  - google
+  - internet
+  - netzneutralität
+  - politik
+  - lang_de
 title: Netzwerk-Überlast vs. Netzwerkneutralität
 aliases:
   - /2010/08/06/netzwerk-berlast-vs-netzwerkneutralit-t.html

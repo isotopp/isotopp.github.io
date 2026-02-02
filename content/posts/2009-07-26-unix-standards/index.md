@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-07-26T17:14:50Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- linux
-- unix
-- lang_de
+  - computer
+  - linux
+  - unix
+  - lang_de
 title: Unix-"Standards"
 aliases:
   - /2009/07/26/unix-standards.html

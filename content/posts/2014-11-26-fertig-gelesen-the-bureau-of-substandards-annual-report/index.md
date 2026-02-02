@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-11-26T21:17:18Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- steampunk
+  - lang_de
+  - book
+  - media
+  - review
+  - steampunk
 title: 'Fertig gelesen: The Bureau of Substandards Annual Report'
 aliases:
   - /2014/11/26/fertig-gelesen-the-bureau-of-substandards-annual-report.html

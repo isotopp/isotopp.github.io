@@ -5,10 +5,10 @@ date: "2025-12-20T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- computer
-- development
-- python
+  - lang_en
+  - computer
+  - development
+  - python
 aliases:
   - /2025/12/20/pysembr.html
 ---

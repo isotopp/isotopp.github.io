@@ -5,9 +5,9 @@ date: "2023-05-17T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- unix
-- filesystems
+  - lang_en
+  - unix
+  - filesystems
 aliases:
   - /2023/05/17/50-years-in-filesystems-towards-2004-lfs.html
 ---

@@ -3,10 +3,10 @@ author: isotopp
 date: "2014-10-04T20:06:31Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Flash Boys'
 aliases:
   - /2014/10/04/fertig-gelesen-flash-boys.html

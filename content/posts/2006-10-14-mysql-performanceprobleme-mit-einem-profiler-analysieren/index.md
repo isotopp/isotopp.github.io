@@ -3,9 +3,9 @@ author: isotopp
 date: "2006-10-14T18:26:37Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- performance
-- lang_de
+  - mysql
+  - performance
+  - lang_de
 title: MySQL Performanceprobleme mit einem Profiler analysieren
 aliases:
   - /2006/10/14/mysql-performanceprobleme-mit-einem-profiler-analysieren.html

@@ -4,10 +4,10 @@ title: "Proper O11y for MySQL"
 date: "2022-10-18T06:07:08Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
-- debug
+  - lang_en
+  - mysql
+  - mysqldev
+  - debug
 aliases:
   - /2022/10/25/proper-o11y-for-mysql.html
 ---

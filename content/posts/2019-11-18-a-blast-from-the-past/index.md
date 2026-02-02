@@ -3,9 +3,9 @@ author: isotopp
 date: "2019-11-18T14:53:14Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- innodb
-- lang_en
+  - mysql
+  - innodb
+  - lang_en
 title: A blast from the past
 aliases:
   - /2019/11/18/a-blast-from-the-past.html

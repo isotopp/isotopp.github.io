@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-08-22T10:01:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- debug
-- mysql
-- networking
-- performance
-- lang_de
+  - debug
+  - mysql
+  - networking
+  - performance
+  - lang_de
 title: MySQL vs. Gigabit Network
 aliases:
   - /2012/08/22/mysql-vs-gigabit-network.html

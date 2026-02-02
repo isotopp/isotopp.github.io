@@ -4,9 +4,9 @@ date: "2017-08-11T13:50:20Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- security
-- erklaerbaer
-- php
+  - security
+  - erklaerbaer
+  - php
 title: 'PHP: Understanding unserialize()'
 aliases:
   - /2017/08/11/php-understanding-unserialize.html

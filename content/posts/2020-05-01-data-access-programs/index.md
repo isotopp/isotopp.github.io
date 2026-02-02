@@ -3,8 +3,8 @@ author: isotopp
 date: "2020-05-01T20:12:40Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- database
+  - lang_en
+  - database
 title: Data Access Programs and Pre-SQL systems
 aliases:
   - /2020/05/01/data-access-programs.html

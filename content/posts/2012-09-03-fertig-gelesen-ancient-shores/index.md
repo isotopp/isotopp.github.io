@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-09-03T07:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: Ancient Shores'
 aliases:
   - /2012/09/03/fertig-gelesen-ancient-shores.html

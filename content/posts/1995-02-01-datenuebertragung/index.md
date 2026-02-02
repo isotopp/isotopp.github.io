@@ -3,9 +3,9 @@ author: isotopp
 date: "1995-02-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- publication
-- internet
+  - lang_de
+  - publication
+  - internet
 title: "Grundlagen der Datenübertragung"
 aliases:
   - /1995/02/01/datenuebertragung.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-05-10T16:51:11Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- microsoft
-- lang_de
+  - computer
+  - microsoft
+  - lang_de
 title: Steve Ballmer lernt noch was
 aliases:
   - /2008/05/10/steve-ballmer-lernt-noch-was.html

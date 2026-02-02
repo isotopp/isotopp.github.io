@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-01-23T19:14:35Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- filesystems
-- free software
-- linux
-- lang_de
+  - filesystems
+  - free software
+  - linux
+  - lang_de
 title: Was bringt ext4?
 aliases:
   - /2009/01/23/was-bringt-ext4.html

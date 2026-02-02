@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-05-23T15:54:42Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- media
-- politik
-- lang_de
+  - copyright
+  - media
+  - politik
+  - lang_de
 title: Internetpiraten in der Netzwerk-Ökonomie
 aliases:
   - /2005/05/23/internetpiraten-in-der-netzwerk-konomie.html

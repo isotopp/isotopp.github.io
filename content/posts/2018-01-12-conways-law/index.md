@@ -4,9 +4,9 @@ date: "2018-01-12T18:45:51Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- erklaerbaer
-- lang_en
+  - computer
+  - erklaerbaer
+  - lang_en
 title: Conway's Law
 aliases:
   - /2018/01/12/conways-law.html

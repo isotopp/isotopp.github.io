@@ -3,8 +3,8 @@ author: isotopp
 date: "2021-03-29T12:22:33Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
+  - lang_en
+  - mysql
 title: Things you didn't know about MySQL and Date and Time and DST
 aliases:
   - /2021/03/29/mysql-date-time-dst.html

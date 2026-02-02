@@ -3,9 +3,9 @@ author: isotopp
 date: "2005-07-06T03:46:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- drsrm
-- roleplay
-- lang_de
+  - drsrm
+  - roleplay
+  - lang_de
 title: Regeln vs. Genrekonventionen
 aliases:
   - /2005/07/06/regeln-vs-genrekonventionen.html

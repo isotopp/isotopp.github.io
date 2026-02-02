@@ -4,8 +4,8 @@ date: "2017-03-21T07:34:23Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- science
-- lang_en
+  - science
+  - lang_en
 title: Salted Doorknobs kill MRSA
 aliases:
   - /2017/03/21/salted-doorknobs-kill-mrsa.html

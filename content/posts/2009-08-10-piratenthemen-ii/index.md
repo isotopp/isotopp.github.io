@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-08-10T08:47:05Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- piraten
-- regulierung
-- lang_de
+  - internet
+  - piraten
+  - regulierung
+  - lang_de
 title: Piratenthemen II
 aliases:
   - /2009/08/10/piratenthemen-ii.html

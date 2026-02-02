@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-07-01T20:09:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- media
-- politik
-- lang_de
+  - copyright
+  - media
+  - politik
+  - lang_de
 title: Urheberrecht - 360-Grad-Ansicht
 aliases:
   - /2009/07/01/urheberrecht-360-grad-ansicht.html

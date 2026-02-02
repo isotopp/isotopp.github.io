@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-02-28T18:15:58Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- steampunk
+  - lang_de
+  - book
+  - media
+  - review
+  - steampunk
 title: 'Fertig gelesen: The Masked City'
 aliases:
   - /2016/02/28/fertig-gelesen-the-masked-city.html

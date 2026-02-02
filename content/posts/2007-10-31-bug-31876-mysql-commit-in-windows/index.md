@@ -3,9 +3,9 @@ author: isotopp
 date: "2007-10-31T18:30:45Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- mysql
-- lang_de
+  - database
+  - mysql
+  - lang_de
 title: "Bug #31876: MySQL Commit in Windows"
 aliases:
   - /2007/10/31/bug-31876-mysql-commit-in-windows.html

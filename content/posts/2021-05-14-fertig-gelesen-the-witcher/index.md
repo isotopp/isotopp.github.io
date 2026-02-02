@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-05-14T15:55:01Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- media
-- review
-- book
+  - lang_en
+  - media
+  - review
+  - book
 title: 'Fertig gelesen: The Witcher'
 aliases:
   - /2021/05/14/fertig-gelesen-the-witcher.html

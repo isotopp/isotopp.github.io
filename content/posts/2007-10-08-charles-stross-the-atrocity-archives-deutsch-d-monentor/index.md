@@ -3,12 +3,12 @@ author: isotopp
 date: "2007-10-08T20:01:04Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- stross
-- cthulhu
-- lang_de
+  - book
+  - review
+  - media
+  - stross
+  - cthulhu
+  - lang_de
 title: 'Fertig gelesen: The Atrocity Archives'
 aliases:
   - /2007/10/08/charles-stross-the-atrocity-archives-deutsch-d-monentor.html

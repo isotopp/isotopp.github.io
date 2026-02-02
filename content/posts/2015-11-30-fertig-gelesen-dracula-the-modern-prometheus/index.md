@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-11-30T20:07:08Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- book
-- media
-- review
-- fantasy
+  - lang_en
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: Dracula: The Modern Prometheus'
 aliases:
   - /2015/11/30/fertig-gelesen-dracula-the-modern-prometheus.html

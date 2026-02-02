@@ -3,12 +3,12 @@ author: isotopp
 date: "2020-08-01T14:11:37Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- database
-- mysql
-- innodb
-- mysqldev
-- erklaerbaer
+  - lang_en
+  - database
+  - mysql
+  - innodb
+  - mysqldev
+  - erklaerbaer
 title: 'MySQL: Locks and Deadlocks'
 aliases:
   - /2020/08/01/mysql-locks-and-deadlocks.html

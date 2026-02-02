@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-10-28T18:18:47Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- karlsruhe
-- mysql
-- work
-- lang_de
+  - karlsruhe
+  - mysql
+  - work
+  - lang_de
 title: In with the out, old with the new...
 aliases:
   - /2005/10/28/in-with-the-out-old-with-the-new.html

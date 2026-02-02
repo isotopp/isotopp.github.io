@@ -3,13 +3,13 @@ author: isotopp
 date: "2011-05-12T19:10:47Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- ccc
-- identity
-- internet
-- politik
-- privacy
-- spackeria
-- lang_de
+  - ccc
+  - identity
+  - internet
+  - politik
+  - privacy
+  - spackeria
+  - lang_de
 title: Von der Spackeria, von Aluhüten und vom Kontrollverlust
 aliases:
   - /2011/05/12/von-der-spackeria-von-aluhueten-und-vom-kontrollverlust.html

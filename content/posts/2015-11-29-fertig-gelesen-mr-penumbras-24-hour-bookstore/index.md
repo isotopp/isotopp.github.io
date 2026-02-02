@@ -3,10 +3,10 @@ author: isotopp
 date: "2015-11-29T17:07:34Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Mr Penumbra''s 24-hour Bookstore'
 aliases:
   - /2015/11/29/fertig-gelesen-mr-penumbras-24-hour-bookstore.html

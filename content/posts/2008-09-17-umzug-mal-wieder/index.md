@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-09-17T11:06:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- berlin
-- umzug
-- lang_de
+  - berlin
+  - umzug
+  - lang_de
 title: Umzug, mal wieder
 aliases:
   - /2008/09/17/umzug-mal-wieder.html

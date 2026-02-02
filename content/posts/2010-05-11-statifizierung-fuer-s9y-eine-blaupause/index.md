@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-05-11T08:54:12Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- blog
-- performance
-- s9y
-- lang_de
+  - blog
+  - performance
+  - s9y
+  - lang_de
 title: Statifizierung für S9Y - eine Blaupause
 aliases:
   - /2010/05/11/statifizierung-fuer-s9y-eine-blaupause.html

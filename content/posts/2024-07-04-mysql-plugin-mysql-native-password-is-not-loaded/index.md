@@ -6,9 +6,9 @@ date: "2024-07-04T05:06:07Z"
 feature-img: assets/img/background/mysql.jpg
 toc: true
 tags:
-- lang_en
-- database
-- mysql
+  - lang_en
+  - database
+  - mysql
 aliases:
   - /2024/07/04/mysql-plugin-mysql-native-password-is-not-loaded.html
 ---

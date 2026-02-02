@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-10-09T17:05:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- kernel
-- linux
-- lang_de
+  - computer
+  - kernel
+  - linux
+  - lang_de
 title: Wieviel Speicher brauchst Du denn?
 aliases:
   - /2009/10/09/wieviel-speicher-brauchst-du-denn.html

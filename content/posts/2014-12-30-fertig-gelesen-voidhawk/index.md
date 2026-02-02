@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-12-30T18:32:38Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: Voidhawk'
 aliases:
   - /2014/12/30/fertig-gelesen-voidhawk.html

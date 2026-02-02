@@ -4,10 +4,10 @@ date: "2017-05-15T10:19:24Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- politik
-- erklaerbaer
-- lang_en
+  - computer
+  - politik
+  - erklaerbaer
+  - lang_en
 title: Handling Wannacrypt - a few words about technical debt
 aliases:
   - /2017/05/15/handling-wannacrypt-a-few-words-about-technical-debt.html

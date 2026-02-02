@@ -5,9 +5,9 @@ date: "2023-10-10T02:03:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_de
-- erklaerbaer
-- work
+  - lang_de
+  - erklaerbaer
+  - work
 aliases:
   - /2023/10/10/sitzende-taetigkeit.html
 ---

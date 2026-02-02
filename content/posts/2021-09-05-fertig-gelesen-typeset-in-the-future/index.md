@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-09-05T13:19:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 title: 'Fertig gelesen: Typeset in the Future'
 aliases:
   - /2021/09/05/fertig-gelesen-typeset-in-the-future.html

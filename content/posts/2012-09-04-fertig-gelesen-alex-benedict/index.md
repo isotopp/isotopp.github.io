@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-09-04T07:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: Alex Benedict'
 aliases:
   - /2012/09/04/fertig-gelesen-alex-benedict.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2017-01-02T14:42:49Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: The End of The Aztecs'
 aliases:
   - /2017/01/02/fertig-gelesen-the-end-of-the-aztecs.html

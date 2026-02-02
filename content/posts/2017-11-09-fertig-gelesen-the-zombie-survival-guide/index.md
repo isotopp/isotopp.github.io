@@ -4,10 +4,10 @@ date: "2017-11-09T08:20:16Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: The Zombie Survival Guide'
 aliases:
   - /2017/11/09/fertig-gelesen-the-zombie-survival-guide.html

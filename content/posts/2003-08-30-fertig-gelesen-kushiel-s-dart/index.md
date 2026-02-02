@@ -3,10 +3,10 @@ author: isotopp
 date: "2003-08-30T16:15:56Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- media
-- review
-- lang_de
+  - book
+  - media
+  - review
+  - lang_de
 title: 'Fertig gelesen: Kushiel''s Dart'
 aliases:
   - /2003/08/30/fertig-gelesen-kushiel-s-dart.html

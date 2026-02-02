@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-08-31T08:33:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- review
-- book
-- media
-- spoiler
+  - review
+  - book
+  - media
+  - spoiler
 title: Fertig gelesen vs. Spoiler.
 aliases:
   - /2012/08/31/fertig-gelesen-vs-spoiler.html

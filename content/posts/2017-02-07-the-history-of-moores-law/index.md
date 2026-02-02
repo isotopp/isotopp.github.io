@@ -4,8 +4,8 @@ date: "2017-02-07T21:55:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- lang_en
+  - computer
+  - lang_en
 title: The History of Moore's Law
 aliases:
   - /2017/02/07/the-history-of-moores-law.html

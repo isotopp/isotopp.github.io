@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-11-30T21:07:50Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Earth'
 aliases:
   - /2015/11/30/fertig-gelesen-earth.html

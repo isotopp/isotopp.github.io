@@ -3,9 +3,9 @@ author: isotopp
 date: "2019-10-15T15:58:31Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- climate
-- mobility
-- lang_en
+  - climate
+  - mobility
+  - lang_en
 title: Climate change happened 30 years ago
 aliases:
   - /2019/10/15/climate-change-happened-30-years-ago.html

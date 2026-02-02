@@ -3,10 +3,10 @@ author: isotopp
 date: "2016-09-01T08:08:46Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- computer
-- devops
-- talk
+  - lang_en
+  - computer
+  - devops
+  - talk
 title: Be simple. Be boring. Be obvious.
 aliases:
   - /2016/09/01/be-simple-be-boring-be-obvious.html

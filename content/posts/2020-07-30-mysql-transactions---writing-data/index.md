@@ -3,12 +3,12 @@ author: isotopp
 date: "2020-07-30T08:37:32Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- database
-- mysql
-- innodb
-- erklaerbaer
-- mysqldev
+  - lang_en
+  - database
+  - mysql
+  - innodb
+  - erklaerbaer
+  - mysqldev
 title: MySQL Transactions - writing data
 aliases:
   - /2020/07/30/mysql-transactions---writing-data.html

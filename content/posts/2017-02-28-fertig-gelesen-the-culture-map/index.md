@@ -4,10 +4,10 @@ date: "2017-02-28T22:00:22Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- lang_en
+  - review
+  - media
+  - book
+  - lang_en
 title: 'Fertig gelesen: The Culture Map'
 aliases:
   - /2017/02/28/fertig-gelesen-the-culture-map.html

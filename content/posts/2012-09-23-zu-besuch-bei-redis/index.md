@@ -3,12 +3,12 @@ author: isotopp
 date: "2012-09-23T19:06:45Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- innodb
-- mysql
-- nosql
-- sql
-- lang_de
+  - database
+  - innodb
+  - mysql
+  - nosql
+  - sql
+  - lang_de
 title: Zu Besuch bei Redis
 aliases:
   - /2012/09/23/zu-besuch-bei-redis.html

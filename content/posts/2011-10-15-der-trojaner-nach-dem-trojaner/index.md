@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-10-15T10:56:58Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- computer
-- politik
-- security
-- lang_de
+  - computer
+  - politik
+  - security
+  - lang_de
 title: Der Trojaner nach dem Trojaner
 aliases:
   - /2011/10/15/der-trojaner-nach-dem-trojaner.html

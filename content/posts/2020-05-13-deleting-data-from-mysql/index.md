@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-05-13T11:24:35Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- database
-- mysql
+  - lang_en
+  - database
+  - mysql
 title: Deleting data from MySQL
 aliases:
   - /2020/05/13/deleting-data-from-mysql.html

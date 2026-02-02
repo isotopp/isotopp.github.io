@@ -4,9 +4,9 @@ date: "2017-08-07T12:31:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- erklaerbaer
-- lang_en
+  - computer
+  - erklaerbaer
+  - lang_en
 title: So you want to write a Shell script
 aliases:
   - /2017/08/07/so-you-want-to-write-a-shell-script.html

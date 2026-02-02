@@ -3,12 +3,12 @@ author: isotopp
 date: "2020-08-02T02:25:21Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- database
-- mysql
-- innodb
-- mysqldev
-- erklaerbaer
+  - lang_en
+  - database
+  - mysql
+  - innodb
+  - mysqldev
+  - erklaerbaer
 title: MySQL Deadlocks with INSERT
 aliases:
   - /2020/08/02/mysql-deadlocks-with-insert.html

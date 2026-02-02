@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-10-04T20:02:11Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Fluency'
 aliases:
   - /2014/10/04/fertig-gelesen-fluency.html

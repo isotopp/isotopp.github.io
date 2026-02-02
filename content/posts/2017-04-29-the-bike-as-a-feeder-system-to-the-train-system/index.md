@@ -4,9 +4,9 @@ date: "2017-04-29T10:36:12Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- netherlands
-- lang_en
+  - mobility
+  - netherlands
+  - lang_en
 title: The bike as a feeder system to the train system
 aliases:
   - /2017/04/29/the-bike-as-a-feeder-system-to-the-train-system.html

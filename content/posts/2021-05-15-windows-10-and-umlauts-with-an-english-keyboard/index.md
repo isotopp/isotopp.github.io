@@ -3,8 +3,8 @@ author: isotopp
 date: "2021-05-15T17:50:46Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- windows
+  - lang_en
+  - windows
 title: Windows 10 and Umlauts with an english keyboard
 aliases:
   - /2021/05/15/windows-10-and-umlauts-with-an-english-keyboard.html

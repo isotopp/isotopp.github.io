@@ -3,9 +3,9 @@ author: isotopp
 date: "2012-06-25T11:42:45Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- piraten
-- copyright
+  - lang_de
+  - piraten
+  - copyright
 title: Wieso wir gegen das Leistungsschutzrecht sind
 aliases:
   - /2012/06/25/wieso-wir-gegen-das-leistungsschutzrecht-sind.html

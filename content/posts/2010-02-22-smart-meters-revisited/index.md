@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-02-22T19:00:00Z"
 feature-img: assets/img/background/baellebad.jpg
 tags:
-- computer
-- energy
-- security
-- lang_de
+  - computer
+  - energy
+  - security
+  - lang_de
 title: Smart Meters revisited
 aliases:
   - /2010/02/22/smart-meters-revisited.html

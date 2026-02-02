@@ -4,9 +4,9 @@ date: "2022-03-24T08:40:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "Truncated incorrect DOUBLE value"
 tags:
-- mysql
-- mysqldev
-- lang_en
+  - mysql
+  - mysqldev
+  - lang_en
 aliases:
   - /2022/03/24/truncated-incorrect-double-value.html
 ---

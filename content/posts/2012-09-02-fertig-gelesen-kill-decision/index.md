@@ -3,7 +3,7 @@ author: isotopp
 date: "2012-09-02T07:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
+  - lang_de
 title: 'Fertig gelesen: Kill Decision'
 aliases:
   - /2012/09/02/fertig-gelesen-kill-decision.html

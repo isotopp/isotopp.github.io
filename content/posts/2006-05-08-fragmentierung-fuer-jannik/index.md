@@ -3,10 +3,10 @@ author: isotopp
 date: "2006-05-08T20:45:51Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- filesystems
-- erklaerbaer
-- lang_de
+  - computer
+  - filesystems
+  - erklaerbaer
+  - lang_de
 title: Fragmentierung (für Jannik)
 aliases:
   - /2006/05/08/fragmentierung-fuer-jannik.html

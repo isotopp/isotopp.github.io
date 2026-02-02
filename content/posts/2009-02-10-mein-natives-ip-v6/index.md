@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-02-10T11:49:23Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- ipv6
-- lang_de
+  - internet
+  - ipv6
+  - lang_de
 title: Mein natives IP V6
 aliases:
   - /2009/02/10/mein-natives-ip-v6.html

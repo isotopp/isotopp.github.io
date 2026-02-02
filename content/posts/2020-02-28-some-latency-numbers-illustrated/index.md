@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-02-28T10:45:23Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- database
-- performance
+  - lang_en
+  - database
+  - performance
 title: Some latency numbers illustrated
 aliases:
   - /2020/02/28/some-latency-numbers-illustrated.html

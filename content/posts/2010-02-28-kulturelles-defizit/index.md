@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-02-28T08:37:53Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- work
-- piraten
-- politik
-- reisen
-- lang_de
+  - work
+  - piraten
+  - politik
+  - reisen
+  - lang_de
 title: Kulturelles Defizit
 aliases:
   - /2010/02/28/kulturelles-defizit.html

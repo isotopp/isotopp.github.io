@@ -4,9 +4,9 @@ title: "MySQL: Data for Testing"
 date: "2022-09-26T12:13:14Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 aliases:
   - /2022/09/26/mysql-data-for-testing.html
 ---

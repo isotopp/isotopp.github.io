@@ -5,10 +5,10 @@ feature-img: assets/img/background/rijksmuseum.jpg
 title: "Heizen mit Klimaanlagen"
 toc: true
 tags:
-- lang_de
-- netherlands
-- energy
-- climate
+  - lang_de
+  - netherlands
+  - energy
+  - climate
 aliases:
   - /2025/06/10/heizen-mit-klimaanlagen.html
 ---

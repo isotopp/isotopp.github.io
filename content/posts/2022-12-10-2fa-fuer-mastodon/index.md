@@ -4,8 +4,8 @@ title: "2FA für Mastodon"
 date: "2022-12-10T06:07:08Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- lang_de
-- security
+  - lang_de
+  - security
 aliases:
   - /2022/12/10/2fa-fuer-mastodon.html
 ---

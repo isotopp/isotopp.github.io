@@ -4,9 +4,9 @@ date: "1999-05-02T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Funding Open Source Projects"
 tags:
-- lang_en
-- publication
-- internet
+  - lang_en
+  - publication
+  - internet
 aliases:
   - /1999/07/17/oss-funding.html
 ---

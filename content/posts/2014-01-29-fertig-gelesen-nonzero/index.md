@@ -3,10 +3,10 @@ author: isotopp
 date: "2014-01-29T14:47:41Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: "Nonzero - The Logic of Human Destiny"'
 aliases:
   - /2014/01/29/fertig-gelesen-nonzero.html

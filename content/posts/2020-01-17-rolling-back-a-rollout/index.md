@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-01-17T19:53:49Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- devops
-- work
-- testing
+  - lang_en
+  - devops
+  - work
+  - testing
 title: Rolling back a rollout
 aliases:
   - /2020/01/17/rolling-back-a-rollout.html

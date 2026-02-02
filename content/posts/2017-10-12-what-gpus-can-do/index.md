@@ -4,9 +4,9 @@ date: "2017-10-12T23:51:20Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- performance
-- gaming
-- lang_en
+  - performance
+  - gaming
+  - lang_en
 title: What GPUs can do…
 aliases:
   - /2017/10/12/what-gpus-can-do.html

@@ -6,10 +6,10 @@ description: "What can we learn from the Crowdstroke fail?"
 title: "Crowdstroke"
 toc: true
 tags:
-- lang_en
-- security
-- computer
-- erklaerbaer
+  - lang_en
+  - security
+  - computer
+  - erklaerbaer
 aliases:
   - /2024/07/22/crowdstroke.html
 ---

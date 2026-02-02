@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-05-16T08:11:32Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- devops
-- monitoring
-- security
-- lang_de
+  - devops
+  - monitoring
+  - security
+  - lang_de
 title: Wieso zehn Prozent?
 aliases:
   - /2010/05/16/wieso-zehn-prozent.html

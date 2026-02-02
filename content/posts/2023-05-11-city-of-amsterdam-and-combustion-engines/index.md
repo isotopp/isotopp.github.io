@@ -3,10 +3,10 @@ author: isotopp
 date: "2023-05-11T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- mobility
-- amsterdam
-- netherlands
+  - lang_en
+  - mobility
+  - amsterdam
+  - netherlands
 title: 'City of Amsterdam and Combustion Engines'
 aliases:
   - /2023/05/11/city-of-amsterdam-and-combustion-engines.html

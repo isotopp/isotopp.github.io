@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-10-01T21:38:44Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- politik
-- computer
+  - lang_de
+  - politik
+  - computer
 title: Projektschmerzen
 aliases:
   - /2021/10/01/projektschmerzen.html

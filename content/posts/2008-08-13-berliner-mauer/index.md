@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-08-13T08:30:13Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- berlin
-- politik
-- lang_de
+  - berlin
+  - politik
+  - lang_de
 title: Berliner Mauer
 aliases:
   - /2008/08/13/berliner-mauer.html

@@ -4,9 +4,9 @@ date: "2017-02-09T07:56:54Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- science
-- lang_en
+  - mobility
+  - science
+  - lang_en
 title: 'Video: 20 Years of continuous improvement in crash safety'
 aliases:
   - /2017/02/09/video-20-years-of-continuous-improvement-in-crash-safety.html

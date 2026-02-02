@@ -3,10 +3,10 @@ author: isotopp
 date: "2014-10-04T19:13:51Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: 1177 B.C. - The Year Civilization Collapsed'
 aliases:
   - /2014/10/04/fertig-gelesen-1177-bc-the-year-civilization-collapsed.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2006-10-26T06:37:57Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- commodore
-- hardware
-- kiel
-- lang_de
+  - commodore
+  - hardware
+  - kiel
+  - lang_de
 title: MuT 64er 10/86
 aliases:
   - /2006/10/26/mut-64er-10-86.html

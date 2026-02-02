@@ -3,9 +3,9 @@ author: isotopp
 date: "2007-01-20T04:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- monitoring
-- mysql
-- lang_de
+  - monitoring
+  - mysql
+  - lang_de
 title: Ein Nagios-Plugin für MySQL
 aliases:
   - /2007/01/20/ein-nagios-plugin-fuer-mysql.html

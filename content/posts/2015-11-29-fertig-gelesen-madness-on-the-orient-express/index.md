@@ -3,10 +3,10 @@ author: isotopp
 date: "2015-11-29T15:14:10Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Madness on the Orient Express'
 aliases:
   - /2015/11/29/fertig-gelesen-madness-on-the-orient-express.html

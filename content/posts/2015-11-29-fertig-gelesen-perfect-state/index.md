@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-11-29T15:02:46Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Perfect State'
 aliases:
   - /2015/11/29/fertig-gelesen-perfect-state.html

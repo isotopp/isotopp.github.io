@@ -3,9 +3,9 @@ author: isotopp
 date: "2012-08-20T13:41:55Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- free software
-- mysql
-- lang_de
+  - free software
+  - mysql
+  - lang_de
 title: MySQL Testcases
 aliases:
   - /2012/08/20/mysql-testcases.html

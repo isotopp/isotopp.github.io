@@ -3,8 +3,8 @@ author: isotopp
 date: "2021-08-18T11:15:50Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- computer
+  - lang_en
+  - computer
 title: Epochalypse
 aliases:
   - /2021/08/18/epochalypse.html

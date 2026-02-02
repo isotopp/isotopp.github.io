@@ -3,8 +3,8 @@ author: isotopp
 date: "2003-10-24T06:33:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- lang_de
+  - computer
+  - lang_de
 title: ObjC - oder warum DCOP so kompliziert ist
 aliases:
   - /2003/10/24/objc-oder-warum-dcop-so-kompliziert-ist.html

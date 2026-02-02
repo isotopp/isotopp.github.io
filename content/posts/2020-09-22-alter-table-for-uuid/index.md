@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-09-22T16:29:52Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
-- database
-- erklaerbaer
+  - lang_en
+  - mysql
+  - mysqldev
+  - database
+  - erklaerbaer
 title: 'MySQL: ALTER TABLE for UUID'
 aliases:
   - /2020/09/22/alter-table-for-uuid.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-08-11T20:30:46Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- book
-- media
-- review
-- steampunk
+  - lang_en
+  - book
+  - media
+  - review
+  - steampunk
 title: 'Fertig gelesen: Kady Cross "The Girl with the ..."'
 aliases:
   - /2014/08/11/fertig-gelesen-kady-cross-the-girl-with-the.html

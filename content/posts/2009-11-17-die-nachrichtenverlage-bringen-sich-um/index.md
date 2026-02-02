@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-11-17T10:58:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- media
-- advertising
-- copyright
-- lang_de
+  - media
+  - advertising
+  - copyright
+  - lang_de
 title: Die Nachrichtenverlage bringen sich um
 aliases:
   - /2009/11/17/die-nachrichtenverlage-bringen-sich-um.html

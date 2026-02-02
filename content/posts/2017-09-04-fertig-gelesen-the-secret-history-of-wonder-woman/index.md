@@ -4,10 +4,10 @@ date: "2017-09-04T21:07:19Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- lang_en
+  - review
+  - media
+  - book
+  - lang_en
 title: 'Fertig gelesen: The Secret History of Wonder Woman'
 aliases:
   - /2017/09/04/fertig-gelesen-the-secret-history-of-wonder-woman.html

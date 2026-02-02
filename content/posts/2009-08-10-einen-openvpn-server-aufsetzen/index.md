@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-08-10T07:59:34Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- privacy
-- lang_de
+  - security
+  - privacy
+  - lang_de
 title: Einen  openvpn Server aufsetzen
 aliases:
   - /2009/08/10/einen-openvpn-server-aufsetzen.html

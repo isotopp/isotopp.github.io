@@ -3,10 +3,10 @@ author: isotopp
 date: "2017-06-03T14:52:26Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- talk
-- containers
-- kubernetes
+  - lang_en
+  - talk
+  - containers
+  - kubernetes
 title: Something Kubernetes Containers
 aliases:
   - /2017/06/03/something-kubernetes-containers.html

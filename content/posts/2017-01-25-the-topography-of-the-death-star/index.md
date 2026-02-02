@@ -4,8 +4,8 @@ date: "2017-01-25T10:57:50Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- fluffy fluff
-- lang_en
+  - fluffy fluff
+  - lang_en
 title: The Topography of the Death Star
 aliases:
   - /2017/01/25/the-topography-of-the-death-star.html

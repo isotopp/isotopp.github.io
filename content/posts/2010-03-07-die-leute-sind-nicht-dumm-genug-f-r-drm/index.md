@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-03-07T10:26:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- media
-- lang_de
+  - copyright
+  - media
+  - lang_de
 title: Die Leute sind nicht dumm genug für DRM...
 aliases:
   - /2010/03/07/die-leute-sind-nicht-dumm-genug-f-r-drm.html

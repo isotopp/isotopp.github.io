@@ -3,9 +3,9 @@ author: isotopp
 date: "2007-04-18T05:19:49Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- überwachung
-- lang_de
+  - security
+  - überwachung
+  - lang_de
 title: Bundestrojaner im Handelsblatt
 aliases:
   - /2007/04/18/bundestrojaner-im-handelsblatt.html

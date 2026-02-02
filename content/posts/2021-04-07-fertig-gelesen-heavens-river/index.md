@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-04-07T21:52:54Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: Heaven''s River'
 aliases:
   - /2021/04/07/fertig-gelesen-heavens-river.html

@@ -5,10 +5,10 @@ feature-img: assets/img/background/schloss.jpg
 title: "Snake Oil"
 toc: true
 tags:
-- erklaerbaer
-- computer
-- security
-- lang_en
+  - erklaerbaer
+  - computer
+  - security
+  - lang_en
 aliases:
   - /2024/02/10/snake-oil.html
 ---

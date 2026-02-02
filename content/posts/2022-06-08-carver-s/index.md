@@ -4,8 +4,8 @@ date: "2022-06-08T04:17:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Carver S+"
 tags:
-- lang_en
-- mobility
+  - lang_en
+  - mobility
 aliases:
   - /2022/06/08/carver-s.html
 ---

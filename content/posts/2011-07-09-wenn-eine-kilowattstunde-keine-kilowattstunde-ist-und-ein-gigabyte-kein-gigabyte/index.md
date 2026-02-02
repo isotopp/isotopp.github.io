@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-07-09T18:09:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- netzneutralität
-- politik
-- lang_de
+  - internet
+  - netzneutralität
+  - politik
+  - lang_de
 title: Wenn eine Kilowattstunde keine Kilowattstunde ist und ein Gigabyte kein Gigabyte
 aliases:
   - /2011/07/09/wenn-eine-kilowattstunde-keine-kilowattstunde-ist-und-ein-gigabyte-kein-gigabyte.html

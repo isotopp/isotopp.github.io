@@ -3,10 +3,10 @@ author: isotopp
 date: "2018-11-04T13:41:50Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Streetfight: Handbook for an Urban Revolution.'
 aliases:
   - /2018/11/04/fertig-gelesen-streetfight.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-05-16T15:16:00Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- google
-- privacy
-- security
-- wlan
-- lang_de
+  - google
+  - privacy
+  - security
+  - wlan
+  - lang_de
 title: Wie man aus Versehen WLAN-Daten mitschneidet
 aliases:
   - /2010/05/16/wie-man-aus-versehen-wlan-daten-mitschneidet.html

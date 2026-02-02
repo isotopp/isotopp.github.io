@@ -3,8 +3,8 @@ author: isotopp
 date: "2021-04-02T12:34:56Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
+  - lang_en
+  - mysql
 title: Making an unexpected leap with interval syntax
 aliases:
   - /2021/04/02/making-an-unexpected-leap-with-interval-syntax.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2019-09-06T15:30:14Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- database
-- performance
-- lang_en
+  - mysql
+  - database
+  - performance
+  - lang_en
 title: MySQL Performance Limits
 aliases:
   - /2019/09/06/mysql-performance-limits.html

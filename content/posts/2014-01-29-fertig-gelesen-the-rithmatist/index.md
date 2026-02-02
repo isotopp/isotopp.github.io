@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-01-29T14:34:32Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: "The Rithmatist"'
 aliases:
   - /2014/01/29/fertig-gelesen-the-rithmatist.html

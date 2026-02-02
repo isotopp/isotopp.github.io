@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-05-14T14:04:24Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 title: 'Fertig gelesen: The Antivirus Hackers Handbook'
 aliases:
   - /2021/05/14/fertig-gelesen-the-antivirus-hackers-handbook.html

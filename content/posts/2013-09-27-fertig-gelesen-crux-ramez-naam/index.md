@@ -3,11 +3,11 @@ author: isotopp
 date: "2013-09-27T13:54:39Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Crux'
 aliases:
   - /2013/09/27/fertig-gelesen-crux-ramez-naam.html

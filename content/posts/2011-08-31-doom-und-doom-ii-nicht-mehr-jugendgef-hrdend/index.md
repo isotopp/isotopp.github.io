@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-08-31T19:47:02Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- jugendschutz
-- media
-- politik
-- lang_de
+  - jugendschutz
+  - media
+  - politik
+  - lang_de
 title: Doom und Doom II nicht mehr jugendgefährdend
 aliases:
   - /2011/08/31/doom-und-doom-ii-nicht-mehr-jugendgef-hrdend.html

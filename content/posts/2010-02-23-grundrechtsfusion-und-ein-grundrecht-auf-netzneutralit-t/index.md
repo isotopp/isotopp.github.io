@@ -3,12 +3,12 @@ author: isotopp
 date: "2010-02-23T05:57:16Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- netzneutralität
-- piraten
-- politik
-- zensur
-- lang_de
+  - internet
+  - netzneutralität
+  - piraten
+  - politik
+  - zensur
+  - lang_de
 title: Grundrechtsfusion und ein Grundrecht auf Netzneutralität
 aliases:
   - /2010/02/23/grundrechtsfusion-und-ein-grundrecht-auf-netzneutralit-t.html

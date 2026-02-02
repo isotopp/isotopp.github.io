@@ -3,11 +3,11 @@ author: isotopp
 date: "2006-09-19T16:58:35Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- free software
-- lizenz
-- politik
-- lang_de
+  - copyright
+  - free software
+  - lizenz
+  - politik
+  - lang_de
 title: 'GPL: Marktdurchdringung ist kein Wert an sich'
 aliases:
   - /2006/09/19/gpl-marktdurchdringung-ist-kein-wert-an-sich.html

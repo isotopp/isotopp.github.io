@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-05-17T11:21:00Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- internet
-- privacy
-- security
-- wlan
-- lang_de
+  - internet
+  - privacy
+  - security
+  - wlan
+  - lang_de
 title: WLANs mappen
 aliases:
   - /2010/05/17/wlans-mappen.html

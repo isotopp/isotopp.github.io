@@ -3,10 +3,10 @@ author: isotopp
 date: "2006-01-16T11:47:04Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- politik
-- security
-- überwachung
-- lang_de
+  - politik
+  - security
+  - überwachung
+  - lang_de
 title: 'Noch mehr lauschen: "Einfach mal mithören"'
 aliases:
   - /2006/01/16/noch-mehr-lauschen-einfach-mal-mithoeren.html

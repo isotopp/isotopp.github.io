@@ -3,11 +3,11 @@ author: isotopp
 date: "2005-12-28T19:06:48Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- ccc
-- musik
-- sony
-- security
-- lang_de
+  - ccc
+  - musik
+  - sony
+  - security
+  - lang_de
 title: Sony Rootkit Timeline
 aliases:
   - /2005/12/28/sony-rootkit-timeline.html

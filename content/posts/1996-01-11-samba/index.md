@@ -3,9 +3,9 @@ author: isotopp
 date: "1996-01-11T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- publication
-- unix
+  - lang_de
+  - publication
+  - unix
 title: "Samba"
 aliases:
   - /1996/01/11/samba.html

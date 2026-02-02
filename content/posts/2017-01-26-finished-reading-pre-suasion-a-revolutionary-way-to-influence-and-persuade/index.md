@@ -4,10 +4,10 @@ date: "2017-01-26T22:02:36Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Finished Reading: Pre-Suasion: A Revolutionary Way to Influence and Persuade'
 aliases:
   - /2017/01/26/finished-reading-pre-suasion-a-revolutionary-way-to-influence-and-persuade.html

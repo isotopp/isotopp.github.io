@@ -3,10 +3,10 @@ author: isotopp
 date: "2008-09-18T20:58:16Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- erklaerbaer
-- physik
-- schulung
-- lang_de
+  - erklaerbaer
+  - physik
+  - schulung
+  - lang_de
 title: Kernphysik mit Kikka
 aliases:
   - /2008/09/18/kernphysik-mit-kikka.html

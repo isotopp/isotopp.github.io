@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-11-29T14:42:54Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: A Darker Shade Of Magic'
 aliases:
   - /2015/11/29/fertig-gelesen-a-darker-shade-of-magic.html

@@ -3,7 +3,7 @@ author: isotopp
 date: "2011-07-21T13:09:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
+  - lang_de
 title: Die Query schlägt zurück
 aliases:
   - /2011/07/21/die-query-schl-gt-zur-ck.html

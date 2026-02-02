@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-12-05T11:10:50Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- jugendschutz
-- media
-- film
-- lang_de
+  - internet
+  - jugendschutz
+  - media
+  - film
+  - lang_de
 title: 'JMStV: Nix neues'
 aliases:
   - /2011/12/05/jmstv-nix-neues.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2007-06-05T12:36:29Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- hardware
-- lang_de
+  - computer
+  - hardware
+  - lang_de
 title: RAID-5
 aliases:
   - /2007/06/05/raid-5.html

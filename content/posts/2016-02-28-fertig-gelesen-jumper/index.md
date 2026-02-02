@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-02-28T16:08:37Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Jumper'
 aliases:
   - /2016/02/28/fertig-gelesen-jumper.html

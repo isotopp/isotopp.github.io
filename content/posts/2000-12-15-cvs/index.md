@@ -4,9 +4,9 @@ date: "2000-12-15T09:02:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "CVS - Was ist das?"
 tags:
-- lang_de
-- talk
-- publication
+  - lang_de
+  - talk
+  - publication
 aliases:
   - /2000/12/15/cvs.html
 ---

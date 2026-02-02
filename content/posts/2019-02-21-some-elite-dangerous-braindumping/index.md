@@ -4,9 +4,9 @@ title: "Some Elite: Dangerous Braindumping"
 date: "2019-02-21T09:10:15Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- pluspora_import
-- lang_de
-- elite dangerous
+  - pluspora_import
+  - lang_de
+  - elite dangerous
 aliases:
   - /2019/02/21/some-elite-dangerous-braindumping.html
 ---

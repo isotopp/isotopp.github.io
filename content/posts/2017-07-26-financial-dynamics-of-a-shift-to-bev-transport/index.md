@@ -4,8 +4,8 @@ date: "2017-07-26T12:05:33Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- lang_en
+  - mobility
+  - lang_en
 title: Financial dynamics of a shift to BEV transport
 aliases:
   - /2017/07/26/financial-dynamics-of-a-shift-to-bev-transport.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-06-23T21:32:27Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- bildung
-- schnuppel
-- politik
+  - lang_de
+  - bildung
+  - schnuppel
+  - politik
 title: Schulen digitalisieren
 aliases:
   - /2020/06/23/schulen-digitalisieren.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2014-12-01T20:27:03Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: 1491'
 aliases:
   - /2014/12/01/fertig-gelesen-1491.html

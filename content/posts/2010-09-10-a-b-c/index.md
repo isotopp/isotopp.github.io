@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-09-10T08:22:24Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- oracle
-- sql
-- lang_de
+  - mysql
+  - oracle
+  - sql
+  - lang_de
 title: '''a'' = ''b'' = ''c'''
 aliases:
   - /2010/09/10/a-b-c.html

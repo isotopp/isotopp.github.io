@@ -3,10 +3,10 @@ author: isotopp
 date: "2017-01-02T14:38:34Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Kubernetes - Scheduling the Future at Cloud Scale'
 aliases:
   - /2017/01/02/fertig-gelesen-kubernetes-scheduling-the-future-at-cloud-scale.html

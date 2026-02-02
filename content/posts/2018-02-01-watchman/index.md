@@ -4,9 +4,9 @@ date: "2018-02-01T06:06:54Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- apple
-- php
-- macos
+  - apple
+  - php
+  - macos
 title: Watchman
 aliases:
   - /2018/02/01/watchman.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-02-05T18:52:45Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- cookie
-- privacy
-- erklaerbaer
-- internet
-- lang_de
+  - cookie
+  - privacy
+  - erklaerbaer
+  - internet
+  - lang_de
 title: C is for Cookie
 aliases:
   - /2011/02/05/c-is-for-cookie.html

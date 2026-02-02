@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-05-19T14:51:22Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- anderswo
-- kirche
-- religion
-- lang_de
+  - anderswo
+  - kirche
+  - religion
+  - lang_de
 title: Stoppt die Katholikenflut!
 aliases:
   - /2010/05/19/stoppt-die-katholikenflut.html

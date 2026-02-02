@@ -3,8 +3,8 @@ author: isotopp
 date: "2007-01-19T14:13:02Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- travel
-- lang_de
+  - travel
+  - lang_de
 title: Ein Flugbericht
 aliases:
   - /2007/01/19/ein-flugbericht.html

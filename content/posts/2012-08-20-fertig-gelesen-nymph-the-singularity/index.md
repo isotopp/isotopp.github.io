@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-08-20T07:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: Nymph - The Singularity'
 aliases:
   - /2012/08/20/fertig-gelesen-nymph-the-singularity.html

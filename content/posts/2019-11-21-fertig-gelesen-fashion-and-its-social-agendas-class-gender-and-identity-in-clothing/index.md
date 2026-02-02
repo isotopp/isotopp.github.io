@@ -3,10 +3,10 @@ author: isotopp
 date: "2019-11-21T21:31:14Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- media
-- book
-- review
-- lang_en
+  - media
+  - book
+  - review
+  - lang_en
 title: 'Fertig gelesen: Fashion and Its Social Agendas: Class, Gender, and Identity in Clothing'
 aliases:
   - /2019/11/21/fertig-gelesen-fashion-and-its-social-agendas-class-gender-and-identity-in-clothing.html

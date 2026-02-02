@@ -4,9 +4,9 @@ title: "Sell your users, or sell to your users"
 date: "2019-03-25T09:12:34Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- pluspora_import
-- lang_en
-- advertising
+  - pluspora_import
+  - lang_en
+  - advertising
 aliases:
   - /2019/03/25/sell-to-users.html
 ---

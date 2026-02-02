@@ -3,9 +3,9 @@ author: isotopp
 date: "2024-07-12T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- media
-- sonos
+  - lang_de
+  - media
+  - sonos
 title: "Sonos S2 Analysis"
 aliases:
   - /2024/07/12/sonos-s2-analysis.html

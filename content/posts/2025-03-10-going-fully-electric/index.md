@@ -5,10 +5,10 @@ feature-img: assets/img/background/rijksmuseum.jpg
 title: "Going fully electric"
 toc: true
 tags:
-- lang_en
-- netherlands
-- energy
-- climate
+  - lang_en
+  - netherlands
+  - energy
+  - climate
 aliases:
   - /2025/03/10/going-fully-electric.html
 ---

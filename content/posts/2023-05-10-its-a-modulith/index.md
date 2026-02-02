@@ -4,10 +4,10 @@ title: "It's a Modulith"
 date: "2023-05-10T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- architektur
-- computer
-- software
+  - lang_en
+  - architektur
+  - computer
+  - software
 aliases:
   - /2023/05/10/its-a-modulith.html
 ---

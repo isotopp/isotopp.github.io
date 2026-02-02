@@ -4,10 +4,10 @@ date: "2021-01-05T17:11:57Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- python
-- bash
-- devops
+  - lang_en
+  - python
+  - bash
+  - devops
 title: Using Python to bash
 aliases:
   - /2021/01/05/using-python-to-bash.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-01-19T20:10:55Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- steampunk
+  - lang_de
+  - book
+  - media
+  - review
+  - steampunk
 title: 'Fertig gelesen: "Finishing School" Series (Etiquette & Espionage, Curtsies and Conspiracies)'
 aliases:
   - /2014/01/19/fertig-gelesen-finishing-school-series.html

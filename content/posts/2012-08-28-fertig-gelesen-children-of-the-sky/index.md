@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-08-28T07:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: Children of the Sky'
 aliases:
   - /2012/08/28/fertig-gelesen-children-of-the-sky.html

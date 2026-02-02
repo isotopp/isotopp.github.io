@@ -3,11 +3,11 @@ author: isotopp
 date: "2018-09-25T19:30:20Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- book
-- media
-- review
-- fantasy
+  - lang_en
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: Throne of Glass'
 aliases:
   - /2018/09/25/fertig-gelesen-throne-of-glass.html

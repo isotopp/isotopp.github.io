@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-08-17T17:41:50Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- book
-- media
-- review
+  - lang_en
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Building the Cycling City'
 aliases:
   - /2020/08/17/building-the-cycling-city.html

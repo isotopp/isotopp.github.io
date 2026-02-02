@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-11-18T18:52:34Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- damals
-- lang_de
+  - computer
+  - damals
+  - lang_de
 title: Alte Prospekte
 aliases:
   - /2009/11/18/alte-prospekte.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-02-14T20:01:02Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Once Dead und Dead Wrong'
 aliases:
   - /2015/02/14/fertig-gelesen-once-dead-und-dead-wrong.html

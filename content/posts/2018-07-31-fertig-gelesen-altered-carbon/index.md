@@ -3,11 +3,11 @@ author: isotopp
 date: "2018-07-31T17:28:36Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Altered Carbon'
 aliases:
   - /2018/07/31/fertig-gelesen-altered-carbon.html

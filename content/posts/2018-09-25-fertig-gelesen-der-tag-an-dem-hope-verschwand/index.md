@@ -3,11 +3,11 @@ author: isotopp
 date: "2018-09-25T20:03:23Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: Der Tag, an dem Hope verschwand'
 aliases:
   - /2018/09/25/fertig-gelesen-der-tag-an-dem-hope-verschwand.html

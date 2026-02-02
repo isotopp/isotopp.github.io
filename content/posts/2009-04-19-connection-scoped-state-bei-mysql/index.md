@@ -3,11 +3,11 @@ author: isotopp
 date: "2009-04-19T11:14:27Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- erklaerbaer
-- database
-- mysql
-- mysqldev
-- lang_de
+  - erklaerbaer
+  - database
+  - mysql
+  - mysqldev
+  - lang_de
 title: Connection Scoped State bei MySQL
 aliases:
   - /2009/04/19/connection-scoped-state-bei-mysql.html

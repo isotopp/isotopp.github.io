@@ -3,9 +3,9 @@ author: isotopp
 date: "2022-02-11T11:35:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg 
 tags:
-- work
-- remote first
-- lang_en
+  - work
+  - remote first
+  - lang_en
 title: "Spaces"
 aliases:
   - /2022/02/21/spaces.html

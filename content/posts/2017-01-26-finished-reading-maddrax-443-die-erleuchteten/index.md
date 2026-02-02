@@ -4,10 +4,10 @@ date: "2017-01-26T21:33:18Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Finished Reading: Maddrax 443 "Die Erleuchteten"'
 aliases:
   - /2017/01/26/finished-reading-maddrax-443-die-erleuchteten.html

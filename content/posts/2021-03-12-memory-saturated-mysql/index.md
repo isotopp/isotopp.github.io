@@ -3,8 +3,8 @@ author: isotopp
 date: "2021-03-12T12:40:33Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
+  - lang_en
+  - mysql
 title: Memory saturated MySQL
 aliases:
   - /2021/03/12/memory-saturated-mysql.html

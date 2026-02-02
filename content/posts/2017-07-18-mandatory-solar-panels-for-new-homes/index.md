@@ -4,8 +4,8 @@ date: "2017-07-18T12:46:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- lang_en
+  - mobility
+  - lang_en
 title: Mandatory solar panels for new homes
 aliases:
   - /2017/07/18/mandatory-solar-panels-for-new-homes.html

@@ -5,9 +5,9 @@ date: "2023-08-28T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_de
-- devops
-- computer
+  - lang_de
+  - devops
+  - computer
 aliases:
   - /2023/08/28/der-admin-beruf.html
 ---

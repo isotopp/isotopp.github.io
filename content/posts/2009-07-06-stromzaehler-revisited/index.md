@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-07-06T08:23:30Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- energy
-- lang_de
+  - computer
+  - energy
+  - lang_de
 title: Stromzähler revisited
 aliases:
   - /2009/07/06/stromzaehler-revisited.html

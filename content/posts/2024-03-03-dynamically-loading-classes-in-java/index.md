@@ -5,10 +5,10 @@ date: "2024-03-03T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- computer
-- development
-- java
+  - lang_en
+  - computer
+  - development
+  - java
 aliases:
   - /2024/03/03/dynamically-loading-classes-in-java.html
 ---

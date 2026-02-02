@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-08-12T06:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- lang_de
+  - book
+  - review
+  - media
+  - lang_de
 title: 'Fertig gelesen: Sturm über roten Wassern'
 aliases:
   - /2010/08/12/fertig-gelesen-sturm-ber-roten-wassern.html

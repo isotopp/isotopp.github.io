@@ -3,8 +3,8 @@ author: isotopp
 date: "2005-12-30T16:17:52Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- politik
-- lang_de
+  - politik
+  - lang_de
 title: '"Bist Du Deutschland?" oder "Ein vereinfachtes Weltbild für Anfänger"'
 aliases:
   - /2005/12/30/bist-du-deutschland-oder-ein-vereinfachtes-weltbild-fuer-anfaenger.html

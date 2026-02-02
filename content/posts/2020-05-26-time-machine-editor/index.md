@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-05-26T15:45:15Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- apple
-- macos
+  - lang_en
+  - apple
+  - macos
 title: Time Machine Editor
 aliases:
   - /2020/05/26/time-machine-editor.html

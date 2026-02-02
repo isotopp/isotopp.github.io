@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-11-13T10:47:53Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- wikipedia
-- lang_de
+  - internet
+  - wikipedia
+  - lang_de
 title: Communityfix
 aliases:
   - /2009/11/13/communityfix.html

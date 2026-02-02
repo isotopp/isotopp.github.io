@@ -3,8 +3,8 @@ author: isotopp
 date: "2021-03-24T12:22:33Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
+  - lang_en
+  - mysql
 title: That's a lot of databases
 aliases:
   - /2021/03/24/a-lot-of-mysql.html

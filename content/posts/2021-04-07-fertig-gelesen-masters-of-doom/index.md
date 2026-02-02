@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-04-07T20:58:35Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 title: 'Fertig gelesen: Masters of Doom and The Game Engine Black Book: Doom'
 aliases:
   - /2021/04/07/fertig-gelesen-masters-of-doom.html

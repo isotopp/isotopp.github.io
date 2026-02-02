@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-09-04T22:57:10Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
-- database
-- erklaerbaer
+  - lang_en
+  - mysql
+  - mysqldev
+  - database
+  - erklaerbaer
 title: 'MySQL: Basic usage of the JSON data type'
 aliases:
   - /2020/09/04/mysql-json-data-type.html

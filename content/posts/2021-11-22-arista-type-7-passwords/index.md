@@ -4,10 +4,10 @@ title: "Arista Type 7 Passwords"
 date: 2021-11-21T17:29:00+01:00
 feature-img: assets/img/background/schloss.jpg
 tags:
-- lang_en
-- security
-- hack
-- networking
+  - lang_en
+  - security
+  - hack
+  - networking
 aliases:
   - /2021/11/22/arista-type-7-passwords.html
 ---

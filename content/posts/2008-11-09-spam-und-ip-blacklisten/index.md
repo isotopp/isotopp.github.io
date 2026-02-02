@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-11-09T08:24:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- mail
-- spam
-- lang_de
+  - mail
+  - spam
+  - lang_de
 title: Spam und IP-Blacklisten
 aliases:
   - /2008/11/09/spam-und-ip-blacklisten.html

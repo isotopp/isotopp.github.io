@@ -4,10 +4,10 @@ date: "2022-06-28T08:09:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "The new energy bill"
 tags:
-- lang_en
-- netherlands
-- energy
-- climate
+  - lang_en
+  - netherlands
+  - energy
+  - climate
 aliases:
   - /2022/06/28/the-new-energy-bill.html
 ---

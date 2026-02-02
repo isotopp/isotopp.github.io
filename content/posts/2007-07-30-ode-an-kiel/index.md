@@ -3,9 +3,9 @@ author: isotopp
 date: "2007-07-30T05:28:44Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- kiel
-- anderswo
-- lang_de
+  - kiel
+  - anderswo
+  - lang_de
 title: Ode an Kiel
 aliases:
   - /2007/07/30/ode-an-kiel.html

@@ -5,8 +5,8 @@ date: "2024-03-01T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- hugo
+  - lang_en
+  - hugo
 aliases:
   - /2024/03/01/breaking-changes-in-hugo-123.html
 ---

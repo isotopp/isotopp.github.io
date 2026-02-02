@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-10-30T12:24:53Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- berlin
-- reisen
-- lang_de
+  - berlin
+  - reisen
+  - lang_de
 title: Tempelhof
 aliases:
   - /2008/10/30/tempelhof.html

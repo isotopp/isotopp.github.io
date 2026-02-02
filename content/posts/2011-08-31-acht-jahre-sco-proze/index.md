@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-08-31T18:46:23Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- free software
-- unix
-- lang_de
+  - copyright
+  - free software
+  - unix
+  - lang_de
 title: Acht Jahre SCO-Prozeß
 aliases:
   - /2011/08/31/acht-jahre-sco-proze.html

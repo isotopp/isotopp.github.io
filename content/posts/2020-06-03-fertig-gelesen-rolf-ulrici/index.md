@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-06-03T12:13:28Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- review
-- book
-- media
-- scifi
+  - lang_de
+  - review
+  - book
+  - media
+  - scifi
 title: 'Fertig gelesen: Rolf Ulrici'
 aliases:
   - /2020/06/03/fertig-gelesen-rolf-ulrici.html

@@ -4,9 +4,9 @@ title: "Rotating Accounts or Passwords?"
 date: "2023-02-20T12:13:14Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- lang_en
-- devops
-- security
+  - lang_en
+  - devops
+  - security
 aliases:
   - /2023/02/20/rotating-accounts-or-passwords.html
 ---

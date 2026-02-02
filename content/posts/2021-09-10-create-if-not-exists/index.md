@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-09-10T20:01:06Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 title: 'MySQL: CREATE IF NOT EXISTS TABLE, but CREATE OR REPLACE VIEW'
 aliases:
   - /2021/09/10/create-if-not-exists.html

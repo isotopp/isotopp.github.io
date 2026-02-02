@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-04-20T15:01:54Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_de
-- database
-- mysql
-- nosql
+  - lang_de
+  - database
+  - mysql
+  - nosql
 title: Zusammenfassung 'Schemaless'
 aliases:
   - /2011/04/20/zusammenfassung-schemaless.html

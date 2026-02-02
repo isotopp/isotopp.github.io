@@ -3,12 +3,12 @@ author: isotopp
 date: "2012-02-23T14:14:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- media
-- musik
-- piraten
-- sony
-- lang_de
+  - copyright
+  - media
+  - musik
+  - piraten
+  - sony
+  - lang_de
 title: 'Sony: "Das Internet ist für uns ein Segen"'
 aliases:
   - /2012/02/23/sony-das-internet-ist-f-r-uns-ein-segen.html

@@ -4,9 +4,9 @@ date: "1996-03-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Wer beherrscht das Internet?"
 tags:
-- lang_de
-- publication
-- internet
+  - lang_de
+  - publication
+  - internet
 aliases:
   - /1996/01/01/wer-beherrscht-das-internet.html
 ---

@@ -4,9 +4,9 @@ title: "MySQL: Row Literals"
 date: "2022-08-22T08:39:21Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 aliases:
   - /2022/08/22/mysql-row-literals.html
 ---

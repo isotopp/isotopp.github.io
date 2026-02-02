@@ -3,10 +3,10 @@ author: isotopp
 date: "2004-07-05T14:35:54Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- damals
-- usenet
-- lang_de
+  - computer
+  - damals
+  - usenet
+  - lang_de
 title: Alte Säcke online
 aliases:
   - /2004/07/05/alte-saecke-online.html

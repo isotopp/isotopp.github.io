@@ -3,9 +3,9 @@ author: isotopp
 date: "2007-03-11T11:51:22Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- überwachung
-- lang_de
+  - security
+  - überwachung
+  - lang_de
 title: Bundestrojaner, Sina-Boxen und Mailüberwachung
 aliases:
   - /2007/03/11/bundestrojaner-sina-boxen-und-mail-berwachung.html

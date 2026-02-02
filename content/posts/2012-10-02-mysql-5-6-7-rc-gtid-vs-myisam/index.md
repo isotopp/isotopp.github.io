@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-10-02T15:51:03Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- innodb
-- mysql
-- replication
-- lang_en
+  - innodb
+  - mysql
+  - replication
+  - lang_en
 title: 'MySQL 5.6.7-RC: GTID vs. MyISAM'
 aliases:
   - /2012/10/02/mysql-5-6-7-rc-gtid-vs-myisam.html

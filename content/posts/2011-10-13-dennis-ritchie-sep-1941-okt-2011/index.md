@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-10-13T03:39:44Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- c
-- computer
-- unix
-- lang_de
+  - c
+  - computer
+  - unix
+  - lang_de
 title: Dennis Ritchie (Sep 1941-Okt 2011)
 aliases:
   - /2011/10/13/dennis-ritchie-sep-1941-okt-2011.html

@@ -4,9 +4,9 @@ date: "2017-03-15T10:37:20Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- fluffy fluff
-- damals
+  - computer
+  - fluffy fluff
+  - damals
 title: How does the 8008 processor work?
 aliases:
   - /2017/03/15/how-does-the-8008-processor-work.html

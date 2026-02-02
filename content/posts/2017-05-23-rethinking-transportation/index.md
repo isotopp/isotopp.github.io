@@ -4,8 +4,8 @@ date: "2017-05-23T15:39:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- lang_en
+  - mobility
+  - lang_en
 title: Rethinking Transportation
 aliases:
   - /2017/05/23/rethinking-transportation.html

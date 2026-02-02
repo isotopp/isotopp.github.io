@@ -4,9 +4,9 @@ date: "2017-06-12T16:00:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- performance
-- container
+  - computer
+  - performance
+  - container
 title: '"Usage Patterns and the Economics of the Public Cloud"'
 aliases:
   - /2017/06/12/usage-patterns-and-the-economics-of-the-public-cloud.html

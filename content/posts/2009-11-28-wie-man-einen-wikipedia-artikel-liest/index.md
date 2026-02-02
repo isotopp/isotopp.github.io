@@ -3,11 +3,11 @@ author: isotopp
 date: "2009-11-28T15:27:56Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- media
-- schulung
-- wikipedia
-- lang_de
+  - internet
+  - media
+  - schulung
+  - wikipedia
+  - lang_de
 title: Wie man einen Wikipedia-Artikel... liest
 aliases:
   - /2009/11/28/wie-man-einen-wikipedia-artikel-liest.html

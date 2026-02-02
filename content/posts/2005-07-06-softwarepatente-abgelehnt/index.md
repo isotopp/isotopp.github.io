@@ -3,12 +3,12 @@ author: isotopp
 date: "2005-07-06T10:52:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- free software
-- lizenz
-- patent
-- politik
-- software
-- lang_de
+  - free software
+  - lizenz
+  - patent
+  - politik
+  - software
+  - lang_de
 title: Softwarepatente? Abgelehnt!
 aliases:
   - /2005/07/06/softwarepatente-abgelehnt.html

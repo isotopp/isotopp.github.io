@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-11-15T14:28:09Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- iot
-- home automation
+  - lang_en
+  - iot
+  - home automation
 title: My home sensor network
 aliases:
   - /2020/11/15/my-home-sensor-network.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-02-11T19:19:44Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- kryptographie
-- security
-- web
-- lang_de
+  - kryptographie
+  - security
+  - web
+  - lang_de
 title: Ein paar Worte zu SSL
 aliases:
   - /2009/02/11/ein-paar-worte-zu-ssl.html

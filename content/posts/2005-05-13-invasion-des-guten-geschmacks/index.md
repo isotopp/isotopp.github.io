@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-05-13T13:30:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- image
-- karlsruhe
-- work
-- lang_de
+  - image
+  - karlsruhe
+  - work
+  - lang_de
 title: Invasion des guten Geschmacks
 aliases:
   - /2005/05/13/invasion-des-guten-geschmacks.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-05-08T09:21:38Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: The Rho Agenda (The Second Ship und Immune)'
 aliases:
   - /2011/05/08/fertig-gelesen-the-rho-agenda-the-second-ship-und-immune.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-01-18T21:47:46Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- internet
-- privacy
-- security
-- lang_de
+  - internet
+  - privacy
+  - security
+  - lang_de
 title: Vergeben, vergessen und vernichten
 aliases:
   - /2011/01/18/vergeben-vergessen-und-vernichten.html

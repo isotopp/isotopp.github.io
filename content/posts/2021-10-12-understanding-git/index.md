@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-10-12T17:50:52Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- development
-- git
+  - lang_en
+  - development
+  - git
 title: Understanding git
 aliases:
   - /2021/10/12/understanding-git.html

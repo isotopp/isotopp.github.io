@@ -3,10 +3,10 @@ author: isotopp
 date: "2017-01-02T14:01:07Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Drift Into Failure'
 aliases:
   - /2017/01/02/fertig-gelesen-drift-into-failure.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2004-03-14T08:43:19Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- php
-- mysql
-- lang_de
+  - php
+  - mysql
+  - lang_de
 title: MySQL und die Lizenzen
 aliases:
   - /2004/03/14/mysql-und-die-lizenzen.html

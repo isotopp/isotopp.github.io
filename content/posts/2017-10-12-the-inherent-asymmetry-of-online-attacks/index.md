@@ -4,8 +4,8 @@ date: "2017-10-12T22:40:26Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- security
-- lang_en
+  - security
+  - lang_en
 title: The inherent Asymmetry of online attacks
 aliases:
   - /2017/10/12/the-inherent-asymmetry-of-online-attacks.html

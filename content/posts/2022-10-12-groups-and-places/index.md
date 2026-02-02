@@ -4,10 +4,10 @@ title: "Groups and Places"
 date: "2022-10-12T06:07:08Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- remote first
-- work
-- chat
+  - lang_en
+  - remote first
+  - work
+  - chat
 aliases:
   - /2022/10/12/groups-and-places.html
 ---

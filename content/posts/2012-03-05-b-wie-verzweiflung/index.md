@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-03-05T19:34:48Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- jugendschutz
-- media
-- politik
-- lang_de
+  - internet
+  - jugendschutz
+  - media
+  - politik
+  - lang_de
 title: /b/ wie "Verzweiflung"
 aliases:
   - /2012/03/05/b-wie-verzweiflung.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2007-09-07T18:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- damals
-- free software
-- kiel
-- politik
-- lang_de
+  - damals
+  - free software
+  - kiel
+  - politik
+  - lang_de
 title: Echte Helden
 aliases:
   - /2007/09/07/echte-helden.html

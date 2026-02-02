@@ -3,9 +3,9 @@ author: isotopp
 date: "2024-09-03T04:05:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- iot
-- home automation
+  - lang_en
+  - iot
+  - home automation
 title: "zigbee2mqtt in rootless podman"
 aliases:
   - /2024/09/03/zigbee2mqtt-in-rootless-podman.html

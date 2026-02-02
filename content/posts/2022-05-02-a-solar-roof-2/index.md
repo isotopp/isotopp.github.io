@@ -5,10 +5,10 @@ feature-img: assets/img/background/rijksmuseum.jpg
 title: "A solar roof 2"
 toc: true
 tags:
-- lang_en
-- netherlands
-- energy
-- climate
+  - lang_en
+  - netherlands
+  - energy
+  - climate
 aliases:
   - /2022/05/02/a-solar-roof-2.html
 ---

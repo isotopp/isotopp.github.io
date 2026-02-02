@@ -3,10 +3,10 @@ author: isotopp
 date: "2018-07-31T17:54:03Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Social Architecture: Building Online Communities'
 aliases:
   - /2018/07/31/fertig-gelesen-social-architecture-building-online-communities.html

@@ -4,10 +4,10 @@ date: "2023-09-30T01:02:03Z"
 feature-img: assets/img/background/book.jpg
 title: 'Fertig gelesen: A Life with Footnotes'
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 aliases:
   - /2023/09/30/fertig-gelesen-a-life-with-footnotes.html
 ---

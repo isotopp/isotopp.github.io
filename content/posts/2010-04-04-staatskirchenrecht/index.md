@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-04-04T18:38:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- kirche
-- politik
-- lang_de
+  - kirche
+  - politik
+  - lang_de
 title: Staatskirchenrecht
 aliases:
   - /2010/04/04/staatskirchenrecht.html

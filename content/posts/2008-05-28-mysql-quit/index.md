@@ -3,8 +3,8 @@ author: isotopp
 date: "2008-05-28T13:59:26Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- lang_de
+  - mysql
+  - lang_de
 title: mysql> quit;
 aliases:
   - /2008/05/28/mysql-quit.html

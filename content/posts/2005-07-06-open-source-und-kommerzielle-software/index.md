@@ -3,9 +3,9 @@ author: isotopp
 date: "2005-07-06T09:21:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- free software
-- lizenz
-- lang_de
+  - free software
+  - lizenz
+  - lang_de
 title: Open Source und kommerzielle Software
 aliases:
   - /2005/07/06/open-source-und-kommerzielle-software.html

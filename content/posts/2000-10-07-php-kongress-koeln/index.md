@@ -4,9 +4,9 @@ date: "2000-10-07T09:00:00Z"
 feature-img: assets/img/background/schloss.jpg
 title: "PHP Kongress Köln"
 tags:
-- lang_de
-- php
-- web 
+  - lang_de
+  - php
+  - web
 aliases:
   - /2000/10/07/php-kongress-koeln.html
 ---

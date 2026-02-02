@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-12-02T19:44:03Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- software
-- lang_de
+  - book
+  - review
+  - media
+  - software
+  - lang_de
 title: 'Fertig gelesen: The Lean Startup'
 aliases:
   - /2011/12/02/fertig-gelesen-the-lean-startup.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-09-09T20:16:47Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 title: 'MySQL: Two kinds of compression'
 aliases:
   - /2021/09/09/mysql-two-kinds-of-compression.html

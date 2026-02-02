@@ -3,9 +3,9 @@ author: isotopp
 date: "2011-12-13T11:15:17Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- erklaerbaer
-- physik
-- lang_de
+  - erklaerbaer
+  - physik
+  - lang_de
 title: Higgs
 aliases:
   - /2011/12/13/higgs.html

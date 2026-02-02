@@ -3,10 +3,10 @@ author: isotopp
 date: "2007-03-18T10:58:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- blog
-- media
-- copyright
-- lang_de
+  - blog
+  - media
+  - copyright
+  - lang_de
 title: Warum alle meine Texte frei im Netz zu lesen sind
 aliases:
   - /2007/03/18/warum-alle-meine-texte-frei-im-netz-zu-lesen-sind.html

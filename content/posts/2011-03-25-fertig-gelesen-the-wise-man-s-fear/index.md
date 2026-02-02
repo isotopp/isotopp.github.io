@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-03-25T09:14:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- lang_de
+  - book
+  - review
+  - media
+  - lang_de
 title: 'Fertig gelesen: The Wise Man''s Fear'
 aliases:
   - /2011/03/25/fertig-gelesen-the-wise-man-s-fear.html

@@ -3,12 +3,12 @@ author: isotopp
 date: "2020-07-27T21:03:09Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- database
-- mysql
-- innodb
-- erklaerbaer
-- mysqldev
+  - lang_en
+  - database
+  - mysql
+  - innodb
+  - erklaerbaer
+  - mysqldev
 title: MySQL Commit Size and Speed
 aliases:
   - /2020/07/27/mysql-commit-size-and-speed.html

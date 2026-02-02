@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-02-28T18:05:33Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Leviathan Wakes'
 aliases:
   - /2016/02/28/fertig-gelesen-leviathan-wakes.html

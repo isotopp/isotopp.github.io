@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-02-05T07:01:44Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- lang_de
+  - computer
+  - lang_de
 title: Bäume in SQL
 aliases:
   - /2004/02/05/baeume-in-sql.html

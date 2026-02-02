@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-01-29T14:15:59Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: "The Circle"'
 aliases:
   - /2014/01/29/fertig-gelesen-the-circle.html

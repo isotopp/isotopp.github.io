@@ -3,9 +3,9 @@ author: isotopp
 date: "2005-06-02T08:26:10Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- identity
-- security
-- lang_de
+  - identity
+  - security
+  - lang_de
 title: Die Welt ist meine... Zwiebel?
 aliases:
   - /2005/06/02/die-welt-ist-meine-zwiebel.html

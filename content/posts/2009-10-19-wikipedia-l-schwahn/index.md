@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-10-19T12:00:37Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- wikipedia
-- zensur
-- lang_de
+  - internet
+  - wikipedia
+  - zensur
+  - lang_de
 title: Wikipedia Löschwahn
 aliases:
   - /2009/10/19/wikipedia-l-schwahn.html

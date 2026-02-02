@@ -5,10 +5,10 @@ date: "2026-01-14T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- computer
-- gaming
-- python
+  - lang_en
+  - computer
+  - gaming
+  - python
 aliases:
   - /2026/01/14/bofhle.html
 ---

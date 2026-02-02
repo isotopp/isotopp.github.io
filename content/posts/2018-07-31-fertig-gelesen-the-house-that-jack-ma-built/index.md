@@ -3,10 +3,10 @@ author: isotopp
 date: "2018-07-31T18:03:21Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: The House That Jack Ma Built'
 aliases:
   - /2018/07/31/fertig-gelesen-the-house-that-jack-ma-built.html

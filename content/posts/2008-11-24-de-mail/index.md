@@ -3,10 +3,10 @@ author: isotopp
 date: "2008-11-24T07:49:25Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- demail
-- politik
-- security
-- lang_de
+  - demail
+  - politik
+  - security
+  - lang_de
 title: DE-Mail
 aliases:
   - /2008/11/24/de-mail.html

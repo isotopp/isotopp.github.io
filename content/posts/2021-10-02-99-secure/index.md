@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-10-02T19:17:00Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- lang_de
-- security
-- ccc
+  - lang_de
+  - security
+  - ccc
 title: 99% secure
 aliases:
   - /2021/10/02/99-secure.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-10-08T12:21:27Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- linux
-- erklaerbaer
-- lang_de
+  - computer
+  - linux
+  - erklaerbaer
+  - lang_de
 title: Dynamisch geladener Code
 aliases:
   - /2005/10/08/dynamisch-geladener-code.html

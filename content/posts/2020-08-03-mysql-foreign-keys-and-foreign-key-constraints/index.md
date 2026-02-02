@@ -3,12 +3,12 @@ author: isotopp
 date: "2020-08-03T07:29:49Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- database
-- mysql
-- innodb
-- mysqldev
-- erklaerbaer
+  - lang_en
+  - database
+  - mysql
+  - innodb
+  - mysqldev
+  - erklaerbaer
 title: MySQL Foreign Keys and Foreign Key Constraints
 aliases:
   - /2020/08/03/mysql-foreign-keys-and-foreign-key-constraints.html

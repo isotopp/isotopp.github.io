@@ -5,10 +5,10 @@ feature-img: assets/img/background/rijksmuseum.jpg
 title: "Wie ChatGPT funktioniert"
 toc: true
 tags:
-- erklaerbaer
-- computer
-- ai
-- lang_de
+  - erklaerbaer
+  - computer
+  - ai
+  - lang_de
 aliases:
   - /2024/02/06/wie-chatgpt-funktioniert.html
 ---

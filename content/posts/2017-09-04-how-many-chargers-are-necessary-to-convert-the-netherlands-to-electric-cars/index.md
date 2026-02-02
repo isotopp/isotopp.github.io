@@ -4,8 +4,8 @@ date: "2017-09-04T21:51:30Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- netherlands
+  - mobility
+  - netherlands
 title: How many chargers are necessary to convert the Netherlands to electric cars?
 aliases:
   - /2017/09/04/how-many-chargers-are-necessary-to-convert-the-netherlands-to-electric-cars.html

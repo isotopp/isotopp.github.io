@@ -5,9 +5,9 @@ date: "2024-02-20T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- computer
-- python
+  - lang_en
+  - computer
+  - python
 aliases:
   - /2024/02/19/python-slots.html
 ---

@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-06-08T06:15:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- mysql
-- nosql
-- sql
-- lang_de
+  - database
+  - mysql
+  - nosql
+  - sql
+  - lang_de
 title: Die relationale Datenbank wird 40.
 aliases:
   - /2010/06/08/die-relationale-datenbank-wird-40.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2019-06-14T15:01:43Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- storage
-- computer
+  - lang_en
+  - storage
+  - computer
 title: Not quite storage any more
 aliases:
   - /2019/06/14/not-quite-storage-any-more.html

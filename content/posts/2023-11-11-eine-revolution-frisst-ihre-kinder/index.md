@@ -5,9 +5,9 @@ date: "2023-11-11T02:03:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_de
-- publication
-- free software
+  - lang_de
+  - publication
+  - free software
 aliases:
   - /2023/11/11/eine-revolution-frisst-ihre-kinder.html
 ---

@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-06-27T17:47:45Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- identity
-- politik
-- security
-- lang_de
+  - identity
+  - politik
+  - security
+  - lang_de
 title: Vorratsdatenspeicherung
 aliases:
   - /2005/06/27/vorratsdatenspeicherung.html

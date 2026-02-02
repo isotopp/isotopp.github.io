@@ -4,8 +4,8 @@ date: "2017-02-24T20:26:28Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- lang_en
+  - mobility
+  - lang_en
 title: Solar plus Storage in Australia
 aliases:
   - /2017/02/24/solar-plus-storage-in-australia.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2018-09-25T20:17:39Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- book
-- media
-- review
+  - lang_en
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Sled Driver'
 aliases:
   - /2018/09/25/fertig-gelesen-sled-driver.html

@@ -5,9 +5,9 @@ date: "2025-07-09T05:06:07Z"
 feature-img: assets/img/background/mysql.jpg
 toc: true
 tags:
-- lang_en
-- database
-- mysql
+  - lang_en
+  - database
+  - mysql
 aliases:
   - /2025/07/09/mysql-release-notes-database.html
 ---

@@ -3,10 +3,10 @@ author: isotopp
 date: "2006-08-03T17:10:55Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- media
-- review
-- lang_de
+  - book
+  - media
+  - review
+  - lang_de
 title: 'Fertig gelesen: Greg''s Bazillenprosa'
 aliases:
   - /2006/08/03/fertig-gelesen-greg-s-bazillenprosa.html

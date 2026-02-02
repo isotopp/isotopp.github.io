@@ -3,10 +3,10 @@ author: isotopp
 date: "2013-11-23T06:21:28Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: The Cassandra Project'
 aliases:
   - /2013/11/23/fertig-gelesen-the-cassandra-project.html

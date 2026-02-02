@@ -3,11 +3,11 @@ author: isotopp
 date: "2009-06-24T07:21:35Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- identity
-- internet
-- networking
-- zensur
-- lang_de
+  - identity
+  - internet
+  - networking
+  - zensur
+  - lang_de
 title: Internet mit Kugelschreibern (und Bussen)
 aliases:
   - /2009/06/24/internet-mit-kugelschreibern-und-bussen.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2018-06-18T20:33:10Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- lang_en
-- security
-- hack
+  - lang_en
+  - security
+  - hack
 title: Websense DLP gives instant root
 aliases:
   - /2018/06/18/websense-dlp-gives-instant-root.html

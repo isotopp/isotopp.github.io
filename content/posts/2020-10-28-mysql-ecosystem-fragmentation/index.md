@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-10-28T15:28:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- database
+  - lang_en
+  - mysql
+  - database
 title: 'MySQL: Ecosystem fragmentation'
 aliases:
   - /2020/10/28/mysql-ecosystem-fragmentation.html

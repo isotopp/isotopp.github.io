@@ -4,9 +4,9 @@ title: "USENET und Tiernetze"
 date: "2022-11-28T06:07:08Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- usenet
-- kiel
+  - lang_de
+  - usenet
+  - kiel
 aliases:
   - /2022/12/02/usenet-und-tiernetze.html
 ---

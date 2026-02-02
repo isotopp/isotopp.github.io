@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-02-15T20:08:30Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- s9y
-- usenet
-- lang_de
+  - computer
+  - s9y
+  - usenet
+  - lang_de
 title: Abschied aus dem USENET
 aliases:
   - /2005/02/15/abschied-aus-dem-usenet.html

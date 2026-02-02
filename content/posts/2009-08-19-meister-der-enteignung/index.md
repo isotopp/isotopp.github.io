@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-08-19T15:55:34Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- copyright
-- internet
+  - lang_de
+  - copyright
+  - internet
 title: Meister der Enteignung
 aliases:
   - /2009/08/19/meister-der-enteignung.html

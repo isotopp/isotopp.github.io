@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-02-10T19:08:54Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- kryptographie
-- security
-- web
-- lang_de
+  - kryptographie
+  - security
+  - web
+  - lang_de
 title: Die Kosten von SSL
 aliases:
   - /2011/02/10/die-kosten-von-ssl.html

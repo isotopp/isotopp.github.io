@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-08-22T07:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: How to live safely in a science fictional universe'
 aliases:
   - /2012/08/22/fertig-gelesen-how-to-live-safely-in-a-science-fictional-universe.html

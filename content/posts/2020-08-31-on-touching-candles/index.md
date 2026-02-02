@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-08-31T17:51:27Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- devops
-- erklaerbaer
+  - lang_en
+  - devops
+  - erklaerbaer
 title: On Touching Candles, And Error Budgets
 aliases:
   - /2020/08/31/on-touching-candles.html

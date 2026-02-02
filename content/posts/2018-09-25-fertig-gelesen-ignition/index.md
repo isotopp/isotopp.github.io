@@ -3,10 +3,10 @@ author: isotopp
 date: "2018-09-25T20:09:16Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Ignition!'
 aliases:
   - /2018/09/25/fertig-gelesen-ignition.html

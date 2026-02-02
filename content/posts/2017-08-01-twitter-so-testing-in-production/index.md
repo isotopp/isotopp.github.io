@@ -4,9 +4,9 @@ date: "2017-08-01T09:25:02Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- work
-- lang_en
+  - computer
+  - work
+  - lang_en
 title: 'Twitter so: Testing in Production'
 aliases:
   - /2017/08/01/twitter-so-testing-in-production.html

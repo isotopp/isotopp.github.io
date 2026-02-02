@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-05-12T20:20:46Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- iot
-- home automation
+  - lang_en
+  - iot
+  - home automation
 title: Plugs with Wi-Fi
 aliases:
   - /2020/05/12/plugs-with-wifi.html

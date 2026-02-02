@@ -5,9 +5,9 @@ date: "2023-09-16T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_de
-- mobility
-- bike
+  - lang_de
+  - mobility
+  - bike
 aliases:
   - /2023/09/16/haftungsfragen.html
 ---

@@ -4,8 +4,8 @@ date: "2017-04-26T11:52:14Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- container
-- lang_en
+  - container
+  - lang_en
 title: jq
 aliases:
   - /2017/04/26/jq.html

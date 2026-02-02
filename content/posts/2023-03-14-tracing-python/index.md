@@ -5,9 +5,9 @@ date: "2023-03-14T12:13:14Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- python
-- debug
+  - lang_en
+  - python
+  - debug
 aliases:
   - /2023/03/14/tracing-python.html
 ---

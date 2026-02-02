@@ -4,9 +4,9 @@ date: "2017-07-09T18:31:39Z"
 feature-img: assets/img/background/mysql.jpg
 status: publish
 tags:
-- mysql
-- erklaerbaer
-- lang_en
+  - mysql
+  - erklaerbaer
+  - lang_en
 title: Using MySQL Partitions (a Python example)
 aliases:
   - /2017/07/09/using-mysql-partitions-a-python-example.html

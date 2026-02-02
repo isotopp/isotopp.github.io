@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-08-19T13:04:58Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- politik
-- wahl
-- lang_de
+  - internet
+  - politik
+  - wahl
+  - lang_de
 title: Angriff im Morgengrauen oder ein paar Gedanken zu Onlinewahlen
 aliases:
   - /2009/08/19/angriff-im-morgengrauen-oder-ein-paar-gedanken-zu-onlinewahlen.html

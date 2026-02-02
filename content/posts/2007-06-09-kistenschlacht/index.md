@@ -3,8 +3,8 @@ author: isotopp
 date: "2007-06-09T07:16:52Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- berlin
-- lang_de
+  - berlin
+  - lang_de
 title: Kistenschlacht
 aliases:
   - /2007/06/09/kistenschlacht.html

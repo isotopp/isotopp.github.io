@@ -11,9 +11,9 @@ description: |
   But despite Devs and Operations people using the same tools now, their mindset is still differennt – by necessity,
   and that leads to tension.
 tags:
-- lang_en
-- devops
-- talk
+  - lang_en
+  - devops
+  - talk
 title: "Go away, or I will replace you with a very small shell script"
 aliases:
   - /2015/03/27/go-away-or-i-will-replace-you.html

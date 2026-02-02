@@ -3,8 +3,8 @@ author: isotopp
 date: "2021-01-10T12:54:35Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- python
+  - lang_en
+  - python
 title: Labyrinths (in Python)
 aliases:
   - /2021/01/10/labyrinths-in-python.html

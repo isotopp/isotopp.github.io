@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-11-19T17:08:09Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- devops
-- monitoring
+  - lang_en
+  - devops
+  - monitoring
 title: On the Observability of Outliers
 aliases:
   - /2020/11/19/on-the-observability-of-outliers.html

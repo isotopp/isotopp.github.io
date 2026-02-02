@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-03-17T18:39:04Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- media
-- roleplay
-- scifi
-- stross
-- lang_de
+  - media
+  - roleplay
+  - scifi
+  - stross
+  - lang_de
 title: The Laundry
 aliases:
   - /2010/03/17/the-laundry.html

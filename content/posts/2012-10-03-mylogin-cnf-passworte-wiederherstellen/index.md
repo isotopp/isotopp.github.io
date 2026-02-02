@@ -3,9 +3,9 @@ author: isotopp
 date: "2012-10-03T10:37:53Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- security
-- lang_de
+  - mysql
+  - security
+  - lang_de
 title: .mylogin.cnf Passworte wiederherstellen
 aliases:
   - /2012/10/03/mylogin-cnf-passworte-wiederherstellen.html

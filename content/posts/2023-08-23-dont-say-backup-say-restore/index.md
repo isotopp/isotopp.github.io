@@ -5,9 +5,9 @@ date: "2023-08-23T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_en
-- devops
-- data center
+  - lang_en
+  - devops
+  - data center
 aliases:
   - /2023/08/23/dont-say-backup-say-restore.html
 ---

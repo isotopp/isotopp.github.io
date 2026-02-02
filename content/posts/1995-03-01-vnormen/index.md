@@ -3,9 +3,9 @@ author: isotopp
 date: "1995-03-01T09:15:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- publication
-- internet
+  - lang_de
+  - publication
+  - internet
 title: "V-Normen"
 aliases:
   - /1995/03/01/vnormen.html

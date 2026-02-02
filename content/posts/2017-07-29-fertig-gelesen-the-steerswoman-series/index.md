@@ -4,10 +4,10 @@ date: "2017-07-29T08:16:30Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: The Steerswoman Series'
 aliases:
   - /2017/07/29/fertig-gelesen-the-steerswoman-series.html

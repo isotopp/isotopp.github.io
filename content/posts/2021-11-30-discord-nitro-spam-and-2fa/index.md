@@ -4,10 +4,10 @@ title: "Discord Nitro Spam and 2FA"
 date: 2021-11-30T08:29:00+01:00
 feature-img: assets/img/background/schloss.jpg
 tags:
-- lang_en
-- security
-- identity
-- minecraft
+  - lang_en
+  - security
+  - identity
+  - minecraft
 aliases:
   - /2021/11/30/discord-nitro-spam-and-2fa.html
 ---

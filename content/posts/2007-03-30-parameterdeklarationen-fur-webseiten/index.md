@@ -3,9 +3,9 @@ author: isotopp
 date: "2007-03-30T11:47:38Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- php
-- security
-- lang_de
+  - php
+  - security
+  - lang_de
 title: Parameterdeklarationen für Webseiten
 aliases:
   - /2007/03/30/parameterdeklarationen-fur-webseiten.html

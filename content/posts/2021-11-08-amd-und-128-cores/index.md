@@ -4,9 +4,9 @@ title: "AMD und 128 cores"
 date: 2021-11-08T13:28:27+01:00
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- computer
-- cloud
+  - lang_de
+  - computer
+  - cloud
 aliases:
   - /2021/11/08/amd-und-128-cores.html
 ---

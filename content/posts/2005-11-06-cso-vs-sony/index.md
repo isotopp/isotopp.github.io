@@ -3,12 +3,12 @@ author: isotopp
 date: "2005-11-06T13:11:35Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- hack
-- sony
-- media
-- musik
-- security
-- lang_de
+  - hack
+  - sony
+  - media
+  - musik
+  - security
+  - lang_de
 title: CSO vs. Sony
 aliases:
   - /2005/11/06/cso-vs-sony.html

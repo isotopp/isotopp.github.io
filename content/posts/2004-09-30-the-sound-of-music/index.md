@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-09-30T11:51:21Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- media
-- lang_de
+  - media
+  - lang_de
 title: The Sound of Music
 aliases:
   - /2004/09/30/the-sound-of-music.html

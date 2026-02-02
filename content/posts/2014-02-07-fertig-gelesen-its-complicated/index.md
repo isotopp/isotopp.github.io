@@ -3,10 +3,10 @@ author: isotopp
 date: "2014-02-07T11:17:09Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: "It''s complicated"'
 aliases:
   - /2014/02/07/fertig-gelesen-its-complicated.html

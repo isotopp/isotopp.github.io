@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-08-06T17:48:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- piraten
-- politik
-- lang_de
+  - piraten
+  - politik
+  - lang_de
 title: Ein Sturm aus Scheiße ist auch eine Art flüssiges Feedback
 aliases:
   - /2010/08/06/ein-sturm-aus-schei-e-ist-auch-eine-art-fl-ssiges-feedback.html

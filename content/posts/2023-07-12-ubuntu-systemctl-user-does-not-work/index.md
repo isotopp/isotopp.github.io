@@ -5,9 +5,9 @@ date: "2023-07-12T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_en
-- linux
-- devops
+  - lang_en
+  - linux
+  - devops
 aliases:
   - /2023/07/12/ubuntu-systemctl-user-does-not-work.html
 ---

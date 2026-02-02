@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-08-29T07:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- comic
-- media
-- lang_de
+  - book
+  - review
+  - comic
+  - media
+  - lang_de
 title: 'Fertig gelesen: Whatever happened to the world of tomorrow?'
 aliases:
   - /2012/08/29/fertig-gelesen-whatever-happened-to-the-world-of-tomorrow.html

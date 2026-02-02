@@ -4,9 +4,9 @@ title: "MySQL: The command line client"
 date: "2022-09-08T12:13:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 aliases:
   - /2022/12/28/mysql-the-command-line-client.html
 ---

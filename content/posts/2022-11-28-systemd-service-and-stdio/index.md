@@ -4,9 +4,9 @@ title: "Systemd Service and stdio"
 date: "2022-11-28T06:07:08Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- python
-- devops
+  - lang_en
+  - python
+  - devops
 aliases:
   - /2022/11/28/systemd-service-and-stdio.html
 ---

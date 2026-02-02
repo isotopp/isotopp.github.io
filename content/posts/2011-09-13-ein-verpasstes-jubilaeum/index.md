@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-09-13T18:08:33Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- damals
-- privacy
-- politik
-- lang_de
+  - damals
+  - privacy
+  - politik
+  - lang_de
 title: Ein verpaßtes Jubiläum
 aliases:
   - /2011/09/13/ein-verpasstes-jubilaeum.html

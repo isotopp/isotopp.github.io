@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-01-19T18:18:05Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: "Zero Point"'
 aliases:
   - /2014/01/19/fertig-gelesen-zero-point-neal-asher.html

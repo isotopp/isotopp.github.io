@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-09-09T09:36:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- innodb
-- mysql
-- postgres
-- sql
-- lang_de
+  - innodb
+  - mysql
+  - postgres
+  - sql
+  - lang_de
 title: Covering indexes und MVCC
 aliases:
   - /2010/09/09/covering-indexes-und-mvcc.html

@@ -4,11 +4,11 @@ date: "2017-07-26T14:51:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- filesystems
-- data center
-- container
-- performance
-- lang_en
+  - filesystems
+  - data center
+  - container
+  - performance
+  - lang_en
 title: An abundance of IOPS and Zero Jitter
 aliases:
   - /2017/07/26/an-abundance-of-iops-and-zero-jitter.html

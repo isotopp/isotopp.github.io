@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-02-22T08:14:33Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- netherlands
-- mobility
-- cycling
+  - lang_en
+  - netherlands
+  - mobility
+  - cycling
 title: In which we cycle shopping...
 aliases:
   - /2020/02/22/in-which-we-cycle-shopping.html

@@ -4,12 +4,12 @@ date: "2005-05-29T09:00:00Z"
 feature-img: assets/img/background/schloss.jpg
 title: "Security Management - was ist das eigentlich?"
 tags:
-- lang_de
-- talk
-- publication
-- internet
-- security
-- karlsruhe
+  - lang_de
+  - talk
+  - publication
+  - internet
+  - security
+  - karlsruhe
 aliases:
   - /2005/05/29/security-management.html
 ---

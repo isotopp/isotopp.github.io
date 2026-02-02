@@ -4,11 +4,11 @@ date: "2005-05-30T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Vorträge halten"
 tags:
-- lang_de
-- talk
-- publication
-- internet
-- karlsruhe
+  - lang_de
+  - talk
+  - publication
+  - internet
+  - karlsruhe
 aliases:
   - /2005/05/30/vortraege-richtig-halten.html
 ---

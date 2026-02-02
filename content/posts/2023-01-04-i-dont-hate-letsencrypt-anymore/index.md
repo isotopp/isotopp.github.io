@@ -4,9 +4,9 @@ title: "I don't hate Let's Encrypt anymore"
 date: "2023-01-04T06:07:08Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- lang_en
-- security
-- devops
+  - lang_en
+  - security
+  - devops
 aliases:
   - /2023/01/04/i-dont-hate-letsencrypt-anymore.html
 ---

@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-08-17T19:50:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- replication
-- lang_de
+  - mysql
+  - replication
+  - lang_de
 title: Ein Ring mit zwei MySQL-Servern und auto_increment_increment
 aliases:
   - /2010/08/17/ein-ring-mit-zwei-mysql-servern-und-auto-increment-increment.html

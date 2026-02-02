@@ -4,9 +4,9 @@ title: "MySQL: InnoDB Fragmentation"
 date: "2023-07-06T01:02:03Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- database
+  - lang_en
+  - mysql
+  - database
 aliases:
   - /2023/07/06/mysql-innodb-fragmentation.html
 ---

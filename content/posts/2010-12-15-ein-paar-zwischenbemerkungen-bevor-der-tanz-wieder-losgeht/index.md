@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-12-15T18:00:35Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- blog
-- jugendschutz
-- lang_de
+  - blog
+  - jugendschutz
+  - lang_de
 title: Ein paar Zwischenbemerkungen, bevor der Tanz wieder losgeht
 aliases:
   - /2010/12/15/ein-paar-zwischenbemerkungen-bevor-der-tanz-wieder-losgeht.html

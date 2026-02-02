@@ -3,9 +3,9 @@ author: isotopp
 date: "2006-03-10T07:28:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- gaming
-- politik
-- lang_de
+  - gaming
+  - politik
+  - lang_de
 title: Counterstrike am Hindukusch
 aliases:
   - /2006/03/10/counterstrike-am-hindukusch.html

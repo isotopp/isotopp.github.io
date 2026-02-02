@@ -4,10 +4,10 @@ date: "2017-11-08T08:14:21Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- lang_en
+  - review
+  - media
+  - book
+  - lang_en
 title: 'Fertig gelesen: All Systems Red'
 aliases:
   - /2017/11/08/fertig-gelesen-all-systems-red.html

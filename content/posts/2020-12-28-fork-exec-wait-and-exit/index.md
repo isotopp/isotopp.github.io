@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-12-28T18:25:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- linux
-- erklaerbaer
-- computer
-- lang_en
+  - linux
+  - erklaerbaer
+  - computer
+  - lang_en
 title: fork, exec, wait and exit
 aliases:
   - /2020/12/28/fork-exec-wait-and-exit.html

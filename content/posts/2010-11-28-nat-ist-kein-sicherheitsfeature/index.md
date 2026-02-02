@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-11-28T14:59:23Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- computer
-- internet
-- security
-- lang_de
+  - computer
+  - internet
+  - security
+  - lang_de
 title: NAT ist kein Sicherheitsfeature
 aliases:
   - /2010/11/28/nat-ist-kein-sicherheitsfeature.html

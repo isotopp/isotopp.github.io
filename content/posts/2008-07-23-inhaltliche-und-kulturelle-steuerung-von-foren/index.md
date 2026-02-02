@@ -3,10 +3,10 @@ author: isotopp
 date: "2008-07-23T13:47:35Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- community
-- publication
-- usenet
-- lang_en
+  - community
+  - publication
+  - usenet
+  - lang_en
 title: "Inhaltliche und kulturelle Steuerung von Foren"
 aliases:
   - /2008/07/23/inhaltliche-und-kulturelle-steuerung-von-foren.html

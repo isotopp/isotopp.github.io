@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-09-27T18:52:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 title: 'MySQL: Our MySQL in 2010, a hiring interview question'
 aliases:
   - /2021/09/27/mysql-booking-2010-a-hiring-interview-question.html

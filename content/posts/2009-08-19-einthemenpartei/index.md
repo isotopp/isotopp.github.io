@@ -3,13 +3,13 @@ author: isotopp
 date: "2009-08-19T19:28:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- free software
-- internet
-- media
-- piraten
-- politik
-- lang_de
+  - copyright
+  - free software
+  - internet
+  - media
+  - piraten
+  - politik
+  - lang_de
 title: Einthemenpartei
 aliases:
   - /2009/08/19/einthemenpartei.html

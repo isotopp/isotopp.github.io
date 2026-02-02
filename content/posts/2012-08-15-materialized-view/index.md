@@ -3,9 +3,9 @@ author: isotopp
 date: "2012-08-15T03:45:04Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- architektur
-- lang_de
+  - mysql
+  - architektur
+  - lang_de
 title: Materialized View
 aliases:
   - /2012/08/15/materialized-view.html

@@ -4,8 +4,8 @@ date: "2018-03-04T18:30:22Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- erklaerbaer
-- blockchain
+  - erklaerbaer
+  - blockchain
 title: Hashes in Structures
 aliases:
   - /2018/03/04/hashes-in-structures.html

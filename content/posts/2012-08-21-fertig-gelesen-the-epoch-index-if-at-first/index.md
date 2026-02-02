@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-08-21T07:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: The Epoch Index und If at first...'
 aliases:
   - /2012/08/21/fertig-gelesen-the-epoch-index-if-at-first.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2003-09-08T16:00:34Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- media
-- review
-- lang_de
+  - book
+  - media
+  - review
+  - lang_de
 title: 'Fertig gelesen: Dead until dark'
 aliases:
   - /2003/09/08/fertig-gelesen-dead-until-dark.html

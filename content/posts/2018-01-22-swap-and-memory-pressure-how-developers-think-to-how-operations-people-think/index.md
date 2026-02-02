@@ -4,9 +4,9 @@ date: "2018-01-22T10:41:59Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- data center
-- container
-- lang_en
+  - data center
+  - container
+  - lang_en
 title: 'Swap and Memory Pressure: How Developers think to how Operations people think'
 aliases:
   - /2018/01/22/swap-and-memory-pressure-how-developers-think-to-how-operations-people-think.html

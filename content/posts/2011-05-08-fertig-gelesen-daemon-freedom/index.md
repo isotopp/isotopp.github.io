@@ -3,12 +3,12 @@ author: isotopp
 date: "2011-05-08T09:06:31Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- politik
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - politik
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: Daemon, Freedom™'
 aliases:
   - /2011/05/08/fertig-gelesen-daemon-freedom.html

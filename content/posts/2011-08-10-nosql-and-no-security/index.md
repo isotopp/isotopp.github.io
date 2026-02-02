@@ -3,9 +3,9 @@ author: isotopp
 date: "2011-08-10T19:30:40Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- database
-- security
-- lang_de
+  - database
+  - security
+  - lang_de
 title: 'NoSQL and No Security '
 aliases:
   - /2011/08/10/nosql-and-no-security.html

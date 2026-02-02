@@ -4,10 +4,10 @@ date: "2017-08-23T21:58:52Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- erklaerbaer
-- community
-- usenet
-- lang_en
+  - erklaerbaer
+  - community
+  - usenet
+  - lang_en
 title: Community Management?
 aliases:
   - /2017/08/23/community-management.html

@@ -4,9 +4,9 @@ date: "2017-03-13T21:56:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- fluffy fluff
-- science
-- lang_en
+  - fluffy fluff
+  - science
+  - lang_en
 title: That's no moon!
 aliases:
   - /2017/03/13/thats-no-moon.html

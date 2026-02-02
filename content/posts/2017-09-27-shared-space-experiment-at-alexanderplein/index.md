@@ -4,9 +4,9 @@ date: "2017-09-27T16:44:46Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- netherlands
-- mobility
-- lang_en
+  - netherlands
+  - mobility
+  - lang_en
 title: Shared Space Experiment at Alexanderplein
 aliases:
   - /2017/09/27/shared-space-experiment-at-alexanderplein.html

@@ -4,10 +4,10 @@ date: "2017-11-09T16:26:42Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- lang_en
+  - review
+  - media
+  - book
+  - lang_en
 title: 'Fertig gelesen: How to Make a Zombie'
 aliases:
   - /2017/11/09/fertig-gelesen-how-to-make-a-zombie.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-02-28T19:13:15Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Caliban''s War'
 aliases:
   - /2016/02/28/fertig-gelesen-calibans-war.html

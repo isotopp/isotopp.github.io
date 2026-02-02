@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-01-12T17:07:50Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- data center
-- bildung
+  - lang_de
+  - data center
+  - bildung
 title: 940.000 User in Baden-Württemberg
 aliases:
   - /2021/01/12/600000-user-in-baden-wurttemberg.html

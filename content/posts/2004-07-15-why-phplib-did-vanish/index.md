@@ -3,9 +3,9 @@ author: isotopp
 date: "2004-07-15T13:05:44Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- php
-- damals
-- lang_de
+  - php
+  - damals
+  - lang_de
 title: Why PHPLIB did vanish
 aliases:
   - /2004/07/15/why-phplib-did-vanish.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2019-06-13T14:37:35Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- storage
-- computer
+  - lang_en
+  - storage
+  - computer
 title: Adventures in Storageland
 aliases:
   - /2019/06/13/adventures-in-storageland.html

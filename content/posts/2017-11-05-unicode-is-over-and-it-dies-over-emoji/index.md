@@ -4,8 +4,8 @@ date: "2017-11-05T09:24:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- lang_en
+  - computer
+  - lang_en
 title: Unicode is over and it dies over Emoji
 aliases:
   - /2017/11/05/unicode-is-over-and-it-dies-over-emoji.html

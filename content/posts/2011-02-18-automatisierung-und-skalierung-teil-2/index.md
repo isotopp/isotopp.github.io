@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-02-18T20:47:49Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- architektur
-- mysql
-- work
-- lang_de
+  - architektur
+  - mysql
+  - work
+  - lang_de
 title: Automatisierung und Skalierung - Teil 2
 aliases:
   - /2011/02/18/automatisierung-und-skalierung-teil-2.html

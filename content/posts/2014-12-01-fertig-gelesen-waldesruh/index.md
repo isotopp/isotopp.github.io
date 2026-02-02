@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-12-01T20:33:10Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- steampunk
+  - lang_de
+  - book
+  - media
+  - review
+  - steampunk
 title: 'Fertig gelesen: Waldesruh'
 aliases:
   - /2014/12/01/fertig-gelesen-waldesruh.html

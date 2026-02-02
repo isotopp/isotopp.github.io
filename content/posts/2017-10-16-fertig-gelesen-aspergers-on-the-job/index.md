@@ -4,10 +4,10 @@ date: "2017-10-16T13:08:01Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- lang_en
+  - review
+  - media
+  - book
+  - lang_en
 title: 'Fertig gelesen: Asperger''s on the Job'
 aliases:
   - /2017/10/16/fertig-gelesen-aspergers-on-the-job.html

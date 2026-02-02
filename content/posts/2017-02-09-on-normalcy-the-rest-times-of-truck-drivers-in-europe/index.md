@@ -4,8 +4,8 @@ date: "2017-02-09T14:11:50Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- lang_en
+  - mobility
+  - lang_en
 title: 'On Normalcy: The rest times of truck drivers in Europe'
 aliases:
   - /2017/02/09/on-normalcy-the-rest-times-of-truck-drivers-in-europe.html

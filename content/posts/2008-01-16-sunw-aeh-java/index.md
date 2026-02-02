@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-01-16T15:35:41Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- sun
-- lang_de
+  - mysql
+  - sun
+  - lang_de
 title: SUNW, äh, JAVA
 aliases:
   - /2008/01/16/sunw-aeh-java.html

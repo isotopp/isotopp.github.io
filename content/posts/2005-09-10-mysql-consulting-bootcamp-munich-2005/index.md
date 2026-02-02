@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-09-10T17:46:54Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- image
-- mysql
-- work
-- lang_de
+  - image
+  - mysql
+  - work
+  - lang_de
 title: MySQL Consulting Bootcamp Munich 2005
 aliases:
   - /2005/09/10/mysql-consulting-bootcamp-munich-2005.html

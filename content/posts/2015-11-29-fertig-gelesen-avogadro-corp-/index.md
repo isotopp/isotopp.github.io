@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-11-29T14:29:06Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Avogadro Corp'
 aliases:
   - /2015/11/29/fertig-gelesen-avogadro-corp-.html

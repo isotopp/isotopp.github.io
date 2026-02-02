@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-11-05T06:41:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- nosql
-- database
-- development
-- lang_de
+  - mysql
+  - nosql
+  - database
+  - development
+  - lang_de
 title: Ein paar Gedanken zum Thema NoSQL
 aliases:
   - /2010/11/05/ein-paar-gedanken-zum-thema-nosql.html

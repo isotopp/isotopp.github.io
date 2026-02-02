@@ -4,9 +4,9 @@ date: "2017-08-07T19:34:37Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- work
-- lang_en
-- remote first
+  - work
+  - lang_en
+  - remote first
 title: The company as a social engine
 aliases:
   - /2017/08/07/the-company-as-a-social-engine.html

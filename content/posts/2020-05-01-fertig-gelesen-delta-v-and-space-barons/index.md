@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-05-01T09:01:07Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- book
-- review
-- media
+  - lang_en
+  - book
+  - review
+  - media
 title: 'Fertig gelesen: Delta-V and Space Barons'
 aliases:
   - /2020/05/01/fertig-gelesen-delta-v-and-space-barons.html

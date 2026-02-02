@@ -3,9 +3,9 @@ author: isotopp
 date: "2005-09-10T17:46:54Z"
 feature-img: assets/img/background/mysql.jpg 
 tags:
-- mysql
-- mysqldev
-- lang_en
+  - mysql
+  - mysqldev
+  - lang_en
 title: Nermalisation
 aliases:
   - /2005/09/11/nermalisation.html

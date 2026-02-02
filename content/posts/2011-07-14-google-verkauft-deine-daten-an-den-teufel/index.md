@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-07-14T08:27:41Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- google
-- internet
-- advertising
-- lang_de
+  - google
+  - internet
+  - advertising
+  - lang_de
 title: Google verkauft Deine Daten an den Teufel!
 aliases:
   - /2011/07/14/google-verkauft-deine-daten-an-den-teufel.html

@@ -5,9 +5,9 @@ date: "2023-09-18T02:03:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_de
-- erklaerbaer
-- technik
+  - lang_de
+  - erklaerbaer
+  - technik
 aliases:
   - /2023/09/18/flugtaxi.html
 ---

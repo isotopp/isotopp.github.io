@@ -4,10 +4,10 @@ date: "2002-02-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Enterprise Mail: große Mailsysteme, kleine Schmerzen"
 tags:
-- lang_de
-- talk
-- publication
-- internet
+  - lang_de
+  - talk
+  - publication
+  - internet
 aliases:
   - /2002/02/01/enterprise-mail.html
 ---

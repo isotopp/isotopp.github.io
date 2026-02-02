@@ -3,11 +3,11 @@ author: isotopp
 date: "2018-09-25T19:14:05Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- book
-- media
-- review
-- scifi
+  - lang_en
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Murderbot Diaries'
 aliases:
   - /2018/09/25/fertig-gelesen-murderbot-diaries.html

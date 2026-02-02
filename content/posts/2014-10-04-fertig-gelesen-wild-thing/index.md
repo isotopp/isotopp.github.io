@@ -3,10 +3,10 @@ author: isotopp
 date: "2014-10-04T18:53:32Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Wild Thing'
 aliases:
   - /2014/10/04/fertig-gelesen-wild-thing.html

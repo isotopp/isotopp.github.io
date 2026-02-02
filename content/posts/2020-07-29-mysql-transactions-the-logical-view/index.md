@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-07-29T20:40:09Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- database
-- innodb
-- mysqldev
+  - lang_en
+  - mysql
+  - database
+  - innodb
+  - mysqldev
 title: MySQL Transactions - the logical side
 aliases:
   - /2020/07/29/mysql-transactions-the-logical-view.html

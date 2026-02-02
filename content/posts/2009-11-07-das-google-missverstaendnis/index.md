@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-11-07T16:30:16Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- google
-- internet
-- technik
-- lang_de
+  - google
+  - internet
+  - technik
+  - lang_de
 title: Das Google-Mißverständnis
 aliases:
   - /2009/11/07/das-google-missverstaendnis.html

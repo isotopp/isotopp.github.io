@@ -3,11 +3,11 @@ author: isotopp
 date: "2021-07-28T09:48:30Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- review
-- media
-- book
-- scifi
+  - lang_en
+  - review
+  - media
+  - book
+  - scifi
 title: 'Fertig gelesen: The Merchant Princes Omnibus'
 aliases:
   - /2021/07/28/fertig-gelesen-the-merchant-princes-omnibus.html

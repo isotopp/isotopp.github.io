@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-02-19T12:19:25Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- jugendschutz
-- politik
-- zensur
-- lang_de
+  - internet
+  - jugendschutz
+  - politik
+  - zensur
+  - lang_de
 title: Die Netzsperren schlagen zurück
 aliases:
   - /2010/02/19/die-netzsperren-schlagen-zur-ck.html

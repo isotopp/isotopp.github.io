@@ -3,10 +3,10 @@ author: isotopp
 date: "2014-08-11T20:00:10Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: "Sex and the citadel"'
 aliases:
   - /2014/08/11/fertig-gelesen-sex-and-the-citadel.html

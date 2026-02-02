@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-10-21T18:30:26Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- wikipedia
-- lang_de
+  - internet
+  - wikipedia
+  - lang_de
 title: Unter Wikipedianern
 aliases:
   - /2009/10/21/unter-wikipedianern.html

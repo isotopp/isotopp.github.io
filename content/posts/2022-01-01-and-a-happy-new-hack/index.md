@@ -4,10 +4,10 @@ title: "... and a happy new hack."
 date: 2022-01-01T16:28:00+01:00
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- gaming
-- microsoft
-- minecraft
+  - lang_de
+  - gaming
+  - microsoft
+  - minecraft
 aliases:
   - /2022/01/01/and-a-happy-new-hack.html
 ---

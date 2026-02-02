@@ -5,10 +5,10 @@ feature-img: assets/img/background/schloss.jpg
 title: "Schlangenöl"
 toc: true
 tags:
-- erklaerbaer
-- computer
-- security
-- lang_de
+  - erklaerbaer
+  - computer
+  - security
+  - lang_de
 aliases:
   - /2024/02/09/schlangenoel.html
 ---

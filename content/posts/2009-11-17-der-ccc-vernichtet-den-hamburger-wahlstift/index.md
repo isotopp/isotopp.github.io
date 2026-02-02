@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-11-17T08:46:34Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- politik
-- wahl
-- lang_de
+  - politik
+  - wahl
+  - lang_de
 title: Der CCC vernichtet den Hamburger Wahlstift
 aliases:
   - /2009/11/17/der-ccc-vernichtet-den-hamburger-wahlstift.html

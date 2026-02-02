@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-02-07T22:25:22Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- free software
-- lizenz
-- politik
-- lang_de
+  - free software
+  - lizenz
+  - politik
+  - lang_de
 title: "Von der GPL"
 aliases:
   - /2005/02/07/von-der-gpl.html

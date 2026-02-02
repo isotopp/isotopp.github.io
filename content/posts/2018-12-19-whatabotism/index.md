@@ -4,10 +4,10 @@ date: "2018-12-19T17:06:42Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Whatabotism"
 tags:
-- lang_de
-- computer
-- security
-- hack
+  - lang_de
+  - computer
+  - security
+  - hack
 aliases:
   - /2018/12/19/whatabotism.html
 ---

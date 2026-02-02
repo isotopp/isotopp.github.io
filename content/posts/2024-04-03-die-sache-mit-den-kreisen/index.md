@@ -5,10 +5,10 @@ date: "2024-04-03T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_de
-- computer
-- schnuppel
-- python
+  - lang_de
+  - computer
+  - schnuppel
+  - python
 aliases:
   - /2024/04/03/die-sache-mit-den-kreisen.html
 ---

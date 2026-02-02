@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-08-11T14:48:26Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- identity
-- security
-- lang_de
+  - identity
+  - security
+  - lang_de
 title: Sicherheit von Chipkarten
 aliases:
   - /2008/08/11/sicherheit-von-chipkarten.html

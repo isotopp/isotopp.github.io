@@ -3,10 +3,10 @@ author: isotopp
 date: "2007-08-11T21:06:08Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- mysql
-- performance
-- lang_de
+  - database
+  - mysql
+  - performance
+  - lang_de
 title: Zehn Zentimeter
 aliases:
   - /2007/08/11/zehn-zentimeter.html

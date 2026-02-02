@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-06-03T14:54:32Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- kryptographie
-- talk
-- publication
-- security
-- lang_de
+  - kryptographie
+  - talk
+  - publication
+  - security
+  - lang_de
 title: Einige kryptographische Grundlagen
 aliases:
   - /2011/06/03/einige-kryptographische-grundlagen.html

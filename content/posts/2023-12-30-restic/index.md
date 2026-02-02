@@ -5,9 +5,9 @@ date: "2023-12-30T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_de
-- linux
-- devops
+  - lang_de
+  - linux
+  - devops
 aliases:
   - /2023/12/30/restic.html
 ---

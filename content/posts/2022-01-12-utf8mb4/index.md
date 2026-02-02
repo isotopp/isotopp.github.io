@@ -4,9 +4,9 @@ title: "UTF8MB4"
 date: 2022-01-10T16:28:00+01:00
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 aliases:
   - /2022/01/12/utf8mb4.html
 ---

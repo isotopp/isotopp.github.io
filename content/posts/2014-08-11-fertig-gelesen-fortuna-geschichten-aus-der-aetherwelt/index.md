@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-08-11T19:41:56Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- steampunk
+  - lang_de
+  - book
+  - media
+  - review
+  - steampunk
 title: 'Fertig gelesen: "Fortuna: Geschichten aus der Aetherwelt"'
 aliases:
   - /2014/08/11/fertig-gelesen-fortuna-geschichten-aus-der-aetherwelt.html

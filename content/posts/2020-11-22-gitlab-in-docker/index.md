@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-11-22T20:33:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- devops
-- docker
-- git
-- development
+  - lang_en
+  - devops
+  - docker
+  - git
+  - development
 title: Gitlab in Docker
 aliases:
   - /2020/11/22/gitlab-in-docker.html

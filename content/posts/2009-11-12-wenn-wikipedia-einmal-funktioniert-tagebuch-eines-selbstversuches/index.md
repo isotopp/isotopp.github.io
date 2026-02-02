@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-11-12T11:35:27Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- wikipedia
-- lang_de
+  - internet
+  - wikipedia
+  - lang_de
 title: Wenn Wikipedia einmal funktioniert... Tagebuch eines Selbstversuches
 aliases:
   - /2009/11/12/wenn-wikipedia-einmal-funktioniert-tagebuch-eines-selbstversuches.html

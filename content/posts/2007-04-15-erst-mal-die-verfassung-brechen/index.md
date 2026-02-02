@@ -3,10 +3,10 @@ author: isotopp
 date: "2007-04-15T05:12:31Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- politik
-- security
-- überwachung
-- lang_de
+  - politik
+  - security
+  - überwachung
+  - lang_de
 title: Erst mal die Verfassung brechen...
 aliases:
   - /2007/04/15/erst-mal-die-verfassung-brechen.html

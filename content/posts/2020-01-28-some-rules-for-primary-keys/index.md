@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-01-28T19:26:35Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- schemas
-- database
+  - lang_en
+  - mysql
+  - schemas
+  - database
 title: Some rules for primary keys
 aliases:
   - /2020/01/28/some-rules-for-primary-keys.html

@@ -5,9 +5,9 @@ date: "2023-09-20T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_de
-- gaming
-- elite-dangerous
+  - lang_de
+  - gaming
+  - elite-dangerous
 aliases:
   - /2023/09/20/elite.html
 ---

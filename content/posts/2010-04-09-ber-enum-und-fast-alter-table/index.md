@@ -3,8 +3,8 @@ author: isotopp
 date: "2010-04-09T12:57:01Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- lang_de
+  - mysql
+  - lang_de
 title: Über ENUM (und Fast Alter Table)
 aliases:
   - /2010/04/09/ber-enum-und-fast-alter-table.html

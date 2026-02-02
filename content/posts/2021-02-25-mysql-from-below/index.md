@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-02-25T22:02:20Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- database
+  - lang_en
+  - mysql
+  - database
 title: MySQL from Below
 aliases:
   - /2021/02/25/mysql-from-below.html

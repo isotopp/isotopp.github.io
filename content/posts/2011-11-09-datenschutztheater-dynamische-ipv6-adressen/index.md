@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-11-09T13:18:38Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- ipv6
-- politik
-- privacy
-- spackeria
-- lang_de
+  - ipv6
+  - politik
+  - privacy
+  - spackeria
+  - lang_de
 title: 'Datenschutztheater: dynamische IPv6 Adressen'
 aliases:
   - /2011/11/09/datenschutztheater-dynamische-ipv6-adressen.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "1998-11-19T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- publication
-- detebe
-- inkomploehntopp
+  - publication
+  - detebe
+  - inkomploehntopp
 title: "Interstellare Gesellschaft für Revolutionäre Informatik"
 aliases:
   - /1988/11/19/interstellare-gesellschaft-fuer-revolutionaere-informatik.html

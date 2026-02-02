@@ -4,9 +4,9 @@ date: "2024-09-28T04:05:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_de
-- web
-- hugo
+  - lang_de
+  - web
+  - hugo
 title: "Details in Hugo"
 aliases:
   - /2024/09/28/details-in-hugo.html

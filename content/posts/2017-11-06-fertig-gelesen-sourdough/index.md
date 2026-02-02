@@ -4,10 +4,10 @@ date: "2017-11-06T15:25:49Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- lang_en
+  - review
+  - media
+  - book
+  - lang_en
 title: 'Fertig gelesen: Sourdough'
 aliases:
   - /2017/11/06/fertig-gelesen-sourdough.html

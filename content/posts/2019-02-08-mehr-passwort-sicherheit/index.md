@@ -4,9 +4,9 @@ title: "Mehr Paßwort-Sicherheit"
 date: "2019-02-08T10:14:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- pluspora_import
-- security
-- lang_de
+  - pluspora_import
+  - security
+  - lang_de
 aliases:
   - /2019/02/08/mehr-passwort-sicherheit.html
 ---

@@ -3,12 +3,12 @@ author: isotopp
 date: "2020-07-27T11:15:58Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysqldev
-- mysql
-- database
-- innodb
-- erklaerbaer
+  - lang_en
+  - mysqldev
+  - mysql
+  - database
+  - innodb
+  - erklaerbaer
 title: MySQL Transactions - the physical side
 aliases:
   - /2020/07/27/mysql-transactions.html

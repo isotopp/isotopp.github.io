@@ -4,8 +4,8 @@ date: "2017-09-11T19:49:05Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- work
-- lang_en
+  - work
+  - lang_en
 title: Where do you see yourself in five years?
 aliases:
   - /2017/09/11/where-do-you-see-yourself-in-five-years.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2007-07-28T18:38:38Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- hardware
-- mysql
-- work
-- lang_de
+  - hardware
+  - mysql
+  - work
+  - lang_de
 title: Hardware für ein MySQL
 aliases:
   - /2007/07/28/hardware-f-r-ein-mysql.html

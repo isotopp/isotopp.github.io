@@ -4,9 +4,9 @@ date: "2017-07-07T15:45:01Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- erklaerbaer
-- lang_en
+  - computer
+  - erklaerbaer
+  - lang_en
 title: New Technology vs Planned Obsolescence
 aliases:
   - /2017/07/07/new-technology-vs-planned-obsolescence.html

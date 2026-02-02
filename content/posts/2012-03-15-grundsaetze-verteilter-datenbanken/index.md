@@ -4,12 +4,12 @@ date: "2012-03-15T08:59:42Z"
 feature-img: assets/img/background/mysql.jpg
 title: Grundsätze verteilter Datenbanken
 tags:
-- cluster
-- database
-- erklaerbaer
-- distributed computing
-- mysql
-- lang_de
+  - cluster
+  - database
+  - erklaerbaer
+  - distributed computing
+  - mysql
+  - lang_de
 aliases:
   - /2012/03/15/grundsaetze-verteilter-datenbanken.html
 ---

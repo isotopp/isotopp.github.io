@@ -5,10 +5,10 @@ date: "2022-07-30T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "MacOS: How to prevent screen blanker"
 tags:
-- lang_en
-- apple
-- macos
-- python
+  - lang_en
+  - apple
+  - macos
+  - python
 aliases:
   - /2022/07/30/macos-how-to-prevent-screen-blanker.html
 ---

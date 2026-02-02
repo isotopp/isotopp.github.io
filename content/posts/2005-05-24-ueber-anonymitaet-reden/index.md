@@ -3,9 +3,9 @@ author: isotopp
 date: "2005-05-24T02:15:00Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- identity
-- security
-- lang_de
+  - identity
+  - security
+  - lang_de
 title: Über Anonymität reden
 aliases:
   - /2005/05/24/ueber-anonymitaet-reden.html

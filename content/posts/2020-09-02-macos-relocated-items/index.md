@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-09-02T16:58:53Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- apple
-- macos
+  - lang_en
+  - apple
+  - macos
 title: 'MacOS: Deleting Relocated Items'
 aliases:
   - /2020/09/02/macos-relocated-items.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-06-15T10:37:23Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- devops
-- erklaerbaer
+  - lang_en
+  - devops
+  - erklaerbaer
 title: Pizza, People, Projects and Processes
 aliases:
   - /2020/06/15/pizza-people-projects-and-processes.html

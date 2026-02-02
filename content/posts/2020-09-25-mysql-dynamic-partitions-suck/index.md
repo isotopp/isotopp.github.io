@@ -3,12 +3,12 @@ author: isotopp
 date: "2020-09-25T12:02:24Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- database
-- innodb
-- erklaerbaer
-- mysqldev
+  - lang_en
+  - mysql
+  - database
+  - innodb
+  - erklaerbaer
+  - mysqldev
 title: 'MySQL: automatic partitions surely would be nice'
 aliases:
   - /2020/09/25/mysql-dynamic-partitions-suck.html

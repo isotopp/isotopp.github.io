@@ -3,12 +3,12 @@ author: isotopp
 date: "2020-09-18T17:39:10Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- database
-- innodb
-- erklaerbaer
-- mysqldev
+  - lang_en
+  - mysql
+  - database
+  - innodb
+  - erklaerbaer
+  - mysqldev
 title: 'MySQL: Encoding fields for great profit.'
 aliases:
   - /2020/09/18/mysql-encoding-fields-for-great-profit.html

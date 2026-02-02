@@ -4,9 +4,9 @@ date: "2024-09-29T04:05:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_de
-- ai
-- copyright
+  - lang_de
+  - ai
+  - copyright
 title: "Werk und AI"
 aliases:
   - /2024/09/29/werk-und-ai.html

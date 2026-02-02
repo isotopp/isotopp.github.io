@@ -4,9 +4,9 @@ date: "2017-04-13T10:05:43Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- security
-- container
-- lang_en
+  - security
+  - container
+  - lang_en
 title: Curlbash, and Desktop Containers
 aliases:
   - /2017/04/13/curlbash-and-desktop-containers.html

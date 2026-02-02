@@ -4,10 +4,10 @@ date: "2017-07-27T08:03:18Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: War Factory'
 aliases:
   - /2017/07/27/fertig-gelesen-war-factory.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-03-12T19:44:10Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- computer
-- monitoring
-- mysql
-- lang_de
+  - computer
+  - monitoring
+  - mysql
+  - lang_de
 title: Wie man einen Graph plottet
 aliases:
   - /2012/03/12/wie-man-einen-graph-plottet.html

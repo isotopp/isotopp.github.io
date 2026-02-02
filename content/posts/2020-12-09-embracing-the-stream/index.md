@@ -3,8 +3,8 @@ author: isotopp
 date: "2020-12-09T15:12:22Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- devops
+  - lang_en
+  - devops
 title: Embracing the Stream
 aliases:
   - /2020/12/09/embracing-the-stream.html

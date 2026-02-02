@@ -4,9 +4,9 @@ date: "2017-03-09T14:59:32Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- copyright
-- lang_en
+  - computer
+  - copyright
+  - lang_en
 title: github updates its TOS, and they are not trying to cheat
 aliases:
   - /2017/03/09/github-updates-its-tos-and-they-are-not-trying-to-cheat.html

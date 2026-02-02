@@ -4,8 +4,8 @@ date: "2017-03-10T15:44:15Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- fluffy fluff
-- lang_en
+  - fluffy fluff
+  - lang_en
 title: 'IRC so: 110 Freedom Volts'
 aliases:
   - /2017/03/10/irc-so-110-freedom-volts.html

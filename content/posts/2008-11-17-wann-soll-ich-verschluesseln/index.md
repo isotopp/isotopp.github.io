@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-11-17T09:36:07Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- kryptographie
-- security
-- lang_de
+  - kryptographie
+  - security
+  - lang_de
 title: Wann soll ich verschlüsseln?
 aliases:
   - /2008/11/17/wann-soll-ich-verschluesseln.html

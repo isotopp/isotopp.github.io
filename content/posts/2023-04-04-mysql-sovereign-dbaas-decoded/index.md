@@ -4,9 +4,9 @@ title: "MySQL: SeveralNines Podcast with Kris"
 date: "2023-04-04T12:13:14Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- database
+  - lang_en
+  - mysql
+  - database
 aliases:
   - /2023/04/04/mysql-sovereign-dbaas-decoded.html
 ---

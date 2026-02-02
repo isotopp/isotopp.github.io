@@ -4,8 +4,8 @@ date: "2017-08-08T10:35:30Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- science
-- lang_en
+  - science
+  - lang_en
 title: The Story of CO2 (and other Greenhouse Gas Emissions)
 aliases:
   - /2017/08/08/the-story-of-co2-and-other-greenhouse-gas-emissions.html

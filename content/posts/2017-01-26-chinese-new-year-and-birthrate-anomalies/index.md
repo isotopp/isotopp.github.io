@@ -4,9 +4,9 @@ date: "2017-01-26T13:17:16Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- fluffy fluff
-- science
-- lang_en
+  - fluffy fluff
+  - science
+  - lang_en
 title: Chinese New Year, and birthrate anomalies
 aliases:
   - /2017/01/26/chinese-new-year-and-birthrate-anomalies.html

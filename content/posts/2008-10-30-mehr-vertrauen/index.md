@@ -3,11 +3,11 @@ author: isotopp
 date: "2008-10-30T15:49:15Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- politik
-- security
-- terror
-- überwachung
-- lang_de
+  - politik
+  - security
+  - terror
+  - überwachung
+  - lang_de
 title: Mehr Vertrauen...
 aliases:
   - /2008/10/30/mehr-vertrauen.html

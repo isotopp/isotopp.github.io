@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-02-23T14:47:09Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- damals
-- internet
-- mail
-- usenet
-- lang_de
+  - damals
+  - internet
+  - mail
+  - usenet
+  - lang_de
 title: Opa erzählt vom Krieg
 aliases:
   - /2012/02/23/opa-erz-hlt-vom-krieg.html

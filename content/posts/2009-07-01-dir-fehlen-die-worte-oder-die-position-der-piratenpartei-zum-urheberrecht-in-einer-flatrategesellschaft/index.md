@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-07-01T22:05:08Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- media
-- piraten
-- lang_de
+  - copyright
+  - media
+  - piraten
+  - lang_de
 title: '"Dir fehlen die Worte" oder "Die Position der Piratenpartei zum Urheberrecht in einer Flatrategesellschaft"'
 aliases:
   - /2009/07/01/dir-fehlen-die-worte-oder-die-position-der-piratenpartei-zum-urheberrecht-in-einer-flatrategesellschaft.html

@@ -4,9 +4,9 @@ date: "2017-10-13T12:36:42Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- advertising
-- copyright
-- lang_en
+  - advertising
+  - copyright
+  - lang_en
 title: So what is the state of the Ads mess?
 aliases:
   - /2017/10/13/so-what-is-the-state-of-the-ads-mess.html

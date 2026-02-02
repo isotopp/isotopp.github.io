@@ -4,11 +4,11 @@ date: "2009-08-06T09:10:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Jugendschutzfilter saugen und dafür gibt es einen Grund"
 tags:
-- internet
-- jugendschutz
-- politik
-- web
-- lang_de
+  - internet
+  - jugendschutz
+  - politik
+  - web
+  - lang_de
 aliases:
   - /2009/08/06/jugendschutzfilter-saugen-und-daf-r-gibt-es-einen-grund.html
 ---

@@ -4,10 +4,10 @@ title: "Change Data Capture"
 date: "2022-12-05T06:07:08Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
-- data warehouse
+  - lang_en
+  - mysql
+  - mysqldev
+  - data warehouse
 aliases:
   - /2022/12/05/change-data-capture.html
 ---

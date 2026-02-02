@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-11-01T18:41:28Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- erklaerbaer
-- unix
-- lang_de
+  - computer
+  - erklaerbaer
+  - unix
+  - lang_de
 title: User und Gruppen, Prozesse und Dateien
 aliases:
   - /2005/11/01/user-und-gruppen-prozesse-und-dateien.html

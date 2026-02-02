@@ -4,9 +4,9 @@ date: "2017-10-12T22:36:21Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- performance
-- computer
-- lang_en
+  - performance
+  - computer
+  - lang_en
 title: Latency Numbers, visualised and memorised
 aliases:
   - /2017/10/12/latency-numbers-visualised-and-memorised.html

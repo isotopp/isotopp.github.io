@@ -4,8 +4,8 @@ date: "2017-05-31T15:36:31Z"
 feature-img: assets/img/background/mysql.jpg
 status: publish
 tags:
-- mysql
-- lang_en
+  - mysql
+  - lang_en
 title: Good Riddance to the Query Cache
 aliases:
   - /2017/05/31/good-riddance-to-the-query-cache.html

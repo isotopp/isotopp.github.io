@@ -3,11 +3,11 @@ author: isotopp
 date: "2013-11-18T09:38:59Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: Republic of Thieves'
 aliases:
   - /2013/11/18/fertig-gelesen-republic-of-thieves.html

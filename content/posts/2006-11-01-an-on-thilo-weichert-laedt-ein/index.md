@@ -3,11 +3,11 @@ author: isotopp
 date: "2006-11-01T12:37:48Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- privacy
-- identity
-- politik
-- security
-- lang_de
+  - privacy
+  - identity
+  - politik
+  - security
+  - lang_de
 title: 'AN.ON: Thilo Weichert lädt ein'
 aliases:
   - /2006/11/01/an-on-thilo-weichert-laedt-ein.html

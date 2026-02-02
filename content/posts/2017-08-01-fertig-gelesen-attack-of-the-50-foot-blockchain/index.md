@@ -4,10 +4,10 @@ date: "2017-08-01T13:56:20Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- lang_en
+  - review
+  - media
+  - book
+  - lang_en
 title: 'Fertig gelesen: Attack of the 50 foot Blockchain'
 aliases:
   - /2017/08/01/fertig-gelesen-attack-of-the-50-foot-blockchain.html

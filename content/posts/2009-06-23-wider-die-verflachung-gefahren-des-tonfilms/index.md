@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-06-23T11:15:31Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- film
-- internet
-- media
-- lang_de
+  - film
+  - internet
+  - media
+  - lang_de
 title: Wider die Verflachung! Gefahren des Tonfilms
 aliases:
   - /2009/06/23/wider-die-verflachung-gefahren-des-tonfilms.html

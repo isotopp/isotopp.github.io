@@ -3,12 +3,12 @@ author: isotopp
 date: "2010-08-16T06:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- cthulhu
-- media
-- stross
-- lang_de
+  - book
+  - review
+  - cthulhu
+  - media
+  - stross
+  - lang_de
 title: 'Fertig gelesen: The Fuller Memorandum'
 aliases:
   - /2010/08/16/fertig-gelesen-the-fuller-memorandum.html

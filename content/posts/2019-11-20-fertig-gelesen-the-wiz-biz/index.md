@@ -3,10 +3,10 @@ author: isotopp
 date: "2019-11-20T20:56:12Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- media
-- review
-- lang_en
+  - book
+  - media
+  - review
+  - lang_en
 title: 'Fertig gelesen: The Wiz Biz'
 aliases:
   - /2019/11/20/fertig-gelesen-the-wiz-biz.html

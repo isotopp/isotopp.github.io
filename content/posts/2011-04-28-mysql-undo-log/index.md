@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-04-28T12:40:01Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- innodb
-- mysql
-- lang_de
+  - database
+  - innodb
+  - mysql
+  - lang_de
 title: MySQL Undo Log
 aliases:
   - /2011/04/28/mysql-undo-log.html

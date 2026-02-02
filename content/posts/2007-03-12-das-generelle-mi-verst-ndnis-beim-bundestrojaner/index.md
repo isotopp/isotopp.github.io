@@ -3,10 +3,10 @@ author: isotopp
 date: "2007-03-12T10:08:42Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- terror
-- überwachung
-- lang_de
+  - security
+  - terror
+  - überwachung
+  - lang_de
 title: Das generelle Mißverständnis beim Bundestrojaner
 aliases:
   - /2007/03/12/das-generelle-mi-verst-ndnis-beim-bundestrojaner.html

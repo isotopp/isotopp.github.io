@@ -5,10 +5,10 @@ date: "2024-05-31T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_de
-- computer
-- erklaerbaer
-- ai
+  - lang_de
+  - computer
+  - erklaerbaer
+  - ai
 aliases:
   - /2024/05/31/llms-daheim-mit-ollama.html
 ---

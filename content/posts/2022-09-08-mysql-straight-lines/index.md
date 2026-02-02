@@ -4,8 +4,8 @@ title: "MySQL: Straight lines"
 date: "2022-09-08T12:13:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
+  - lang_en
+  - mysql
 aliases:
   - /2022/09/08/mysql-straight-lines.html
 ---

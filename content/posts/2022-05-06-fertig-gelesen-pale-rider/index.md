@@ -4,10 +4,10 @@ date: "2022-05-06T07:47:06Z"
 feature-img: assets/img/background/book.jpg
 title: 'Fertig gelesen: Pale Rider'
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 aliases:
   - /2022/05/06/fertig-gelesen-pale-rider.html
 ---

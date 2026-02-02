@@ -4,9 +4,9 @@ date: "1996-03-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "rwx - sonst nix?"
 tags:
-- lang_de
-- publication
-- unix
+  - lang_de
+  - publication
+  - unix
 aliases:
   - /1996/03/01/rwx-sonst-nix.html
 ---

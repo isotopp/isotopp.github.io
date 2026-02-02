@@ -4,10 +4,10 @@ title: "Service Mesh"
 date: "2018-11-28T20:57:34Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- pluspora_import
-- lang_de
-- cloud
-- erklaerbaer
+  - pluspora_import
+  - lang_de
+  - cloud
+  - erklaerbaer
 aliases:
   - /2018/11/28/service-mesh.html
 ---

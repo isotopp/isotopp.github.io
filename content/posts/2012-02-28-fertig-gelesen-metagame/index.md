@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-02-28T08:58:58Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: Metagame'
 aliases:
   - /2012/02/28/fertig-gelesen-metagame.html

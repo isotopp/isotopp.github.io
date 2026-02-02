@@ -4,9 +4,9 @@ title: "Systemd and docker -H fd://"
 date: "2022-11-28T09:10:11Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- python
-- devops
+  - lang_en
+  - python
+  - devops
 aliases:
   - /2022/11/28/systemd-and-docker-fd.html
 ---

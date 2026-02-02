@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-07-13T17:59:36Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- lang_de
+  - security
+  - lang_de
 title: Appliances
 aliases:
   - /2004/07/13/appliances.html

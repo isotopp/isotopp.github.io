@@ -3,11 +3,11 @@ author: isotopp
 date: "2005-01-05T12:44:36Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- blog
-- free software
-- lizenz
-- media
-- lang_de
+  - blog
+  - free software
+  - lizenz
+  - media
+  - lang_de
 title: Ein paar ideologische Steine ins Rollen bringen
 aliases:
   - /2005/01/05/ein-paar-ideologische-steine-ins-rollen-bringen.html

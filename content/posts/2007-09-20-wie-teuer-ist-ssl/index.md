@@ -3,8 +3,8 @@ author: isotopp
 date: "2007-09-20T22:38:33Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- lang_de
+  - security
+  - lang_de
 title: Wie teuer ist SSL?
 aliases:
   - /2007/09/20/wie-teuer-ist-ssl.html

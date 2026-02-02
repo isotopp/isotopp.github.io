@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-02-07T14:12:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- free software
-- lizenz
-- politik
-- lang_de
+  - free software
+  - lizenz
+  - politik
+  - lang_de
 title: Qt4 wird vollständig GPL
 aliases:
   - /2005/02/07/qt4-wird-vollstaendig-gpl.html

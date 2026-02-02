@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-10-05T16:41:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- drsrm
-- roleplay
-- lang_de
+  - drsrm
+  - roleplay
+  - lang_de
 title: 'drsrm 2008: Primetime Adventures'
 aliases:
   - /2008/10/05/drsrm-2008-primetime-adventures.html

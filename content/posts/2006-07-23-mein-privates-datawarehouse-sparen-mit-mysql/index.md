@@ -3,9 +3,9 @@ author: isotopp
 date: "2006-07-23T11:50:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- erklaerbaer
-- mysql
-- lang_de
+  - erklaerbaer
+  - mysql
+  - lang_de
 title: Mein privates Datawarehouse - Sparen mit MySQL
 aliases:
   - /2006/07/23/mein-privates-datawarehouse-sparen-mit-mysql.html

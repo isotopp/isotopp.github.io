@@ -5,9 +5,9 @@ date: "2023-12-05T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- python
-- apple
+  - lang_en
+  - python
+  - apple
 aliases:
   - /2023/12/05/x86_64-binaries-on-m1.html
 ---

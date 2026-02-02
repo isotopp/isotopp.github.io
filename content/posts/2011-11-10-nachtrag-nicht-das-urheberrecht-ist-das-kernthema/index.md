@@ -3,12 +3,12 @@ author: isotopp
 date: "2011-11-10T18:15:32Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- kultur
-- media
-- piraten
-- politik
-- lang_de
+  - copyright
+  - kultur
+  - media
+  - piraten
+  - politik
+  - lang_de
 title: 'Nachtrag: Nicht das Urheberrecht ist das Kernthema'
 aliases:
   - /2011/11/10/nachtrag-nicht-das-urheberrecht-ist-das-kernthema.html

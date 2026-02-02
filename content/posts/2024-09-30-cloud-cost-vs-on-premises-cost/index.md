@@ -4,9 +4,9 @@ date: "2024-09-30T04:05:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_de
-- cloud
-- data center
+  - lang_de
+  - cloud
+  - data center
 title: "Cloud Cost vs. On-Premises Cost"
 aliases:
   - /2024/09/30/cloud-cost-vs-on-premises-cost.html

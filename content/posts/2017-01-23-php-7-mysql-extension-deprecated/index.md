@@ -4,8 +4,8 @@ date: "2017-01-23T15:13:12Z"
 feature-img: assets/img/background/mysql.jpg
 status: publish
 tags:
-- mysql
-- php
+  - mysql
+  - php
 title: 'PHP 7: mysql extension deprecated'
 aliases:
   - /2017/01/23/php-7-mysql-extension-deprecated.html

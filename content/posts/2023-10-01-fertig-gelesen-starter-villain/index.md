@@ -4,10 +4,10 @@ date: "2023-10-01T01:02:03Z"
 feature-img: assets/img/background/book.jpg
 title: 'Fertig gelesen: Starter Villain'
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 aliases:
   - /2023/10/01/fertig-gelesen-starter-villain.html
 ---

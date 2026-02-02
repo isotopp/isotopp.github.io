@@ -3,8 +3,8 @@ author: isotopp
 date: "2020-09-17T19:10:36Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- privacy
+  - lang_de
+  - privacy
 title: Mein selbstfahrendes Auto hat Kameras, oh nein!
 aliases:
   - /2020/09/17/mein-selbstfahrendes-auto-hat-kameras-oh-nein.html

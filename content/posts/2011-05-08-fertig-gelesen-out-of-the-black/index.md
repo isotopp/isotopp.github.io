@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-05-08T09:38:21Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: Out of the Black'
 aliases:
   - /2011/05/08/fertig-gelesen-out-of-the-black.html

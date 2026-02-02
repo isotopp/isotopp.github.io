@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-01-28T20:28:43Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- schnuppel
-- bildung
+  - lang_de
+  - schnuppel
+  - bildung
 title: Mein Sohn sitzt vor dem Computer
 aliases:
   - /2020/01/28/mein-sohn-sitzt-vor-dem-computer.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2019-11-11T16:23:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- computer
-- storage
-- database
+  - lang_en
+  - computer
+  - storage
+  - database
 title: Filling disk space fast
 aliases:
   - /2019/11/11/filling-disk-space-fast.html

@@ -4,8 +4,8 @@ date: "2024-10-14T04:05:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- image
+  - lang_en
+  - image
 title: "Immich"
 aliases:
   - /2024/10/14/immich.html

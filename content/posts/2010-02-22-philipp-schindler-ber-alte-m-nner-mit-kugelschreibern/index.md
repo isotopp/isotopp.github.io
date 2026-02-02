@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-02-22T17:23:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- google
-- internet
-- media
-- mobiltelefon
-- lang_de
+  - google
+  - internet
+  - media
+  - mobiltelefon
+  - lang_de
 title: Philipp Schindler über alte Männer mit Kugelschreibern
 aliases:
   - /2010/02/22/philipp-schindler-ber-alte-m-nner-mit-kugelschreibern.html

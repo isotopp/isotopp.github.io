@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-08-10T19:45:27Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- cookie
-- privacy
-- identity
-- security
-- lang_de
+  - cookie
+  - privacy
+  - identity
+  - security
+  - lang_de
 title: IVW jetzt "datenschutzkonform" (Updated)
 aliases:
   - /2011/08/10/ivw-jetzt-datenschutzkonform-updated.html

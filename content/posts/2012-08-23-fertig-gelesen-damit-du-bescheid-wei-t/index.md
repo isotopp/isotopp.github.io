@@ -3,12 +3,12 @@ author: isotopp
 date: "2012-08-23T07:36:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- politik
-- religion
-- lang_de
+  - book
+  - review
+  - media
+  - politik
+  - religion
+  - lang_de
 title: 'Fertig gelesen: Damit Du Bescheid weißt'
 aliases:
   - /2012/08/23/fertig-gelesen-damit-du-bescheid-wei-t.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2006-10-04T17:20:35Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- database
-- hardware
-- mysql
-- lang_de
+  - database
+  - hardware
+  - mysql
+  - lang_de
 title: Kris vs. 2xMSA 30
 aliases:
   - /2006/10/04/kris-vs-2xmsa-30.html

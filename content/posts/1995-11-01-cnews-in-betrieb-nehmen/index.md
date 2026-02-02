@@ -4,9 +4,9 @@ date: "1995-11-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Cnews in Betrieb nehmen"
 tags:
-- lang_de
-- publication
-- internet
+  - lang_de
+  - publication
+  - internet
 aliases:
   - /1995/11/01/cnews-in-betrieb-nehmen.html
 ---

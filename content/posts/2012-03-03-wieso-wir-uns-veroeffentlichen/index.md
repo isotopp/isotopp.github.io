@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-03-03T16:05:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- google
-- social networking
-- spackeria
-- privacy
-- lang_de
+  - google
+  - social networking
+  - spackeria
+  - privacy
+  - lang_de
 title: Wieso wir uns veröffentlichen
 aliases:
   - /2012/03/03/wieso-wir-uns-veroeffentlichen.html

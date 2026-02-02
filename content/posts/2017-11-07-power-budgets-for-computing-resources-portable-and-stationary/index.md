@@ -4,9 +4,9 @@ date: "2017-11-07T12:48:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- data center
-- computer
-- lang_en
+  - data center
+  - computer
+  - lang_en
 title: Power budgets for computing resources - portable and stationary
 aliases:
   - /2017/11/07/power-budgets-for-computing-resources-portable-and-stationary.html

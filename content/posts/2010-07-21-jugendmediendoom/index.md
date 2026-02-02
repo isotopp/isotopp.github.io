@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-07-21T14:55:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- jugendschutz
-- media
-- politik
-- lang_de
+  - jugendschutz
+  - media
+  - politik
+  - lang_de
 title: Jugendmediendoom
 aliases:
   - /2010/07/21/jugendmediendoom.html

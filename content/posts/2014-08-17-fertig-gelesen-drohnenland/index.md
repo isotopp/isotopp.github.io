@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-08-17T06:29:58Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Drohnenland'
 aliases:
   - /2014/08/17/fertig-gelesen-drohnenland.html

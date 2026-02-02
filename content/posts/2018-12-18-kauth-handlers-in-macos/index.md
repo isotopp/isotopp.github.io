@@ -4,11 +4,11 @@ author: isotopp
 date: "2018-12-18T09:06:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- pluspora_import
-- lang_de
-- security
-- macos
-- apple
+  - pluspora_import
+  - lang_de
+  - security
+  - macos
+  - apple
 aliases:
   - /2018/12/18/kauth-handlers-in-macos.html
 ---

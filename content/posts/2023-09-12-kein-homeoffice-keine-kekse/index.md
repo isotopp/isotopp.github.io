@@ -5,9 +5,9 @@ date: "2023-09-12T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_de
-- work
-- remote first
+  - lang_de
+  - work
+  - remote first
 aliases:
   - /2023/09/12/kein-homeoffice-keine-kekse.html
 ---

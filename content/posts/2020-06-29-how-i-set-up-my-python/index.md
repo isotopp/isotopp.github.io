@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-06-29T14:40:13Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- python
-- development
+  - lang_en
+  - python
+  - development
 title: How I set up my Python
 aliases:
   - /2020/06/29/how-i-set-up-my-python.html

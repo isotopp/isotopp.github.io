@@ -5,9 +5,9 @@ feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 title: "Nobody wants backup. Everybody wants restore."
 tags:
-- data center
-- lang_en
-- devops
+  - data center
+  - lang_en
+  - devops
 aliases:
   - /2017/02/01/nobody-wants-backup-everybody-wants-restore.html
 ---

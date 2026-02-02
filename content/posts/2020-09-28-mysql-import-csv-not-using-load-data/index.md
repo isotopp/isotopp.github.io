@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-09-28T18:00:34Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- database
-- erklaerbaer
-- mysqldev
+  - lang_en
+  - mysql
+  - database
+  - erklaerbaer
+  - mysqldev
 title: 'MySQL: Import CSV, not using LOAD DATA'
 aliases:
   - /2020/09/28/mysql-import-csv-not-using-load-data.html

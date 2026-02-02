@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-08-04T22:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- kiel
-- lang_de
+  - kiel
+  - lang_de
 title: Der unaufhaltsame Niedergang der Strandburg
 aliases:
   - /2004/08/04/der-unaufhaltsame-niedergang-der-strandburg.html

@@ -4,9 +4,9 @@ date: "2017-06-12T09:35:11Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- fluffy fluff
-- lang_en
+  - computer
+  - fluffy fluff
+  - lang_en
 title: 'Shit found on github: bork'
 aliases:
   - /2017/06/12/shit-found-on-github-bork.html

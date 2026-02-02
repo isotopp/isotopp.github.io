@@ -3,10 +3,10 @@ author: isotopp
 date: "2013-09-27T18:52:03Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Crazy Rich Asians'
 aliases:
   - /2013/09/27/fertig-gelesen-crazy-rich-asians-kevin-kwan.html

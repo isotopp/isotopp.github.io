@@ -4,10 +4,10 @@ date: "2017-11-08T15:29:24Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- lang_en
+  - review
+  - media
+  - book
+  - lang_en
 title: 'Fertig gelesen: The Collapsing Empire'
 aliases:
   - /2017/11/08/fertig-gelesen-the-collapsing-empire.html

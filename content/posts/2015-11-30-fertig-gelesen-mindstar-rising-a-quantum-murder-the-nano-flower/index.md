@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-11-30T19:59:10Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Mindstar Rising, A Quantum Murder, The Nano Flower'
 aliases:
   - /2015/11/30/fertig-gelesen-mindstar-rising-a-quantum-murder-the-nano-flower.html

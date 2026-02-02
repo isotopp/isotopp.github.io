@@ -3,9 +3,9 @@ author: isotopp
 date: "1995-08-28T18:13:42Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- detebe
-- inkomploehntopp
+  - lang_de
+  - detebe
+  - inkomploehntopp
 title: "Merkbefreiung"
 aliases:
   - /1995/08/28/merkbefreiung.html

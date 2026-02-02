@@ -4,9 +4,9 @@ date: "1999-04-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Das Recht auf Kryptographie ist das Recht auf digitale Selbstverteidigung"
 tags:
-- lang_de
-- publication
-- internet
+  - lang_de
+  - publication
+  - internet
 aliases:
   - /1997/04/01/das-recht-auf-digitale-selbstverteidigung.html
 ---

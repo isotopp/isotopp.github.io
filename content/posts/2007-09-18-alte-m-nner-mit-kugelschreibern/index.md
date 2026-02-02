@@ -3,10 +3,10 @@ author: isotopp
 date: "2007-09-18T04:52:15Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- politik
-- security
-- überwachung
-- lang_de
+  - politik
+  - security
+  - überwachung
+  - lang_de
 title: Alte Männer mit Kugelschreibern
 aliases:
   - /2007/09/18/alte-m-nner-mit-kugelschreibern.html

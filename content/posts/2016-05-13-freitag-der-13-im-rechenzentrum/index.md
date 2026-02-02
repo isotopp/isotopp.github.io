@@ -3,8 +3,8 @@ author: isotopp
 date: "2016-05-13T09:32:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- data center
+  - lang_de
+  - data center
 title: Freitag, der 13. im Rechenzentrum
 aliases:
   - /2016/05/13/freitag-der-13-im-rechenzentrum.html

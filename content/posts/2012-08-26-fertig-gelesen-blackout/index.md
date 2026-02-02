@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-08-26T07:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- lang_de
+  - book
+  - review
+  - media
+  - lang_de
 title: 'Fertig gelesen: Blackout'
 aliases:
   - /2012/08/26/fertig-gelesen-blackout.html

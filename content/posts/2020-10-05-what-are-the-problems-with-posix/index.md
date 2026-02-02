@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-10-05T17:13:30Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- erklaerbaer
-- filesystems
-- database
-- mysql
+  - lang_en
+  - erklaerbaer
+  - filesystems
+  - database
+  - mysql
 title: What are the problems with POSIX?
 aliases:
   - /2020/10/05/what-are-the-problems-with-posix.html

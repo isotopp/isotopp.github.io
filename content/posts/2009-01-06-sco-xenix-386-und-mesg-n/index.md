@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-01-06T13:06:47Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- hack
-- lang_de
+  - computer
+  - hack
+  - lang_de
 title: SCO Xenix 386 und mesg n
 aliases:
   - /2009/01/06/sco-xenix-386-und-mesg-n.html

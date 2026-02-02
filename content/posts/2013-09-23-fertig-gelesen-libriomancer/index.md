@@ -3,11 +3,11 @@ author: isotopp
 date: "2013-09-23T16:08:39Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: Libriomancer'
 aliases:
   - /2013/09/23/fertig-gelesen-libriomancer.html

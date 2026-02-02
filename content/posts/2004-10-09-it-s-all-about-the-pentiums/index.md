@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-10-09T08:47:13Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- lang_de
+  - computer
+  - lang_de
 title: It's all about the Pentiums
 aliases:
   - /2004/10/09/it-s-all-about-the-pentiums.html

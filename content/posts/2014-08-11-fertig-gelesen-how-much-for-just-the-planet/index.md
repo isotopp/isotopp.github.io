@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-08-11T20:02:41Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: "How Much for Just the Planet?"'
 aliases:
   - /2014/08/11/fertig-gelesen-how-much-for-just-the-planet.html

@@ -5,9 +5,9 @@ date: "2023-05-23T01:02:03Z"
 feature-img: assets/img/background/schloss.jpg
 toc: false
 tags:
-- lang_en
-- security
-- spam
+  - lang_en
+  - security
+  - spam
 aliases:
   - /2023/05/23/getting-rid-of-phishing-training-mails.html
 ---

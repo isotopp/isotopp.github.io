@@ -3,10 +3,10 @@ author: isotopp
 date: "2009-11-12T20:32:25Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- oracle
-- sun
-- lang_de
+  - mysql
+  - oracle
+  - sun
+  - lang_de
 title: MySQL, Sun, Oracle - und die EU
 aliases:
   - /2009/11/12/mysql-sun-oracle-und-die-eu.html

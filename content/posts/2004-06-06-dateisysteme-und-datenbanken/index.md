@@ -3,9 +3,9 @@ author: isotopp
 date: "2004-06-06T14:06:40Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- filesystems
-- database
-- lang_de
+  - filesystems
+  - database
+  - lang_de
 title: Dateisysteme und Datenbanken
 aliases:
   - /2004/06/06/dateisysteme-und-datenbanken.html

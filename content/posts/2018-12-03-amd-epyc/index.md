@@ -4,9 +4,9 @@ author: isotopp
 date: "2018-12-03T18:08:51Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- pluspora_import
-- lang_de
-- computer
+  - pluspora_import
+  - lang_de
+  - computer
 aliases:
   - /2018/12/03/amd-epyc.html
 ---

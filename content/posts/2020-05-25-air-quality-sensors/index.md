@@ -3,8 +3,8 @@ author: isotopp
 date: "2020-05-25T21:27:26Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- iot
+  - lang_en
+  - iot
 title: Air Quality Sensors
 aliases:
   - /2020/05/25/air-quality-sensors.html

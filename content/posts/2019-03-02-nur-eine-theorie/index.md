@@ -5,9 +5,9 @@ date: "2019-03-02T02:03:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_de
-- erklaerbaer
-- science
+  - lang_de
+  - erklaerbaer
+  - science
 aliases:
   - /2019/03/02/nur-eine-theorie.html
 ---

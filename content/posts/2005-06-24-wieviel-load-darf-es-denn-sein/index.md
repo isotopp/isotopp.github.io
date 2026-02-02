@@ -3,11 +3,11 @@ author: isotopp
 date: "2005-06-24T08:47:16Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- devops
-- linux
-- unix
-- lang_de
+  - computer
+  - devops
+  - linux
+  - unix
+  - lang_de
 title: Wieviel Load darf es denn sein?
 aliases:
   - /2005/06/24/wieviel-load-darf-es-denn-sein.html

@@ -4,9 +4,9 @@ title: Mozilla und IRC
 date: "2019-04-29T17:41:47Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- pluspora_import
-- lang_de
-- computer
+  - pluspora_import
+  - lang_de
+  - computer
 aliases:
   - /2019/04/29/mozilla-irc.html
 ---

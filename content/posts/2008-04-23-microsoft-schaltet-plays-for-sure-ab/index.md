@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-04-23T07:28:27Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- media
-- musik
-- lang_de
+  - media
+  - musik
+  - lang_de
 title: Microsoft schaltet "Plays for Sure" ab
 aliases:
   - /2008/04/23/microsoft-schaltet-plays-for-sure-ab.html

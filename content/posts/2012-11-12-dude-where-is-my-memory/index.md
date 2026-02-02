@@ -3,9 +3,9 @@ author: isotopp
 date: "2012-11-12T14:06:40Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- performance
-- lang_de
+  - mysql
+  - performance
+  - lang_de
 title: Dude, where is my memory?
 aliases:
   - /2012/11/12/dude-where-is-my-memory.html

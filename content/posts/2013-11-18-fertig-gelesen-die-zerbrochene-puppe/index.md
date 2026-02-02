@@ -3,11 +3,11 @@ author: isotopp
 date: "2013-11-18T09:57:22Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- steampunk
+  - lang_de
+  - book
+  - media
+  - review
+  - steampunk
 title: 'Fertig gelesen: Die zerbrochene Puppe'
 aliases:
   - /2013/11/18/fertig-gelesen-die-zerbrochene-puppe.html

@@ -5,9 +5,9 @@ date: "2023-09-13T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_de
-- energy
-- verkehr
+  - lang_de
+  - energy
+  - verkehr
 aliases:
   - /2023/09/13/energiekosten-beim-elektroauto.html
 ---

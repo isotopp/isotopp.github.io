@@ -4,9 +4,9 @@ date: "2017-08-08T13:44:36Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- science
-- lang_en
+  - mobility
+  - science
+  - lang_en
 title: Evaluating the Changing Causes of Photovoltaics Cost Reduction
 aliases:
   - /2017/08/08/evaluating-the-changing-causes-of-photovoltaics-cost-reduction.html

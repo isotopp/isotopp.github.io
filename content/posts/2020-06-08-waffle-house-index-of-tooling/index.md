@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-06-08T11:46:42Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- devops
-- performance
+  - lang_en
+  - devops
+  - performance
 title: Waffle House Index of Tooling
 aliases:
   - /2020/06/08/waffle-house-index-of-tooling.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-08-14T06:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- comic
-- media
-- lang_de
+  - book
+  - review
+  - comic
+  - media
+  - lang_de
 title: 'Fertig gelesen: Batwoman Elegy'
 aliases:
   - /2010/08/14/fertig-gelesen-batwoman-elegy.html

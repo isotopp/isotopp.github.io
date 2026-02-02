@@ -4,8 +4,8 @@ date: "2017-03-13T15:02:49Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- lang_en
+  - mobility
+  - lang_en
 title: We learned a few things about Cycle Path design in the last 25 years
 aliases:
   - /2017/03/13/we-learned-a-few-things-about-cycle-path-design-in-the-last-25-years.html

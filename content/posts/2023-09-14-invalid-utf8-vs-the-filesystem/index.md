@@ -5,10 +5,10 @@ date: "2023-09-14T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_en
-- filesystems
-- computer
-- unix
+  - lang_en
+  - filesystems
+  - computer
+  - unix
 aliases:
   - /2023/09/14/invalid-utf8-vs-the-filesystem.html
 ---

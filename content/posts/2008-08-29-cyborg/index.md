@@ -3,10 +3,10 @@ author: isotopp
 date: "2008-08-29T03:01:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- cyborg
-- hack
-- internet
-- lang_de
+  - cyborg
+  - hack
+  - internet
+  - lang_de
 title: Cyborg
 aliases:
   - /2008/08/29/cyborg.html

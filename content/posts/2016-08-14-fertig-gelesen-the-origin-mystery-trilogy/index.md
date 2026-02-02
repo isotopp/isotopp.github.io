@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-08-14T19:58:45Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: The Origin Mystery Trilogy'
 aliases:
   - /2016/08/14/fertig-gelesen-the-origin-mystery-trilogy.html

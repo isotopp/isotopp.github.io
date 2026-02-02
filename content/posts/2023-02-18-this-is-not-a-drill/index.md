@@ -4,9 +4,9 @@ title: "This is not a Drill, this is just Tuesday"
 date: "2023-02-18T06:07:08Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- lang_en
-- devops
-- security
+  - lang_en
+  - devops
+  - security
 aliases:
   - /2023/02/18/this-is-not-a-drill.html
 ---

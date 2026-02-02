@@ -3,11 +3,11 @@ author: isotopp
 date: "2014-10-04T19:53:25Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: Under the Empyrean Sky'
 aliases:
   - /2014/10/04/fertig-gelesen-under-the-empyrean-sky.html

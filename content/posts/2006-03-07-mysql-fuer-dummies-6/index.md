@@ -3,8 +3,8 @@ author: isotopp
 date: "2006-03-07T17:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- mysql
-- lang_de
+  - mysql
+  - lang_de
 title: MySQL für Dummies (6)
 aliases:
   - /2006/03/07/mysql-fuer-dummies-6.html

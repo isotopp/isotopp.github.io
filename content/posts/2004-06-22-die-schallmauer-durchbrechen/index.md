@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-06-22T08:20:45Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- lang_de
+  - security
+  - lang_de
 title: Die Schallmauer durchbrechen...
 aliases:
   - /2004/06/22/die-schallmauer-durchbrechen.html

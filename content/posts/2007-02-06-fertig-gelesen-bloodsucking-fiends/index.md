@@ -3,9 +3,9 @@ author: isotopp
 date: "2007-02-06T04:05:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- media
-- review
-- lang_de
+  - media
+  - review
+  - lang_de
 title: 'Fertig gelesen: Bloodsucking Fiends'
 aliases:
   - /2007/02/06/fertig-gelesen-bloodsucking-fiends.html

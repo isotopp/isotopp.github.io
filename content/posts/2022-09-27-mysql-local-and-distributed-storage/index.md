@@ -4,8 +4,8 @@ title: "MySQL: Local and distributed storage"
 date: "2022-09-27T12:13:14Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
+  - lang_en
+  - mysql
 aliases:
   - /2022/09/27/mysql-local-and-distributed-storage.html
 ---

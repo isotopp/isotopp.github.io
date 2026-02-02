@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-09-17T14:06:51Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 title: 'MySQL: Binding the ORM'
 aliases:
   - /2021/09/17/binding-the-orm.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2021-07-23T09:00:40Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- review
-- media
-- book
-- scifi
+  - lang_en
+  - review
+  - media
+  - book
+  - scifi
 title: 'Fertig gelesen: Outland'
 aliases:
   - /2021/07/23/fertig-gelesen-outland.html

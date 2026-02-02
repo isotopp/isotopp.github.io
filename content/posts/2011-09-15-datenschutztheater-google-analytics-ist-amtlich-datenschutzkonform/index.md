@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-09-15T10:28:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- privacy
-- google
-- spackeria
-- terror
-- lang_de
+  - privacy
+  - google
+  - spackeria
+  - terror
+  - lang_de
 title: 'Datenschutztheater: Google Analytics ist amtlich datenschutzkonform '
 aliases:
   - /2011/09/15/datenschutztheater-google-analytics-ist-amtlich-datenschutzkonform.html

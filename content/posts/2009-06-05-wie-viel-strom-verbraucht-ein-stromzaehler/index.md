@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-06-05T08:48:58Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- energy
-- lang_de
+  - computer
+  - energy
+  - lang_de
 title: Wie viel Strom verbraucht ein Stromzähler?
 aliases:
   - /2009/06/05/wie-viel-strom-verbraucht-ein-stromzaehler.html

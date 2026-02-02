@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-07-22T11:26:00Z"
 feature-img: assets/img/background/baby-schlaeft.jpg
 tags:
-- berlin
-- image
-- schnuppel
-- lang_de
+  - berlin
+  - image
+  - schnuppel
+  - lang_de
 title: Mit dem Schnuppel im Tierpark
 aliases:
   - /2012/07/22/mit-dem-schnuppel-im-tierpark.html

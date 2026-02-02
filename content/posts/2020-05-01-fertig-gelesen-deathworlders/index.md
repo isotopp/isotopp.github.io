@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-05-01T08:47:15Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- media
-- review
-- book
+  - lang_en
+  - media
+  - review
+  - book
 title: 'Fertig gelesen: Deathworlders'
 aliases:
   - /2020/05/01/fertig-gelesen-deathworlders.html

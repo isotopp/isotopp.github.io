@@ -5,10 +5,10 @@ feature-img: assets/img/background/rijksmuseum.jpg
 title: "Sperrungen im Internet - Eine systematische Aufarbeitung der Zensurdiskussion"
 toc: true
 tags:
-- lang_de
-- politik
-- usenet
-- jugendschutz
+  - lang_de
+  - politik
+  - usenet
+  - jugendschutz
 aliases:
   - /1997/05/14/sperrungen-im-internet.html
 ---

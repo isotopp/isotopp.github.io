@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-02-16T14:53:04Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- damals
-- hack
-- security
-- lang_de
+  - damals
+  - hack
+  - security
+  - lang_de
 title: Vertrauenswürdigkeit öffentlicher Hardware
 aliases:
   - /2011/02/16/vertrauensw-rdigkeit-ffentlicher-hardware.html

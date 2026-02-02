@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-08-14T18:44:06Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: Revisionary'
 aliases:
   - /2016/08/14/fertig-gelesen-revisionary.html

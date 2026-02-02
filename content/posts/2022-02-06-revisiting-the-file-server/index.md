@@ -4,10 +4,10 @@ title: "Revisiting the file server"
 date: 2022-02-06T21:06:03+01:00
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- computer
-- linux
-- storage
+  - lang_en
+  - computer
+  - linux
+  - storage
 aliases:
   - /2022/02/06/revisiting-the-file-server.html
 ---

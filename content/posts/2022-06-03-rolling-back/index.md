@@ -4,9 +4,9 @@ date: "2022-06-02T08:42:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "Rolling MySQL back and forward"
 tags:
-- database
-- mysql
-- lang_en
+  - database
+  - mysql
+  - lang_en
 aliases:
   - /2022/06/03/rolling-back.html
 ---

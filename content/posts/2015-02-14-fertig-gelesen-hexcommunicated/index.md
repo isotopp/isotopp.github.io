@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-02-14T19:45:31Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- book
-- media
-- review
-- scifi
+  - lang_en
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Hexcommunicated'
 aliases:
   - /2015/02/14/fertig-gelesen-hexcommunicated.html

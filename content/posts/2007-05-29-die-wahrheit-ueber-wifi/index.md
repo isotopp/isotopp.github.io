@@ -3,8 +3,8 @@ author: isotopp
 date: "2007-05-29T08:32:13Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- hardware
-- lang_de
+  - hardware
+  - lang_de
 title: Die Wahrheit über Wi-Fi
 aliases:
   - /2007/05/29/die-wahrheit-ueber-wifi.html

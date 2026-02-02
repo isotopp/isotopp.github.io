@@ -3,12 +3,12 @@ author: isotopp
 date: "2012-08-17T21:24:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- religion
-- science
-- lang_de
+  - book
+  - review
+  - media
+  - religion
+  - science
+  - lang_de
 title: 'Fertig gelesen: The Religion Virus'
 aliases:
   - /2012/08/17/fertig-gelesen-the-religion-virus.html

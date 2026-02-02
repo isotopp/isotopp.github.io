@@ -3,7 +3,7 @@ author: isotopp
 date: "2009-08-22T15:02:38Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
+  - lang_de
 title: links for 2009-08-22
 aliases:
   - /2009/08/22/megapanzer.html

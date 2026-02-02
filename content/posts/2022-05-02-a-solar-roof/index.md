@@ -4,10 +4,10 @@ date: "2022-05-02T08:42:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "A solar roof"
 tags:
-- lang_en
-- netherlands
-- energy
-- climate
+  - lang_en
+  - netherlands
+  - energy
+  - climate
 aliases:
   - /2022/05/02/a-solar-roof.html
 ---

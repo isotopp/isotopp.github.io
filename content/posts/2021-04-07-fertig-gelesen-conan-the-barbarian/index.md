@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-04-07T22:13:19Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- media
-- review
-- book
+  - lang_en
+  - media
+  - review
+  - book
 title: 'Fertig gelesen: Conan, The Barbarian'
 aliases:
   - /2021/04/07/fertig-gelesen-conan-the-barbarian.html

@@ -3,12 +3,12 @@ author: isotopp
 date: "2010-05-13T14:08:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- internet
-- kultur
-- media
-- politik
-- lang_de
+  - copyright
+  - internet
+  - kultur
+  - media
+  - politik
+  - lang_de
 title: Auf der Suche nach einem funktionierenden Urheberrecht
 aliases:
   - /2010/05/13/auf-der-suche-nach-einem-funktionierenden-urheberrecht.html

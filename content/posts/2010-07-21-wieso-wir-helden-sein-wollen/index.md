@@ -3,11 +3,11 @@ author: isotopp
 date: "2010-07-21T08:03:28Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- damals
-- free software
-- kiel
-- politik
-- lang_de
+  - damals
+  - free software
+  - kiel
+  - politik
+  - lang_de
 title: Wieso wir Helden sein wollen
 aliases:
   - /2010/07/21/wieso-wir-helden-sein-wollen.html

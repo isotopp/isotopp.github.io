@@ -4,9 +4,9 @@ date: "2017-03-20T09:41:57Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- free software
-- lang_en
+  - computer
+  - free software
+  - lang_en
 title: When you commit to git, how long does it matter?
 aliases:
   - /2017/03/20/when-you-commit-to-git-how-long-does-it-matter.html

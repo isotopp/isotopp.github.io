@@ -4,9 +4,9 @@ title: "MySQL: Selecting random rows"
 date: "2023-02-20T12:13:14Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 aliases:
   - /2023/03/06/selecting-random-rows.html
 ---

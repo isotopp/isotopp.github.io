@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-11-08T07:21:43Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- media
-- lang_de
+  - media
+  - lang_de
 title: Fernsehen macht Angst
 aliases:
   - /2004/11/08/fernsehen-macht-angst.html

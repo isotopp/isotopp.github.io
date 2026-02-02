@@ -5,9 +5,9 @@ date: "2023-06-12T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_en
-- bike
-- überwachung
+  - lang_en
+  - bike
+  - überwachung
 aliases:
   - /2023/06/12/what-to-do-with-self-driving-car-data.html
 ---

@@ -3,10 +3,10 @@ author: isotopp
 date: "2008-05-30T07:47:55Z"
 feature-img: assets/img/background/baellebad.jpg
 tags:
-- architektur
-- computer
-- security
-- lang_de
+  - architektur
+  - computer
+  - security
+  - lang_de
 title: The Importance Of FAIL
 aliases:
   - /2008/05/30/the-importance-of-fail.html

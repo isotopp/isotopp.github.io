@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-03-01T10:06:31Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- internet
-- privacy
-- security
-- spackeria
-- lang_de
+  - internet
+  - privacy
+  - security
+  - spackeria
+  - lang_de
 title: Recht auf Vergeben
 aliases:
   - /2012/03/01/recht-auf-vergeben.html

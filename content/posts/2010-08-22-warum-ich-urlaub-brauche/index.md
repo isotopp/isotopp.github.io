@@ -3,8 +3,8 @@ author: isotopp
 date: "2010-08-22T08:46:23Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- lang_de
+  - computer
+  - lang_de
 title: Warum ich Urlaub brauche
 aliases:
   - /2010/08/22/warum-ich-urlaub-brauche.html

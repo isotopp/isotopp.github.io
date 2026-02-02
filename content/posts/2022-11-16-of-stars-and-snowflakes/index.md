@@ -4,10 +4,10 @@ title: "Of Stars and Snowflakes"
 date: "2022-11-16T06:07:08Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
-- data warehouse
+  - lang_en
+  - mysql
+  - mysqldev
+  - data warehouse
 aliases:
   - /2022/11/16/of-stars-and-snowflakes.html
 ---

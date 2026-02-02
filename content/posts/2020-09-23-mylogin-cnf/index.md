@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-09-23T12:29:52Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
-- database
+  - lang_en
+  - mysql
+  - mysqldev
+  - database
 title: 'MySQL: Provisioning .mylogin.cnf'
 aliases:
   - /2020/09/23/mylogin-cnf.html

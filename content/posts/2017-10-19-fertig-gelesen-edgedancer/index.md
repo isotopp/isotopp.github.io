@@ -4,10 +4,10 @@ date: "2017-10-19T20:30:24Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- lang_en
+  - review
+  - media
+  - book
+  - lang_en
 title: 'Fertig gelesen: Edgedancer'
 aliases:
   - /2017/10/19/fertig-gelesen-edgedancer.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2011-09-19T20:00:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- innodb
-- mysql
-- postgres
-- lang_de
+  - database
+  - innodb
+  - mysql
+  - postgres
+  - lang_de
 title: Checkpoint Blues
 aliases:
   - /2011/09/19/checkpoint-blues.html

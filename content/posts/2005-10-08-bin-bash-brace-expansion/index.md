@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-10-08T08:43:57Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- bash
-- computer
-- unix
-- lang_de
+  - bash
+  - computer
+  - unix
+  - lang_de
 title: '#!/bin/bash -- Brace Expansion'
 aliases:
   - /2005/10/08/bin-bash-brace-expansion.html

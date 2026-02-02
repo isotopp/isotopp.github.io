@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-04-15T16:48:20Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- lang_de
+  - computer
+  - lang_de
 title: GNU GPL in Deutschland
 aliases:
   - /2004/04/15/gnu-gpl-in-deutschland.html

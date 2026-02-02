@@ -4,9 +4,9 @@ title: "Social Networks and USENET"
 date: "2019-01-24T14:58:29Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- social networking
-- usenet
+  - lang_de
+  - social networking
+  - usenet
 aliases:
   - /2019/01/24/social-networks-and-usenet.html
 ---

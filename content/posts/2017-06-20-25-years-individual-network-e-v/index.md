@@ -4,9 +4,9 @@ date: "2017-06-20T09:47:13Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- neuland
-- damals
-- lang_en
+  - neuland
+  - damals
+  - lang_en
 title: 25 years "Individual Network e.V."
 aliases:
   - /2017/06/20/25-years-individual-network-e-v.html

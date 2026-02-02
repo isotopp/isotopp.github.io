@@ -3,12 +3,12 @@ author: isotopp
 date: "2020-08-25T17:10:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- erklaerbaer
-- mysql
-- mysqldev
-- sql
-- lang_en
+  - database
+  - erklaerbaer
+  - mysql
+  - mysqldev
+  - sql
+  - lang_en
 title: 'MySQL: NULL is NULL'
 aliases:
   - /2020/08/25/null-is-null.html

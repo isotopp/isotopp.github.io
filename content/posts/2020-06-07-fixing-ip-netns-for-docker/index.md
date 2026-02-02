@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-06-07T14:18:36Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- docker
-- networking
-- debug
-- lang_en
+  - docker
+  - networking
+  - debug
+  - lang_en
 title: Fixing "ip netns" for docker
 aliases:
   - /2020/06/07/fixing-ip-netns-for-docker.html

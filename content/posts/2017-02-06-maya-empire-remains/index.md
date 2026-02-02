@@ -4,8 +4,8 @@ date: "2017-02-06T21:26:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- science
-- lang_en
+  - science
+  - lang_en
 title: Maya empire remains
 aliases:
   - /2017/02/06/maya-empire-remains.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2015-11-30T21:16:01Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: The Annihilation Score'
 aliases:
   - /2015/11/30/fertig-gelesen-the-annihilation-score.html

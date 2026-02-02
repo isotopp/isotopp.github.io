@@ -4,9 +4,9 @@ date: "2017-05-08T09:15:29Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- gaming
-- fluffy fluff
-- lang_en
+  - gaming
+  - fluffy fluff
+  - lang_en
 title: Kris, where are the posts?
 aliases:
   - /2017/05/08/kris-where-are-the-posts.html

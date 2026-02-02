@@ -3,10 +3,10 @@ author: isotopp
 date: "2008-01-04T08:55:24Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- film
-- media
-- lang_de
+  - copyright
+  - film
+  - media
+  - lang_de
 title: DRM Krieg auf Anwender-Rechnern
 aliases:
   - /2008/01/04/drm-krieg-auf-anwender-rechnern.html

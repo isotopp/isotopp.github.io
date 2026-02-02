@@ -3,10 +3,10 @@ author: isotopp
 date: "2006-07-30T07:17:12Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- architektur
-- mysql
-- performance
-- lang_de
+  - architektur
+  - mysql
+  - performance
+  - lang_de
 title: Leben mit Fehlern - der Schlüssel zum Scaleout
 aliases:
   - /2006/07/30/leben-mit-fehlern-der-schluessel-zum-scaleout.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2006-09-10T18:07:21Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- free software
-- lizenz
-- politik
-- lang_de
+  - copyright
+  - free software
+  - lizenz
+  - politik
+  - lang_de
 title: GPL in Deutschland vor Gericht durchgesetzt
 aliases:
   - /2006/09/10/gpl-in-deutschland-vor-gericht-durchgesetzt.html

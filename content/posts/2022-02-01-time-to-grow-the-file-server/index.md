@@ -4,10 +4,10 @@ title: "Time to grow the file server"
 date: 2022-02-01T21:06:03+01:00
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- computer
-- linux
-- storage
+  - lang_en
+  - computer
+  - linux
+  - storage
 aliases:
   - /2022/02/01/time-to-grow-the-file-server.html
 ---

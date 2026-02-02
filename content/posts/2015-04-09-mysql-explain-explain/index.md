@@ -5,10 +5,10 @@ date: "2024-04-21T05:06:07Z"
 feature-img: assets/img/background/mysql.jpg
 toc: true
 tags:
-- lang_en
-- database
-- mysql
-- mysqldev
+  - lang_en
+  - database
+  - mysql
+  - mysqldev
 aliases:
   - /2015/04/09/mysql-explain-explain.html
 ---

@@ -3,10 +3,10 @@ author: isotopp
 date: "2006-07-05T14:35:20Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- mysql
-- remote first
-- work
-- lang_de
+  - mysql
+  - remote first
+  - work
+  - lang_de
 title: Erfahrungen mit Nonoffice
 aliases:
   - /2006/07/05/erfahrungen-mit-nonoffice.html

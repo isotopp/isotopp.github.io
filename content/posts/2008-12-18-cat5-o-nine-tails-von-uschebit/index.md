@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-12-18T08:46:12Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- berlin
-- work
-- lang_de
+  - berlin
+  - work
+  - lang_de
 title: Cat5-o-Nine-Tails von uschebit
 aliases:
   - /2008/12/18/cat5-o-nine-tails-von-uschebit.html

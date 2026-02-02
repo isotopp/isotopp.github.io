@@ -4,10 +4,10 @@ date: "2022-05-05T07:47:06Z"
 feature-img: assets/img/background/book.jpg
 title: 'Fertig gelesen: The Kaiju Preservation Society'
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 aliases:
   - /2022/05/05/fertig-gelesen-the-kaiju-preservation-society.html
 ---

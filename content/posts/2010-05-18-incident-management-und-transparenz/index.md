@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-05-18T11:14:06Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- privacy
-- security
-- wlan
-- lang_de
+  - privacy
+  - security
+  - wlan
+  - lang_de
 title: Incident Management und Transparenz
 aliases:
   - /2010/05/18/incident-management-und-transparenz.html

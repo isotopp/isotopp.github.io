@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-08-16T14:59:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- replication
-- lang_de
+  - mysql
+  - replication
+  - lang_de
 title: Master-Master und Distributed Transactions
 aliases:
   - /2010/08/16/master-master-und-distributed-transactions.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2018-09-25T19:47:23Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: Das Spielhaus'
 aliases:
   - /2018/09/25/fertig-gelesen-das-spielhaus.html

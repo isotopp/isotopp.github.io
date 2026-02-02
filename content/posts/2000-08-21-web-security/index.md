@@ -4,10 +4,10 @@ date: "2000-08-21T09:00:00Z"
 feature-img: assets/img/background/schloss.jpg
 title: "Web Security"
 tags:
-- lang_de
-- security
-- talk
-- publication
+  - lang_de
+  - security
+  - talk
+  - publication
 aliases:
   - /2000/08/21/web-security.html
 ---

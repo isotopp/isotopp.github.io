@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-01-02T20:34:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- privacy
-- politik
-- spackeria
-- lang_de
+  - privacy
+  - politik
+  - spackeria
+  - lang_de
 title: 'Datenschutztheater: Die informierte Zustimmung'
 aliases:
   - /2012/01/02/datenschutztheater-die-informierte-zustimmung.html

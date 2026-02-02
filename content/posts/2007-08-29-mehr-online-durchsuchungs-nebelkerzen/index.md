@@ -3,10 +3,10 @@ author: isotopp
 date: "2007-08-29T09:22:18Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- politik
-- security
-- überwachung
-- lang_de
+  - politik
+  - security
+  - überwachung
+  - lang_de
 title: Mehr Online-Durchsuchungs-Nebelkerzen
 aliases:
   - /2007/08/29/mehr-online-durchsuchungs-nebelkerzen.html

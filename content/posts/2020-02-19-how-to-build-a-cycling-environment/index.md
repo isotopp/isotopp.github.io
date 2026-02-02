@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-02-19T11:38:27Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- germany
-- netherlands
-- cycling
-- mobility
+  - lang_en
+  - germany
+  - netherlands
+  - cycling
+  - mobility
 title: How to build a cycling environment
 aliases:
   - /2020/02/19/how-to-build-a-cycling-environment.html

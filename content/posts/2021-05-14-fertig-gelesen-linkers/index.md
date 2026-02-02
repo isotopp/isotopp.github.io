@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-05-14T13:06:36Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- review
-- usenet
-- media
+  - lang_en
+  - review
+  - usenet
+  - media
 title: 'Fertig gelesen: Linkers'
 aliases:
   - /2021/05/14/fertig-gelesen-linkers.html

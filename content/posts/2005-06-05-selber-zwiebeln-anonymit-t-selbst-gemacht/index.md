@@ -3,9 +3,9 @@ author: isotopp
 date: "2005-06-05T19:36:03Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- identity
-- security
-- lang_de
+  - identity
+  - security
+  - lang_de
 title: Selber Zwiebeln - Anonymität selbst gemacht
 aliases:
   - /2005/06/05/selber-zwiebeln-anonymit-t-selbst-gemacht.html

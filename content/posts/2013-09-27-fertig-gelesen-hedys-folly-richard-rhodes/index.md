@@ -3,10 +3,10 @@ author: isotopp
 date: "2013-09-27T18:11:54Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Hedy''s Folly'
 aliases:
   - /2013/09/27/fertig-gelesen-hedys-folly-richard-rhodes.html

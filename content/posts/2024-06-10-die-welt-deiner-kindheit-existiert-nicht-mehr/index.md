@@ -5,9 +5,9 @@ date: "2024-06-10T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_de
-- erklaerbaer
-- politik
+  - lang_de
+  - erklaerbaer
+  - politik
 aliases:
   - /2024/06/10/die-welt-deiner-kindheit-existiert-nicht-mehr.html
 ---

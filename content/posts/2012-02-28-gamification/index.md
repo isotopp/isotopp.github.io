@@ -3,9 +3,9 @@ author: isotopp
 date: "2012-02-28T07:50:40Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- gaming
-- roleplay
-- lang_de
+  - gaming
+  - roleplay
+  - lang_de
 title: Gamification
 aliases:
   - /2012/02/28/gamification.html

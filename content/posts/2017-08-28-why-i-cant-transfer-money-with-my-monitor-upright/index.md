@@ -4,8 +4,8 @@ date: "2017-08-28T10:18:07Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- security
-- lang_en
+  - security
+  - lang_en
 title: Why I can't transfer money with my Monitor upright
 aliases:
   - /2017/08/28/why-i-cant-transfer-money-with-my-monitor-upright.html

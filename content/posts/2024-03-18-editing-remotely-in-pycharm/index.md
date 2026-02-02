@@ -5,10 +5,10 @@ date: "2024-03-18T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
-- lang_en
-- computer
-- development
-- python
+  - lang_en
+  - computer
+  - development
+  - python
 aliases:
   - /2024/03/18/editing-remotely-in-pycharm.html
 ---

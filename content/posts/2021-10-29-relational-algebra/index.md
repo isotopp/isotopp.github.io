@@ -4,9 +4,9 @@ date: "2021-10-29T14:06:51Z"
 feature-img: assets/img/background/mysql.jpg
 title: 'Relational, and an Algebra'
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 aliases:
   - /2021/10/29/relational-algebra.html
 ---

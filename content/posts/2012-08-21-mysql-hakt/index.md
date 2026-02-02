@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-08-21T14:24:29Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- debug
-- mysql
-- performance
-- lang_de
+  - debug
+  - mysql
+  - performance
+  - lang_de
 title: MySQL hakt...
 aliases:
   - /2012/08/21/mysql-hakt.html

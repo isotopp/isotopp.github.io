@@ -3,9 +3,9 @@ author: isotopp
 date: "2025-08-12T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- iot
-- home automation
+  - lang_en
+  - iot
+  - home automation
 title: Athom CO2 Sensors
 aliases:
   - /2025/08/12/athom-co2-sensor.html

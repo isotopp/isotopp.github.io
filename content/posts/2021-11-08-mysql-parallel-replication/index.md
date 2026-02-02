@@ -4,9 +4,9 @@ title: "MySQL: Parallel Replication"
 date: 2021-11-08T13:28:27+01:00
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- replication
+  - lang_en
+  - mysql
+  - replication
 aliases:
   - /2021/11/08/mysql-parallel-replication.html
 ---

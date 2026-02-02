@@ -4,8 +4,8 @@ date: "2017-04-21T13:52:42Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- germany
-- lang_en
+  - germany
+  - lang_en
 title: Militant capitalist attacked german soccer bus
 aliases:
   - /2017/04/21/militant-capitalist-attacked-german-soccer-bus.html

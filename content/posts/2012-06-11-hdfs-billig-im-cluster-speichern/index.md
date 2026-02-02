@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-06-11T17:26:44Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- cluster
-- computer
-- hadoop
-- lang_de
+  - cluster
+  - computer
+  - hadoop
+  - lang_de
 title: HDFS - billig im Cluster speichern
 aliases:
   - /2012/06/11/hdfs-billig-im-cluster-speichern.html

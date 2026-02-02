@@ -4,9 +4,9 @@ date: "1995-12-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "init - Starten und Beenden von Linux"
 tags:
-- lang_de
-- publication
-- unix
+  - lang_de
+  - publication
+  - unix
 aliases:
   - /1995/12/01/init-starten-und-beenden-von-linux.html
 ---

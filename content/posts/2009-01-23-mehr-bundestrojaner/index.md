@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-01-23T18:56:23Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- politik
-- security
-- lang_de
+  - politik
+  - security
+  - lang_de
 title: Mehr Bundestrojaner
 aliases:
   - /2009/01/23/mehr-bundestrojaner.html

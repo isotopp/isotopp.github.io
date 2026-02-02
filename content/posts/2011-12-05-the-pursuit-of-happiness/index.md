@@ -3,9 +3,9 @@ author: isotopp
 date: "2011-12-05T20:05:40Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- piraten
-- politik
-- lang_de
+  - piraten
+  - politik
+  - lang_de
 title: The pursuit of happiness
 aliases:
   - /2011/12/05/the-pursuit-of-happiness.html

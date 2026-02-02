@@ -3,10 +3,10 @@ author: isotopp
 date: "2013-11-23T14:01:46Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Land of Desire'
 aliases:
   - /2013/11/23/fertig-gelesen-land-of-desire.html

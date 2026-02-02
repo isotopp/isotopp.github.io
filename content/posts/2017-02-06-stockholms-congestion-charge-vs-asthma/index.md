@@ -4,8 +4,8 @@ date: "2017-02-06T12:55:12Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- mobility
-- lang_en
+  - mobility
+  - lang_en
 title: Stockholm's congestion charge vs. Asthma
 aliases:
   - /2017/02/06/stockholms-congestion-charge-vs-asthma.html

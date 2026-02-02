@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-01-04T08:14:43Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- mysql
-- lang_de
+  - database
+  - mysql
+  - lang_de
 title: 'MySQL: Integer Overflow'
 aliases:
   - /2008/01/04/mysql-integer-overflow.html

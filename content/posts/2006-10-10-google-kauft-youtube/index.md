@@ -3,9 +3,9 @@ author: isotopp
 date: "2006-10-10T06:06:30Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- google
-- lang_de
+  - computer
+  - google
+  - lang_de
 title: Google kauft YouTube
 aliases:
   - /2006/10/10/google-kauft-youtube.html

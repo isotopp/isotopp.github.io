@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-11-09T19:24:12Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- identity
-- security
-- lang_de
+  - identity
+  - security
+  - lang_de
 title: '''Principal''?'
 aliases:
   - /2009/11/09/principal.html

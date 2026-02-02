@@ -4,10 +4,10 @@ date: "2002-01-31T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "LDAP vs. SQL"
 tags:
-- lang_de
-- talk
-- publication
-- internet
+  - lang_de
+  - talk
+  - publication
+  - internet
 aliases:
   - /2002/01/31/ldap-vs-sql.html
 ---

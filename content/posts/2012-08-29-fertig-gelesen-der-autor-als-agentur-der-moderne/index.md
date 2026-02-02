@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-08-29T14:00:00Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- review
-- media
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: Der Autor als Agentur der Moderne'
 aliases:
   - /2012/08/29/fertig-gelesen-der-autor-als-agentur-der-moderne.html

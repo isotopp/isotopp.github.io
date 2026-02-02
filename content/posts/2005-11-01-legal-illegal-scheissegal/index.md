@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-11-01T12:35:56Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- hack
-- media
-- security
-- lang_de
+  - hack
+  - media
+  - security
+  - lang_de
 title: Legal, Illegal, Scheißegal...
 aliases:
   - /2005/11/01/legal-illegal-scheissegal.html

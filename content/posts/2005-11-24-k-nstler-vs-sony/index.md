@@ -3,12 +3,12 @@ author: isotopp
 date: "2005-11-24T15:20:59Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- hack
-- sony
-- media
-- musik
-- security
-- lang_de
+  - hack
+  - sony
+  - media
+  - musik
+  - security
+  - lang_de
 title: Künstler vs. Sony
 aliases:
   - /2005/11/24/k-nstler-vs-sony.html

@@ -3,11 +3,11 @@ author: isotopp
 date: "2009-06-19T14:46:41Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- jugendschutz
-- politik
-- überwachung
-- zensur
-- lang_de
+  - jugendschutz
+  - politik
+  - überwachung
+  - zensur
+  - lang_de
 title: Es ist noch lange nicht vorbei.
 aliases:
   - /2009/06/19/es-ist-noch-lange-nicht-vorbei.html

@@ -3,8 +3,8 @@ author: isotopp
 date: "2008-05-30T05:22:56Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- politik
-- lang_de
+  - politik
+  - lang_de
 title: Vertrauensvorschuß II
 aliases:
   - /2008/05/30/vertrauensvorschu-ii.html

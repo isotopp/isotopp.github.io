@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-09-28T19:00:07Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- lang_de
+  - security
+  - lang_de
 title: Transitiv dumm
 aliases:
   - /2004/09/28/transitiv-dumm.html

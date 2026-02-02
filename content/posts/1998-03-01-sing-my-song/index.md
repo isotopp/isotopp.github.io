@@ -4,9 +4,9 @@ date: "1998-03-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Sing my song"
 tags:
-- lang_en
-- publication
-- internet
+  - lang_en
+  - publication
+  - internet
 aliases:
   - /1998/03/01/sing-my-song.html
 ---

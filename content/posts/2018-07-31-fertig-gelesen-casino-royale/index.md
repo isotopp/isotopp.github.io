@@ -3,10 +3,10 @@ author: isotopp
 date: "2018-07-31T18:24:50Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Casino Royale'
 aliases:
   - /2018/07/31/fertig-gelesen-casino-royale.html

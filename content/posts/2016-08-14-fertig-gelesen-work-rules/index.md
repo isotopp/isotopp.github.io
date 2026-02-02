@@ -3,10 +3,10 @@ author: isotopp
 date: "2016-08-14T20:45:03Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Work Rules!'
 aliases:
   - /2016/08/14/fertig-gelesen-work-rules.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-07-26T10:55:41Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- free software
-- karlsruhe
-- mysql
-- lang_de
+  - free software
+  - karlsruhe
+  - mysql
+  - lang_de
 title: Change Request
 aliases:
   - /2005/07/26/change-request.html

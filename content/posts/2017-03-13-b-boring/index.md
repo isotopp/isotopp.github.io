@@ -4,7 +4,7 @@ date: "2017-03-13T18:00:59Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
+  - computer
 title: B.boring
 aliases:
   - /2017/03/13/b-boring.html

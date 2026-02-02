@@ -4,8 +4,8 @@ date: "2017-10-20T16:08:14Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- security
-- lang_en
+  - security
+  - lang_en
 title: ASLR
 aliases:
   - /2017/10/20/aslr.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2010-04-06T10:03:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- politik
-- zensur
-- lang_de
+  - politik
+  - zensur
+  - lang_de
 title: Löschen statt Sperren
 aliases:
   - /2010/04/06/l-schen-statt-sperren.html

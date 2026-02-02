@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-01-17T18:44:34Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- lang_de
-- google
-- security
-- identity
-- privacy
+  - lang_de
+  - google
+  - security
+  - identity
+  - privacy
 title: Mailbox.org, Google, OAuth und Less Secure Applications
 aliases:
   - /2020/01/17/mailboxorg-google-oauth-und-less-secure-applications.html

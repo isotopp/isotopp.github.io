@@ -4,10 +4,10 @@ title: "Minecraft: unable to create native thread"
 date: 2023-02-17T13:32:00+01:00
 feature-§img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- gaming
-- microsoft
-- minecraft
+  - lang_en
+  - gaming
+  - microsoft
+  - minecraft
 aliases:
   - /2023/02/17/minecraft-unable-to-create-native-thread.html
 ---

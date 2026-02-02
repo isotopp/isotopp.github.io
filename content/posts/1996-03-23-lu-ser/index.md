@@ -3,9 +3,9 @@ author: isotopp
 date: "1996-03-23T17:36:39Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- detebe
-- inkomploehntopp
+  - lang_de
+  - detebe
+  - inkomploehntopp
 title: "Lu Ser"
 aliases:
   - /1996/03/23/lu-ser.html

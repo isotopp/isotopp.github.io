@@ -3,10 +3,10 @@ author: isotopp
 date: "2011-11-04T13:31:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- mysql
-- sql
-- lang_de
+  - database
+  - mysql
+  - sql
+  - lang_de
 title: NULL is NULL
 aliases:
   - /2011/11/04/null-is-null.html

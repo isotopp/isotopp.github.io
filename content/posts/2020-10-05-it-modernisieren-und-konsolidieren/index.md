@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-10-05T21:52:04Z"
 feature-img: assets/img/background/neuland.jpg
 tags:
-- lang_de
-- cloud
-- data center
+  - lang_de
+  - cloud
+  - data center
 title: IT modernisieren und konsolidieren
 aliases:
   - /2020/10/05/it-modernisieren-und-konsolidieren.html

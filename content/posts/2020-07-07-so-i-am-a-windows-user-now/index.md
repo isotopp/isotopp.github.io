@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-07-07T11:15:58Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- windows
-- macos
-- apple
+  - lang_en
+  - windows
+  - macos
+  - apple
 title: So I am a Windows User now
 aliases:
   - /2020/07/07/so-i-am-a-windows-user-now.html

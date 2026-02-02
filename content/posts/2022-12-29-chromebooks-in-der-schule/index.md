@@ -4,10 +4,10 @@ date: "2022-12-29T01:02:03Z"
 title: Chromebooks in der Schule
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- schnuppel
-- bildung
-- security
+  - lang_de
+  - schnuppel
+  - bildung
+  - security
 aliases:
   - /2022/12/29/chromebooks-in-der-schule.html
 ---

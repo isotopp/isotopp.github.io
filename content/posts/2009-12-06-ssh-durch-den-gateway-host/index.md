@@ -3,7 +3,7 @@ author: isotopp
 date: "2009-12-06T12:20:51Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
+  - lang_de
 title: ssh durch den Gateway Host
 aliases:
   - /2009/12/06/ssh-durch-den-gateway-host.html

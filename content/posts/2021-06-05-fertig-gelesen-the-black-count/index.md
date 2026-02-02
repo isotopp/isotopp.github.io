@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-06-05T21:36:47Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- review
-- book
-- media
+  - lang_en
+  - review
+  - book
+  - media
 title: 'Fertig gelesen: The Black Count'
 aliases:
   - /2021/06/05/fertig-gelesen-the-black-count.html

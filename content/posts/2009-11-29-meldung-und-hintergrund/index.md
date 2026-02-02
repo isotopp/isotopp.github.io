@@ -3,9 +3,9 @@ author: isotopp
 date: "2009-11-29T11:47:42Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- media
-- reisen
-- lang_de
+  - media
+  - reisen
+  - lang_de
 title: Meldung und Hintergrund
 aliases:
   - /2009/11/29/meldung-und-hintergrund.html

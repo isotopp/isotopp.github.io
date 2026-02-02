@@ -4,10 +4,10 @@ date: "2020-08-16T22:52:10Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: A Wizard''s Guide To Defensive Baking'
 aliases:
   - /2020/08/16/fertig-gelesen-defensive-baking.html

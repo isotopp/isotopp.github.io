@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-08-14T20:17:11Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: The Nightmare Stacks'
 aliases:
   - /2016/08/14/fertig-gelesen-the-nightmare-stacks.html

@@ -3,8 +3,8 @@ author: isotopp
 date: "2012-02-11T13:40:47Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- free software
-- lang_de
+  - free software
+  - lang_de
 title: Busybox, die GPL und Wirrniss
 aliases:
   - /2012/02/11/busybox-die-gpl-und-wirrniss.html

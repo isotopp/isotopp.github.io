@@ -3,12 +3,12 @@ author: isotopp
 date: "2012-09-25T11:11:06Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- debug
-- monitoring
-- mysql
-- performance
-- lang_de
+  - database
+  - debug
+  - monitoring
+  - mysql
+  - performance
+  - lang_de
 title: House und Heisenberg revisited
 aliases:
   - /2012/09/25/house-und-heisenberg-revisited.html

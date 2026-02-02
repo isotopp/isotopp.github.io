@@ -3,8 +3,8 @@ author: isotopp
 date: "2020-02-21T13:22:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- netherlands
+  - lang_en
+  - netherlands
 title: Under the sea...
 aliases:
   - /2020/02/21/under-the-sea.html

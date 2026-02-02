@@ -4,9 +4,9 @@ date: "2022-04-04T08:42:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "Change Data Capture and the Binlog"
 tags:
-- database
-- mysql
-- lang_en
+  - database
+  - mysql
+  - lang_en
 aliases:
   - /2022/04/05/change-data-capture-and-the-binlog.html
 ---

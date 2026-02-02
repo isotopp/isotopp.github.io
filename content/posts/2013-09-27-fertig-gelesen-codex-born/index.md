@@ -3,11 +3,11 @@ author: isotopp
 date: "2013-09-27T14:00:06Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Codex Born'
 aliases:
   - /2013/09/27/fertig-gelesen-codex-born.html

@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-10-19T06:58:45Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- zensur
-- lang_de
+  - zensur
+  - lang_de
 title: Cholera
 aliases:
   - /2004/10/19/cholera.html

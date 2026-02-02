@@ -4,9 +4,9 @@ date: "2017-02-14T09:27:04Z"
 feature-img: assets/img/background/mysql.jpg
 status: publish
 tags:
-- mysql
-- security
-- data center
+  - mysql
+  - security
+  - data center
 title: Post like it is 2015
 aliases:
   - /2017/02/14/post-like-its-2015.html

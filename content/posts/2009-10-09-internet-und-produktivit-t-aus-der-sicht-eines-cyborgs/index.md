@@ -3,11 +3,11 @@ author: isotopp
 date: "2009-10-09T12:23:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- work
-- community
-- cyborg
-- internet
-- lang_de
+  - work
+  - community
+  - cyborg
+  - internet
+  - lang_de
 title: Internet und Produktivität aus der Sicht eines Cyborgs
 aliases:
   - /2009/10/09/internet-und-produktivit-t-aus-der-sicht-eines-cyborgs.html

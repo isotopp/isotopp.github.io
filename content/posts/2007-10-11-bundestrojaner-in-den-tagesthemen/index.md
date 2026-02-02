@@ -3,10 +3,10 @@ author: isotopp
 date: "2007-10-11T11:40:31Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- politik
-- security
-- terror
-- lang_de
+  - politik
+  - security
+  - terror
+  - lang_de
 title: Bundestrojaner in den Tagesthemen
 aliases:
   - /2007/10/11/bundestrojaner-in-den-tagesthemen.html

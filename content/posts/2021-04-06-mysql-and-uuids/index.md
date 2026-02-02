@@ -3,8 +3,8 @@ author: isotopp
 date: "2021-04-06T11:34:56Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
+  - lang_en
+  - mysql
 title: MySQL and UUIDs
 aliases:
   - /2021/04/06/mysql-and-uuids.html

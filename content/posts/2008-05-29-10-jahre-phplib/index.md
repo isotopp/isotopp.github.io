@@ -3,9 +3,9 @@ author: isotopp
 date: "2008-05-29T19:56:48Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- damals
-- php
-- lang_de
+  - damals
+  - php
+  - lang_de
 title: 10 Jahre PHPLIB
 aliases:
   - /2008/05/29/10-jahre-phplib.html

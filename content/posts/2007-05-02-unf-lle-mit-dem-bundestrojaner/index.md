@@ -3,9 +3,9 @@ author: isotopp
 date: "2007-05-02T17:50:03Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- überwachung
-- lang_de
+  - security
+  - überwachung
+  - lang_de
 title: Unfälle mit dem Bundestrojaner
 aliases:
   - /2007/05/02/unf-lle-mit-dem-bundestrojaner.html

@@ -4,8 +4,8 @@ date: "2017-02-02T12:25:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- science
-- lang_en
+  - science
+  - lang_en
 title: Racing our galaxy
 aliases:
   - /2017/02/02/racing-our-galaxy.html

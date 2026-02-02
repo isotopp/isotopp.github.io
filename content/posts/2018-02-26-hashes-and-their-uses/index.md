@@ -4,8 +4,8 @@ date: "2018-02-26T23:14:54Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- erklaerbaer
-- blockchain
+  - erklaerbaer
+  - blockchain
 title: Hashes and their uses
 aliases:
   - /2018/02/26/hashes-and-their-uses.html

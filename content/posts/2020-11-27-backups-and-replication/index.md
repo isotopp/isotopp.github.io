@@ -3,10 +3,10 @@ author: isotopp
 date: "2020-11-27T12:40:33Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
-- replication
+  - lang_en
+  - mysql
+  - mysqldev
+  - replication
 title: "MySQL: Backups and Replication"
 aliases:
   - /2020/11/27/backups-and-replication.html

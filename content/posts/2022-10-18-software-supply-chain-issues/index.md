@@ -4,9 +4,9 @@ title: "Software Supply Chain Issues"
 date: "2022-10-18T06:07:08Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_en
-- security
-- software
+  - lang_en
+  - security
+  - software
 aliases:
   - /2022/10/18/software-supply-chain-issues.html
 ---

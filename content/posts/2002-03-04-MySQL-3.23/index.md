@@ -4,10 +4,10 @@ date: "2002-03-04T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "MySQL 3.23"
 tags:
-- lang_de
-- talk
-- publication
-- internet
+  - lang_de
+  - talk
+  - publication
+  - internet
 aliases:
   - /2002/03/04/MySQL-3.23.html
 ---

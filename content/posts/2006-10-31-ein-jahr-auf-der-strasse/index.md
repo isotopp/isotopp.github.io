@@ -3,11 +3,11 @@ author: isotopp
 date: "2006-10-31T23:00:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- karlsruhe
-- mysql
-- travel
-- work
-- lang_de
+  - karlsruhe
+  - mysql
+  - travel
+  - work
+  - lang_de
 title: Ein Jahr auf der Straße
 aliases:
   - /2006/10/31/ein-jahr-auf-der-strasse.html

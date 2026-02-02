@@ -3,9 +3,9 @@ author: isotopp
 date: "2011-10-11T16:20:03Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- politik
-- security
-- lang_de
+  - politik
+  - security
+  - lang_de
 title: Artikelsammlung "Staatstrojaner"
 aliases:
   - /2011/10/11/artikelsammlung-staatstrojaner.html

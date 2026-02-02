@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-05-12T07:13:35Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- lang_de
+  - security
+  - lang_de
 title: Firewalls und Komplexität
 aliases:
   - /2004/05/12/firewalls-und-komplexitaet.html

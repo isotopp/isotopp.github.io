@@ -4,8 +4,8 @@ date: "2017-03-22T10:10:29Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- security
-- lang_en
+  - security
+  - lang_en
 title: 10 reasons not to do HTTPS interception
 aliases:
   - /2017/03/22/10-reasons-not-to-do-https-interception.html

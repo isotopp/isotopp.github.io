@@ -3,10 +3,10 @@ author: isotopp
 date: "2012-05-28T11:12:25Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- hadoop
-- mysql
-- lang_de
+  - database
+  - hadoop
+  - mysql
+  - lang_de
 title: Logging
 aliases:
   - /2012/05/28/logging.html

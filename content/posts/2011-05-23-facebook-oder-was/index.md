@@ -3,9 +3,9 @@ author: isotopp
 date: "2011-05-23T18:42:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- internet
-- social networking
-- lang_de
+  - internet
+  - social networking
+  - lang_de
 title: Facebook oder was?
 aliases:
   - /2011/05/23/facebook-oder-was.html

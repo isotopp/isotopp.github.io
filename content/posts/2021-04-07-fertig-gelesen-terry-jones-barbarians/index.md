@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-04-07T22:31:24Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_en
-- book
-- review
-- media
+  - lang_en
+  - book
+  - review
+  - media
 title: 'Fertig gelesen: Terry Jones'' Barbarians'
 aliases:
   - /2021/04/07/fertig-gelesen-terry-jones-barbarians.html

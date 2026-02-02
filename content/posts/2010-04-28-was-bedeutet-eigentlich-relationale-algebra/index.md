@@ -3,10 +3,10 @@ author: isotopp
 date: "2010-04-28T05:18:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- sql
-- sqlite
-- lang_de
+  - mysql
+  - sql
+  - sqlite
+  - lang_de
 title: Was bedeutet eigentlich 'Relationale Algebra'?
 aliases:
   - /2010/04/28/was-bedeutet-eigentlich-relationale-algebra.html

@@ -3,8 +3,8 @@ author: isotopp
 date: "2020-12-01T09:33:10Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
+  - lang_en
+  - mysql
 title: Not JOINing on PERFORMANCE_SCHEMA
 aliases:
   - /2020/12/01/not-joining-on-performance-schema.html

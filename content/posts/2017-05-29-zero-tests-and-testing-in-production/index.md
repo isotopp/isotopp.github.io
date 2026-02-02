@@ -4,9 +4,9 @@ date: "2017-05-29T05:11:51Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- testing
-- lang_en
+  - computer
+  - testing
+  - lang_en
 title: Zero Tests and Testing in Production
 aliases:
   - /2017/05/29/zero-tests-and-testing-in-production.html

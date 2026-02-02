@@ -4,10 +4,10 @@ title: "From Hadoop to HTAP?"
 date: "2022-12-23T06:07:08Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
-- data warehouse
+  - lang_en
+  - mysql
+  - mysqldev
+  - data warehouse
 aliases:
   - /2022/12/23/from-hadoop-to-htap.html
 ---

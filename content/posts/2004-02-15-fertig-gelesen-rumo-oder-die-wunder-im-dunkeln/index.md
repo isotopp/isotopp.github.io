@@ -3,10 +3,10 @@ author: isotopp
 date: "2004-02-15T20:54:45Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- book
-- media
-- review
-- lang_de
+  - book
+  - media
+  - review
+  - lang_de
 title: 'Fertig gelesen: Rumo oder Die Wunder im Dunkeln'
 aliases:
   - /2004/02/15/fertig-gelesen-rumo-oder-die-wunder-im-dunkeln.html

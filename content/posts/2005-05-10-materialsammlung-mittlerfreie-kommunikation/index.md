@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-05-10T05:12:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- media
-- politik
-- usenet
-- lang_de
+  - media
+  - politik
+  - usenet
+  - lang_de
 title: Materialsammlung "Mittlerfreie Kommunikation"
 aliases:
   - /2005/05/10/materialsammlung-mittlerfreie-kommunikation.html

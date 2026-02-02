@@ -4,10 +4,10 @@ date: "2017-11-06T08:13:21Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- lang_en
+  - review
+  - media
+  - book
+  - lang_en
 title: 'Fertig gelesen: All these worlds'
 aliases:
   - /2017/11/06/fertig-gelesen-all-these-worlds.html

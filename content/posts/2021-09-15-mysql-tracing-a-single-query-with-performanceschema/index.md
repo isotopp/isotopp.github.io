@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-09-15T18:06:51Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 title: 'MySQL: Tracing a single query with PERFORMANCE_SCHEMA'
 aliases:
   - /2021/09/15/mysql-tracing-a-single-query-with-performanceschema.html

@@ -3,10 +3,10 @@ author: isotopp
 date: "2016-08-14T20:40:39Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: Holland für die Hosentasche'
 aliases:
   - /2016/08/14/fertig-gelesen-holland-fur-die-hosentasche.html

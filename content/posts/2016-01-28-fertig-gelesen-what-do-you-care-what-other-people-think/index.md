@@ -3,10 +3,10 @@ author: isotopp
 date: "2016-01-28T10:54:54Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
+  - lang_de
+  - book
+  - media
+  - review
 title: 'Fertig gelesen: What Do You Care What Other People Think?'
 aliases:
   - /2016/01/28/fertig-gelesen-what-do-you-care-what-other-people-think.html

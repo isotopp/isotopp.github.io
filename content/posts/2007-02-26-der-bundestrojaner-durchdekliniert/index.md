@@ -3,9 +3,9 @@ author: isotopp
 date: "2007-02-26T19:40:17Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- security
-- überwachung
-- lang_de
+  - security
+  - überwachung
+  - lang_de
 title: Der Bundestrojaner durchdekliniert
 aliases:
   - /2007/02/26/der-bundestrojaner-durchdekliniert.html

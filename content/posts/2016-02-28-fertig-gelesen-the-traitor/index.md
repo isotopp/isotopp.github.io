@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-02-28T16:47:35Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- fantasy
+  - lang_de
+  - book
+  - media
+  - review
+  - fantasy
 title: 'Fertig gelesen: The Traitor Baru Cormorant'
 aliases:
   - /2016/02/28/fertig-gelesen-the-traitor.html

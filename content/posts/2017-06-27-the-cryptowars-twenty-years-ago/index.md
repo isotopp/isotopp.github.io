@@ -4,9 +4,9 @@ date: "2017-06-27T12:15:29Z"
 feature-img: assets/img/background/schloss.jpg
 status: publish
 tags:
-- politik
-- security
-- kryptographie
+  - politik
+  - security
+  - kryptographie
 title: The Cryptowars, twenty years ago
 aliases:
   - /2017/06/27/the-cryptowars-twenty-years-ago.html

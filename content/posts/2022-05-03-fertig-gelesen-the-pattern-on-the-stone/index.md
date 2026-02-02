@@ -4,10 +4,10 @@ date: "2022-05-03T07:47:06Z"
 feature-img: assets/img/background/book.jpg
 title: 'Fertig gelesen: The Pattern on the Stone'
 tags:
-- lang_en
-- review
-- media
-- book
+  - lang_en
+  - review
+  - media
+  - book
 aliases:
   - /2022/05/03/fertig-gelesen-the-pattern-on-the-stone.html
 ---

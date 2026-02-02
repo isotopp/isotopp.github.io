@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-01-04T11:22:09Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- blog
-- free software
-- lizenz
-- lang_de
+  - blog
+  - free software
+  - lizenz
+  - lang_de
 title: Rumble in the Jungle
 aliases:
   - /2005/01/04/rumble-in-the-jungle.html

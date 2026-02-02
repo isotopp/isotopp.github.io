@@ -4,10 +4,10 @@ date: "2019-11-18T18:52:10Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: Infinity Engine'
 aliases:
   - /2019/11/18/fertig-gelesen-infinity-engine.html

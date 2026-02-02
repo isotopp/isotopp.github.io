@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-02-24T08:02:20Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- database
+  - lang_en
+  - mysql
+  - database
 title: Validating storage
 aliases:
   - /2021/02/24/validating-storage.html

@@ -3,9 +3,9 @@ author: isotopp
 date: "2021-09-30T20:01:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- lang_de
-- computer
-- cloud
+  - lang_de
+  - computer
+  - cloud
 title: Software Defined Silicon
 aliases:
   - /2021/09/30/software-defined-silicon.html

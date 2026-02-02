@@ -5,9 +5,9 @@ date: "2025-09-05T05:06:07Z"
 feature-img: assets/img/background/mysql.jpg
 toc: true
 tags:
-- lang_en
-- database
-- mysql
+  - lang_en
+  - database
+  - mysql
 aliases:
   - /2025/09/05/mysql-flag-codes-from-country-codes.html
 ---

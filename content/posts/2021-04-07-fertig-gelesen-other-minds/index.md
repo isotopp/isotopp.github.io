@@ -3,10 +3,10 @@ author: isotopp
 date: "2021-04-07T21:32:05Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- review
-- book
-- media
-- lang_en
+  - review
+  - book
+  - media
+  - lang_en
 title: 'Fertig gelesen: Other Minds'
 aliases:
   - /2021/04/07/fertig-gelesen-other-minds.html

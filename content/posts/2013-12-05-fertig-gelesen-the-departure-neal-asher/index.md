@@ -3,11 +3,11 @@ author: isotopp
 date: "2013-12-05T16:24:33Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: "The Departure"'
 aliases:
   - /2013/12/05/fertig-gelesen-the-departure-neal-asher.html

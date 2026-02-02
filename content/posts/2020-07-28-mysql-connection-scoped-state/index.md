@@ -3,11 +3,11 @@ author: isotopp
 date: "2020-07-28T15:40:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- erklaerbaer
-- database
-- mysql
-- mysqldev
-- lang_en
+  - erklaerbaer
+  - database
+  - mysql
+  - mysqldev
+  - lang_en
 title: MySQL Connection Scoped State
 aliases:
   - /2020/07/28/mysql-connection-scoped-state.html

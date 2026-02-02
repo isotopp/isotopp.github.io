@@ -5,10 +5,10 @@ feature-img: assets/img/background/mysql.jpg
 title: "SQL Engineering Guidelines"
 toc: true
 tags:
-- database
-- mysql
-- mysqldev
-- lang_en
+  - database
+  - mysql
+  - mysqldev
+  - lang_en
 aliases:
   - /2022/04/15/sql-engineering-guidelines.html
 ---

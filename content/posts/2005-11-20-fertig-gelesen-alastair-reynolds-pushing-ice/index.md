@@ -3,10 +3,10 @@ author: isotopp
 date: "2005-11-20T18:29:42Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- review
-- book
-- scifi
-- lang_de
+  - review
+  - book
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: Alastair Reynolds: "Pushing Ice"'
 aliases:
   - /2005/11/20/fertig-gelesen-alastair-reynolds-pushing-ice.html

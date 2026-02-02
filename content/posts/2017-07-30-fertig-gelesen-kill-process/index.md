@@ -4,10 +4,10 @@ date: "2017-07-30T08:07:55Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- lang_en
+  - review
+  - media
+  - book
+  - lang_en
 title: 'Fertig gelesen: Kill Process'
 aliases:
   - /2017/07/30/fertig-gelesen-kill-process.html

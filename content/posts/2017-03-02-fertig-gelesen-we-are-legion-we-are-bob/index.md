@@ -4,11 +4,11 @@ date: "2017-03-02T21:39:15Z"
 feature-img: assets/img/background/book.jpg
 status: publish
 tags:
-- review
-- media
-- book
-- scifi
-- lang_en
+  - review
+  - media
+  - book
+  - scifi
+  - lang_en
 title: 'Fertig gelesen: We are Legion (We are Bob)'
 aliases:
   - /2017/03/02/fertig-gelesen-we-are-legion-we-are-bob.html

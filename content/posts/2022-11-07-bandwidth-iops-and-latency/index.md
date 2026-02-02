@@ -4,9 +4,9 @@ title: "Bandwidth, IOPS and Latency"
 date: "2022-11-07T06:07:08Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- mysqldev
+  - lang_en
+  - mysql
+  - mysqldev
 aliases:
   - /2022/11/07/bandwidth-iops-and-latency.html
 ---

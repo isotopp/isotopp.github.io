@@ -3,10 +3,10 @@ author: isotopp
 date: "2004-06-23T09:00:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- publication
-- talk
-- linux
-- lang_de
+  - publication
+  - talk
+  - linux
+  - lang_de
 title: "Von 10^3 nach 10^7: Wachstumsschmerzen mit Linux"
 aliases:
   - /2004/06/23/von-10-hoch-3-nach-10-hoch-7.html

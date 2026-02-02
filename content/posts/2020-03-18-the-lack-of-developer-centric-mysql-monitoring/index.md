@@ -3,9 +3,9 @@ author: isotopp
 date: "2020-03-18T11:24:09Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
-- mysql
-- monitoring
+  - lang_en
+  - mysql
+  - monitoring
 title: The lack of developer centric MySQL monitoring - a rant
 aliases:
   - /2020/03/18/the-lack-of-developer-centric-mysql-monitoring.html

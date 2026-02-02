@@ -4,9 +4,9 @@ date: "2017-05-18T10:44:13Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 status: publish
 tags:
-- computer
-- work
-- erklaerbaer
+  - computer
+  - work
+  - erklaerbaer
 title: Rolling out patches and changes, often and fast
 aliases:
   - /2017/05/18/rolling-out-patches-and-changes-often-and-fast.html

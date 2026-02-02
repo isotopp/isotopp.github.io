@@ -3,9 +3,9 @@ author: isotopp
 date: "2007-10-10T09:46:49Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- mysql
-- lang_de
+  - database
+  - mysql
+  - lang_de
 title: "Welches Dateisystem für meinen Datenbank-Server"
 aliases:
   - /2007/10/10/welches-dateisystem-fuer-meinen-datenbankserver.html

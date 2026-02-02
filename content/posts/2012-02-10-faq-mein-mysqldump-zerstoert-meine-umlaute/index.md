@@ -3,8 +3,8 @@ author: isotopp
 date: "2012-02-10T11:50:22Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- mysql
-- lang_de
+  - mysql
+  - lang_de
 title: 'FAQ: Mein mysqldump zerstört meine Umlaute'
 aliases:
   - /2012/02/10/faq-mein-mysqldump-zerstoert-meine-umlaute.html

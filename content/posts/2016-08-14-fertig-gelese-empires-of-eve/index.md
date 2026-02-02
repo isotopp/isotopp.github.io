@@ -3,11 +3,11 @@ author: isotopp
 date: "2016-08-14T18:49:05Z"
 feature-img: assets/img/background/book.jpg
 tags:
-- lang_de
-- book
-- media
-- review
-- scifi
+  - lang_de
+  - book
+  - media
+  - review
+  - scifi
 title: 'Fertig gelesen: Empires of EVE'
 aliases:
   - /2016/08/14/fertig-gelese-empires-of-eve.html

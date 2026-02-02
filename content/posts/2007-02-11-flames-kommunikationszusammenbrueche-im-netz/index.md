@@ -3,11 +3,11 @@ author: isotopp
 date: "2007-02-11T13:31:15Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- talk
-- publication
-- karlsruhe
-- stuttgart
-- lang_de
+  - talk
+  - publication
+  - karlsruhe
+  - stuttgart
+  - lang_de
 title: Flames - Kommunikationszusammenbrüche im Netz
 aliases:
   - /2007/02/11/flames-kommunikationszusammenbrueche-im-netz.html

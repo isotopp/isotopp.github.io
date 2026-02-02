@@ -3,9 +3,9 @@ author: isotopp
 date: "1992-03-17T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- publication
-- computer
-- lang_de
+  - publication
+  - computer
+  - lang_de
 title: "Betriebssysteme"
 aliases:
   - /1992/03/17/betriebssysteme.html

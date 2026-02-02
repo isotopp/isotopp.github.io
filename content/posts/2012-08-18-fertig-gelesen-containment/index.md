@@ -3,11 +3,11 @@ author: isotopp
 date: "2012-08-18T07:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- book
-- review
-- media
-- scifi
-- lang_de
+  - book
+  - review
+  - media
+  - scifi
+  - lang_de
 title: 'Fertig gelesen: Containment'
 aliases:
   - /2012/08/18/fertig-gelesen-containment.html

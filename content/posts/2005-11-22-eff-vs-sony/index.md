@@ -3,12 +3,12 @@ author: isotopp
 date: "2005-11-22T08:13:30Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
-- hack
-- sony
-- media
-- musik
-- security
-- lang_de
+  - hack
+  - sony
+  - media
+  - musik
+  - security
+  - lang_de
 title: EFF vs. Sony
 aliases:
   - /2005/11/22/eff-vs-sony.html

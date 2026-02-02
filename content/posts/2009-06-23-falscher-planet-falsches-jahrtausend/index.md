@@ -3,12 +3,12 @@ author: isotopp
 date: "2009-06-23T21:18:20Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- copyright
-- internet
-- media
-- piraten
-- politik
-- lang_de
+  - copyright
+  - internet
+  - media
+  - piraten
+  - politik
+  - lang_de
 title: Falscher Planet, falsches Jahrtausend
 aliases:
   - /2009/06/23/falscher-planet-falsches-jahrtausend.html

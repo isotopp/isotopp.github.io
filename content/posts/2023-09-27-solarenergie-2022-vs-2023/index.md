@@ -5,8 +5,8 @@ date: "2023-09-27T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
-- lang_de
-- energy
+  - lang_de
+  - energy
 aliases:
   - /2023/09/27/solarenergie-2022-vs-2023.html
 ---

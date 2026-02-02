@@ -3,8 +3,8 @@ author: isotopp
 date: "2008-06-15T10:42:08Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- free software
-- lang_de
+  - free software
+  - lang_de
 title: Markteintrittsschranke
 aliases:
   - /2008/06/15/markteintrittsschranke.html

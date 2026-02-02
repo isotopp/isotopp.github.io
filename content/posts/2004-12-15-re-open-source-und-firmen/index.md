@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-12-15T15:55:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- computer
-- lang_de
+  - computer
+  - lang_de
 title: Re Open Source Software und Firmen
 aliases:
   - /2004/12/15/re-open-source-und-firmen.html

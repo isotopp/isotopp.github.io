@@ -3,11 +3,11 @@ author: isotopp
 date: "2009-10-28T16:48:29Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- database
-- development
-- mysql
-- sql
-- lang_de
+  - database
+  - development
+  - mysql
+  - sql
+  - lang_de
 title: Ein paar Gedanken zu Zeitreihendaten
 aliases:
   - /2009/10/28/ein-paar-gedanken-zu-zeitreihendaten.html

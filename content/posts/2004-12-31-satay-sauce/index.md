@@ -3,8 +3,8 @@ author: isotopp
 date: "2004-12-31T18:01:36Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- rezepte
-- lang_de
+  - rezepte
+  - lang_de
 title: Satay Sauce
 aliases:
   - /2004/12/31/satay-sauce.html
