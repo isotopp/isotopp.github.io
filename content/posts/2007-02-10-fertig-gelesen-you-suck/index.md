@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: You Suck'
 aliases:
-  - /2007/02/10/fertig-gelesen-you-suck.md.html
+  - /2007/02/10/fertig-gelesen-you-suck.html
 ---
 
 Will sagen, nach 

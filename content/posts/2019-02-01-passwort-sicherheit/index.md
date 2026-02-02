@@ -8,7 +8,7 @@ tags:
 - security
 - lang_de
 aliases:
-  - /2019/02/01/passwort-sicherheit.md.html
+  - /2019/02/01/passwort-sicherheit.html
 ---
 
 In einem [Kommentar auf Heise](https://www.heise.de/newsticker/meldung/Kommentar-Steckt-Euch-Euren-Aendere-dein-Passwort-Tag-sonstwohin-4291584.html) regt sich Jürgen Schmidt über den Ändere-Dein-Paßwort-Tag auf.

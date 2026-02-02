@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: MySQL für Dummies (2)
 aliases:
-  - /2006/03/03/mysql-fuer-dummies-2.md.html
+  - /2006/03/03/mysql-fuer-dummies-2.html
 ---
 
 Für die folgenden Beispiele wird eine breitere Tabelle gebraucht, und es müssen auch einige Testdaten vorhanden sein.

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Master-Master und Distributed Transactions
 aliases:
-  - /2010/08/16/master-master-und-distributed-transactions.md.html
+  - /2010/08/16/master-master-und-distributed-transactions.html
 ---
 Immer mal wieder kommt jemand im Internet auf die Idee, wie man
 Master-Master und verteilte Transaktionen ganz einfach realisieren kann.

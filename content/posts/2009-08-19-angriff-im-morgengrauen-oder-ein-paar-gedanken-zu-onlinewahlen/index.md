@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Angriff im Morgengrauen oder ein paar Gedanken zu Onlinewahlen
 aliases:
-  - /2009/08/19/angriff-im-morgengrauen-oder-ein-paar-gedanken-zu-onlinewahlen.md.html
+  - /2009/08/19/angriff-im-morgengrauen-oder-ein-paar-gedanken-zu-onlinewahlen.html
 ---
 In [Das Internet wird wahlentscheidend?](http://netzpolitik.org/2009/das-internet-wird-wahlentscheidend/) berichtet Netzpolitik.org über eine Umfrage, die der Branchenverband Bitkom sich hat maßschneidern lassen. Neben einer Reihe von anderen seltsamen Fakten heißt es dort: 
 

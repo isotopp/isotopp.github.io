@@ -9,7 +9,7 @@ tags:
 - bildung
 - security
 aliases:
-  - /2022/12/30/was-mein-kind-in-der-schule-so-macht.md.html
+  - /2022/12/30/was-mein-kind-in-der-schule-so-macht.html
 ---
 
 Die Niederlande sind ja ein Land, das mit WhatsApp funktioniert.

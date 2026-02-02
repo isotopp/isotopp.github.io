@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Drift Into Failure'
 aliases:
-  - /2017/01/02/fertig-gelesen-drift-into-failure.md.html
+  - /2017/01/02/fertig-gelesen-drift-into-failure.html
 ---
 "Drift Into Failure" ist eine Art populärwissenschaftliche Einführung in die Systemtheorie. Anhand einer Reihe von Beispielen werden eine komponentenorientierte Fehleranalyse und eine Art blameless Postmortem nebeneinander gestellt und an Hand von drei zentralen Beispielen (und einer Reihe von kleineren illustrativen Ideen) gezeigt, wie dies zu unterschiedlichen Ergebnissen führen kann.
 

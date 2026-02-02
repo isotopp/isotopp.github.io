@@ -10,7 +10,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: "Finishing School" Series (Etiquette & Espionage, Curtsies and Conspiracies)'
 aliases:
-  - /2014/01/19/fertig-gelesen-finishing-school-series.md.html
+  - /2014/01/19/fertig-gelesen-finishing-school-series.html
 ---
 Fertig gelesen: "Finishing School" Series (Etiquette & Espionage, Curtsies and Conspiracies), Gail Carriger
 

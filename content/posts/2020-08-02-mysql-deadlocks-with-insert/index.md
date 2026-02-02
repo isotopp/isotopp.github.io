@@ -11,7 +11,7 @@ tags:
 - erklaerbaer
 title: MySQL Deadlocks with INSERT
 aliases:
-  - /2020/08/02/mysql-deadlocks-with-insert.md.html
+  - /2020/08/02/mysql-deadlocks-with-insert.html
 ---
 
 Support Channel. "Hi, I am getting deadlocks in the database, and they occur when I have to roll back the transactions but if we don't have to roll back all transactions get executed." 

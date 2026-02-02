@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: "Sex and the citadel"'
 aliases:
-  - /2014/08/11/fertig-gelesen-sex-and-the-citadel.md.html
+  - /2014/08/11/fertig-gelesen-sex-and-the-citadel.html
 ---
 Ausgehend von Ägypten blickt das Buch auf den Umgang der arabischen Welt mit der Sexualität in allen ihren Facetten und wie sie sich unter dem Einfluß des radikalen Islamismus verändert hat. Gerade auch die historische Perspektive auf Sexualtät und die Rolle der Frau im Kalifat ist spannend, weil sie zugleich den modernen Islamismus demaskiert als Gewalt gegen sich selbst und andere aus Unsicherheit.
 

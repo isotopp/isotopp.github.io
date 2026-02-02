@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Zero Tests and Testing in Production
 aliases:
-  - /2017/05/29/zero-tests-and-testing-in-production.md.html
+  - /2017/05/29/zero-tests-and-testing-in-production.html
 ---
 There is a pretty cool Twitter thread by Sarah Mei, starting at 
 

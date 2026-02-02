@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Kris, where are the posts?
 aliases:
-  - /2017/05/08/kris-where-are-the-posts.md.html
+  - /2017/05/08/kris-where-are-the-posts.html
 ---
 It's not my fault, really. It's
 [Schenker](https://www.mysn.de/xmg-gaming-desktop-pcs/xmg-prime), and 

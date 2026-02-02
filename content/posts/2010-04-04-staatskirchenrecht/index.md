@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Staatskirchenrecht
 aliases:
-  - /2010/04/04/staatskirchenrecht.md.html
+  - /2010/04/04/staatskirchenrecht.html
 ---
 Warum zahlen wir in Deutschland Kirchensteuer und keinen Zehnt an die
 jeweilige Kirche direkt? Wieso ist an einigen Tagen Tanzverbot? Wieso

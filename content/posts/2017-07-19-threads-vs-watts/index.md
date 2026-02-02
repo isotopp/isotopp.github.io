@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Threads vs. Watts
 aliases:
-  - /2017/07/19/threads-vs-watts.md.html
+  - /2017/07/19/threads-vs-watts.html
 ---
 So I have been testing, again. My hapless test subject this time is a Dell Box, an R630. It has a comfortable 384GB of memory, one of two 25 GBit/s ports active, and it comes with two [E5-2690v4](http://ark.intel.com/products/91770/Intel-Xeon-Processor-E5-2690-v4-35M-Cache-2_60-GHz) CPUs. That gives it 14 cores per die, 28 cores in total, or with hyperthreading, 56 threads.
 

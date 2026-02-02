@@ -6,7 +6,7 @@ tags:
 - lang_de
 title: Die Query schlägt zurück
 aliases:
-  - /2011/07/21/die-query-schl-gt-zur-ck.md.html
+  - /2011/07/21/die-query-schl-gt-zur-ck.html
 ---
 Der vielfach unterschätzte Michael Seemann erklärt der Spackeria, warum es
 sie gibt:

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Mehr Online-Durchsuchungs-Nebelkerzen
 aliases:
-  - /2007/08/29/mehr-online-durchsuchungs-nebelkerzen.md.html
+  - /2007/08/29/mehr-online-durchsuchungs-nebelkerzen.html
 ---
 Laut 
 [Heise Newsticker](http://www.heise.de/newsticker/meldung/95073) äußert sich IT-Laie Jörg Ziercke: 

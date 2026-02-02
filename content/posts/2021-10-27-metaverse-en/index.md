@@ -9,7 +9,7 @@ tags:
 - media
 title: Metaverse (en)
 aliases:
-  - /2021/10/27/metaverse-en.md.html
+  - /2021/10/27/metaverse-en.html
 ---
 
 I [wrote on Twitter](https://twitter.com/isotopp/status/1450739310546886657) something about the term "Metaverse".

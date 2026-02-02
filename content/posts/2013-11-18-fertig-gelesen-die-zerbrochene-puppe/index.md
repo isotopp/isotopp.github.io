@@ -10,7 +10,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: Die zerbrochene Puppe'
 aliases:
-  - /2013/11/18/fertig-gelesen-die-zerbrochene-puppe.md.html
+  - /2013/11/18/fertig-gelesen-die-zerbrochene-puppe.html
 ---
 Die zerbrochene Puppe kam hier quasi zeitgleich mit Aetherhertz von Anja Bagus rein und ist ebenfalls ein deutscher Streampunk-Roman, da hören die Gemeinsamkeiten auch schon auf. Während ich Aetherhertz so heruntergelesen habe und gespannt auf einen zweiten Teil warte, habe ich mich durch die zerbrochene Puppe hindurch kämpfen müssen.
 

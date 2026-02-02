@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Warum ich Urlaub brauche
 aliases:
-  - /2010/08/22/warum-ich-urlaub-brauche.md.html
+  - /2010/08/22/warum-ich-urlaub-brauche.html
 ---
 
 Meine Firma verwendet SAP. Zum Glück habe ich damit nicht viel zu tun, außer

@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Unicode is over and it dies over Emoji
 aliases:
-  - /2017/11/05/unicode-is-over-and-it-dies-over-emoji.md.html
+  - /2017/11/05/unicode-is-over-and-it-dies-over-emoji.html
 ---
 
 In 1982, [Scott Fahlmann invented the use of :-) and :-(](http://www.cs.cmu.edu/~sef/Orig-Smiley.htm) for marking up emotions or semantic context in written online communication.

@@ -9,7 +9,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /2002/06/01/enterprise-intranet-integration.md.html
+  - /2002/06/01/enterprise-intranet-integration.html
 ---
 
 **Vortrag auf der NuBIT, Kiel, 2002**

@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: The cost of winning…
 aliases:
-  - /2017/03/10/the-cost-of-winning.md.html
+  - /2017/03/10/the-cost-of-winning.html
 ---
 Tech.co has an article titled 
 [Artificial Intelligence Startups Are Winning the Cybersecurity Race](http://tech.co/ai-startups-winning-cybersecurity-race-2017-03). The

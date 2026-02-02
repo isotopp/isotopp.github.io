@@ -8,7 +8,7 @@ tags:
 - monitoring
 title: The lack of developer centric MySQL monitoring - a rant
 aliases:
-  - /2020/03/18/the-lack-of-developer-centric-mysql-monitoring.md.html
+  - /2020/03/18/the-lack-of-developer-centric-mysql-monitoring.html
 ---
 So where I work we have a large number of MySQL instances. They are organized in a slightly smaller number of replication hierarchies, which tend to cross region boundaries.
 

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Invasion des guten Geschmacks
 aliases:
-  - /2005/05/13/invasion-des-guten-geschmacks.md.html
+  - /2005/05/13/invasion-des-guten-geschmacks.html
 ---
 
 ![](tosi_cruisi.jpg)

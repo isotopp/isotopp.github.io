@@ -8,7 +8,7 @@ tags:
 - mysqldev
 title: Database as a Queue
 aliases:
-  - /2021/01/28/database-as-a-queue.md.html
+  - /2021/01/28/database-as-a-queue.html
 ---
 
 The DBA experience at work suggests that every single schema at some point in its lifecycle holds a queue table. These are tables in which some processes (the “producers”) put rows, which a swarm of other processes (the “consumers”) lock and consume.

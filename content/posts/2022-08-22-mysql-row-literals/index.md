@@ -8,7 +8,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2022/08/22/mysql-row-literals.md.html
+  - /2022/08/22/mysql-row-literals.html
 ---
 
 Question on the Libera/#mysql IRC channel:

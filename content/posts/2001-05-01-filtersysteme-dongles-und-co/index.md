@@ -9,7 +9,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /2001/05/01/filtersysteme-dongles-und-co.md.html
+  - /2001/05/01/filtersysteme-dongles-und-co.html
 ---
 
 **Vortrag auf der Alcatel SEL Stiftungskonferenz, Mai 2001**

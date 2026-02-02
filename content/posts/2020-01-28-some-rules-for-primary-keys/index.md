@@ -9,7 +9,7 @@ tags:
 - database
 title: Some rules for primary keys
 aliases:
-  - /2020/01/28/some-rules-for-primary-keys.md.html
+  - /2020/01/28/some-rules-for-primary-keys.html
 ---
 On Twitter, [@CaptainEyesight](https://twitter.com/CaptainEyesight/status/1221889419654787073) asked a question:
 

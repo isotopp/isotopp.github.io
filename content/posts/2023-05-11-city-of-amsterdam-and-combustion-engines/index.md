@@ -9,7 +9,7 @@ tags:
 - netherlands
 title: 'City of Amsterdam and Combustion Engines'
 aliases:
-  - /2023/05/11/city-of-amsterdam-and-combustion-engines.md.html
+  - /2023/05/11/city-of-amsterdam-and-combustion-engines.html
 ---
 
 Electrive.net had an article about Copenhagen banning combustion engines in the city, starting 2030:

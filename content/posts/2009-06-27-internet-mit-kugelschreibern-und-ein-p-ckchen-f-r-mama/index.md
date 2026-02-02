@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Internet mit Kugelschreibern (und ein Päckchen für Mama)
 aliases:
-  - /2009/06/27/internet-mit-kugelschreibern-und-ein-p-ckchen-f-r-mama.md.html
+  - /2009/06/27/internet-mit-kugelschreibern-und-ein-p-ckchen-f-r-mama.html
 ---
 Ich bin ja ein guter Sohn und schicke daher meiner Mama ab und an ein Päckchen. Da freut sie sich immer. Weil ich außerdem ein Geek bin, ist es ein IP-Päckchen.
 

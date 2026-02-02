@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Dead until dark'
 aliases:
-  - /2003/09/08/fertig-gelesen-dead-until-dark.md.html
+  - /2003/09/08/fertig-gelesen-dead-until-dark.html
 ---
 [Dead until dark](https://www.amazon.de/Dead-Until-Sookie-Stackhouse-English-ebook/dp/B000OCXHRW) ist die Geschichte einer Kellnerin, die Gedanken lesen kann und die sich einen Vampir als Liebhaber anschafft, während ihr Chef ein Werhund ist.
 

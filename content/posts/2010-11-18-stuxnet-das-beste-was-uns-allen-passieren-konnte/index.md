@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Stuxnet - das Beste, was uns allen passieren konnte
 aliases:
-  - /2010/11/18/stuxnet-das-beste-was-uns-allen-passieren-konnte.md.html
+  - /2010/11/18/stuxnet-das-beste-was-uns-allen-passieren-konnte.html
 ---
 [Stuxnet](http://de.wikipedia.org/wiki/Stuxnet) ist ein maßgeschneiderter
 Computervirus, der zwei bislang unbekannte Windows-Sicherheitslücken

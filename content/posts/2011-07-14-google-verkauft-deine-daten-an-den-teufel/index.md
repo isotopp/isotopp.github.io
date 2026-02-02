@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Google verkauft Deine Daten an den Teufel!
 aliases:
-  - /2011/07/14/google-verkauft-deine-daten-an-den-teufel.md.html
+  - /2011/07/14/google-verkauft-deine-daten-an-den-teufel.html
 ---
 [Google plant die Super-Datenbank](http://www.sueddeutsche.de/digital/gespeichterte-nutzerdaten-google-plant-die-super-datenbank-1.1119600) 
 schreibt die SZ, 

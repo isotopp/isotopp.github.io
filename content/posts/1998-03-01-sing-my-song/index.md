@@ -8,7 +8,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /1998/03/01/sing-my-song.md.html
+  - /1998/03/01/sing-my-song.html
 ---
 
 ```console

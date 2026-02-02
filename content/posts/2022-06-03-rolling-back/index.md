@@ -8,7 +8,7 @@ tags:
 - mysql
 - lang_en
 aliases:
-  - /2022/06/03/rolling-back.md.html
+  - /2022/06/03/rolling-back.html
 ---
 
 Where I work, we [manage databases in an automated way]({{< relref "2021-03-24-a-lot-of-mysql.md" >}}).

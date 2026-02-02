@@ -9,7 +9,7 @@ tags:
 - talk
 - publication
 aliases:
-  - /2000/08/21/web-security.md.html
+  - /2000/08/21/web-security.html
 ---
 
 ![](2000/08/web-security.001.jpg)

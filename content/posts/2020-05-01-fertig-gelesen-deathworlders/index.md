@@ -9,7 +9,7 @@ tags:
 - book
 title: 'Fertig gelesen: Deathworlders'
 aliases:
-  - /2020/05/01/fertig-gelesen-deathworlders.md.html
+  - /2020/05/01/fertig-gelesen-deathworlders.html
 ---
 In the foreword to his short story "With Friends Like These["](http://img.4plebs.org/boards/tg/image/1399/37/1399378820602.pdf), Alan Dean Foster writes
 

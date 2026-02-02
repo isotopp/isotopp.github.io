@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Stromzähler revisited
 aliases:
-  - /2009/07/06/stromzaehler-revisited.md.html
+  - /2009/07/06/stromzaehler-revisited.html
 ---
 
 Neulich fragte ich noch 

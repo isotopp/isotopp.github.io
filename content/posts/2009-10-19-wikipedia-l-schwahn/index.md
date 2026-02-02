@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Wikipedia Löschwahn
 aliases:
-  - /2009/10/19/wikipedia-l-schwahn.md.html
+  - /2009/10/19/wikipedia-l-schwahn.html
 ---
 Im August dieses Jahres titelte Golem 
 [Die aktivsten Wikipedia-Autoren bleiben unter sich](http://www.golem.de/0908/69071.html). Dort hieß es: 

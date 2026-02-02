@@ -9,7 +9,7 @@ tags:
 - linux
 - storage
 aliases:
-  - /2022/02/01/time-to-grow-the-file-server.md.html
+  - /2022/02/01/time-to-grow-the-file-server.html
 ---
 
 The old file server was full, and since the little one got more local storage in his laptop, I also needed more storage for backup to match.

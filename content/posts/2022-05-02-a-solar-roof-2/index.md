@@ -10,7 +10,7 @@ tags:
 - energy
 - climate
 aliases:
-  - /2022/05/02/a-solar-roof-2.md.html
+  - /2022/05/02/a-solar-roof-2.html
 ---
 
 Zum vorhergehenden Artikel bekam ich einen Leserbrief als Github Issue, das ist hier inhaltlich unverändert veröffentliche,

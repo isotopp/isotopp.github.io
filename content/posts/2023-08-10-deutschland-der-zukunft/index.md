@@ -8,7 +8,7 @@ tags:
 - lang_de
 - erklaerbaer
 aliases:
-  - /2023/08/10/deutschland-der-zukunft.md.html
+  - /2023/08/10/deutschland-der-zukunft.html
 ---
 
 Das Statistische Bundesamt hat in 

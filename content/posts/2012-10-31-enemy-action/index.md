@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Enemy Action
 aliases:
-  - /2012/10/31/enemy-action.md.html
+  - /2012/10/31/enemy-action.html
 ---
 "Kris, guck mal, connection surge auf $WICHTIGER_MASTER, davor kurzer Activity drop. Alle anderen Graphen sehen normal aus."
 

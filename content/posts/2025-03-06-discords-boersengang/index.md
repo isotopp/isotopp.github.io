@@ -9,7 +9,7 @@ tags:
   - erklaerbaer
 title: "Discords Börsengang"
 aliases:
-  - /2025/03/06/discords-boersengang.md.html
+  - /2025/03/06/discords-boersengang.html
 ---
 
 Heise berichtet:

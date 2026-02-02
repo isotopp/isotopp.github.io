@@ -8,7 +8,7 @@ tags:
 - devops
 - python
 aliases:
-  - /2022/12/12/ansible-list-crossproduct.md.html
+  - /2022/12/12/ansible-list-crossproduct.html
 ---
 
 A friend asked in Discord:

@@ -7,7 +7,7 @@ tags:
 - windows
 title: Windows 10 and Umlauts with an english keyboard
 aliases:
-  - /2021/05/15/windows-10-and-umlauts-with-an-english-keyboard.md.html
+  - /2021/05/15/windows-10-and-umlauts-with-an-english-keyboard.html
 ---
 
 I never wrote this up, and the information online is all referring to older versions of Windows, so let's fix this.

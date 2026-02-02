@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: '"Dir fehlen die Worte" oder "Die Position der Piratenpartei zum Urheberrecht in einer Flatrategesellschaft"'
 aliases:
-  - /2009/07/01/dir-fehlen-die-worte-oder-die-position-der-piratenpartei-zum-urheberrecht-in-einer-flatrategesellschaft.md.html
+  - /2009/07/01/dir-fehlen-die-worte-oder-die-position-der-piratenpartei-zum-urheberrecht-in-einer-flatrategesellschaft.html
 ---
 > Ich bin Mitglied in der Piratenpartei, aber dieser Text hier ist meine
 > Sicht auf das Thema und nicht eine abgestimmte Position der Piratenpartei.

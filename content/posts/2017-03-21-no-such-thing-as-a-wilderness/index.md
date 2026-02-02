@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: No such thing as a wilderness?
 aliases:
-  - /2017/03/21/no-such-thing-as-a-wilderness.md.html
+  - /2017/03/21/no-such-thing-as-a-wilderness.html
 ---
 
 Some 40 authors are listed in the title of 

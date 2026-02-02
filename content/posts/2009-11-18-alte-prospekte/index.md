@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Alte Prospekte
 aliases:
-  - /2009/11/18/alte-prospekte.md.html
+  - /2009/11/18/alte-prospekte.html
 ---
 Beim Aufräumen habe ich noch ein paar alte Prospekte gefunden und mal eben
 eingescannt.

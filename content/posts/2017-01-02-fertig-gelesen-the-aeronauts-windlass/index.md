@@ -10,7 +10,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: The Aeronaut''s Windlass'
 aliases:
-  - /2017/01/02/fertig-gelesen-the-aeronauts-windlass.md.html
+  - /2017/01/02/fertig-gelesen-the-aeronauts-windlass.html
 ---
 Butcher ("Dresden Files") nimmt sich des Genres Steampunk an und wirft uns in eine fremde Welt, offensichtlich ein besiedelter Planet der nicht die Erde ist und in der Menschen Eindringlinge sind, und in der sie  nur auf Grund einer halb mystischen, vergessenen Technologie überleben können, die auf "Aether" basiert.
 

@@ -9,7 +9,7 @@ tags:
 - media
 - book
 aliases:
-  - /2023/10/01/fertig-gelesen-starter-villain.md.html
+  - /2023/10/01/fertig-gelesen-starter-villain.html
 ---
 
 [John Scalzi's](https://mastodon.social/@scalzi) latest book is currently

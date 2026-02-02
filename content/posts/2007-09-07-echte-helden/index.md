@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Echte Helden
 aliases:
-  - /2007/09/07/echte-helden.md.html
+  - /2007/09/07/echte-helden.html
 ---
 ![](yodaorigami.jpg)
 

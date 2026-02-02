@@ -9,7 +9,7 @@ tags:
 - security
 - hack
 aliases:
-  - /2023/09/15/sshpass.md.html
+  - /2023/09/15/sshpass.html
 ---
 
 Heute lernte ich, daß das Utility `sshpass` existiert.

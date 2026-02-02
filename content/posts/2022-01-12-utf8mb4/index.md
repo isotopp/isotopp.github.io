@@ -8,7 +8,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2022/01/12/utf8mb4.md.html
+  - /2022/01/12/utf8mb4.html
 ---
 
 On Twitter, Jan Wildeboer [linked](https://twitter.com/jwildeboer/status/1481308177727729668) an [article by Adam Hooper](https://adamhooper.medium.com/in-mysql-never-use-utf8-use-utf8mb4-11761243e434) on MySQL and the weird `utf8mb4` character set.

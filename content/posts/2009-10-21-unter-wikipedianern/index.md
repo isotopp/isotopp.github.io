@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Unter Wikipedianern
 aliases:
-  - /2009/10/21/unter-wikipedianern.md.html
+  - /2009/10/21/unter-wikipedianern.html
 ---
 Ich habe die letzten paar Tage unter Wikipedianern zugebracht. Also, nicht etwa in deren Wiki, wie man erwarten sollte, sondern im Freenode im Channel #wikipedia-de, wo offenbar einige Leute abhängen, die in der deutschen Wikipedia editieren. Die Erfahrung war… seltsam.
 

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Automatisierung und Skalierung - Teil 2
 aliases:
-  - /2011/02/18/automatisierung-und-skalierung-teil-2.md.html
+  - /2011/02/18/automatisierung-und-skalierung-teil-2.html
 ---
 Dies ist der 2. Teil zum Thema Automatisierung von Systemverwaltungsaufgaben. 
 [Den ersten Teil gibt es hier]({{< relref "2011-02-17-automatisierung-und-skalierung.md" >}}).

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Artikelsammlung "Staatstrojaner"
 aliases:
-  - /2011/10/11/artikelsammlung-staatstrojaner.md.html
+  - /2011/10/11/artikelsammlung-staatstrojaner.html
 ---
 
 Das Thema Staatstrojaner (damals noch: Bundestrojaner) begleitet uns hier im

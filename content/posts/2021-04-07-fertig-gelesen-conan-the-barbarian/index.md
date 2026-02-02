@@ -9,7 +9,7 @@ tags:
 - book
 title: 'Fertig gelesen: Conan, The Barbarian'
 aliases:
-  - /2021/04/07/fertig-gelesen-conan-the-barbarian.md.html
+  - /2021/04/07/fertig-gelesen-conan-the-barbarian.html
 ---
 [Conan, The Barbarian](https://www.amazon.de/Conan-Barbarian-Complete-Collection-English-ebook/dp/B07HCD69LQ) by Robert E. Howard is a collection of all Conan stories.
 

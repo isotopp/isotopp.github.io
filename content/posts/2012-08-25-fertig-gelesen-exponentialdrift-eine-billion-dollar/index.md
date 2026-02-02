@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Exponentialdrift, Eine Billion Dollar'
 aliases:
-  - /2012/08/25/fertig-gelesen-exponentialdrift-eine-billion-dollar.md.html
+  - /2012/08/25/fertig-gelesen-exponentialdrift-eine-billion-dollar.html
 ---
 [Exponentialdrift](http://www.amazon.de/Exponentialdrift-Roman-ebook/dp/B004ROTA74),
 Andreas Eschbach, EUR 3.99

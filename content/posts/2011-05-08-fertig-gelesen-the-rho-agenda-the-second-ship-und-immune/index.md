@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: The Rho Agenda (The Second Ship und Immune)'
 aliases:
-  - /2011/05/08/fertig-gelesen-the-rho-agenda-the-second-ship-und-immune.md.html
+  - /2011/05/08/fertig-gelesen-the-rho-agenda-the-second-ship-und-immune.html
 ---
 "[The Second Ship](http://www.amazon.com/Second-Ship-Rho-Agenda-ebook/dp/B00196L8DW)",
 Richard Phillips, 0.71 USD

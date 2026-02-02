@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Urteilsbegründung zu GPL in Deutschland vor Gericht durchgesetzt
 aliases:
-  - /2006/09/22/urteilsbegr-ndung-zu-gpl-in-deutschland-vor-gericht-durchgesetzt.md.html
+  - /2006/09/22/urteilsbegr-ndung-zu-gpl-in-deutschland-vor-gericht-durchgesetzt.html
 ---
 Nachtrag zu
 [GPL in Deutschland vor Gericht durchgesetzt]({{< relref "2004-04-15-gnu-gpl-in-deutschland.md" >}}):

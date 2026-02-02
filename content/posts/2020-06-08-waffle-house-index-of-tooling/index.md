@@ -8,7 +8,7 @@ tags:
 - performance
 title: Waffle House Index of Tooling
 aliases:
-  - /2020/06/08/waffle-house-index-of-tooling.md.html
+  - /2020/06/08/waffle-house-index-of-tooling.html
 ---
 Charity Majors was [on fire and on target, again](https://twitter.com/mipsytipsy/status/1268418428542443520):
 

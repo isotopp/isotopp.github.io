@@ -8,7 +8,7 @@ tags:
 - devops
 - security
 aliases:
-  - /2023/02/18/this-is-not-a-drill.md.html
+  - /2023/02/18/this-is-not-a-drill.html
 ---
 
 # Master of Disaster

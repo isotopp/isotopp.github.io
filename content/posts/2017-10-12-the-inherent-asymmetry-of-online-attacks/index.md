@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: The inherent Asymmetry of online attacks
 aliases:
-  - /2017/10/12/the-inherent-asymmetry-of-online-attacks.md.html
+  - /2017/10/12/the-inherent-asymmetry-of-online-attacks.html
 ---
 [Katie Moussouris explains teh Cyber](https://twitter.com/k8em0/status/918516496569073664) 
 and how it is asymmetric: 

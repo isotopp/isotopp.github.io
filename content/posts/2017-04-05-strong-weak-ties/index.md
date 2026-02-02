@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: Strong weak ties
 aliases:
-  - /2017/04/05/strong-weak-ties.md.html
+  - /2017/04/05/strong-weak-ties.html
 ---
 
 A long time ago, I wrote a text on the German Blog and on Carta: 

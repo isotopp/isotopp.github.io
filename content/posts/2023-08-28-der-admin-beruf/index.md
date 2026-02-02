@@ -9,7 +9,7 @@ tags:
 - devops
 - computer
 aliases:
-  - /2023/08/28/der-admin-beruf.md.html
+  - /2023/08/28/der-admin-beruf.html
 ---
 
 (based on a series of posts on Mastdon)

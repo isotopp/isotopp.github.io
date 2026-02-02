@@ -10,7 +10,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: Waldesruh'
 aliases:
-  - /2014/12/01/fertig-gelesen-waldesruh.md.html
+  - /2014/12/01/fertig-gelesen-waldesruh.html
 ---
 Eine weitere Geschichte im Aetherwelt-Universum von Anja Bagus, und insbesondere eine, die auch den Metaplot weiter vorantreibt und in dem von ihr geschaffenen Universum weiter für Eskalation sorgt. Handwerklich schön gemacht und gut zu lesen, spielt sich vor dem Hintergrund eines Hotels im Hochschwarzwald und unter Aufnahme von Mythen und Märchen der Region ein Konflikt zwischen verschiedenen Parteien der Aetherwelt ab, bei dem wir als Leser mehr über das Wesen und die Macht der Magie in ihrer Welt lernen.
 

@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: 'Catalina: Upgrade carefully.'
 aliases:
-  - /2019/10/08/catalina-upgrade-carefully.md.html
+  - /2019/10/08/catalina-upgrade-carefully.html
 ---
 Catalina is here. It fixes many things, among them iTunes. On the other
 hand, it drops support for 32-Bit MacOS applications.

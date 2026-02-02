@@ -8,7 +8,7 @@ tags:
 - internet
 title: Netflix does not bring down the Internet
 aliases:
-  - /2020/03/19/netflix-does-not-bring-down-the-internet.md.html
+  - /2020/03/19/netflix-does-not-bring-down-the-internet.html
 ---
 It's Coronavirus Crisis and Netflix is killing us all, again. This time it's not their [excessive energy use]({{< relref "2019-12-28-streaming-and-energy.md" >}}), but their dreaded HD videos that are overloading the Internet. Or is it?
 

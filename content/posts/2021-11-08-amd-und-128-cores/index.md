@@ -8,7 +8,7 @@ tags:
 - computer
 - cloud
 aliases:
-  - /2021/11/08/amd-und-128-cores.md.html
+  - /2021/11/08/amd-und-128-cores.html
 ---
 
 Wir sprachen in

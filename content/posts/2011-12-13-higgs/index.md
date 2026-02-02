@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Higgs
 aliases:
-  - /2011/12/13/higgs.md.html
+  - /2011/12/13/higgs.html
 ---
 Das Cern macht in weniger als 2 Stunden [einen
 Webcast(http://webcast.web.cern.ch/webcast/). Der Titel ist "Update on the

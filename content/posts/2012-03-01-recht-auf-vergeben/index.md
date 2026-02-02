@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Recht auf Vergeben
 aliases:
-  - /2012/03/01/recht-auf-vergeben.md.html
+  - /2012/03/01/recht-auf-vergeben.html
 ---
 
 Unser Innenminister diskutiert das "[Recht auf Vergessen](http://www.spiegel.de/netzwelt/netzpolitik/0,1518,817830,00.html)"

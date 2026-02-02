@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Das Internet macht die Politik schwerer... Menno.
 aliases:
-  - /2010/07/21/das-internet-macht-die-politik-schwerer-menno.md.html
+  - /2010/07/21/das-internet-macht-die-politik-schwerer-menno.html
 ---
 [Merkel so](http://www.heise.de/newsticker/meldung/Merkel-Das-Web-macht-es-der-Politik-schwerer-1042655.html): 
 

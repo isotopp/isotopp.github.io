@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: MySQL und die Lizenzen
 aliases:
-  - /2004/03/14/mysql-und-die-lizenzen.md.html
+  - /2004/03/14/mysql-und-die-lizenzen.html
 ---
 
 ![](20040314_dolphin.jpg) 

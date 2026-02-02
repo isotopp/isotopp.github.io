@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Mindstar Rising, A Quantum Murder, The Nano Flower'
 aliases:
-  - /2015/11/30/fertig-gelesen-mindstar-rising-a-quantum-murder-the-nano-flower.md.html
+  - /2015/11/30/fertig-gelesen-mindstar-rising-a-quantum-murder-the-nano-flower.html
 ---
 Wenn Peter F. Hamilton versucht, alle Modewellen von 1993 gleichzeitig zu reiten, dann schreibt er einen YA Roman, der in der grimmen Zukunft eines durch Klimawandel und Sozialismus zugrunde gerichteten Post-Peak-Oil England spielt und versucht, Cyberpunk zu sein. Wenn man dabei Worte wie "Cybofax" liest, dann ist das niedlich, aber Smartphones waren 1993 noch nicht erfunden, und Hamilton hat sie korrekt vorhergesehen, wenn er auch den Namen nicht wissen konnte, den wir diesen Dingen geben werden würden. 
 

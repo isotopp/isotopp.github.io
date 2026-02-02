@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Ein paar ideologische Steine ins Rollen bringen
 aliases:
-  - /2005/01/05/ein-paar-ideologische-steine-ins-rollen-bringen.md.html
+  - /2005/01/05/ein-paar-ideologische-steine-ins-rollen-bringen.html
 ---
 Im Nachbeben zu
 [Rumble in the Jungle]({{< relref "2005-01-04-rumble-in-the-jungle.md" >}})

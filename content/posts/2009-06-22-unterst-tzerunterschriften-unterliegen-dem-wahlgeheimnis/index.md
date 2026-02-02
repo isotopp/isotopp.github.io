@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Unterstützerunterschriften unterliegen dem Wahlgeheimnis
 aliases:
-  - /2009/06/22/unterst-tzerunterschriften-unterliegen-dem-wahlgeheimnis.md.html
+  - /2009/06/22/unterst-tzerunterschriften-unterliegen-dem-wahlgeheimnis.html
 ---
 Chris erklärt in 
 [Unterstützungsunterschriften unterliegen dem Wahlgeheimnis](http://chris-wf.livejournal.com/4505.html): 

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Was bringt ext4?
 aliases:
-  - /2009/01/23/was-bringt-ext4.md.html
+  - /2009/01/23/was-bringt-ext4.html
 ---
 Der Linux-Kernel 2.6.28 enthält das ext4-Dateisystem standardmäßig und sowohl Fedora als auch Ubuntu werden es unterstützen. Was bringt ext4 an Änderungen?
 

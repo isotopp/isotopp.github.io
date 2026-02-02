@@ -8,7 +8,7 @@ tags:
 - blockchain
 title: Hashes in Structures
 aliases:
-  - /2018/03/04/hashes-in-structures.md.html
+  - /2018/03/04/hashes-in-structures.html
 ---
 In 
 [Hashes and their uses]({{< relref "2018-02-26-hashes-and-their-uses.md" >}}) 

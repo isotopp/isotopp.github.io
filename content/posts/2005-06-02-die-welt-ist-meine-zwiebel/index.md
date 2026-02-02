@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Die Welt ist meine... Zwiebel?
 aliases:
-  - /2005/06/02/die-welt-ist-meine-zwiebel.md.html
+  - /2005/06/02/die-welt-ist-meine-zwiebel.html
 ---
 ![](tor.jpg)
 

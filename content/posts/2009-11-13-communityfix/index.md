@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Communityfix
 aliases:
-  - /2009/11/13/communityfix.md.html
+  - /2009/11/13/communityfix.html
 ---
 Ich schrieb in 
 [Der alljährliche Wikimedia-Spendenaufruf]({{< relref "2009-11-12-update-der-allj-hrliche-wikimedia-spendenaufruf.md" >}}):

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Mehr Bundestrojaner
 aliases:
-  - /2009/01/23/mehr-bundestrojaner.md.html
+  - /2009/01/23/mehr-bundestrojaner.html
 ---
 Es sollten drei bis fünf Überwachungen mit einem maßgeschneiderten Binary
 sein, sagten Schäuble und Ziercke. Doch erwartungsgemäß liest sich das nun

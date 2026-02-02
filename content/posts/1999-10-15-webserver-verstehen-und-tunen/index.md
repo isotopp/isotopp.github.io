@@ -8,7 +8,7 @@ tags:
 - php
 - web 
 aliases:
-  - /1999/10/15/webserver-verstehen-und-tunen.md.html
+  - /1999/10/15/webserver-verstehen-und-tunen.html
 ---
 
 *Diesen Artikel habe ich als Schulungsunterlage für

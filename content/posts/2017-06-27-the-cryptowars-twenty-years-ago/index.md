@@ -9,7 +9,7 @@ tags:
 - kryptographie
 title: The Cryptowars, twenty years ago
 aliases:
-  - /2017/06/27/the-cryptowars-twenty-years-ago.md.html
+  - /2017/06/27/the-cryptowars-twenty-years-ago.html
 ---
 
 So there was 

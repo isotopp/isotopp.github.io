@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Urheberrecht - 360-Grad-Ansicht
 aliases:
-  - /2009/07/01/urheberrecht-360-grad-ansicht.md.html
+  - /2009/07/01/urheberrecht-360-grad-ansicht.html
 ---
 Durch die Gründung und Medienpräsenz der Piratenpartei, den Heidelberger Appell und die verschiedenen Schreie von Verlagen nach staatlicher Subventionierung und Schutz ihres Geschäftsmodelles als UNESCO Weltkulturerbe ist das Thema Copyright in den vergangenen Wochen aktueller denn je.
 

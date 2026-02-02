@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: '"Bist Du Deutschland?" oder "Ein vereinfachtes Weltbild für Anfänger"'
 aliases:
-  - /2005/12/30/bist-du-deutschland-oder-ein-vereinfachtes-weltbild-fuer-anfaenger.md.html
+  - /2005/12/30/bist-du-deutschland-oder-ein-vereinfachtes-weltbild-fuer-anfaenger.html
 ---
 
 ![](deutschlandfahne.jpg)

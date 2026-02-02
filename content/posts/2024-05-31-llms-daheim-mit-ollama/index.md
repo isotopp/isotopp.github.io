@@ -10,7 +10,7 @@ tags:
 - erklaerbaer
 - ai
 aliases:
-  - /2024/05/31/llms-daheim-mit-ollama.md.html
+  - /2024/05/31/llms-daheim-mit-ollama.html
 ---
 
 Dieser Text ist eine Art Follow-up für [Wie ChatGPT funktioniert]({{< relref "2024-02-06-wie-chatgpt-funktioniert.md" >}}).

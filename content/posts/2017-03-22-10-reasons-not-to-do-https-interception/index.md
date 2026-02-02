@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: 10 reasons not to do HTTPS interception
 aliases:
-  - /2017/03/22/10-reasons-not-to-do-https-interception.md.html
+  - /2017/03/22/10-reasons-not-to-do-https-interception.html
 ---
 Marnix Dekker has [an article on HTTPS
 interception](https://www.linkedin.com/pulse/9-reasons-intercept-https-marnix-dekker)

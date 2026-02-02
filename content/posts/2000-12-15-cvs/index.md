@@ -8,7 +8,7 @@ tags:
 - talk
 - publication
 aliases:
-  - /2000/12/15/cvs.md.html
+  - /2000/12/15/cvs.html
 ---
 
 # CVS - Was ist das?

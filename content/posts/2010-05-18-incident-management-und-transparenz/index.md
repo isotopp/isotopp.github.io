@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Incident Management und Transparenz
 aliases:
-  - /2010/05/18/incident-management-und-transparenz.md.html
+  - /2010/05/18/incident-management-und-transparenz.html
 ---
 In einem  Kommentar zu "Wie man aus Versehen WLAN-Daten mitschneidet"
 schreibt Florian:

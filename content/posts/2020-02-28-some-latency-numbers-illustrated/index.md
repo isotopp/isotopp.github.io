@@ -8,7 +8,7 @@ tags:
 - performance
 title: Some latency numbers illustrated
 aliases:
-  - /2020/02/28/some-latency-numbers-illustrated.md.html
+  - /2020/02/28/some-latency-numbers-illustrated.html
 ---
 These images are older than time itself. I picked them up while working as a consultant for MySQL AB, but I do not know the source.
 

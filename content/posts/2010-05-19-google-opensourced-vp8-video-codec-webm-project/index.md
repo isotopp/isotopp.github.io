@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Google opensourced VP8 Video-Codec: WebM Project'
 aliases:
-  - /2010/05/19/google-opensourced-vp8-video-codec-webm-project.md.html
+  - /2010/05/19/google-opensourced-vp8-video-codec-webm-project.html
 ---
 [VP8](http://en.wikipedia.org/wiki/VP8) ist ein Videocodec, der von On2
 entwickelt wurde. Google hatte die Firma am 17. Februar 2010 für $133 Mio

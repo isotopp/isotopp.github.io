@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Internet mit Kugelschreibern (und Bussen)
 aliases:
-  - /2009/06/24/internet-mit-kugelschreibern-und-bussen.md.html
+  - /2009/06/24/internet-mit-kugelschreibern-und-bussen.html
 ---
 ![](kris-symbol.png)
 

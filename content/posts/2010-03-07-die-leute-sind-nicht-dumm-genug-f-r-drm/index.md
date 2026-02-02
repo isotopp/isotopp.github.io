@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Die Leute sind nicht dumm genug für DRM...
 aliases:
-  - /2010/03/07/die-leute-sind-nicht-dumm-genug-f-r-drm.md.html
+  - /2010/03/07/die-leute-sind-nicht-dumm-genug-f-r-drm.html
 ---
 ![](dvd_vs_torrent.jpeg)
 

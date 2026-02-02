@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Cibola burn'
 aliases:
-  - /2016/02/28/fertig-gelesen-cibola-burn.md.html
+  - /2016/02/28/fertig-gelesen-cibola-burn.html
 ---
 Juhu, kommerzielle Siedler fliegen durch die Gates zu einer der Welten irgendwo anders - Illus heißt das neue zu Hause, und andere Siedler sind da bereits vorher angekommen. Die neue Welt ist unwirtlich, im Grunde groß genug für alle, und man ist von jeder Versorgung einige Flugzeitjahre weit abgeschnitten.
 

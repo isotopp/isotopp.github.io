@@ -9,7 +9,7 @@ tags:
 - mysqldev
 - data warehouse
 aliases:
-  - /2022/11/20/etl-from-a-django-model.md.html
+  - /2022/11/20/etl-from-a-django-model.html
 ---
 
 Continued from [last weeks article]({{< relref "2022-11-16-of-stars-and-snowflakes.md" >}}) on data warehouses.

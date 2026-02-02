@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Counterstrike am Hindukusch
 aliases:
-  - /2006/03/10/counterstrike-am-hindukusch.md.html
+  - /2006/03/10/counterstrike-am-hindukusch.html
 ---
 
 # [Zwei Jahre später](http://www.heise.de/newsticker/foren/go.shtml?read=1&msg_id=10013743&forum_id=94338)

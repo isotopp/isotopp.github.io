@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Wie man aus Versehen WLAN-Daten mitschneidet
 aliases:
-  - /2010/05/16/wie-man-aus-versehen-wlan-daten-mitschneidet.md.html
+  - /2010/05/16/wie-man-aus-versehen-wlan-daten-mitschneidet.html
 ---
 ### Spiegel Online Service:
 

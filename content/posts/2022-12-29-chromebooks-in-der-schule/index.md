@@ -9,7 +9,7 @@ tags:
 - bildung
 - security
 aliases:
-  - /2022/12/29/chromebooks-in-der-schule.md.html
+  - /2022/12/29/chromebooks-in-der-schule.html
 ---
 
 In

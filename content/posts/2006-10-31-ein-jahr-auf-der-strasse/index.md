@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Ein Jahr auf der Straße
 aliases:
-  - /2006/10/31/ein-jahr-auf-der-strasse.md.html
+  - /2006/10/31/ein-jahr-auf-der-strasse.html
 ---
 
 ![](train_delayed.jpg)

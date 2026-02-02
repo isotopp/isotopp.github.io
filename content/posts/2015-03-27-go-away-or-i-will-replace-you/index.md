@@ -16,7 +16,7 @@ tags:
 - talk
 title: "Go away, or I will replace you with a very small shell script"
 aliases:
-  - /2015/03/27/go-away-or-i-will-replace-you.md.html
+  - /2015/03/27/go-away-or-i-will-replace-you.html
 ---
 
 This is the writeup for the english variant of the talk "Go away or I will replace you with a very small Shell script". The original version of the talk was given in German at [GUUG FFG 2015](https://guug.de/veranstaltungen/ffg2015/abstracts.html#3_1_1) in Stuttgart. [A recorded version in german language](https://www.youtube.com/watch?v=e0CCv7pSK4s) has been made at Froscon in August 2015.

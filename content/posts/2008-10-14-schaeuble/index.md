@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Schäuble
 aliases:
-  - /2008/10/14/schaeuble.md.html
+  - /2008/10/14/schaeuble.html
 ---
 "[Ich schütze Grundrechte, ich gefährde sie nicht](http://www.katzundgoldt.de/ru_elend.htm)"
 

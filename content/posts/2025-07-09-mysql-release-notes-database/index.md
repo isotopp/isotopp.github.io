@@ -9,7 +9,7 @@ tags:
 - database
 - mysql
 aliases:
-  - /2025/07/09/mysql-release-notes-database.md.html
+  - /2025/07/09/mysql-release-notes-database.html
 ---
 
 I’ve hacked together a horrible thing in Python, and made it available in

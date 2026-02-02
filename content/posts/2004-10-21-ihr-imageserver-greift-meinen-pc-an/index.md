@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Ihr Imageserver greift meinen PC an
 aliases:
-  - /2004/10/21/ihr-imageserver-greift-meinen-pc-an.md.html
+  - /2004/10/21/ihr-imageserver-greift-meinen-pc-an.html
 ---
 Da sich dies langsam zur FAQ auswächst, hier einmal als Text, damit ich in Zukunft darauf verweisen kann.
 

@@ -8,7 +8,7 @@ tags:
 - python
 - devops
 aliases:
-  - /2022/11/28/systemd-and-docker-fd.md.html
+  - /2022/11/28/systemd-and-docker-fd.html
 ---
 
 Based on what I learned in

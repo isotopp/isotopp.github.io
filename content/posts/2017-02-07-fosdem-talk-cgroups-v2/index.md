@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'FOSDEM Talk: cgroups-v2'
 aliases:
-  - /2017/02/07/fosdem-talk-cgroups-v2.md.html
+  - /2017/02/07/fosdem-talk-cgroups-v2.html
 ---
 ![](2017/02/cgroups-v2.png)
 

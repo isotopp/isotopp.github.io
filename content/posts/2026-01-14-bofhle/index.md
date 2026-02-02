@@ -10,7 +10,7 @@ tags:
 - gaming
 - python
 aliases:
-  - /2026/01/14/bofhle.md.html
+  - /2026/01/14/bofhle.html
 ---
 
 [BOFHLE]( https://sysarmy.com/bofhle/) is a game of wordle with Unix commands.

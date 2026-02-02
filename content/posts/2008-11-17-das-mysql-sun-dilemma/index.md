@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Das MySQL-Sun-Dilemma
 aliases:
-  - /2008/11/17/das-mysql-sun-dilemma.md.html
+  - /2008/11/17/das-mysql-sun-dilemma.html
 ---
 
 Sun hat 

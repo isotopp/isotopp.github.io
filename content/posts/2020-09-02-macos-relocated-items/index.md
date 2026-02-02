@@ -8,7 +8,7 @@ tags:
 - macos
 title: 'MacOS: Deleting Relocated Items'
 aliases:
-  - /2020/09/02/macos-relocated-items.md.html
+  - /2020/09/02/macos-relocated-items.html
 ---
 I had to upgrade my company issued MacBook pro to Catalina for fleet unity reasons. The upgrade left me with a folder `Relocated Items` in `/Users/Shared/Desktop` and a link to that prominently on my Desktop.
 

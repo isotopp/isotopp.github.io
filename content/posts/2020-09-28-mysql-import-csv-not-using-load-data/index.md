@@ -10,7 +10,7 @@ tags:
 - mysqldev
 title: 'MySQL: Import CSV, not using LOAD DATA'
 aliases:
-  - /2020/09/28/mysql-import-csv-not-using-load-data.md.html
+  - /2020/09/28/mysql-import-csv-not-using-load-data.html
 ---
 All over the Internet people are having trouble getting `LOAD DATA` and `LOAD DATA LOCAL` to work. Frankly, do not use them, and especially not the `LOCAL` variant. They are insecure, and even if you get them to work, they are limited and unlikely to do what you want. Write a small data load program as shown below.
 

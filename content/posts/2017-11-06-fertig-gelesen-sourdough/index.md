@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: Sourdough'
 aliases:
-  - /2017/11/06/fertig-gelesen-sourdough.md.html
+  - /2017/11/06/fertig-gelesen-sourdough.html
 ---
 [![](2017/11/sourdough.png)](https://www.amazon.de/Sourdough-English-Robin-Sloan-ebook/dp/B0725QBS43)
 

@@ -8,7 +8,7 @@ tags:
 - internet
 title: "V-Normen"
 aliases:
-  - /1995/03/01/vnormen.md.html
+  - /1995/03/01/vnormen.html
 ---
 
 # V-Normen

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Parameterdeklarationen für Webseiten
 aliases:
-  - /2007/03/30/parameterdeklarationen-fur-webseiten.md.html
+  - /2007/03/30/parameterdeklarationen-fur-webseiten.html
 ---
 
 Es ist mal wieder Zeit, sehr alte Hüte rauszukramen. Heute habe ich mir dienstlich eine Datenbank angesehen, die von PHP aus angesprochen wird. Das PHP, das dort verwendet wird, ist sehr loses PHP, also ohne die Verwendung eines großartiges Frameworks geschrieben. Entsprechend bin ich quasi sofort über SQL-Injections und XSS gefallen.

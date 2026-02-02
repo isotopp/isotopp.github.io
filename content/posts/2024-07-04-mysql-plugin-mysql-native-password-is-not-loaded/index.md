@@ -10,7 +10,7 @@ tags:
 - database
 - mysql
 aliases:
-  - /2024/07/04/mysql-plugin-mysql-native-password-is-not-loaded.md.html
+  - /2024/07/04/mysql-plugin-mysql-native-password-is-not-loaded.html
 ---
 
 In `libera:#mysql` a user has been running MySQL in a docker container with `mysql:latest`.

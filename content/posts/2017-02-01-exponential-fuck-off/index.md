@@ -7,7 +7,7 @@ tags:
 - lang_en
 title: Exponential Fuck-Off
 aliases:
-  - /2017/02/01/exponential-fuck-off.md.html
+  - /2017/02/01/exponential-fuck-off.html
 ---
 
 ![](2017/02/Screen-Shot-2017-02-01-at-09.59.29.png)

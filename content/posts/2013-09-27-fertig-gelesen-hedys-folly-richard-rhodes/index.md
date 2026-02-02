@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Hedy''s Folly'
 aliases:
-  - /2013/09/27/fertig-gelesen-hedys-folly-richard-rhodes.md.html
+  - /2013/09/27/fertig-gelesen-hedys-folly-richard-rhodes.html
 ---
 Hedy Lamarr (1914-2000), das Gesicht von der CorelDraw-Packung, war zu ihrer Zeit eine der schönsten Frauen der Welt und ein großer Hollywood Star. Sie war außerdem mathematisch begabt, hatte gute Kontake zur Rüstungsindustrie und zur Avantgarde-Kunstszene.
 

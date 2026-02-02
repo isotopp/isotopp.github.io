@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Batwoman Elegy'
 aliases:
-  - /2010/08/14/fertig-gelesen-batwoman-elegy.md.html
+  - /2010/08/14/fertig-gelesen-batwoman-elegy.html
 ---
 [Batwoman: Elegy](http://www.amazon.de/Batwoman-Elegy-Deluxe-Greg-Rucka/dp/1401226922)
 (Deluxe Edition), Greg Rucka, J.H. Williams III, EUR 18.00, 192 Seiten.

@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Fernsehen macht Angst
 aliases:
-  - /2004/11/08/fernsehen-macht-angst.md.html
+  - /2004/11/08/fernsehen-macht-angst.html
 ---
 In ["Das Böse ist immer und überall"](http://www.heise.de/tp/deutsch/inhalt/co/18724/1.html) schreibt Telepolis über ein Phänomen, daß wir alle bei unseren alten Tanten haben beobachten können, als wir klein waren. Besagte Tanten saßen nämlich mit den Kieler Nachrichten auf dem Schoß da und lasen in der Rubrik mit den Polizeiberichten, was letzte Nacht alles schlimmes passiert ist, um dann den Kopf zu schütteln, "Tsk, tsk, tsk" zu machen und sich dann darüber auszulassen, wie schlimm alles geworden ist.
 

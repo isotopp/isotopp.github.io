@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Eine Verfassung
 aliases:
-  - /2008/06/17/eine-verfassung.md.html
+  - /2008/06/17/eine-verfassung.html
 ---
 
 Ein paar Arbeitsnotizen für unsere etwas orientierungslosen Europapolitiker: 

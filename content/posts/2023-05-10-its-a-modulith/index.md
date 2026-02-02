@@ -9,7 +9,7 @@ tags:
 - computer
 - software
 aliases:
-  - /2023/05/10/its-a-modulith.md.html
+  - /2023/05/10/its-a-modulith.html
 ---
 
 "Computers are simple" is what I am telling people I train.

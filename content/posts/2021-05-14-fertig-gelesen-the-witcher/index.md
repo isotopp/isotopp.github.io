@@ -9,7 +9,7 @@ tags:
 - book
 title: 'Fertig gelesen: The Witcher'
 aliases:
-  - /2021/05/14/fertig-gelesen-the-witcher.md.html
+  - /2021/05/14/fertig-gelesen-the-witcher.html
 ---
 So, Netflix' "[The Witcher](https://www.netflix.com/nl-en/title/80189685)" was weird, and could not decide what it wanted to be: A "Hercules Legenday Journey's"-like half-comedy, half-camp series, or something else, darker and denser, with more story and background. It hinted at a better story, better told, that did not make it into the final product, and died somewhere between the scriptwriting and the cutting table.
 

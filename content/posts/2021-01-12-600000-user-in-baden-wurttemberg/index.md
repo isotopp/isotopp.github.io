@@ -8,7 +8,7 @@ tags:
 - bildung
 title: 940.000 User in Baden-Württemberg
 aliases:
-  - /2021/01/12/600000-user-in-baden-wurttemberg.md.html
+  - /2021/01/12/600000-user-in-baden-wurttemberg.html
 ---
 
 Deutschland ist im Lockdown, die Schulen sind endlich geschlossen und es wird remote unterrichtet. Weil es Deutschland ist, passiert das in jedem Bundesland anders und uneinheitlich. In Baden-Württemberg verwendet man [Moodle](https://moodle.org/). Wer sich da drunter nichts vorstellen kann, kann es sich [hier](https://school.moodledemo.net/mod/page/view.php?id=44) ansehen.

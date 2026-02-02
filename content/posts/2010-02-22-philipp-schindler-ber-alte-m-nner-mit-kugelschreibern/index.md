@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Philipp Schindler über alte Männer mit Kugelschreibern
 aliases:
-  - /2010/02/22/philipp-schindler-ber-alte-m-nner-mit-kugelschreibern.md.html
+  - /2010/02/22/philipp-schindler-ber-alte-m-nner-mit-kugelschreibern.html
 ---
 [Google-Chef im Zeit Online Dialog über Kulturwandel](https://www.youtube.com/watch?v=KPnDiWV7zG8)
 

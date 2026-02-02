@@ -8,7 +8,7 @@ tags:
 - home automation
 title: Athom CO2 Sensors
 aliases:
-  - /2025/08/12/athom-co2-sensor.md.html
+  - /2025/08/12/athom-co2-sensor.html
 ---
 
 Cheap and integrated CO2 sensors are finally available.

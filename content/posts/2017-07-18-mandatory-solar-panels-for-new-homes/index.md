@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Mandatory solar panels for new homes
 aliases:
-  - /2017/07/18/mandatory-solar-panels-for-new-homes.md.html
+  - /2017/07/18/mandatory-solar-panels-for-new-homes.html
 ---
 Short link to [NBC Miami](http://www.nbcmiami.com/news/local/South-Miami-Set-to-Become-First-City-in-Florida-to-Require-Solar-Panels-on-New-Homes-434557443.html):
 

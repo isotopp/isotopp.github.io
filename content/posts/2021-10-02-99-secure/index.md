@@ -8,7 +8,7 @@ tags:
 - ccc
 title: 99% secure
 aliases:
-  - /2021/10/02/99-secure.md.html
+  - /2021/10/02/99-secure.html
 ---
 
 [Linus Neumann zitiert Prof. Norbert Pohlmann](https://twitter.com/Linuzifer/status/1443880403211857922):

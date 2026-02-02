@@ -11,7 +11,7 @@ tags:
 - erklaerbaer
 title: MySQL Transactions - the physical side
 aliases:
-  - /2020/07/27/mysql-transactions.md.html
+  - /2020/07/27/mysql-transactions.html
 ---
 So you talk to a database, doing transactions. What happens actually, behind the scenes? Let’s have a look.
 

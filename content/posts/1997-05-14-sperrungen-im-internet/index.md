@@ -10,7 +10,7 @@ tags:
 - usenet
 - jugendschutz
 aliases:
-  - /1997/05/14/sperrungen-im-internet.md.html
+  - /1997/05/14/sperrungen-im-internet.html
 ---
 
 # Zusammenfassung

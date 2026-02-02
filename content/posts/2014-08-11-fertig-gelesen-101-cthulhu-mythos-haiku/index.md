@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: "101 Cthulhu Mythos Haiku"'
 aliases:
-  - /2014/08/11/fertig-gelesen-101-cthulhu-mythos-haiku.md.html
+  - /2014/08/11/fertig-gelesen-101-cthulhu-mythos-haiku.html
 ---
 Does exactly what it says on the tin. Endlessly brillant. 89 cent.
 

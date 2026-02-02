@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'drsrm 2008: Primetime Adventures'
 aliases:
-  - /2008/10/05/drsrm-2008-primetime-adventures.md.html
+  - /2008/10/05/drsrm-2008-primetime-adventures.html
 ---
 ![](phantasie.jpg)
 

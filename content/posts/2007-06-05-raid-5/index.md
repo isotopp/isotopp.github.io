@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: RAID-5
 aliases:
-  - /2007/06/05/raid-5.md.html
+  - /2007/06/05/raid-5.html
 ---
 
 > R> Ich hoffe, Isotopp wirft den Text aus #offtopicana nachher noch ins Blog.

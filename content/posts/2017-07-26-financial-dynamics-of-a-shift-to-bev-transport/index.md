@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Financial dynamics of a shift to BEV transport
 aliases:
-  - /2017/07/26/financial-dynamics-of-a-shift-to-bev-transport.md.html
+  - /2017/07/26/financial-dynamics-of-a-shift-to-bev-transport.html
 ---
 The German Language podcast Lage der Nation has published an 
 [interview with Axel Friedrich](https://www.kuechenstud.io/lagedernation/2017/07/25/ldn-sommerinterview-1-axel-friedrich-zu-diesel-gate/)

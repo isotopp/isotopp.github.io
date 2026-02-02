@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: MySQL für Dummies (6)
 aliases:
-  - /2006/03/07/mysql-fuer-dummies-6.md.html
+  - /2006/03/07/mysql-fuer-dummies-6.html
 ---
 
 > gilt das ganze auch für Mysql Version 4.1?

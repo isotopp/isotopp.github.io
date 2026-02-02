@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Submission (Port 587)
 aliases:
-  - /2004/10/29/submission-port-587.md.html
+  - /2004/10/29/submission-port-587.html
 ---
 Mail wird über SMTP (Port 25) versendet, weiß man ja.
 

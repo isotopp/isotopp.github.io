@@ -10,7 +10,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2015/04/09/mysql-explain-explain.md.html
+  - /2015/04/09/mysql-explain-explain.html
 ---
 
 ![](2015/04/explain-001.jpg)

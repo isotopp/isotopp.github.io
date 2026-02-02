@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: Community Management?
 aliases:
-  - /2017/08/23/community-management.md.html
+  - /2017/08/23/community-management.html
 ---
 Today is a weird day. First thing is a friend asking about help with
 community management. And next thing is Fefe reiterating his longstanding

@@ -8,7 +8,7 @@ tags:
 - erklaerbaer
 title: On Touching Candles, And Error Budgets
 aliases:
-  - /2020/08/31/on-touching-candles.md.html
+  - /2020/08/31/on-touching-candles.html
 ---
 Ok, it's "Dad Stories" Time (from [Twitter](https://twitter.com/isotopp/status/1300414521169907713)). When my son was somewhat older than a year, he was learning to speak. He could already say "Mama" and "Papa".
 

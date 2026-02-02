@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Noch mehr lauschen: "Einfach mal mithören"'
 aliases:
-  - /2006/01/16/noch-mehr-lauschen-einfach-mal-mithoeren.md.html
+  - /2006/01/16/noch-mehr-lauschen-einfach-mal-mithoeren.html
 ---
 
 Die Polizei in Schleswig-Holstein will gerne 

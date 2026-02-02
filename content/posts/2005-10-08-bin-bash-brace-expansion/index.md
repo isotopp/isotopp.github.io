@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: '#!/bin/bash -- Brace Expansion'
 aliases:
-  - /2005/10/08/bin-bash-brace-expansion.md.html
+  - /2005/10/08/bin-bash-brace-expansion.html
 ---
 
 Eine Unix-Kommandoshell nimmt die Benutzereingabe und unterteilt sie in Worte. 

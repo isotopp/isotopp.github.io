@@ -12,7 +12,7 @@ tags:
 - lang_de
 title: Einthemenpartei
 aliases:
-  - /2009/08/19/einthemenpartei.md.html
+  - /2009/08/19/einthemenpartei.html
 ---
 Eine Einthemenpartei wie die Piraten macht es sich sehr einfach - sie beackert nur dieses eine Poltikfeld und sammelt das Stimmvieh ein. Schauen wir mal genauer hin.
 

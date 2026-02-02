@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: The Importance Of FAIL
 aliases:
-  - /2008/05/30/the-importance-of-fail.md.html
+  - /2008/05/30/the-importance-of-fail.html
 ---
 Wenn man mit Featureentwicklern spricht, dann reden sie immer gerne über tolle
 neue Dinge die sie gerade eingebaut haben.

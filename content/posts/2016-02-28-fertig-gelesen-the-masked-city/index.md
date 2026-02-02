@@ -10,7 +10,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: The Masked City'
 aliases:
-  - /2016/02/28/fertig-gelesen-the-masked-city.md.html
+  - /2016/02/28/fertig-gelesen-the-masked-city.html
 ---
 Frau Cogmans zweiter Streich betreffend die unsichtbare Bibliothek: Die Fae haben ihre Jungdrachen und Assisten Kai geklaut und in einer Version von Venedig tief im Chaos versteckt. Um einen weltenvernichtenden Krieg zwischen den Drachen und den Fae abzuwenden muß sie los und Kai sowie gleich ein paar Welten retten.
 

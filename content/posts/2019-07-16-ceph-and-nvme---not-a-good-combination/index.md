@@ -8,7 +8,7 @@ tags:
 - storage
 title: Ceph and NVME - not a good combination?
 aliases:
-  - /2019/07/16/ceph-and-nvme---not-a-good-combination.md.html
+  - /2019/07/16/ceph-and-nvme---not-a-good-combination.html
 ---
 Saving an [older twitter thread on Ceph](https://twitter.com/isotopp/status/1151013922528534528).
 

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: MySQL Testcases
 aliases:
-  - /2012/08/20/mysql-testcases.md.html
+  - /2012/08/20/mysql-testcases.html
 ---
 In 
 [Entwickler kritisieren Oracles Umgang mit MySQL](http://www.heise.de/ix/meldung/Entwickler-kritisieren-Oracles-Umgang-mit-MySQL-1670240.html)

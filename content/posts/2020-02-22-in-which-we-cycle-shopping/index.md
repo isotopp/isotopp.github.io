@@ -9,7 +9,7 @@ tags:
 - cycling
 title: In which we cycle shopping...
 aliases:
-  - /2020/02/22/in-which-we-cycle-shopping.md.html
+  - /2020/02/22/in-which-we-cycle-shopping.html
 ---
 Welcome to the Netherlands. Please excuse me, I need to fetch a few things before I have time for you. I need a few things from Lidl in Hoofddorp, do you want to come with me?
 

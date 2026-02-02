@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Nicht Urheberrecht ist das Kernthema
 aliases:
-  - /2011/11/08/nicht-urheberrecht-ist-das-kernthema.md.html
+  - /2011/11/08/nicht-urheberrecht-ist-das-kernthema.html
 ---
 Die Süddeutsche hat einen 
 [määndernden Artikel](http://www.sueddeutsche.de/digital/piratenpartei-vergisst-ihr-gruendungsprinzipien-raubkopierer-in-die-parlamente-1.1183236),

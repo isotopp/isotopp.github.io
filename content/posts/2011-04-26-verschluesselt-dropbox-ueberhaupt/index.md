@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Verschlüsselt Dropbox überhaupt?
 aliases:
-  - /2011/04/26/verschluesselt-dropbox-ueberhaupt.md.html
+  - /2011/04/26/verschluesselt-dropbox-ueberhaupt.html
 ---
 Dropbox ist in den letzten Tagen und Wochen ein wenig seltsam in die
 Schlagzeilen geraten.

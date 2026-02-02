@@ -7,7 +7,7 @@ tags:
 - mysql
 title: Memory saturated MySQL
 aliases:
-  - /2021/03/12/memory-saturated-mysql.md.html
+  - /2021/03/12/memory-saturated-mysql.html
 ---
 »If at all possible, we build databases so that the working set of the database fits into memory.« What does that even mean?
 

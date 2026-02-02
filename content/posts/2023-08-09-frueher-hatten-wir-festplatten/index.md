@@ -9,7 +9,7 @@ tags:
 - filesystems
 - computer
 aliases:
-  - /2023/08/09/frueher-hatten-wir-festplatten.md.html
+  - /2023/08/09/frueher-hatten-wir-festplatten.html
 ---
 
 Früher hatten wir Festplatten. 

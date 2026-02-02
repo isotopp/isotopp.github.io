@@ -11,7 +11,7 @@ tags:
 - climate
 title: Rechenzentren und ihren Stromverbrauch regulieren
 aliases:
-  - /2020/11/01/rechenzentren-und-ihren-stromverbrauch-regulieren.md.html
+  - /2020/11/01/rechenzentren-und-ihren-stromverbrauch-regulieren.html
 ---
 Es gibt ein Interview mit Stefan Ramesohl vom Umweltministerium (des Bundes) in Netzpolitik.org: "[Warum niemand weiß, wie viele Rechenzentren es in Europa gibt](https://netzpolitik.org/2020/interview-zur-umweltpolitischen-digitalagenda-warum-niemand-weiss-wie-viele-rechenzentren-es-in-europa-gibt/)". Im Wesentlichen hat das Umweltministerium angesagt, daß es auf europäischer Ebene Rechenzentren erfassen und katalogisieren will, um in einem zweiten Schritt den Energieverbrauch von Rechenzentren zu regulieren.
 

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Netzneutralität - was ist okay und was ist es nicht?
 aliases:
-  - /2010/08/14/netzneutralit-t-was-ist-okay-und-was-ist-es-nicht.md.html
+  - /2010/08/14/netzneutralit-t-was-ist-okay-und-was-ist-es-nicht.html
 ---
 (Teil 3, siehe auch 
 [Teil1]({{< relref "2010-08-05-vokabeln-f-r-netzneutralit-t.md" >}}) und

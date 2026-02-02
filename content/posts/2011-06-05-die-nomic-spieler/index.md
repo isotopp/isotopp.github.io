@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Die NOMIC-Spieler
 aliases:
-  - /2011/06/05/die-nomic-spieler.md.html
+  - /2011/06/05/die-nomic-spieler.html
 ---
 Douglas Hofstadter erwähnt in seinem
 [Megamagicum](http://www.amazon.de/Metamagicum-Fragen-Essenz-Geist-Struktur/dp/360895774X)

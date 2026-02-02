@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: The Long Earth'
 aliases:
-  - /2016/02/28/fertig-gelesen-the-long-earth.md.html
+  - /2016/02/28/fertig-gelesen-the-long-earth.html
 ---
 Die Kombination von Terry Pratchett und Stephen Baxter ist ja nun ein wenig extrem - ein Erzähler von Fabeln mit Fantasy-Anstrich, dem es primär um Charactere geht und ein Autor von Hard-Scifi mit einem Religionskomplex, der mit Characteren immer so seine Probleme hat. Außer, daß die beiden Briten sind, verbindet die wahrscheinlich sehr wenig, sollte man meinen.
 

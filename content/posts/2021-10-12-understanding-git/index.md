@@ -8,7 +8,7 @@ tags:
 - git
 title: Understanding git
 aliases:
-  - /2021/10/12/understanding-git.md.html
+  - /2021/10/12/understanding-git.html
 ---
 
 It occurred to me that I do not know nearly enough how git works, internally.

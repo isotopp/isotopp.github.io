@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: OMG, our cybervaccines are failing
 aliases:
-  - /2017/02/17/omg-our-cybervaccines-are-failing.md.html
+  - /2017/02/17/omg-our-cybervaccines-are-failing.html
 ---
 [Dark Reading](http://www.darkreading.com/threat-intelligence/-what-to-do-when-all-malware-is-zero-day/a/d-id/1328155)
 is scared: All new malware is "zero-day", for an interesting and wrong

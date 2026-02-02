@@ -8,7 +8,7 @@ tags:
 - internet
 title: "Grundlagen der Datenübertragung"
 aliases:
-  - /1995/02/01/datenuebertragung.md.html
+  - /1995/02/01/datenuebertragung.html
 ---
 
 **von: Kristian Köhntopp, aus: DOS Sonderheft DFÜ, DMV Verlag**

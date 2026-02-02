@@ -9,7 +9,7 @@ tags:
 - unix
 - filesystems
 aliases:
-  - /2023/05/15/50-years-in-filesystems-vnodes.md.html
+  - /2023/05/15/50-years-in-filesystems-vnodes.html
 ---
 
 This is part 4 of a series.

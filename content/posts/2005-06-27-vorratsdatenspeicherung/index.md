@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Vorratsdatenspeicherung
 aliases:
-  - /2005/06/27/vorratsdatenspeicherung.md.html
+  - /2005/06/27/vorratsdatenspeicherung.html
 ---
 [Innenminister wollen einjährige Speicherung von Verbindungsdaten](http://www.heise.de/newsticker/meldung/61036) berichtet
 Heise:

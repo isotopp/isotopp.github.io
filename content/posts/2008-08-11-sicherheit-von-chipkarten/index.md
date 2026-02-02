@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Sicherheit von Chipkarten
 aliases:
-  - /2008/08/11/sicherheit-von-chipkarten.md.html
+  - /2008/08/11/sicherheit-von-chipkarten.html
 ---
 
 ![](chipkarte.jpg)

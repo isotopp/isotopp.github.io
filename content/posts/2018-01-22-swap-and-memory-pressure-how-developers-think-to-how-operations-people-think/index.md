@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Swap and Memory Pressure: How Developers think to how Operations people think'
 aliases:
-  - /2018/01/22/swap-and-memory-pressure-how-developers-think-to-how-operations-people-think.md.html
+  - /2018/01/22/swap-and-memory-pressure-how-developers-think-to-how-operations-people-think.html
 ---
 There is a very useful and interesting article by Chris Down: 
 "[In defence of swap: common misconceptions](https://chrisdown.name/2018/01/02/in-defence-of-swap.html)".

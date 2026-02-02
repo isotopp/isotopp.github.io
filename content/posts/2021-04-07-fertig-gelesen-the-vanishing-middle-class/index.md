@@ -9,7 +9,7 @@ tags:
 - book
 title: 'Fertig gelesen: The Vanishing Middle Class'
 aliases:
-  - /2021/04/07/fertig-gelesen-the-vanishing-middle-class.md.html
+  - /2021/04/07/fertig-gelesen-the-vanishing-middle-class.html
 ---
 [The Vanishing Middle Class: Prejudice and Power in a Dual Economy](https://www.amazon.de/Vanishing-Middle-Class-Prejudice-Economy-ebook/dp/B08BT2XDNT) by Peter Temin analyzes the economical and political structure of the USA. Temin does this through the lens of the "[Dual Economy](https://en.wikipedia.org/wiki/Dual_economy)" Model.
 

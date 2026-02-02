@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: WLANs mappen
 aliases:
-  - /2010/05/17/wlans-mappen.md.html
+  - /2010/05/17/wlans-mappen.html
 ---
 Als Nachtrag zu 
 [Wie man aus Versehen WLAN Daten mitschneidet]({{< relref "2010-05-16-wie-man-aus-versehen-wlan-daten-mitschneidet.md" >}})

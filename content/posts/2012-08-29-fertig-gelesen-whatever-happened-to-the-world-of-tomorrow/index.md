@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Whatever happened to the world of tomorrow?'
 aliases:
-  - /2012/08/29/fertig-gelesen-whatever-happened-to-the-world-of-tomorrow.md.html
+  - /2012/08/29/fertig-gelesen-whatever-happened-to-the-world-of-tomorrow.html
 ---
 "Whatever happened to the World of Tomorrow?" erklärt, wieso das Versprechen
 an unsere Eltern - Jetpacks und fliegende Autos - nicht eingelöst wurde, und

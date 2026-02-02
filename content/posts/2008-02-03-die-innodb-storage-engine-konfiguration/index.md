@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: 'Die InnoDB Storage Engine: Konfiguration'
 aliases:
-  - /2008/02/03/die-innodb-storage-engine-konfiguration.md.html
+  - /2008/02/03/die-innodb-storage-engine-konfiguration.html
 ---
 ![](innodb-transactions.png)
 

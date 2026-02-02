@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Alle vier Stunden - zum Nutzen von Antivirus und zum Nutzen von Testverfahren
 aliases:
-  - /2012/04/27/alle-vier-stunden-zum-nutzen-von-antivirus-und-zum-nutzen-von-testverfahren.md.html
+  - /2012/04/27/alle-vier-stunden-zum-nutzen-von-antivirus-und-zum-nutzen-von-testverfahren.html
 ---
 In 
 [Nur bedingt abwehrbereit](http://www.faz.net/aktuell/technik-motor/computer-internet/virenschutzprogramme-nur-bedingt-abwehrbereit-11727592.html)

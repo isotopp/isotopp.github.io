@@ -8,7 +8,7 @@ tags:
 - mysql
 - lang_en
 aliases:
-  - /2022/06/20/mysql-breaking-replication-with-algorithm-instant.md.html
+  - /2022/06/20/mysql-breaking-replication-with-algorithm-instant.html
 ---
 
 MySQL 8.0.29 adds `ALGORITHM=INSTANT` as a way to run `ALTER TABLE` commands with less wait.

@@ -9,7 +9,7 @@ tags:
 - internet
 - jugendschutz
 aliases:
-  - /1999/05/01/rating-does-not-work.md.html
+  - /1999/05/01/rating-does-not-work.html
 ---
 
 **Version 1.3 (Revised 29-Sep-1999, Updates from Seth Finkelstein)**

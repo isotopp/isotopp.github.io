@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: Künstler vs. Sony
 aliases:
-  - /2005/11/24/k-nstler-vs-sony.md.html
+  - /2005/11/24/k-nstler-vs-sony.html
 ---
 ![](sonyelectronics.jpg)
 

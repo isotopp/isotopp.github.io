@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Open Source und kommerzielle Software
 aliases:
-  - /2005/07/06/open-source-und-kommerzielle-software.md.html
+  - /2005/07/06/open-source-und-kommerzielle-software.html
 ---
 
 In 

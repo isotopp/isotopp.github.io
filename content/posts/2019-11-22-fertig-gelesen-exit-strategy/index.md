@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: Exit Strategy'
 aliases:
-  - /2019/11/22/fertig-gelesen-exit-strategy.md.html
+  - /2019/11/22/fertig-gelesen-exit-strategy.html
 ---
 [Exit Strategy](https://www.amazon.de/gp/product/B078X1N8VF) by Martha Wells
 is the fourth book in the the Murderbot Diaries ([All Systems Red]({{< relref "2017-11-08-fertig-gelesen-all-systems-red.md" >}}), 

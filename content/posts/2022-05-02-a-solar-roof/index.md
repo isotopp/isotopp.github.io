@@ -9,7 +9,7 @@ tags:
 - energy
 - climate
 aliases:
-  - /2022/05/02/a-solar-roof.md.html
+  - /2022/05/02/a-solar-roof.html
 ---
 
 I live in a house in a rural village somewhere in [Randstad](https://en.wikipedia.org/wiki/Randstad).

@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: 'Nachtrag: Nicht das Urheberrecht ist das Kernthema'
 aliases:
-  - /2011/11/10/nachtrag-nicht-das-urheberrecht-ist-das-kernthema.md.html
+  - /2011/11/10/nachtrag-nicht-das-urheberrecht-ist-das-kernthema.html
 ---
 Der Beitrag 
 [Nicht das Urheberrecht ist das Kernthema]({{< relref "2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})

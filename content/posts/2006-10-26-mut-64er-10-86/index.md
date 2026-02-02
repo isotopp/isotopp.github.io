@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: MuT 64er 10/86
 aliases:
-  - /2006/10/26/mut-64er-10-86.md.html
+  - /2006/10/26/mut-64er-10-86.html
 ---
 
 Im März 1983 bekam ich meinen ersten eigenen Computer, einen Commodore 64. 

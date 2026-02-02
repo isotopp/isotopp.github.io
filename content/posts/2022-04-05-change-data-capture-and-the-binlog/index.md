@@ -8,7 +8,7 @@ tags:
 - mysql
 - lang_en
 aliases:
-  - /2022/04/05/change-data-capture-and-the-binlog.md.html
+  - /2022/04/05/change-data-capture-and-the-binlog.html
 ---
 
 MySQL uses replication to do an ongoing life restore of a primary server to any number of replicas.

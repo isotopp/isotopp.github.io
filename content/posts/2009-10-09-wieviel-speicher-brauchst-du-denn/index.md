@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Wieviel Speicher brauchst Du denn?
 aliases:
-  - /2009/10/09/wieviel-speicher-brauchst-du-denn.md.html
+  - /2009/10/09/wieviel-speicher-brauchst-du-denn.html
 ---
 ![](mappedprocess3.png)
 

@@ -9,7 +9,7 @@ tags:
 - linux
 - devops
 aliases:
-  - /2023/07/12/ubuntu-systemctl-user-does-not-work.md.html
+  - /2023/07/12/ubuntu-systemctl-user-does-not-work.html
 ---
 
 Memo to self:

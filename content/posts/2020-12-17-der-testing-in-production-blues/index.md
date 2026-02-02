@@ -8,7 +8,7 @@ tags:
 - politik
 title: Der Testing-in-Production-Blues
 aliases:
-  - /2020/12/17/der-testing-in-production-blues.md.html
+  - /2020/12/17/der-testing-in-production-blues.html
 ---
 
 Kalenderwoche 51/2020: Lockdown mit Schulschließungen. Nachdem es im März schon einmal Schulschließungen wegen Corona gab, und dort die Defizite technischer und organisatorischer Natur offenbar wurden, hat man in Deutschland die Zeit genutzt und sich auf die vorhergesagte 2. Welle vorbereitet, die jetzt genau eingetroffen ist. Deutschland ist schließlich nicht nur das Land der Dichter und Denker, sondern auch ein Land der Ingenieure und Tüftler, und bekannt für seine funktionierende und effiziente Bürokratie.

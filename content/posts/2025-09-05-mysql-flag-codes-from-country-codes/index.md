@@ -9,7 +9,7 @@ tags:
 - database
 - mysql
 aliases:
-  - /2025/09/05/mysql-flag-codes-from-country-codes.md.html
+  - /2025/09/05/mysql-flag-codes-from-country-codes.html
 ---
 
 [Regional Indicator Symbols](https://en.wikipedia.org/wiki/Regional_indicator_symbol) 

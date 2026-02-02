@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: OOP in Perl
 aliases:
-  - /2008/09/19/oop-in-perl.md.html
+  - /2008/09/19/oop-in-perl.html
 ---
 
 ![](oop_in_perl.jpg)

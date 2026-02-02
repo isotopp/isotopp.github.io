@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Der Trojaner nach dem Trojaner
 aliases:
-  - /2011/10/15/der-trojaner-nach-dem-trojaner.md.html
+  - /2011/10/15/der-trojaner-nach-dem-trojaner.html
 ---
 Ich bin Informatiker, kein Jurist. Die Juristen und Verwaltungsmenschen, die
 ich kenne, haben mich jedoch gelehrt, daß Menschen in Deutschland

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Jugendmediendoom
 aliases:
-  - /2010/07/21/jugendmediendoom.md.html
+  - /2010/07/21/jugendmediendoom.html
 ---
 [Doom II](http://en.wikipedia.org/wiki/Doom_II:_Hell_on_Earth) - 
 laut Wikipedia eingestuft als 18+/Indexed bei der 

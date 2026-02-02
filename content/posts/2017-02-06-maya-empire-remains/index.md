@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Maya empire remains
 aliases:
-  - /2017/02/06/maya-empire-remains.md.html
+  - /2017/02/06/maya-empire-remains.html
 ---
 [![](2017/02/maya-ruins.png)](http://www.seeker.com/ancient-mayan-superhighways-found-in-the-guatemala-jungle-2219303581.html)
 

@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: MySQL für Dummies (7)
 aliases:
-  - /2006/03/08/mysql-fuer-dummies-7.md.html
+  - /2006/03/08/mysql-fuer-dummies-7.html
 ---
 
 Mein Freund Heinz ist Vertriebler, und manchmal sagen Vertriebler überraschend schlaue Dinge.

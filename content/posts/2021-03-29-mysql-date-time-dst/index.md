@@ -7,7 +7,7 @@ tags:
 - mysql
 title: Things you didn't know about MySQL and Date and Time and DST
 aliases:
-  - /2021/03/29/mysql-date-time-dst.md.html
+  - /2021/03/29/mysql-date-time-dst.html
 ---
 
 (based on a conversation with a colleague, and [a bit of Twitter](https://twitter.com/isotopp/status/1376436003129462784))

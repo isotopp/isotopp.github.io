@@ -9,7 +9,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /2002/03/04/MySQL-3.23.md.html
+  - /2002/03/04/MySQL-3.23.html
 ---
 
 # Allgemeines

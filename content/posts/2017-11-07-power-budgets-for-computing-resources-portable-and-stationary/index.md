@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Power budgets for computing resources - portable and stationary
 aliases:
-  - /2017/11/07/power-budgets-for-computing-resources-portable-and-stationary.md.html
+  - /2017/11/07/power-budgets-for-computing-resources-portable-and-stationary.html
 ---
 
 ### Fanless devices

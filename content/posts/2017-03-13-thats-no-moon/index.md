@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: That's no moon!
 aliases:
-  - /2017/03/13/thats-no-moon.md.html
+  - /2017/03/13/thats-no-moon.html
 ---
 So Saturn has a 'moon'. At least that's what They want us to believe. But we
 know better. 

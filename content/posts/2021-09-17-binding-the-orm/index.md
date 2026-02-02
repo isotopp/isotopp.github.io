@@ -8,7 +8,7 @@ tags:
 - mysqldev
 title: 'MySQL: Binding the ORM'
 aliases:
-  - /2021/09/17/binding-the-orm.md.html
+  - /2021/09/17/binding-the-orm.html
 ---
 My task is to collect performance data about a single query, using `PERFORMANCE_SCHEMA` (P_S for short) in MySQL, to ship it elsewhere for integration with other data.
 

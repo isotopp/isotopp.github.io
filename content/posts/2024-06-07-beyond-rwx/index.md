@@ -10,7 +10,7 @@ tags:
 - erklaerbaer
 - filesystems
 aliases:
-  - /2024/06/07/beyond-rwx.md.html
+  - /2024/06/07/beyond-rwx.html
 ---
 
 I wrote this article before, in 1996, in german:

@@ -9,7 +9,7 @@ tags:
 - erklaerbaer
 - technik
 aliases:
-  - /2023/09/17/kernfusion.md.html
+  - /2023/09/17/kernfusion.html
 ---
 
 Heise schreibt:

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Dynamisch geladener Code
 aliases:
-  - /2005/10/08/dynamisch-geladener-code.md.html
+  - /2005/10/08/dynamisch-geladener-code.html
 ---
 Inzwischen bin ich so weit, daß ich viele
 Unix-Kommandozeilenprogramme zwar nützlich finde, aber in einem

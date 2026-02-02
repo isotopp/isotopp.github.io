@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Wenn eine Kilowattstunde keine Kilowattstunde ist und ein Gigabyte kein Gigabyte
 aliases:
-  - /2011/07/09/wenn-eine-kilowattstunde-keine-kilowattstunde-ist-und-ein-gigabyte-kein-gigabyte.md.html
+  - /2011/07/09/wenn-eine-kilowattstunde-keine-kilowattstunde-ist-und-ein-gigabyte-kein-gigabyte.html
 ---
 Als [Utility](http://en.wikipedia.org/wiki/Public_utility) hat man es schon
 schwer. Man stellt ein Produkt oder eine Dienstleistung als Schüttgut zur

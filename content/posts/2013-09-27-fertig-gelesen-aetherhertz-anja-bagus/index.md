@@ -10,7 +10,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: Aetherhertz'
 aliases:
-  - /2013/09/27/fertig-gelesen-aetherhertz-anja-bagus.md.html
+  - /2013/09/27/fertig-gelesen-aetherhertz-anja-bagus.html
 ---
 Steampunk von Anja Bagus.
 

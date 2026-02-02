@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: '''a'' = ''b'' = ''c'''
 aliases:
-  - /2010/09/10/a-b-c.md.html
+  - /2010/09/10/a-b-c.html
 ---
 Kurzer SQL WTF von heute: 
 

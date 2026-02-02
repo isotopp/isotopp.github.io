@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Ignition!'
 aliases:
-  - /2018/09/25/fertig-gelesen-ignition.md.html
+  - /2018/09/25/fertig-gelesen-ignition.html
 ---
 John Drury Clark war Chemiker mit einer Spezialisierung auf Raketentreibstoffe in den fünfziger und sechziger Jahren und er hat das überlebt. Das Buch sind seine Memoiren, die nicht nur die Anforderungen und die Fortschritte dokumentieren, die wir bei Rakentreibstoffen in dieser Zeit gemacht haben, sondern auch die zum Teil sehr improvisierten Ausrüstungsteile, mit denen geforscht worden ist und natürlich eine Reihe von Anekdoten über Dinge, die nicht ganz funktioniert haben oder auch spektakulär schief gegangen sind.
 

@@ -6,7 +6,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - pluspora_import
 aliases:
-  - /2019/05/28/kinder-und-visuelle-medien.md.html
+  - /2019/05/28/kinder-und-visuelle-medien.html
 ---
 Ich habe ein Kind, es ist neun Jahre alt.
 

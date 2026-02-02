@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Nymph - The Singularity'
 aliases:
-  - /2012/08/20/fertig-gelesen-nymph-the-singularity.md.html
+  - /2012/08/20/fertig-gelesen-nymph-the-singularity.html
 ---
 
 [Nymph: The Singularity](http://www.amazon.com/Nymph-The-Singularity-ebook/dp/B004OEKEO0),

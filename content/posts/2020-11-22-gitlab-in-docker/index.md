@@ -10,7 +10,7 @@ tags:
 - development
 title: Gitlab in Docker
 aliases:
-  - /2020/11/22/gitlab-in-docker.md.html
+  - /2020/11/22/gitlab-in-docker.html
 ---
 These installation notes are mostly a note to myself, documenting the installation process of a Gitlab Omnibus Container in Docker, plus Gitlab Runners.
 

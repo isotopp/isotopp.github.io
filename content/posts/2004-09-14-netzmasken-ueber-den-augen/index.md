@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Netzmasken über den Augen
 aliases:
-  - /2004/09/14/netzmasken-ueber-den-augen.md.html
+  - /2004/09/14/netzmasken-ueber-den-augen.html
 ---
 Heute habe ich einem jüngeren Kollegen Netmasks und Broadcast-Adressen beibringen wollen, und habe eine Runde über Stellenwertsysteme, Logarithmen, den Unterschied zwischen Ziffer und Zahl und dergleichen Dinge mehr drehen müssen. Mir sind diese Dinge damals mehr oder weniger zugeflogen - einmal weil so etwas an der Schule unterrichtet worden ist, und zum anderen, weil ich einige Jahre mit verschiedenen Assemblern rumhantiert habe, bevor ich meine erste Hochsprache (C64 Basic zählt wohl nicht als solche :) gelernt habe.
 

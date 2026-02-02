@@ -10,7 +10,7 @@ tags:
 - kernel
 title: But is it atomic?
 aliases:
-  - /2018/11/29/but-is-it-atomic.md.html
+  - /2018/11/29/but-is-it-atomic.html
 ---
 From [Pluspora](https://pluspora.com/posts/310948)
 

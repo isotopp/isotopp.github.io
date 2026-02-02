@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: MySQL FLOSS Exception
 aliases:
-  - /2004/07/19/mysql-floss-exception.md.html
+  - /2004/07/19/mysql-floss-exception.html
 ---
 
 ![](20040314_dolphin.jpg)

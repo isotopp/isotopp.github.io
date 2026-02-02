@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: vN'
 aliases:
-  - /2013/09/27/fertig-gelesen-vn-madeline-ashby.md.html
+  - /2013/09/27/fertig-gelesen-vn-madeline-ashby.html
 ---
 Amy ist ein von Neumann (vN), ein Android mit der Fähigkeit, sich selbst zu replizieren. Sie ist außerdem defekt, und deswegen ein Gott: Während alle anderen vN eine Sicherheitsschaltung haben, die es ihnen unmöglich macht, gewalttätige Szenen zu denken, zu erleben oder auch nur anzusehen, ist bei Amy diese Sicherung defekt. Anders als ihre vN-Kameraden ist sie in ihren Handlungen frei und uneingeschränkt.
 

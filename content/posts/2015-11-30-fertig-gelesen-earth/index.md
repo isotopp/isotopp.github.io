@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Earth'
 aliases:
-  - /2015/11/30/fertig-gelesen-earth.md.html
+  - /2015/11/30/fertig-gelesen-earth.html
 ---
 Was als ein fehlgeschlagenes Experiment beginnt, in  dem ein künstliches schwarzes Loch in die Erde fällt und beginnt diese von innen zu zerfressen wird am Ende zu einem Krieg gegen unbekannte Aliens, die die Erde schon 1908 angegriffen und mit einer Raumzeitbombe zum Tode verurteilt haben.
 

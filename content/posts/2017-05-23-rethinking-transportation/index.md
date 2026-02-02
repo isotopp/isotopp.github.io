@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Rethinking Transportation
 aliases:
-  - /2017/05/23/rethinking-transportation.md.html
+  - /2017/05/23/rethinking-transportation.html
 ---
 Tony Seba (Stanford University) came up with a kind of best-case scenario
 for electrification and decarbonization. 

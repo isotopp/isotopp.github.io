@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Googol revisited'
 aliases:
-  - /2003/08/31/fertig-gelesen-googol-revisited.md.html
+  - /2003/08/31/fertig-gelesen-googol-revisited.html
 ---
 Lord Gamma erinnert mich an die Geschichte eines anderen deutschen Sci-Fi Autors, die ich witzigerweise auf einem USA-Urlaub las. Ein riesiger pyramidenförmiger Flugkörper dringt in das Sonnensystem ein und nur die Nostradamus, ein experimentelles deutsches Schiff, ist in der Lage schnell genug dort hinzukommen, um das Objekt zu untersuchen, bevor es wieder verschwindet. Doch stellt sich heraus, daß ein Saboteur an Bord ist, daß auch andere Nationen auf dem Weg zur Pyramide sind und daß noch eine ganze Menge anderer Dinge faul sind.
 

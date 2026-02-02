@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: The Religion Virus'
 aliases:
-  - /2012/08/17/fertig-gelesen-the-religion-virus.md.html
+  - /2012/08/17/fertig-gelesen-the-religion-virus.html
 ---
 [The Religion Virus](http://www.amazon.com/The-Religion-Virus-evolutionist-ebook/dp/B0046A9JMA), 
 Craig A.  James, USD 4.75

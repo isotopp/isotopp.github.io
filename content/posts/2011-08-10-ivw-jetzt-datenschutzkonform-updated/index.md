@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: IVW jetzt "datenschutzkonform" (Updated)
 aliases:
-  - /2011/08/10/ivw-jetzt-datenschutzkonform-updated.md.html
+  - /2011/08/10/ivw-jetzt-datenschutzkonform-updated.html
 ---
 Auf dem Heiseticker findet man die Mitteilung 
 [Hamburger Datenschutzbeauftragter: Reichweitenmessung der IVW ist datenschutzkonform](http://www.heise.de/newsticker/meldung/Hamburger-Datenschutzbeauftragter-Reichweitenmessung-der-IVW-ist-datenschutzkonform-1320862.html).

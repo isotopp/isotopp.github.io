@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Curlbash, and Desktop Containers
 aliases:
-  - /2017/04/13/curlbash-and-desktop-containers.md.html
+  - /2017/04/13/curlbash-and-desktop-containers.html
 ---
 I was having two independent discussions recently, which started with some
 traditional Unix person condemning software installing with curlbash (`curl

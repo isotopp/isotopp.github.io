@@ -8,7 +8,7 @@ tags:
 - inkomploehntopp
 title: "Lu Ser"
 aliases:
-  - /1996/03/23/lu-ser.md.html
+  - /1996/03/23/lu-ser.html
 ---
 
 Der junge Mönch Lu Ser wanderte viele Jahre durch die Netscape auf der Suche nach dem Sinn des Netzes,

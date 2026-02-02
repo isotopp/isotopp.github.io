@@ -9,7 +9,7 @@ tags:
 - php
 title: 'PHP: Understanding unserialize()'
 aliases:
-  - /2017/08/11/php-understanding-unserialize.md.html
+  - /2017/08/11/php-understanding-unserialize.html
 ---
 The history of `serialize()` and `unserialize()` in PHP begins with Boris
 Erdmann and me, and we have to go 20 years back in time. This is the day of

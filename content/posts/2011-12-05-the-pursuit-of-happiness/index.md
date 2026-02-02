@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: The pursuit of happiness
 aliases:
-  - /2011/12/05/the-pursuit-of-happiness.md.html
+  - /2011/12/05/the-pursuit-of-happiness.html
 ---
 Occupy. Die Piraten beschließen, sich mit dem bedingungslosen Grundeinkommen
 auseinander zu setzen. Ich lese

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'NoSQL and No Security '
 aliases:
-  - /2011/08/10/nosql-and-no-security.md.html
+  - /2011/08/10/nosql-and-no-security.html
 ---
 Drüben bei Securosis arbeitet man die Black Hat 2011 unter dem Titel 
 [NoSQL and No Security](http://www.securosis.com/blog/nosql-and-no-security) auf.

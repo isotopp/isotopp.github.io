@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: A (sad) security user story
 aliases:
-  - /2017/10/10/a-sad-security-user-story.md.html
+  - /2017/10/10/a-sad-security-user-story.html
 ---
 Here is a [user story](https://www.mountaingoatsoftware.com/agile/user-stories) for
 implementors of security systems and platform hardening initiatives:

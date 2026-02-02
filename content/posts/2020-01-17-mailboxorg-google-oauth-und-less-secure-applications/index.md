@@ -10,7 +10,7 @@ tags:
 - privacy
 title: Mailbox.org, Google, OAuth und Less Secure Applications
 aliases:
-  - /2020/01/17/mailboxorg-google-oauth-und-less-secure-applications.md.html
+  - /2020/01/17/mailboxorg-google-oauth-und-less-secure-applications.html
 ---
 Heise schreibt in
 [Mailbox.org: Google sperrt "unsichere" Dritte vom Kalender aus](https://www.heise.de/ix/meldung/Mailbox-org-Google-sperrt-unsichere-Dritte-von-Kalender-aus-4640540.html)

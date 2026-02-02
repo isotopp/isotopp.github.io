@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Bäume in SQL
 aliases:
-  - /2004/02/05/baeume-in-sql.md.html
+  - /2004/02/05/baeume-in-sql.html
 ---
 
 Vor einigen Jahren hielt ich einen Vortrag bei NetUSE über 

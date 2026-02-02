@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Dateisysteme und Datenbanken
 aliases:
-  - /2004/06/06/dateisysteme-und-datenbanken.md.html
+  - /2004/06/06/dateisysteme-und-datenbanken.html
 ---
 Der Artikel [Filesysteme sind Datenbanken](http://matthias.leisi.net/archives/45_Filesysteme_sind_Datenbanken.html) von Matthias Leisi regt mich an, hier mal ein paar Sachen aufzuschreiben, die ich schon länger vor mir her kullere.
 

@@ -13,7 +13,7 @@ tags:
 - lang_de
 title: Von der Spackeria, von Aluhüten und vom Kontrollverlust
 aliases:
-  - /2011/05/12/von-der-spackeria-von-aluhueten-und-vom-kontrollverlust.md.html
+  - /2011/05/12/von-der-spackeria-von-aluhueten-und-vom-kontrollverlust.html
 ---
 ## Spackeria? WTF?
 

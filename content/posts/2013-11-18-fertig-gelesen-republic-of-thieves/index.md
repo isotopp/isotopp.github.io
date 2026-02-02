@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: Republic of Thieves'
 aliases:
-  - /2013/11/18/fertig-gelesen-republic-of-thieves.md.html
+  - /2013/11/18/fertig-gelesen-republic-of-thieves.html
 ---
 Ich habe nun endlich "Republic of Thieves" von Scott Lynch durchgelesen. Das Buch ist der dritte Band der Gentlemen Bastards Sequence, nach [The Lies of Locke Lamora]({{< relref "2010-08-10-fertig-gelesen-die-l-gen-des-locke-lamora.md" >}}) und Red Seas Under Red Skies.
 

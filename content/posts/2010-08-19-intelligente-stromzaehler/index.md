@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: '"Intelligente" Stromzähler'
 aliases:
-  - /2010/08/19/intelligente-stromzaehler.md.html
+  - /2010/08/19/intelligente-stromzaehler.html
 ---
 
 Ich habe letztes Jahr 

@@ -9,7 +9,7 @@ tags:
   - devops
 title: "Windows abschalten"
 aliases:
-  - /2024/11/26/windows-abschalten.md.html
+  - /2024/11/26/windows-abschalten.html
 ---
 
 # An

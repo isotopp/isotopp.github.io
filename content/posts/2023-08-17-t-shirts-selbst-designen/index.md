@@ -9,7 +9,7 @@ tags:
 - erklaerbaer
 - fluffy fluff
 aliases:
-  - /2023/08/17/t-shirts-selbst-designen.md.html
+  - /2023/08/17/t-shirts-selbst-designen.html
 ---
 
 Hier ist ein T-Shirt/Tragetasche Unikat mit einem selbst gemachten Slogan.

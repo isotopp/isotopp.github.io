@@ -8,7 +8,7 @@ tags:
 - unix
 title: "UNIX Dateisysteme"
 aliases:
-  - /1994/02/01/dateisysteme.md.html
+  - /1994/02/01/dateisysteme.html
 ---
 
 # UNIX Dateisysteme

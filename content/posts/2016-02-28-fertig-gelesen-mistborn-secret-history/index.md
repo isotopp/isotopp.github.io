@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Mistborn: Secret History'
 aliases:
-  - /2016/02/28/fertig-gelesen-mistborn-secret-history.md.html
+  - /2016/02/28/fertig-gelesen-mistborn-secret-history.html
 ---
 Kelsier ist tot, aber er ist der Survivor und mag deswegen nicht abtreten so wie es von ihm verlangt wird. Also irrt er durch die Nachwelt, was Sanderson als Cognitive Realm bezeichnet, anstatt wie alle anderen in den Spiritual Realm abzutreten. Wie dem auch sei, Kelsier und mit ihm der Leser, dringen auf diese Weise hinter die Kulissen von Scadrial vor und bekommen so eine Tour von der Cosmere-Mechanik hinter dem Konflikt zwischen Preservation und Ruin und eine Menge Cameos von den ganzen Weltenbummlern, die im Cosmere unterwegs sind.
 

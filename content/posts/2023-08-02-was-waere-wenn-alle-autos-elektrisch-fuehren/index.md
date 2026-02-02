@@ -8,7 +8,7 @@ tags:
 - lang_de
 - energy
 aliases:
-  - /2023/08/02/was-waere-wenn-alle-autos-elektrisch-fuehren.md.html
+  - /2023/08/02/was-waere-wenn-alle-autos-elektrisch-fuehren.html
 ---
 
 In Deutschland gibt es circa 50 Millionen Autos.

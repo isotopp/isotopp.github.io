@@ -9,7 +9,7 @@ tags:
 - unix
 - filesystems
 aliases:
-  - /2023/05/05/50-years-in-filesystems-1974.md.html
+  - /2023/05/05/50-years-in-filesystems-1974.html
 ---
 
 Progress is sometimes hard to see, especially when you have been part of it or otherwise lived through it.

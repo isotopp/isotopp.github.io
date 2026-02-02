@@ -9,7 +9,7 @@ tags:
 - energy
 - climate
 aliases:
-  - /2025/06/27/electricity-china-coal-and-solar.md.html
+  - /2025/06/27/electricity-china-coal-and-solar.html
 ---
 
 

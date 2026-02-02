@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: The Origin Mystery Trilogy'
 aliases:
-  - /2016/08/14/fertig-gelesen-the-origin-mystery-trilogy.md.html
+  - /2016/08/14/fertig-gelesen-the-origin-mystery-trilogy.html
 ---
 Es gibt ein ganzes Genre von Scifi, in denen eine Generation Kinder der Erde plötzlich neue Fähigkeiten entwickelt, die auf einer Mutation basieren, und dem sich daraus ergebenden Generationswechsel und gesellschaftlichen Umbruch.
 

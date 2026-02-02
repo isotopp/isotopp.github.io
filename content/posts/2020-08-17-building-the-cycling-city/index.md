@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Building the Cycling City'
 aliases:
-  - /2020/08/17/building-the-cycling-city.md.html
+  - /2020/08/17/building-the-cycling-city.html
 ---
 Melissa and Chris Bruntlett have been living in Vancouver close to the
 station, and decided to do as many daily runs as possible without a car,

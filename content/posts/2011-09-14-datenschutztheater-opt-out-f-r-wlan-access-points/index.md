@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Datenschutztheater: Opt-Out für WLAN Access Points'
 aliases:
-  - /2011/09/14/datenschutztheater-opt-out-f-r-wlan-access-points.md.html
+  - /2011/09/14/datenschutztheater-opt-out-f-r-wlan-access-points.html
 ---
 Jürgen Geuter erklärt bei der Spackeria den Begriff
 [Datenschutztheater](http://blog.spackeria.org/2011/09/12/datenschutztheater/),

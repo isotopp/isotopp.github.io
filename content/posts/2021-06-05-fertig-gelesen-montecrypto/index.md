@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Montecrypto'
 aliases:
-  - /2021/06/05/fertig-gelesen-montecrypto.md.html
+  - /2021/06/05/fertig-gelesen-montecrypto.html
 ---
 
 Wir hatten hier in 

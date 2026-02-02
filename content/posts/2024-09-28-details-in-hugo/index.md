@@ -9,7 +9,7 @@ tags:
 - hugo
 title: "Details in Hugo"
 aliases:
-  - /2024/09/28/details-in-hugo.md.html
+  - /2024/09/28/details-in-hugo.html
 ---
 
 Ich habe ja seit circa 2000 kein Frontend mehr gemacht.

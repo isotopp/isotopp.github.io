@@ -8,7 +8,7 @@ tags:
 - lang_en
 - work
 aliases:
-  - /2023/09/19/the-gospel-of-efficiency-vs-actual-growth.md.html
+  - /2023/09/19/the-gospel-of-efficiency-vs-actual-growth.html
 ---
 
 A decade ago, I came as a performance specialist into a rapidly growing environment.

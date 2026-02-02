@@ -9,7 +9,7 @@ tags:
 - media
 - book
 aliases:
-  - /2022/05/02/fertig-gelesen-the-undersea-network.md.html
+  - /2022/05/02/fertig-gelesen-the-undersea-network.html
 ---
 
 Where is the Internet coming from and how and when was it built?

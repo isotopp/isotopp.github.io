@@ -8,7 +8,7 @@ tags:
 - lang_en
 - advertising
 aliases:
-  - /2019/03/25/sell-to-users.md.html
+  - /2019/03/25/sell-to-users.html
 ---
 
 There is a big change currently happening in the industry, and it is what drives and enables Facebooks "pivot to privacy" at the moment. 

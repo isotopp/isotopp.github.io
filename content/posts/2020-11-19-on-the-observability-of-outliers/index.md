@@ -8,7 +8,7 @@ tags:
 - monitoring
 title: On the Observability of Outliers
 aliases:
-  - /2020/11/19/on-the-observability-of-outliers.md.html
+  - /2020/11/19/on-the-observability-of-outliers.html
 ---
 
 At work, I am in an ongoing discussion with a number of people on the Observability of Outliers. It started with the age-old question “How do I find slow queries in my application?” aka “What would I want from tooling to get that data and where should that tooling sit?”

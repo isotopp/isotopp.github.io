@@ -9,7 +9,7 @@ tags:
 - media
 - book
 aliases:
-  - /2022/05/16/fertig-gelesen-crafting-interpreters.md.html
+  - /2022/05/16/fertig-gelesen-crafting-interpreters.html
 ---
 
 Robert Nystrom is a language developer who works at Google on the Dart programming language.

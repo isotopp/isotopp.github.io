@@ -13,7 +13,7 @@ tags:
 - lang_de
 title: IP V6 verkehrt
 aliases:
-  - /2011/06/05/ip-v6-verkehrt.md.html
+  - /2011/06/05/ip-v6-verkehrt.html
 ---
 >Johannes Caspar, Hamburgischer Beauftragter für Datenschutz und
 > Informationsfreiheit, sieht durch die Einführung des Internetprotokolls

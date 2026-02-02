@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Transitiv dumm
 aliases:
-  - /2004/09/28/transitiv-dumm.md.html
+  - /2004/09/28/transitiv-dumm.html
 ---
 Angenommen, ich hätte einen Account bei einem größeren Laden im Internet, sagen wir einmal ebuyzone. Angenommen, ich hätte außerdem einen Account bei einem größeren Freemailprovider, sagen wir einmal hotweb. Sagen wir weiterhin, ich wäre als Benutzer im Internet eher unbedarft und nicht sehr geübt.
 

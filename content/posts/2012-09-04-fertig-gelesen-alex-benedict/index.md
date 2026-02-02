@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Alex Benedict'
 aliases:
-  - /2012/09/04/fertig-gelesen-alex-benedict.md.html
+  - /2012/09/04/fertig-gelesen-alex-benedict.html
 ---
 [A Talent for War](http://www.amazon.com/Talent-For-Alex-Benedict-ebook/dp/B004P5OZ02),
 Jack McDevitt, USD 7.99 (Audiobook von Audible verfügbar)

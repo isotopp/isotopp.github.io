@@ -9,7 +9,7 @@ tags:
 - mobility
 - bike
 aliases:
-  - /2023/09/16/haftungsfragen.md.html
+  - /2023/09/16/haftungsfragen.html
 ---
 
 Die Niederlande halten es so:

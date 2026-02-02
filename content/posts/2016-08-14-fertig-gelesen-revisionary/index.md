@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: Revisionary'
 aliases:
-  - /2016/08/14/fertig-gelesen-revisionary.md.html
+  - /2016/08/14/fertig-gelesen-revisionary.html
 ---
 Hines ist da, wo Stross noch hin will: Der Deckel ist ab, die Muggel haben die Magie gesehen und müssen sich in der neuen Welt zurecht finden - nichts, was sie bisher über die Welt und ihre Geschichte wissen ist noch wahr und eine neue, bisher unbekannte Macht existiert.
 

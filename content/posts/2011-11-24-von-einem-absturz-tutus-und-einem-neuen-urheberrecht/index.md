@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: Von einem Absturz, Tutus und einem neuen Urheberrecht
 aliases:
-  - /2011/11/24/von-einem-absturz-tutus-und-einem-neuen-urheberrecht.md.html
+  - /2011/11/24/von-einem-absturz-tutus-und-einem-neuen-urheberrecht.html
 ---
 Argh! Ein mal, ein einziges Mal tut man etwas Gutes und dann das!
 

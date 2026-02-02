@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Piratenthemen
 aliases:
-  - /2009/08/10/piratenthemen.md.html
+  - /2009/08/10/piratenthemen.html
 ---
 
 ![](piratenparty.jpg)

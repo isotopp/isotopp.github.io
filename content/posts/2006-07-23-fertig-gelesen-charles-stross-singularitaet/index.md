@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Charles Stross: Singularität'
 aliases:
-  - /2006/07/23/fertig-gelesen-charles-stross-singularitaet.md.html
+  - /2006/07/23/fertig-gelesen-charles-stross-singularitaet.html
 ---
 
 ![](singularitaet.jpg)

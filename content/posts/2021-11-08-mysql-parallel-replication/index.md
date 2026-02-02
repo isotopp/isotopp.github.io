@@ -8,7 +8,7 @@ tags:
 - mysql
 - replication
 aliases:
-  - /2021/11/08/mysql-parallel-replication.md.html
+  - /2021/11/08/mysql-parallel-replication.html
 ---
 
 At work, [replication]({{< relref "2020-11-27-backups-and-replication.md" >}}) is a central feature in our MySQL Standard Architecture.

@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: "The Departure"'
 aliases:
-  - /2013/12/05/fertig-gelesen-the-departure-neal-asher.md.html
+  - /2013/12/05/fertig-gelesen-the-departure-neal-asher.html
 ---
 [Neal Asher](http://en.wikipedia.org/wiki/Neal_Asher) kenne ich als Autor eher von seinen Geschichten aus dem "Polity"-Universum. Dort sind seine Helden bis an die Oberkante Unterlippe hochge-mary-sue't und entsprechend muß er seine Welten mit Gegnern und feindseligen Biosphäre versorgen, die irgendwo zwischen "over the top" und "lächerlich" angesiedelt sind, damit seine Geschichten ihren Helden Gegner präsentieren können, die angemessen sind.
 

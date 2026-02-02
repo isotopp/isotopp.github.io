@@ -10,7 +10,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: Rheingold'
 aliases:
-  - /2015/11/30/fertig-gelesen-rheingold.md.html
+  - /2015/11/30/fertig-gelesen-rheingold.html
 ---
 Dritter und letzter Teil der 2. Trilogie in der Ætherwelt, eine Falk-und-Minerva-Geschichte. In der wir endlich Fafnir treffen, die französischen Dampf-Kampfroboterinnen Action sehen, die Naniten zurück kommen und Thor Loki endlich aufs Maul haut. Oder anders gesagt - Anja Bagus dreht auf.
 

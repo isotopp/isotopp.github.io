@@ -7,7 +7,7 @@ tags:
 - privacy
 title: Mein selbstfahrendes Auto hat Kameras, oh nein!
 aliases:
-  - /2020/09/17/mein-selbstfahrendes-auto-hat-kameras-oh-nein.md.html
+  - /2020/09/17/mein-selbstfahrendes-auto-hat-kameras-oh-nein.html
 ---
 Bei der ARD ist man empört! [Teslas Kameras: ARD rückt Datenschutzbedenken ins Licht](https://www.heise.de/news/Teslas-Kameras-ARD-rueckt-Datenschutzbedenken-ins-Licht-4904167.html). Will sagen, jemand hat älteren Personen gesteckt, daß ein selbstfahrendes Auto wenig überraschend Kameras braucht, um bei seiner bestimmungsgemäße Verwendung weniger ältere Personen überzumöllern.
 

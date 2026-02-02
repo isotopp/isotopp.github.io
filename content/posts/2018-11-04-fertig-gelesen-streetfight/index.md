@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Streetfight: Handbook for an Urban Revolution.'
 aliases:
-  - /2018/11/04/fertig-gelesen-streetfight.md.html
+  - /2018/11/04/fertig-gelesen-streetfight.html
 ---
 Janette Sadik-Khan über ihren Job als Transportation Commissioner in New York und den Umbau und die urbane Erneuerung von New York.
 

@@ -9,7 +9,7 @@ tags:
 - media
 title: 'Fertig gelesen: The Black Count'
 aliases:
-  - /2021/06/05/fertig-gelesen-the-black-count.md.html
+  - /2021/06/05/fertig-gelesen-the-black-count.html
 ---
 
 Another Monte-Cristo-themed book, Tom Reiss' [The Black Count](https://www.amazon.de/dp/B008QYTJZO) nicely complements the german sci-fi novel [Montecrypto]({{< relref "2021-06-05-fertig-gelesen-montecrypto.md" >}}) by Tom Hillenbrand. It is a biography of the father of the French write Alexandere Dumas, Thomas-Alexandre Dumas Davy de la Pailleterie.

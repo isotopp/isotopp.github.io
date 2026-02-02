@@ -10,7 +10,7 @@ tags:
 - schnuppel
 - python
 aliases:
-  - /2024/04/03/die-sache-mit-den-kreisen.md.html
+  - /2024/04/03/die-sache-mit-den-kreisen.html
 ---
 
 Der Sohn brauchte Kreisfunktionen für Dinge in Minecraft.

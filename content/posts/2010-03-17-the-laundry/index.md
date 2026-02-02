@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: The Laundry
 aliases:
-  - /2010/03/17/the-laundry.md.html
+  - /2010/03/17/the-laundry.html
 ---
 In einem [Blogartikel](http://www.antipope.org/charlie/blog-static/2010/03/for-sale-first-edition-of-the.html)
 verweist Charles Stross auf das recht bald erscheinende The Laundry

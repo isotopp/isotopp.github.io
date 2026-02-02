@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: NAT ist kein Sicherheitsfeature
 aliases:
-  - /2010/11/28/nat-ist-kein-sicherheitsfeature.md.html
+  - /2010/11/28/nat-ist-kein-sicherheitsfeature.html
 ---
 Neulich hatte ich wieder einmal die Standard-Diskussion mit jemandem, der
 gegen IPV6 war, weil er dann ja kein NAT mehr habe. Dadurch, so die

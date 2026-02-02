@@ -9,7 +9,7 @@ tags:
 - media
 - book
 aliases:
-  - /2022/05/03/fertig-gelesen-the-pattern-on-the-stone.md.html
+  - /2022/05/03/fertig-gelesen-the-pattern-on-the-stone.html
 ---
 
 This is an old book, from 1998, and much of the technology referred to directly has evolved since then.

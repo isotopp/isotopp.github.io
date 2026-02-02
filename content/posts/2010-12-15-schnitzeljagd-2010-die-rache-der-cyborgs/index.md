@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Schnitzeljagd 2010 - Die Rache der Cyborgs
 aliases:
-  - /2010/12/15/schnitzeljagd-2010-die-rache-der-cyborgs.md.html
+  - /2010/12/15/schnitzeljagd-2010-die-rache-der-cyborgs.html
 ---
 Heute war ich auf einer Schnitzeljagd, als Kennenlernspiel und
 Teambuilding-Exercise.

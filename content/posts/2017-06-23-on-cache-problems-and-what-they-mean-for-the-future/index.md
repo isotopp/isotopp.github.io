@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: On cache problems, and what they mean for the future
 aliases:
-  - /2017/06/23/on-cache-problems-and-what-they-mean-for-the-future.md.html
+  - /2017/06/23/on-cache-problems-and-what-they-mean-for-the-future.html
 ---
 ![](2017/06/ssd-problem.jpg)
 

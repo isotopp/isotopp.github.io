@@ -10,7 +10,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: "Fortuna: Geschichten aus der Aetherwelt"'
 aliases:
-  - /2014/08/11/fertig-gelesen-fortuna-geschichten-aus-der-aetherwelt.md.html
+  - /2014/08/11/fertig-gelesen-fortuna-geschichten-aus-der-aetherwelt.html
 ---
 Das Amt für Aetherangelegenheiten muß eine Serie von Mordfällen an Bord des fliegenden Spielcasinos Fortuna aufklären. Die Aufgabe fällt dem aethersensitiven, blinden Adligen Claudius zu, doch statt sich an die Fakten zu halten verstrickt er sich mehr und mehr in die ganze Geschichte.
 

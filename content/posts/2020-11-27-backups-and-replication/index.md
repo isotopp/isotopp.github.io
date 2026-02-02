@@ -9,7 +9,7 @@ tags:
 - replication
 title: "MySQL: Backups and Replication"
 aliases:
-  - /2020/11/27/backups-and-replication.md.html
+  - /2020/11/27/backups-and-replication.html
 ---
 There was a question at work about MySQL backups and restore. I needed to explain more.
 

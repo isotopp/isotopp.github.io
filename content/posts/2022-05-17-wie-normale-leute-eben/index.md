@@ -7,7 +7,7 @@ tags:
 - lang_de
 - schnuppel
 aliases:
-  - /2022/05/17/wie-normale-leute-eben.md.html
+  - /2022/05/17/wie-normale-leute-eben.html
 ---
 
 Der Schnuppel ist jetzt in der niederländischen Groep 8, also in der 6. und letzten Klasse der Grundschule.

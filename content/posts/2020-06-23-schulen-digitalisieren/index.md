@@ -9,7 +9,7 @@ tags:
 - politik
 title: Schulen digitalisieren
 aliases:
-  - /2020/06/23/schulen-digitalisieren.md.html
+  - /2020/06/23/schulen-digitalisieren.html
 ---
 Da war also ein Artikel bei Golem: [Schulen bemühen sich vergeblich um Geld aus dem Digitalpakt](https://www.golem.de/news/keine-glasfaser-keine-it-kompetenz-schulen-bemuehen-sich-vergeblich-um-geld-aus-dem-digitalpakt-2006-149146.html).
 > Die Schulen wollten das Geld nutzen, die Mittel würden aber trotz vieler Einreichungen nicht freigegeben, sagte ein Lehrer und IT-Verantwortlicher eines Berliner Gymnasiums Golem.de.

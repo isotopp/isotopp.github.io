@@ -9,7 +9,7 @@ tags:
 - work
 - remote first
 aliases:
-  - /2023/09/12/kein-homeoffice-keine-kekse.md.html
+  - /2023/09/12/kein-homeoffice-keine-kekse.html
 ---
 
 Heise schreibt: 

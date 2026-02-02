@@ -9,7 +9,7 @@ tags:
 - lang_de
 - work
 aliases:
-  - /2019/01/07/du-weisst-nichts-von-homeoffice.md.html
+  - /2019/01/07/du-weisst-nichts-von-homeoffice.html
 ---
 
 In [Recht auf Homeoffice](https://www.golem.de/news/spd-arbeitsministerium-will-recht-auf-homeoffice-per-gesetz-1901-138520.html) schreibt Golem:

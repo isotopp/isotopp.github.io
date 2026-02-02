@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Vertrauensverschiß
 aliases:
-  - /2011/07/25/vertrauensverschiss.md.html
+  - /2011/07/25/vertrauensverschiss.html
 ---
 
 [Die Polizei wird persönlich](http://taz.de/Dresdner-Datenaffaere/!75041/)

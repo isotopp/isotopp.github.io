@@ -9,7 +9,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /2006/05/04/sql-vs-ldap-kai-voigt.md.html
+  - /2006/05/04/sql-vs-ldap-kai-voigt.html
 ---
 
 A talk given by Kai Voigt at Linuxtag in Wiesbaden, based on 

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Statifizierung für S9Y - eine Blaupause
 aliases:
-  - /2010/05/11/statifizierung-fuer-s9y-eine-blaupause.md.html
+  - /2010/05/11/statifizierung-fuer-s9y-eine-blaupause.html
 ---
 An anderer Stelle gab es in einem komplett anderen Kontext eine Diskussion 
 ([1](http://mysqldump.azundris.com/archives/36-Serving-Images-From-A-Database.html), 

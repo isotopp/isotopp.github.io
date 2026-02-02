@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Ancient Shores'
 aliases:
-  - /2012/09/03/fertig-gelesen-ancient-shores.md.html
+  - /2012/09/03/fertig-gelesen-ancient-shores.html
 ---
 [Ancient Shores](http://www.amazon.com/Ancient-Shores-ebook/dp/B00121SICI),
 Jack McDevitt, USD 7.99

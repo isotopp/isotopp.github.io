@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Bundestrojaner im Handelsblatt
 aliases:
-  - /2007/04/18/bundestrojaner-im-handelsblatt.md.html
+  - /2007/04/18/bundestrojaner-im-handelsblatt.html
 ---
 
 Im Handelsblatt 

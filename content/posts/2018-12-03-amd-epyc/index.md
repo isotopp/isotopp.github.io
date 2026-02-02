@@ -8,7 +8,7 @@ tags:
 - lang_de
 - computer
 aliases:
-  - /2018/12/03/amd-epyc.md.html
+  - /2018/12/03/amd-epyc.html
 ---
 
 So we have been production benchmarking two AMD EPYC servers today.

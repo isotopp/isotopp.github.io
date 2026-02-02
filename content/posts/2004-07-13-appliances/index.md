@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Appliances
 aliases:
-  - /2004/07/13/appliances.md.html
+  - /2004/07/13/appliances.html
 ---
 Appliances sind eine Pest. Egal, welche Farbe sie haben und was sie tun.
 

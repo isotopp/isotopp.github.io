@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: The Apollo Guidance Computer: Architecture and Operation'
 aliases:
-  - /2017/12/08/fertig-gelesen-the-apollo-guidance-computer-architecture-and-operation.md.html
+  - /2017/12/08/fertig-gelesen-the-apollo-guidance-computer-architecture-and-operation.html
 ---
 [![](2017/12/apollo-guidance-computer.jpg)](https://www.amazon.de/Apollo-Guidance-Computer-Architecture-Operation/dp/1441908765)
 

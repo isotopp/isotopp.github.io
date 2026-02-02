@@ -8,7 +8,7 @@ tags:
 - mysqldev
 title: 'MySQL: Two kinds of compression'
 aliases:
-  - /2021/09/09/mysql-two-kinds-of-compression.md.html
+  - /2021/09/09/mysql-two-kinds-of-compression.html
 ---
 I never had much reason to use table compression, so I largely ignored the topic in MySQL. 
 I knew that MySQL had table compression since 5.1, but I also knew the implementation was horribly complicated and double stored all data.

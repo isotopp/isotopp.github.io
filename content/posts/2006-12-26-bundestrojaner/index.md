@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Bundestrojaner
 aliases:
-  - /2006/12/26/bundestrojaner.md.html
+  - /2006/12/26/bundestrojaner.html
 ---
 Und die finale Analyse des Problemkomplexes 
 [Bundestrojaner](http://www.lawblog.de/index.php/archives/2006/12/21/staatlich-organisierter-hausfriedensbruch/)

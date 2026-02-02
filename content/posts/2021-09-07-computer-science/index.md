@@ -7,7 +7,7 @@ tags:
 - computer
 title: Computer science
 aliases:
-  - /2021/09/07/computer-science.md.html
+  - /2021/09/07/computer-science.html
 ---
 
 [Lilith Wittmann](https://twitter.com/LilithWittmann/status/1435135620658122752) asked on Twitter:

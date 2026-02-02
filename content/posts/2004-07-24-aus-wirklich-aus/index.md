@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: "Aus. Wirklich aus?"
 aliases:
-  - /2004/07/24/aus-wirklich-aus.md.html
+  - /2004/07/24/aus-wirklich-aus.html
 ---
 
 ![](2004/07/notstrom.jpg)

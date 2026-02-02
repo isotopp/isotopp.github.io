@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Children of the Sky'
 aliases:
-  - /2012/08/28/fertig-gelesen-children-of-the-sky.md.html
+  - /2012/08/28/fertig-gelesen-children-of-the-sky.html
 ---
 [The Children of the Sky](http://www.amazon.com/The-Children-Zones-Thought-ebook/dp/B004YD5JIW),
 Vernor Vinge, USD 7.99

@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Ab 18
 aliases:
-  - /2010/01/26/ab-18.md.html
+  - /2010/01/26/ab-18.html
 ---
 ![](blog_altersfreigabe.png)
 

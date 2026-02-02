@@ -10,7 +10,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: Kady Cross "The Girl with the ..."'
 aliases:
-  - /2014/08/11/fertig-gelesen-kady-cross-the-girl-with-the.md.html
+  - /2014/08/11/fertig-gelesen-kady-cross-the-girl-with-the.html
 ---
 League of Extraordinary Gentle(wo)men done right, meets X-Men, meets Wild-Wild West. Larger-than-life steampunk universe with cheesy supervillain opponents forces a Mary-Sueish rich and overly able brooding enlisch Peer to form a team of mutants fighting the cunning "Machinst", saving the Empire.
 

@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Ein paar Gedanken zu Zeitreihendaten
 aliases:
-  - /2009/10/28/ein-paar-gedanken-zu-zeitreihendaten.md.html
+  - /2009/10/28/ein-paar-gedanken-zu-zeitreihendaten.html
 ---
 Ich sitze hier auf der 
 [Open Source Monitoring Conference](http://www.netways.de/osmc/y2009/programm/) 

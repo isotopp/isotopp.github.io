@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: The Boss'
 aliases:
-  - /2015/02/08/fertig-gelesen-the-boss.md.html
+  - /2015/02/08/fertig-gelesen-the-boss.html
 ---
 Diese Woche ist Premiere von 50 Shades, und das offenbar auch noch auf der Berlinale mit einer [Special Gala](https://www.berlinale.de/en/presse/pressemitteilungen/alle/Alle-Detail_25876.html). Passend dazu rollte durch meine Tumblr [dieses Post](https://mariareadsalot.tumblr.com/post/110245450298/valley-guy-zohbugg-cleolinda-cinematicnomad).
 

@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: The Astounding Antagonists'
 aliases:
-  - /2014/12/13/fertig-gelesen-the-astounding-antagonists.md.html
+  - /2014/12/13/fertig-gelesen-the-astounding-antagonists.html
 ---
 Superhelden sind ja immer auch die Verkörperung von Idealen, und wenn sie nur das sind, sind sie stumpfe Abziehbilder und langweilig. Allen voran der langweiligste Superheld von allen mit dem langweiligsten Namen von allen - Superman. In solchen Geschichten, und insbesondere in den Geschichten von Supie sind die Bösen nicht nur deswegen die interessanteren, weil sie die cooleren Kostüme haben, sondern auch, weil sie nicht auf die Verkörperung von Idealen beschränkt sind, sondern richtige Schicksale haben und sich - anders als der Titelheld - weiter entwickeln können.
 

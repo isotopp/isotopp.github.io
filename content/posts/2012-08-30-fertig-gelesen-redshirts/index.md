@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Redshirts'
 aliases:
-  - /2012/08/30/fertig-gelesen-redshirts.md.html
+  - /2012/08/30/fertig-gelesen-redshirts.html
 ---
 [Redshirts](http://www.amazon.com/Redshirts-Novel-Three-Codas-ebook/dp/B0079XPUOW),
 John Scalzi, USD 11.99

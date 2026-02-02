@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: Ein paar Gedanken zu Foreign Key Constraints
 aliases:
-  - /2009/10/20/ein-paar-gedanken-zu-foreign-key-constraints.md.html
+  - /2009/10/20/ein-paar-gedanken-zu-foreign-key-constraints.html
 ---
 Ich lese gerade [SQLite Foreign Key Support](http://www.sqlite.org/draft/foreignkeys.html) und ich muß sagen, ich kann mir ein leichtes Grinsen nicht verkneifen.
 

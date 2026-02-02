@@ -8,7 +8,7 @@ tags:
 - hack
 title: Websense DLP gives instant root
 aliases:
-  - /2018/06/18/websense-dlp-gives-instant-root.md.html
+  - /2018/06/18/websense-dlp-gives-instant-root.html
 ---
 
 Enterprise security software is interesting, because in order to do what it does it often uses privilege, but it is also very often written extremely badly.

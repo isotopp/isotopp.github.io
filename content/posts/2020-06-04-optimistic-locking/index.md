@@ -10,7 +10,7 @@ tags:
 - reddit
 title: Optimistic locking
 aliases:
-  - /2020/06/04/optimistic-locking.md.html
+  - /2020/06/04/optimistic-locking.html
 ---
 A [question](https://www.reddit.com/r/mysql/comments/gwc0ry/concurrent_queries_with_mysql/) from Reddit's /r/mysql:
 

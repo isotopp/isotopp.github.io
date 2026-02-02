@@ -9,7 +9,7 @@ tags:
   - erklaerbaer
 title: "Keine Windkraft zu Hause"
 aliases:
-  - /2024/12/20/keine-windkraft-zu-hause.md.html
+  - /2024/12/20/keine-windkraft-zu-hause.html
 ---
 
 Auf Mastodon hieß es als Antwort auf einen Heim-Solar-Artikel:

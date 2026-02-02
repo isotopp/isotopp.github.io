@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Lord Gamma'
 aliases:
-  - /2003/08/31/fertig-gelesen-lord-gamma.md.html
+  - /2003/08/31/fertig-gelesen-lord-gamma.html
 ---
 [Lord Gamma](https://www.amazon.de/exec/obidos/ASIN/3404243013) hätte so cool sein können. Ein Typ, Stan, in einem Pontiac ohne Motor, fährt eine schnurgerade Gefällestrecke runter, in der sich die Landschaft alle 180 km wiederholt.
 

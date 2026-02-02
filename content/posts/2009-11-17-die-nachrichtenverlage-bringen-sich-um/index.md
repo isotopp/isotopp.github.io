@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Die Nachrichtenverlage bringen sich um
 aliases:
-  - /2009/11/17/die-nachrichtenverlage-bringen-sich-um.md.html
+  - /2009/11/17/die-nachrichtenverlage-bringen-sich-um.html
 ---
 In [Can Newspaper publishers survive this revenue freefall?](http://www.niemanlab.org/2009/08/can-newspaper-publishers-survive-this-revenue-freefall-perhaps-if-they-embrace-a-digital-future/) stellt Martin Langeveld fest, daß in den letzten 50 Jahren der Anteil der gesamten verfügbaren Budgets in der Werbebrance bei ziemlich konstant 2% des Bruttosozialproduktes lag. Jedoch: Die Verteilung der Werbebudgets ist nicht konstant.
 

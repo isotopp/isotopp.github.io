@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: Change Agent'
 aliases:
-  - /2019/11/18/fertig-gelesen-change-agent.md.html
+  - /2019/11/18/fertig-gelesen-change-agent.html
 ---
 [Change Agent](https://www.amazon.de/dp/110198466X) is Daniel
 Suarez fifth book.

@@ -9,7 +9,7 @@ tags:
 - verkehr
 - energy
 aliases:
-  - /2025/08/10/two-years-megane.md.html
+  - /2025/08/10/two-years-megane.html
 ---
 
 It has now been two years since [we got the Megane e-Tech]({{< relref "2023-08-13-electric-cars-and-numbers.md" >}}).

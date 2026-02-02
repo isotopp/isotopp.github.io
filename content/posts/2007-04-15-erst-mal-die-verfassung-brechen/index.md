@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Erst mal die Verfassung brechen...
 aliases:
-  - /2007/04/15/erst-mal-die-verfassung-brechen.md.html
+  - /2007/04/15/erst-mal-die-verfassung-brechen.html
 ---
 [Deutschlandradio](http://www.dradio.de/dkultur/sendungen/tacheles/614853/)
 interviewed Thomas de Maizière:

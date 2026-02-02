@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Work Rules!'
 aliases:
-  - /2016/08/14/fertig-gelesen-work-rules.md.html
+  - /2016/08/14/fertig-gelesen-work-rules.html
 ---
 Wenn man sich auf die erste und wichtigste Säule konzentriert ("Personal, Organisation, Technik"), dann ist dieses Buch die Ergänzung zum [SRE Buch]({{< relref "2016-08-14-fertig-gelesen-site-reliability-engineering.md" >}}), weil es die HR Organisation und die Arbeitssituation von Google beschreibt, und die ist durchaus anders als in anderen Firmen - wieder geprägt vom wirtschaftlichen und technischen Umfeld.
 

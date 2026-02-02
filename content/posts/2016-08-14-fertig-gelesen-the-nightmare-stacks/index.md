@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: The Nightmare Stacks'
 aliases:
-  - /2016/08/14/fertig-gelesen-the-nightmare-stacks.md.html
+  - /2016/08/14/fertig-gelesen-the-nightmare-stacks.html
 ---
 [Die Laundry Files Series](https://www.amazon.de/gp/product/B01C8R8TK0)
 

@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Steelheart, Mitosis'
 aliases:
-  - /2014/12/30/fertig-gelesen-steelheart-mitosis.md.html
+  - /2014/12/30/fertig-gelesen-steelheart-mitosis.html
 ---
 Nach Rafael Chandler s "Astounding Antagonists" nun ein zweites Buch, das sich mit dem Konzept der Superhelden auseinandersetzt.
 

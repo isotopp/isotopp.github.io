@@ -7,7 +7,7 @@ tags:
 - mysql
 title: MySQL and UUIDs
 aliases:
-  - /2021/04/06/mysql-and-uuids.md.html
+  - /2021/04/06/mysql-and-uuids.html
 ---
 
 In [ALTER TABLE for UUID]({{< relref "2020-09-22-alter-table-for-uuid.md" >}}) we discuss currently proper way to store and handle UUID in MySQL. Currently it works, even in a performant way, but it still hurts. It should not.

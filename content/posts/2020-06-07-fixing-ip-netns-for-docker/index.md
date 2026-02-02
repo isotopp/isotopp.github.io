@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Fixing "ip netns" for docker
 aliases:
-  - /2020/06/07/fixing-ip-netns-for-docker.md.html
+  - /2020/06/07/fixing-ip-netns-for-docker.html
 ---
 So I want to monitor my Jitsi Videobridge to get some useful statistics. The instructions say to [enable Videobridge statistics](https://github.com/jitsi/jitsi-videobridge/blob/master/doc/statistics.md) and then grab stuff from port 8080.
 

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: FCopy (Commodore 64)
 aliases:
-  - /2011/07/17/fcopy-commodore-64.md.html
+  - /2011/07/17/fcopy-commodore-64.html
 ---
 Hach.
 

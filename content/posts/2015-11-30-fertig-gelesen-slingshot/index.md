@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Slingshot'
 aliases:
-  - /2015/11/30/fertig-gelesen-slingshot.md.html
+  - /2015/11/30/fertig-gelesen-slingshot.html
 ---
 Tobias Klausmann schiebt uns in ein fremdes Universum und erklärt nichts: Jemand stiehlt ein Raumschiff und der Schiffscomputer kann reden. Das Schiff scheint ein Prototyp zu sein, und schneller oder besser als andere Schiffe zu sein, und offenbar ist es was besonderes, daß der Schiffscomputer eine allgemeine künstliche Intelligenz ist.
 

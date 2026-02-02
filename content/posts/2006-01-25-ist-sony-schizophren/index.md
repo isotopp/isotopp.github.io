@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Ist Sony schizophren?
 aliases:
-  - /2006/01/25/ist-sony-schizophren.md.html
+  - /2006/01/25/ist-sony-schizophren.html
 ---
 
 ![](sonyelectronics.jpg)

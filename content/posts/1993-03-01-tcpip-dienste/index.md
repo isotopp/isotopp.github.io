@@ -8,7 +8,7 @@ tags:
 - internet
 title: "TCP/IP Dienste"
 aliases:
-  - /1993/03/01/tcpip-dienste.md.html
+  - /1993/03/01/tcpip-dienste.html
 ---
 
 **für c't - Magazin für Computertechnik, Ausgabe 3/93**

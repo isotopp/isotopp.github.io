@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: New Technology vs Planned Obsolescence
 aliases:
-  - /2017/07/07/new-technology-vs-planned-obsolescence.md.html
+  - /2017/07/07/new-technology-vs-planned-obsolescence.html
 ---
 based on an [old Google plus article](https://plus.google.com/+KristianK%C3%B6hntopp/posts/3ybLxwccJop)
 from 2015: What you observe as [Planned Obsolescence](https://en.wikipedia.org/wiki/Planned_obsolescence) 

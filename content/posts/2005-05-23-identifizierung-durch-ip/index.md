@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Identifizierung durch IP
 aliases:
-  - /2005/05/23/identifizierung-durch-ip.md.html
+  - /2005/05/23/identifizierung-durch-ip.html
 ---
 In [Das Rätsel um die 193.17.243.1](http://www.schenefelder-tageblatt.de/fr_rechts.php?aid=21657&kat=5&dir=/Homepage/news)
 schreibt Thomas Klink:

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Neues Werkzeug
 aliases:
-  - /2008/06/11/neues-werkzeug.md.html
+  - /2008/06/11/neues-werkzeug.html
 ---
 
 Neuer Job, neues Werkzeug. Diesmal ein MacBook Pro 15", mit 3 GB RAM und der 200 GB 7200rpm Platte und MacOS X 10.5.3. 

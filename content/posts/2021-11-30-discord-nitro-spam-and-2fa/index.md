@@ -9,7 +9,7 @@ tags:
 - identity
 - minecraft
 aliases:
-  - /2021/11/30/discord-nitro-spam-and-2fa.md.html
+  - /2021/11/30/discord-nitro-spam-and-2fa.html
 ---
 
 This morning the Discord account of my son started to send "free nitro" spam to his friends on the friend list, and to some Discords he was a member of.

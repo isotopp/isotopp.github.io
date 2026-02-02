@@ -11,7 +11,7 @@ tags:
 - mysqldev
 title: MySQL Commit Size and Speed
 aliases:
-  - /2020/07/27/mysql-commit-size-and-speed.md.html
+  - /2020/07/27/mysql-commit-size-and-speed.html
 ---
 When writing data to disk, for small transactions the cost of writing the
 commit out do disk dominates the execution time of the script. In order to

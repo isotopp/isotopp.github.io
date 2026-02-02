@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Deutsch für Profis - Wege zu gutem Stil'
 aliases:
-  - /2006/07/30/fertig-gelesen-deutsch-fuer-profis.md.html
+  - /2006/07/30/fertig-gelesen-deutsch-fuer-profis.html
 ---
 
 ![](deutschfuerprofis.jpg)

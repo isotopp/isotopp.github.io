@@ -8,7 +8,7 @@ tags:
 - internet
 title: "A Robots Dictionary"
 aliases:
-  - /1995/03/01/datenuebertragung-glossar.md.html
+  - /1995/03/01/datenuebertragung-glossar.html
 ---
 
 #### Dieser Text ist eine verkürzte Form des Textes »A Robots Dictionary« von me@grmbl.saar.de (Martin Emmerich). Er erschien zusammen mit anderen Artikeln im Sonderheft DFÜ der DOS International (DMV Verlag).

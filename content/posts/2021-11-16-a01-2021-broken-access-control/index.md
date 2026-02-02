@@ -7,7 +7,7 @@ tags:
 - lang_de
 - security
 aliases:
-  - /2021/11/16/a01-2021-broken-access-control.md.html
+  - /2021/11/16/a01-2021-broken-access-control.html
 ---
 
 Dieser Artikel wurde von Lenz Grimmer auch [ins Englische]({{< relref "2021-11-16-a01-2021-broken-access-control-en.md" >}}) übersetzt.

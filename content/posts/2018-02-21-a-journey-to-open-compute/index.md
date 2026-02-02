@@ -11,7 +11,7 @@ tags:
 - lang_en
 title: A Journey to Open Compute
 aliases:
-  - /2018/02/21/a-journey-to-open-compute.md.html
+  - /2018/02/21/a-journey-to-open-compute.html
 ---
 Yesterday, Booking.com hosted the Open Compute Meetup in
 Amsterdam. My talk is on Slideshare and a recording is on

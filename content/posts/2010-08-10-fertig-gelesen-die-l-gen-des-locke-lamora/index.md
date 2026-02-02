@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Die Lügen des Locke Lamora'
 aliases:
-  - /2010/08/10/fertig-gelesen-die-l-gen-des-locke-lamora.md.html
+  - /2010/08/10/fertig-gelesen-die-l-gen-des-locke-lamora.html
 ---
 [Die Lügen des Locke Lamora](http://www.amazon.de/Lügen-Locke-Lamora-Scott-Lynch/dp/3453530918),
 Scott Lynch, EUR 14.00, 848 Seiten.

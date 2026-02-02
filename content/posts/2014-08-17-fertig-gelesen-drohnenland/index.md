@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Drohnenland'
 aliases:
-  - /2014/08/17/fertig-gelesen-drohnenland.md.html
+  - /2014/08/17/fertig-gelesen-drohnenland.html
 ---
 Kriminalgeschichte im Stile von Casablanca, die in einem dystopischen Europa 50 Jahre in der Zukunft spielt. Ein Europol-Kommissar und Ex-Soldat aus den Solarkriegen soll den Mord an einem Europarlamentarier aufklären, um im Laufe der Geschichte zu lernen, daß nichts in seinem Universum echt oder ehrlich ist.
 

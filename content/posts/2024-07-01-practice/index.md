@@ -11,7 +11,7 @@ tags:
 - work
 - computer
 aliases:
-  - /2024/07/01/practice.md.html
+  - /2024/07/01/practice.html
 ---
 
 Some things come to me very slowly and painfully.

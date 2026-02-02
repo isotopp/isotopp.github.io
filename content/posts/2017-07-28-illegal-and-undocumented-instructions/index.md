@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Illegal and undocumented instructions
 aliases:
-  - /2017/07/28/illegal-and-undocumented-instructions.md.html
+  - /2017/07/28/illegal-and-undocumented-instructions.html
 ---
 [![](2017/07/6502-die.jpg)](http://www.pagetable.com/?p=39)
 

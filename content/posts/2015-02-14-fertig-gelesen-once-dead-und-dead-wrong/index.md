@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Once Dead und Dead Wrong'
 aliases:
-  - /2015/02/14/fertig-gelesen-once-dead-und-dead-wrong.md.html
+  - /2015/02/14/fertig-gelesen-once-dead-und-dead-wrong.html
 ---
 Mary Sue Alarm: Jack Gregory war ein hoch begabter CIA Special Operative, bevor er in Kalkutta tödlich verletzt wurde. Auf der Schwelle zum Jenseits macht ihm eine seltsame transdimensionale Dämonenkreatur ein Angebot, daß er nicht ablehnen kann und er kehrt unter die Lebenden zurück, mit einem Gefahrensinn und übernatürlichem Timing, daß ihn alles noch viel heldenhafter macht.
 

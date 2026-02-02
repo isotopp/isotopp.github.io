@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Der Autor als Agentur der Moderne'
 aliases:
-  - /2012/08/29/fertig-gelesen-der-autor-als-agentur-der-moderne.md.html
+  - /2012/08/29/fertig-gelesen-der-autor-als-agentur-der-moderne.html
 ---
 [Der Autor als Agentur der Moderne](http://www.amazon.de/Agentur-Moderne-Transformation-popul%C3%A4rer-Literatur/dp/3899754387),
 Frank O.  Hrachowy, EUR 49.90

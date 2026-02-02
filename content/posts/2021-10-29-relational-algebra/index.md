@@ -8,7 +8,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2021/10/29/relational-algebra.md.html
+  - /2021/10/29/relational-algebra.html
 ---
 
 What is "relational" and "algebra" about "Relational Algebra" and SQL?

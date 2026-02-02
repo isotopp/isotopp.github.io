@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: The Atrocity Archives'
 aliases:
-  - /2007/10/08/charles-stross-the-atrocity-archives-deutsch-d-monentor.md.html
+  - /2007/10/08/charles-stross-the-atrocity-archives-deutsch-d-monentor.html
 ---
 [The Atrocity Archives](http://www.amazon.de/Atrocity-Archives-Charles-Stross/dp/1841495697),
 Charles Stross

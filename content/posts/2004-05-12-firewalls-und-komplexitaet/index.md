@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Firewalls und Komplexität
 aliases:
-  - /2004/05/12/firewalls-und-komplexitaet.md.html
+  - /2004/05/12/firewalls-und-komplexitaet.html
 ---
 In der Computerwoche findet sich ein [Artikel](https://www.tecchannel.de/a/sicherheitsrisiko-web-anwendung,1785212,3), der sich mit dem Thema "Sicherheit von Webanwendungen" beschäftigt. Nun ist es die Computerwoche, und daher nicht so richtig verwunderlich, wenn dieser Artikel das Thema eher ... oberflächlich behandelt. Aber so einige Ideen schockieren mich dann doch.
 

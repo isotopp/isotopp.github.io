@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: The Collapsing Empire'
 aliases:
-  - /2017/11/08/fertig-gelesen-the-collapsing-empire.md.html
+  - /2017/11/08/fertig-gelesen-the-collapsing-empire.html
 ---
 [![](2017/11/the-collapsing-empire.png)](https://www.amazon.de/Collapsing-Empire-English-John-Scalzi-ebook/dp/B01JLZZ3R4)
 

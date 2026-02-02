@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Anonymität und Schizophrenie
 aliases:
-  - /2005/06/08/anonymitaet-und-schizophrenie.md.html
+  - /2005/06/08/anonymitaet-und-schizophrenie.html
 ---
 
 Nils Ketelsen verweist auf den Artikel 

@@ -14,7 +14,7 @@ tags:
 - database
 - mysql
 aliases:
-  - /2024/07/23/mysql-upgrading-old-mysql-instances.md.html
+  - /2024/07/23/mysql-upgrading-old-mysql-instances.html
 ---
 
 > Dear Kris,

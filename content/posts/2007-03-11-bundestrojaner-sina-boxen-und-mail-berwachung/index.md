@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Bundestrojaner, Sina-Boxen und Mailüberwachung
 aliases:
-  - /2007/03/11/bundestrojaner-sina-boxen-und-mail-berwachung.md.html
+  - /2007/03/11/bundestrojaner-sina-boxen-und-mail-berwachung.html
 ---
 Der Artikel 
 [Der Bundestrojaner durchdekliniert]({{< relref "2007-02-26-der-bundestrojaner-durchdekliniert.md" >}})

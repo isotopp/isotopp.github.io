@@ -8,7 +8,7 @@ tags:
 - elite dangerous
 title: Disable Saitek X.52 pro Clutch Mode
 aliases:
-  - /2020/01/15/disable-saitek-x52-clutch-mode.md.html
+  - /2020/01/15/disable-saitek-x52-clutch-mode.html
 ---
 This post is a memo to self, and describes how to disable the
 X.52 clutch mode. I am flying with a Saitek/Logitech X.52 pro

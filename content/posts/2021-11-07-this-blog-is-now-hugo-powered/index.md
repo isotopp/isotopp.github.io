@@ -7,7 +7,7 @@ tags:
 - lang_en
 - blog
 aliases:
-  - /2021/11/07/this-blog-is-now-hugo-powered.md.html
+  - /2021/11/07/this-blog-is-now-hugo-powered.html
 ---
 
 I started blogging almost 20 years ago, because a piece of software I was using to manage calendars and discussion boards to organize the "Dienstag" also offered blogging functionality.

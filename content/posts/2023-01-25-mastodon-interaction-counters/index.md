@@ -9,7 +9,7 @@ tags:
 - fediverse
 - social-networking
 aliases:
-  - /2023/01/25/mastodon-interaction-counters.md.html
+  - /2023/01/25/mastodon-interaction-counters.html
 ---
 
 In [this post](https://toot.io/@Sirsquid/109750677079204971), SirSquid\@toot.io asks:

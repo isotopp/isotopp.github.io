@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Spectre #2 Mitigation - Retpolines'
 aliases:
-  - /2018/02/26/spectre-2-mitigation-retpolines.md.html
+  - /2018/02/26/spectre-2-mitigation-retpolines.html
 ---
 Intel finally published a whitepaper about Spectre #2 Mitigation. The
 [PDF](https://software.intel.com/sites/default/files/managed/1d/46/Retpoline-A-Branch-Target-Injection-Mitigation.pdf)

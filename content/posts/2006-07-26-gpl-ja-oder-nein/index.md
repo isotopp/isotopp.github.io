@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: GPL - ja oder nein
 aliases:
-  - /2006/07/26/gpl-ja-oder-nein.md.html
+  - /2006/07/26/gpl-ja-oder-nein.html
 ---
 
 Manche Lizenznehmer haben komische Vorstellungen davon, wie sie mit der Lizenz umgehen können: 

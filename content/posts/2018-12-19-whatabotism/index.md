@@ -9,7 +9,7 @@ tags:
 - security
 - hack
 aliases:
-  - /2018/12/19/whatabotism.md.html
+  - /2018/12/19/whatabotism.html
 ---
 
 Basierend auf einem [Thread in Twitter](https://twitter.com/isotopp/status/1075020503079886848) und [noch einem Thread](https://twitter.com/isotopp/status/1075394005502976001).

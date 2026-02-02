@@ -8,7 +8,7 @@ tags:
 - devops
 - security
 aliases:
-  - /2023/02/20/rotating-accounts-or-passwords.md.html
+  - /2023/02/20/rotating-accounts-or-passwords.html
 ---
 
 Some applications allow you to have multiple passwords.

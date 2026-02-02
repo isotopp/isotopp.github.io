@@ -9,7 +9,7 @@ tags:
 - apple
 title: Command line access to the Mac keychain
 aliases:
-  - /2017/01/26/command-line-access-to-the-mac-keychain.md.html
+  - /2017/01/26/command-line-access-to-the-mac-keychain.html
 ---
 I am getting my payslips in electronic form, as an encrypted, password
 protected PDF. It's not a super secret password, and the encryption is more

@@ -9,7 +9,7 @@ tags:
 - media
 - book
 aliases:
-  - /2022/05/06/fertig-gelesen-pale-rider.md.html
+  - /2022/05/06/fertig-gelesen-pale-rider.html
 ---
 
 A book from 2017, about the Spanish Flu, which in the wake of the first world war turned into a global pandemic, killing between 50 and 100 million people on all continents.

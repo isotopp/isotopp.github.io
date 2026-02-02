@@ -9,7 +9,7 @@ tags:
 - talk
 title: Be simple. Be boring. Be obvious.
 aliases:
-  - /2016/09/01/be-simple-be-boring-be-obvious.md.html
+  - /2016/09/01/be-simple-be-boring-be-obvious.html
 ---
 On Core.Infra day, I was invited to speak. This is my talk. There were many like it, but this was mine.
 

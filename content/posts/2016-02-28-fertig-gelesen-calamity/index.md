@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Calamity'
 aliases:
-  - /2016/02/28/fertig-gelesen-calamity.md.html
+  - /2016/02/28/fertig-gelesen-calamity.html
 ---
 Dritter und letzter Teil der "Reckoners"-Serie. Die Storymechanik ist formal dieselbe wie in den ersten beiden Teilen - eine neue "exotische" Stadt, ein Epic zum Töten und Verwicklungen. Die neue Stadt ist Ildithia, vormals Atlanta, jetzt eine wandernde Stadt aus Salz und der Gegner ist - so scheint es - Prof, der durch die Geschehnisse im zweiten Band an die Dunkelheit verloren ging. Doch es geht auch um Regalia's Vermächtnis und ihren geheimnisvollen Kontakt zu Calamity selbst, der Quelle der Mächte der Epics.
 

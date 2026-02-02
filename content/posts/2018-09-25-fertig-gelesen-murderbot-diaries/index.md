@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Murderbot Diaries'
 aliases:
-  - /2018/09/25/fertig-gelesen-murderbot-diaries.md.html
+  - /2018/09/25/fertig-gelesen-murderbot-diaries.html
 ---
 Murderbot is a corporate owned killing machine, a secbot, a half-organic artificially intelligent android. Its purpose is to protect corporate assets - settlers and science teams - in hostile environments for as long as it makes economic sense.
 

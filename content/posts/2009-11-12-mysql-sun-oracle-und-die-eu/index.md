@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: MySQL, Sun, Oracle - und die EU
 aliases:
-  - /2009/11/12/mysql-sun-oracle-und-die-eu.md.html
+  - /2009/11/12/mysql-sun-oracle-und-die-eu.html
 ---
 Am 20. April 2009 hat Sun verkündet, daß sie von Oracle gekauft werden. Das hätte MySQL mit eingeschlossen. Am 10. November hat die EU dann mitgeteilt, daß sie diesem Kauf widerspricht und zwar ausschließlich wegen MySQL.
 

@@ -8,7 +8,7 @@ tags:
 - mysql
 - database
 aliases:
-  - /2023/07/06/mysql-innodb-fragmentation.md.html
+  - /2023/07/06/mysql-innodb-fragmentation.html
 ---
 
 There is a really nice article by Pep Pla, over at 

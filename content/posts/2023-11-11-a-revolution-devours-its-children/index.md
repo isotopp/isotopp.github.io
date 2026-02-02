@@ -9,7 +9,7 @@ tags:
 - publication
 - free software
 aliases:
-  - /2023/11/11/a-revolution-devours-its-children.md.html
+  - /2023/11/11/a-revolution-devours-its-children.html
 ---
 
 Initially published in c't 26/23, page 70.

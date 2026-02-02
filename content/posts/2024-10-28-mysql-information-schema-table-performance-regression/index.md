@@ -10,7 +10,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2024/10/28/mysql-information-schema-table-performance-regression.md.html
+  - /2024/10/28/mysql-information-schema-table-performance-regression.html
 ---
 
 In IRC `libera:#mysql` somebody asked about the performance of 

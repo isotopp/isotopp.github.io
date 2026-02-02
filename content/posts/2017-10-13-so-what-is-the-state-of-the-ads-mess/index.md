@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: So what is the state of the Ads mess?
 aliases:
-  - /2017/10/13/so-what-is-the-state-of-the-ads-mess.md.html
+  - /2017/10/13/so-what-is-the-state-of-the-ads-mess.html
 ---
 Ads on the web have many problems:
 

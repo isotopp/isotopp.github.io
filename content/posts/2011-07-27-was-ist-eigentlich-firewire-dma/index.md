@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Was ist eigentlich Firewire DMA?
 aliases:
-  - /2011/07/27/was-ist-eigentlich-firewire-dma.md.html
+  - /2011/07/27/was-ist-eigentlich-firewire-dma.html
 ---
 
 Der Spiegel entdeckt: 

@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: Der Tag, an dem Hope verschwand'
 aliases:
-  - /2018/09/25/fertig-gelesen-der-tag-an-dem-hope-verschwand.md.html
+  - /2018/09/25/fertig-gelesen-der-tag-an-dem-hope-verschwand.html
 ---
 Hope Arden ist wenig bemerkenswert. Wer immer sie trifft, vergißt sie nach wenigen Minuten, sobald er sie nicht mehr sieht. Vergißt auch, daß es sie gegeben hat, daß er mit ihr gesprochen hat oder daß sie je existiert hat. Seit ihrem sechzehnten Lebensjahr geht es ihr so, und sie schlägt sich deshalb mit Diebstählen durch. Was einfach ist, weil man sie ja sofort vergißt.
 

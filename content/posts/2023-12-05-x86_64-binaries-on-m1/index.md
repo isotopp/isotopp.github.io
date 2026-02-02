@@ -9,7 +9,7 @@ tags:
 - python
 - apple
 aliases:
-  - /2023/12/05/x86_64-binaries-on-m1.md.html
+  - /2023/12/05/x86_64-binaries-on-m1.html
 ---
 
 I installed a Python 2.7.18 with `pyenv` on Apple Silicon,

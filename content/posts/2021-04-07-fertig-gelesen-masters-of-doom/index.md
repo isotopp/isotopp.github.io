@@ -9,7 +9,7 @@ tags:
 - book
 title: 'Fertig gelesen: Masters of Doom and The Game Engine Black Book: Doom'
 aliases:
-  - /2021/04/07/fertig-gelesen-masters-of-doom.md.html
+  - /2021/04/07/fertig-gelesen-masters-of-doom.html
 ---
 [Masters of Doom: How Two Guys Created an Empire and Transformed Pop Culture](https://www.amazon.de/Masters-Doom-Created-Transformed-Culture-ebook/dp/B000FBFNL0) by David Kushner is the story of the two Johns: Carmack and Romero, and the early video game culture and the genre of the 3D first person shooter.
 

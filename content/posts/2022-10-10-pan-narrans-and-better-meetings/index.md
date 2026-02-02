@@ -8,7 +8,7 @@ tags:
 - remote first
 - work
 aliases:
-  - /2022/10/10/pan-narrans-and-better-meetings.md.html
+  - /2022/10/10/pan-narrans-and-better-meetings.html
 ---
 
 When you are looking for a better *Remote First* culture, you are looking for better meetings.

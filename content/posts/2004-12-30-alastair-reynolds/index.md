@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Alastair Reynolds'
 aliases:
-  - /2004/12/30/alastair-reynolds.md.html
+  - /2004/12/30/alastair-reynolds.html
 ---
 In 
 [Unendlichkeit](https://www.amazon.de/Unendlichkeit-Roman-Inhibitor-Zyklus-Alastair-Reynolds-ebook/dp/B004P1J5UQ) (Revelation Space) treffen wir auf ein Universum, in dem die Menschen über eine Menge beeindruckender Technik gebieten - kilometerlange Raumschiffe, Smart Materials und Nanotechnik, AIs und cybernetische Bewußtseinsaufrüstung und was es an Spielzeug direkt aus einem 

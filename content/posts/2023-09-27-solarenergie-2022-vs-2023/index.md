@@ -8,7 +8,7 @@ tags:
 - lang_de
 - energy
 aliases:
-  - /2023/09/27/solarenergie-2022-vs-2023.md.html
+  - /2023/09/27/solarenergie-2022-vs-2023.html
 ---
 
 Dieses Jahr war nicht sehr heiß bei uns, und auch nicht so tödlich trocken wie letztes Jahr.

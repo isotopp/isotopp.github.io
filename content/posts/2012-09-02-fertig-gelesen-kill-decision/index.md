@@ -6,7 +6,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Kill Decision'
 aliases:
-  - /2012/09/02/fertig-gelesen-kill-decision.md.html
+  - /2012/09/02/fertig-gelesen-kill-decision.html
 ---
 
 [Kill Decision](http://www.amazon.com/Kill-Decision-ebook/dp/B0073XV2W2),

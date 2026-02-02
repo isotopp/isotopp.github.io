@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Filesysteme für theclaw (30 Jahre Unix Source)
 aliases:
-  - /2006/12/26/filesysteme-fuer-theclaw-30-jahre-unix-source.md.html
+  - /2006/12/26/filesysteme-fuer-theclaw-30-jahre-unix-source.html
 ---
 --- Log opened Di Dez 26 15:52:09 2006
 

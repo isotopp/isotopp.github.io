@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: A Darker Shade Of Magic'
 aliases:
-  - /2015/11/29/fertig-gelesen-a-darker-shade-of-magic.md.html
+  - /2015/11/29/fertig-gelesen-a-darker-shade-of-magic.html
 ---
 Die verschiedenen Versionen von London unterscheiden sich in fast allem außer dem Namen. Sie liegen im Multiversum nebeneinander wie die Seiten eines Buches, und unterscheiden sich insbesondere in der Stärke der Magie - Grey London, unsere Welt, Red London, eine Welt der Fae mit starker Elementarmagie, White London, in dem die Magie noch stärker und wilder ist und deswegen durch Willen und Kontrolle in Ketten gelegt worden ist.
 

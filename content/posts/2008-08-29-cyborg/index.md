@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Cyborg
 aliases:
-  - /2008/08/29/cyborg.md.html
+  - /2008/08/29/cyborg.html
 ---
 ![](cyborg.jpg)
 

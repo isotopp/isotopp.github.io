@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: It's all about the Pentiums
 aliases:
-  - /2004/10/09/it-s-all-about-the-pentiums.md.html
+  - /2004/10/09/it-s-all-about-the-pentiums.html
 ---
 Schon [Weird Al](http://www.weirdal.com/) hat gewußt: [It's all about the Pentiums, baby](http://www.song-text.com/146/). Im Falle eines Rechenzentrums kann man durch den Einsatz von Blades nicht nur Strom sparen, sondern auch die Leistungsdichte erhöhen (also Platz sparen) und das Management verbessern.
 

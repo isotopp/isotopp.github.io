@@ -10,7 +10,7 @@ tags:
 - energy
 - climate
 aliases:
-  - /2025/03/10/going-fully-electric.md.html
+  - /2025/03/10/going-fully-electric.html
 ---
 
 End of April 2022, we got [our solar roof]({{< relref "2022-05-02-a-solar-roof.md" >}}).

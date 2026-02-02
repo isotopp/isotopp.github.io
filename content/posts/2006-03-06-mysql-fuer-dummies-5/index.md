@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: MySQL für Dummies (5)
 aliases:
-  - /2006/03/06/mysql-fuer-dummies-5.md.html
+  - /2006/03/06/mysql-fuer-dummies-5.html
 ---
 
 # Key Buffer

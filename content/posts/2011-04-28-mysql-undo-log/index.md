@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: MySQL Undo Log
 aliases:
-  - /2011/04/28/mysql-undo-log.md.html
+  - /2011/04/28/mysql-undo-log.html
 ---
 
 ![](undo_log_stats.png)

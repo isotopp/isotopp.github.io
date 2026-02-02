@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Ein paar Zwischenbemerkungen, bevor der Tanz wieder losgeht
 aliases:
-  - /2010/12/15/ein-paar-zwischenbemerkungen-bevor-der-tanz-wieder-losgeht.md.html
+  - /2010/12/15/ein-paar-zwischenbemerkungen-bevor-der-tanz-wieder-losgeht.html
 ---
 Es ist ein Fehler anzunehmen, die CDU hätte in NRW gegen den JMStV gestimmt,
 weil sie inhaltlich gegen den JMStV gewesen wäre - keine der Parteien

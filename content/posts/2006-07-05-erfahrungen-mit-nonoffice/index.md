@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Erfahrungen mit Nonoffice
 aliases:
-  - /2006/07/05/erfahrungen-mit-nonoffice.md.html
+  - /2006/07/05/erfahrungen-mit-nonoffice.html
 ---
 
 Seit dem 1. November 2005 arbeite ich für MySQL Deutschland GmbH als Consultant. Damit mit bin ich Teil einer Firma mit 320 Mitarbeitern in 27 Ländern. 

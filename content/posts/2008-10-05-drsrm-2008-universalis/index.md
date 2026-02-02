@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'drsrm 2008: Universalis'
 aliases:
-  - /2008/10/05/drsrm-2008-universalis.md.html
+  - /2008/10/05/drsrm-2008-universalis.html
 ---
 
 ![](uploads.png)

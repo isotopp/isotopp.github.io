@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: SUNW, äh, JAVA
 aliases:
-  - /2008/01/16/sunw-aeh-java.md.html
+  - /2008/01/16/sunw-aeh-java.html
 ---
 
 Aus irgendeinem Grund werden die Firmen verkauft, für die ich arbeite, kaum 2 Jahre nachdem ich da angefangen habe.

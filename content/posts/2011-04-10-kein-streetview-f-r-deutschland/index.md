@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: Kein Streetview für Deutschland
 aliases:
-  - /2011/04/10/kein-streetview-f-r-deutschland.md.html
+  - /2011/04/10/kein-streetview-f-r-deutschland.html
 ---
 Laut 
 [mehreren](http://computer.t-online.de/google-street-view-keine-neuen-staedte-in-deutschland/id_45187128/index) 

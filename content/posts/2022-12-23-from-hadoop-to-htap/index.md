@@ -9,7 +9,7 @@ tags:
 - mysqldev
 - data warehouse
 aliases:
-  - /2022/12/23/from-hadoop-to-htap.md.html
+  - /2022/12/23/from-hadoop-to-htap.html
 ---
 
 For the last 15 years, one popular way to persist large amounts of data has been Hadoop, if you needed them persisted in such a way that you can still process them.

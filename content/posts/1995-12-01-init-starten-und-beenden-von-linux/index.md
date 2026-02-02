@@ -8,7 +8,7 @@ tags:
 - publication
 - unix
 aliases:
-  - /1995/12/01/init-starten-und-beenden-von-linux.md.html
+  - /1995/12/01/init-starten-und-beenden-von-linux.html
 ---
 
 **Linux Magazin, Heft 12/1995**

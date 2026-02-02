@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'Update: Der alljährliche Wikimedia-Spendenaufruf'
 aliases:
-  - /2009/11/12/update-der-allj-hrliche-wikimedia-spendenaufruf.md.html
+  - /2009/11/12/update-der-allj-hrliche-wikimedia-spendenaufruf.html
 ---
 
 > Wikimedia ruft auf zum Spenden! Nach dem Kohlepfennig der

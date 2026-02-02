@@ -8,7 +8,7 @@ tags:
 - cthulhu
 title: Fermi vs. Fhtagn
 aliases:
-  - /2017/06/26/fermi-vs-fhtagn.md.html
+  - /2017/06/26/fermi-vs-fhtagn.html
 ---
 There are things, Lovecraft hypothesizes, that Man is not meant to know.
 This paper is touching on these subjects: [That is not dead which can

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: The Origin Of Wealth, Growing Artificial Societies, The Quark and the Jaguar'
 aliases:
-  - /2007/05/15/the-origin-of-wealth.md.html
+  - /2007/05/15/the-origin-of-wealth.html
 ---
 ![](origin_of_wealth.jpg)
 

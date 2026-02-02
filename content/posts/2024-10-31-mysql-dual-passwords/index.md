@@ -10,7 +10,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2024/10/31/mysql-dual-passwords.md.html
+  - /2024/10/31/mysql-dual-passwords.html
 ---
 
 Account password rotation is often a regulatory requirement.

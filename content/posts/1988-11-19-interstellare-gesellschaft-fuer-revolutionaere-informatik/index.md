@@ -8,7 +8,7 @@ tags:
 - inkomploehntopp
 title: "Interstellare Gesellschaft für Revolutionäre Informatik"
 aliases:
-  - /1988/11/19/interstellare-gesellschaft-fuer-revolutionaere-informatik.md.html
+  - /1988/11/19/interstellare-gesellschaft-fuer-revolutionaere-informatik.html
 ---
 
 # Satzung der Interstellaren Gesellschaft für Revolutionäre Informatik

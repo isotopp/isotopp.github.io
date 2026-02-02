@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Twitter so: Testing in Production'
 aliases:
-  - /2017/08/01/twitter-so-testing-in-production.md.html
+  - /2017/08/01/twitter-so-testing-in-production.html
 ---
 [Matthew Dutton:](https://twitter.com/matthewrdutton/status/892007581639737344)
 »@mipsytipsy I thought "You have to test in production" was a bold statement

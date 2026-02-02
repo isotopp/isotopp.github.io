@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Blue Remembered Earth (Poseidons Children)'
 aliases:
-  - /2015/02/14/fertig-gelesen-blue-remembered-earth-poseidons-children.md.html
+  - /2015/02/14/fertig-gelesen-blue-remembered-earth-poseidons-children.html
 ---
 In 150 Jahren hat die Menschheit den Klimawandel und die Ressourcenknappheit, die uns noch bevorsteht, hinter sich gebracht. Diese 150 Jahre waren jedoch hart und kriegerisch, und ihr Resultat ist die Überwachte Welt. Neurale Interfaces, Augmentation oder schlicht Aug, ist verpflichtend, und nicht nur ein leistungsfähiges Interface für telepahie-gleiche Kommunikation, Telepräsenz und Datenzugriff, sondern auch der Zugang für Den Mechanismus, der Gewalt gegen andere Menschen erkennt und hart unterbindet.
 

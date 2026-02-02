@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Über ENUM (und Fast Alter Table)
 aliases:
-  - /2010/04/09/ber-enum-und-fast-alter-table.md.html
+  - /2010/04/09/ber-enum-und-fast-alter-table.html
 ---
 On 2010-04-08 13:40:57 +0200, 
 

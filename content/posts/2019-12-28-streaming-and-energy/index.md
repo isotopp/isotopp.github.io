@@ -11,7 +11,7 @@ tags:
 - lang_en
 title: Streaming and Energy
 aliases:
-  - /2019/12/28/streaming-and-energy.md.html
+  - /2019/12/28/streaming-and-energy.html
 ---
 A bunch of boomers in Germany is running a distraction campaign on the energy use of data centers and streaming. Example articles in german language can be found in
 [Zeit](https://www.zeit.de/2020/01/digitalpolitik-digitalisierung-klimaschutz-co2-stromverbrauch)

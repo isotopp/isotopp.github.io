@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Einige kryptographische Grundlagen
 aliases:
-  - /2011/06/03/einige-kryptographische-grundlagen.md.html
+  - /2011/06/03/einige-kryptographische-grundlagen.html
 ---
 Heute gibt es hier alten Scheiß: Vor vielen Jahren, in einem anderen Leben,
 habe ich im Rahmen der Ausbildung von Auszubildenden und Neuanstellungen

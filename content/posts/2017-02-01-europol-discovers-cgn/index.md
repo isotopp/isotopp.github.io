@@ -11,7 +11,7 @@ tags:
 - lang_en
 title: Europol discovers CGN
 aliases:
-  - /2017/02/01/europol-discovers-cgn.md.html
+  - /2017/02/01/europol-discovers-cgn.html
 ---
 The Council of the European Union discusses the "problem" of Carrier Grader
 NAT, and would like to see all Ip address logging and storage extended to

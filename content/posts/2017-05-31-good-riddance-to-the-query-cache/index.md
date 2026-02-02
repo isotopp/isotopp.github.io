@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Good Riddance to the Query Cache
 aliases:
-  - /2017/05/31/good-riddance-to-the-query-cache.md.html
+  - /2017/05/31/good-riddance-to-the-query-cache.html
 ---
 	
 [MySQL 8.0 will be retiring support for the Query Cache](http://mysqlserverteam.com/mysql-8-0-retiring-support-for-the-query-cache/).

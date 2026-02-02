@@ -10,7 +10,7 @@ tags:
 - development
 - python
 aliases:
-  - /2024/03/18/editing-remotely-in-pycharm.md.html
+  - /2024/03/18/editing-remotely-in-pycharm.html
 ---
 
 A friend asks me on IRC:

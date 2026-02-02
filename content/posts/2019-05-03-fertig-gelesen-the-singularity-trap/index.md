@@ -10,7 +10,7 @@ tags:
 - book
 - lang_de
 aliases:
-  - /2019/05/03/fertig-gelesen-the-singularity-trap.md.html
+  - /2019/05/03/fertig-gelesen-the-singularity-trap.html
 ---
 
 [The Singularity Trap](https://www.amazon.de/Singularity-Trap-English-Dennis-Taylor-ebook/dp/B07FBRRL2Z) ist ein Buch von Dennis E. Taylor.

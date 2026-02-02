@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Verstehe Dein Netz besser - Deine Flatrate entmündigt Dich!
 aliases:
-  - /2011/07/12/verstehe-dein-netz-besser-deine-flatrate-entm-ndigt-dich.md.html
+  - /2011/07/12/verstehe-dein-netz-besser-deine-flatrate-entm-ndigt-dich.html
 ---
 
 Niemand käme auf die Idee, 

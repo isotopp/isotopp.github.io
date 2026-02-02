@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Microsoft, Yahoo! und was nun?
 aliases:
-  - /2008/05/06/microsoft-yahoo-und-was-nun.md.html
+  - /2008/05/06/microsoft-yahoo-und-was-nun.html
 ---
 Microsoft will Yahoo! kaufen, aber Yahoo! will nicht. 
 

@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: Unbound'
 aliases:
-  - /2015/02/14/fertig-gelesen-unbound.md.html
+  - /2015/02/14/fertig-gelesen-unbound.html
 ---
 Unter der Magie der Geschichten und Bücher liegt die Magie des Gewebes der Welt. Im dritten Teil der Libriomancer-Geschichten von Jim C. Hines lernen wir endlich, wie das alles zusammenhängt. Dazu schickt Hines seinen Helden und seine verschiedenen Begleiterinnen auf einen regelrechten Höllenritt gegen eine potentielle Göttin und die Gefechtszone zweier übermächtigter Fraktionen - die Porter und die Studenten von Bi Sheng, und er macht keine Gefangenen.
 

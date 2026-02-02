@@ -7,7 +7,7 @@ tags:
 - lang_en
 - mysql
 aliases:
-  - /2022/09/27/mysql-local-and-distributed-storage.md.html
+  - /2022/09/27/mysql-local-and-distributed-storage.html
 ---
 
 Where I work, we are using MySQL in a scale-out configuration to handle our database needs.

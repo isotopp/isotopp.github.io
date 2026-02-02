@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Liz application of Clarke's Law to Hanlon's Razor
 aliases:
-  - /2009/02/16/liz-application-of-clarke-s-law-to-hanlon-s-razor.md.html
+  - /2009/02/16/liz-application-of-clarke-s-law-to-hanlon-s-razor.html
 ---
 
 > "Any sufficiently advanced incompetence is indistinguishable from malice."

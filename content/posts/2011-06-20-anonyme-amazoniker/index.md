@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Anonyme Amazoniker
 aliases:
-  - /2011/06/20/anonyme-amazoniker.md.html
+  - /2011/06/20/anonyme-amazoniker.html
 ---
 ![](amazon-per-jahr.png)
 

@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: ASLR
 aliases:
-  - /2017/10/20/aslr.md.html
+  - /2017/10/20/aslr.html
 ---
 ```c
 #define MH_PIE 0x200000 /* When this bit is set, the OS will load the main executable at a random address. Only used in MH_EXECUTE filetypes. */

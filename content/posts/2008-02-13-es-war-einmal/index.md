@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Es war einmal...
 aliases:
-  - /2008/02/13/es-war-einmal.md.html
+  - /2008/02/13/es-war-einmal.html
 ---
 
 ![](webde.jpg)

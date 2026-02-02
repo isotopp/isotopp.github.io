@@ -6,7 +6,7 @@ tags:
 - lang_de
 title: links for 2009-08-22
 aliases:
-  - /2009/08/22/megapanzer.md.html
+  - /2009/08/22/megapanzer.html
 ---
 <ul class="delicious"><li>
                 <div class="delicious-link"><a href="http://www.gulli.com/news/bundestrojaner-ein-2009-08-21/">gulli: Bundestrojaner: ein Programmierer erzählt</a></div>

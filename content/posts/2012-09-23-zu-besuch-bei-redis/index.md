@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: Zu Besuch bei Redis
 aliases:
-  - /2012/09/23/zu-besuch-bei-redis.md.html
+  - /2012/09/23/zu-besuch-bei-redis.html
 ---
 
 Hier ist eine wichtige Zahl: Ein Coredump von einem MySQL auf einer Maschine mit knapp unter 200 GB Speicher dauert 15 Minuten.

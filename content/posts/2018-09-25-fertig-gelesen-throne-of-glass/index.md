@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: Throne of Glass'
 aliases:
-  - /2018/09/25/fertig-gelesen-throne-of-glass.md.html
+  - /2018/09/25/fertig-gelesen-throne-of-glass.html
 ---
 The young and incredibly pretty (except for the scars that document her suffering in the salt mines) Mary Sue was about eight when she was found half frozen at the shore of a winterly river by the King of Assassins, who took her in and forged her into the deadliest of his assassins through harsh and cruel training. Too bad that, eighteen years old, she was caught, punished and was sent to the salt mines of Endovier, by the king who conquered her homeland and slaughtered her parents.
 

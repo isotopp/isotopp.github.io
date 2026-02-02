@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: What GPUs can do…
 aliases:
-  - /2017/10/12/what-gpus-can-do.md.html
+  - /2017/10/12/what-gpus-can-do.html
 ---
 Pcgamer reports "[Nvidia CEO says Moore’s Law is dead and GPUs wi replace CPUs](http://www.pcgamer.com/nvidia-ceo-says-moores-law-is-dead-and-gpus-will-replace-cpus/)".
 

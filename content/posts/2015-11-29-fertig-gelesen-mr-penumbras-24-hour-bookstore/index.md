@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Mr Penumbra''s 24-hour Bookstore'
 aliases:
-  - /2015/11/29/fertig-gelesen-mr-penumbras-24-hour-bookstore.md.html
+  - /2015/11/29/fertig-gelesen-mr-penumbras-24-hour-bookstore.html
 ---
 Clay Jannon braucht einen Job, nachdem das Startup, in dem er rumgehangen hat, den Bach runtergegangen ist. Er findet immerhin eine Nebenbeschäftigung in dem Buchladen des Mr. Penumbra, der an einem tatsächlichen Verkauf der Bücher in seinem Laden eigenartig wenig interessiert zu sein scheint. Stattdessen beschäftigen er und die seltsamen Nichtkunden der Nachschicht damit, eigenartige Werke, die nicht im Katalog stehen zu decodieren.
 

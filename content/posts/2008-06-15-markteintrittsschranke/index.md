@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Markteintrittsschranke
 aliases:
-  - /2008/06/15/markteintrittsschranke.md.html
+  - /2008/06/15/markteintrittsschranke.html
 ---
 In 
 [Die Wikipediatisierung des Wissens](http://www.heise.de/tp/r4/artikel/28/28010/1.html) 

@@ -9,7 +9,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /2002/02/01/enterprise-mail.md.html
+  - /2002/02/01/enterprise-mail.html
 ---
 
 # Enterprise Mail

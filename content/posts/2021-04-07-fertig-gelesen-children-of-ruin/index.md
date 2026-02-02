@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: Children of Ruin'
 aliases:
-  - /2021/04/07/fertig-gelesen-children-of-ruin.md.html
+  - /2021/04/07/fertig-gelesen-children-of-ruin.html
 ---
 [Children of Ruin](https://www.amazon.de/Children-Ruin-Time-Novels-English-ebook/dp/B07KPMJ7V9/) is the second part of [Children of Time]({{< relref "2017-11-07-fertig-gelesen-children-of-time.md" >}}) by english Sci-Fi author Adrian Tchaikovsky.
 

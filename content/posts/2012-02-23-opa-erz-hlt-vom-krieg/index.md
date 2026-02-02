@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Opa erzählt vom Krieg
 aliases:
-  - /2012/02/23/opa-erz-hlt-vom-krieg.md.html
+  - /2012/02/23/opa-erz-hlt-vom-krieg.html
 ---
 Damals, vor dem Internet und dem DSL, so um 1989 rum, da hatten wir Modems. 
 Mail wurde mit UUCP (Unix-to-Unix CoPy) übertragen.  Das heißt, man schrieb

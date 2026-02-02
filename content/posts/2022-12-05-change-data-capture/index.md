@@ -9,7 +9,7 @@ tags:
 - mysqldev
 - data warehouse
 aliases:
-  - /2022/12/05/change-data-capture.md.html
+  - /2022/12/05/change-data-capture.html
 ---
 
 Change Data Capture is a way to capture, well, events from a system that describe how the data in the system changed.

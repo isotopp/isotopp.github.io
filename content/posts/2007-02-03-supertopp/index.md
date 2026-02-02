@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Supertopp!
 aliases:
-  - /2007/02/03/supertopp.md.html
+  - /2007/02/03/supertopp.html
 ---
 
 ![](kris_in_flight.jpg)

@@ -10,7 +10,7 @@ tags:
 - mobility
 title: How to build a cycling environment
 aliases:
-  - /2020/02/19/how-to-build-a-cycling-environment.md.html
+  - /2020/02/19/how-to-build-a-cycling-environment.html
 ---
 Welcome to the Netherlands. We're building roads differently. They are better, safer and less stressful for cyclists, and that also makes them better, safer and less stressful for motorists. Here is how it works:
 

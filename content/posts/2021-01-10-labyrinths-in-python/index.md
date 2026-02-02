@@ -7,7 +7,7 @@ tags:
 - python
 title: Labyrinths (in Python)
 aliases:
-  - /2021/01/10/labyrinths-in-python.md.html
+  - /2021/01/10/labyrinths-in-python.html
 ---
 
 My son wants labyrinths. Ok, let's make them like it's the first semester.

@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Why you can't have nice things…
 aliases:
-  - /2017/08/13/why-you-cant-have-nice-things.md.html
+  - /2017/08/13/why-you-cant-have-nice-things.html
 ---
 ![](2017/08/eating-from-the-trashcan.jpg)
 

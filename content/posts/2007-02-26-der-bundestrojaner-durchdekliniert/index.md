@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Der Bundestrojaner durchdekliniert
 aliases:
-  - /2007/02/26/der-bundestrojaner-durchdekliniert.md.html
+  - /2007/02/26/der-bundestrojaner-durchdekliniert.html
 ---
 ![](bundestrojaner.jpg)
 

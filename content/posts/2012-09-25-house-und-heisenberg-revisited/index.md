@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: House und Heisenberg revisited
 aliases:
-  - /2012/09/25/house-und-heisenberg-revisited.md.html
+  - /2012/09/25/house-und-heisenberg-revisited.html
 ---
 
 Ich habe heute an dem Problem weiter geforscht und wir haben etabliert, 

@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Apostrophiser
 aliases:
-  - /2017/04/05/apostrophiser.md.html
+  - /2017/04/05/apostrophiser.html
 ---
 [The Telegraph had a article](http://www.telegraph.co.uk/news/2017/04/03/revealed-self-styled-grammar-vigilante-corrects-badly-punctuated/?WT.mc_id=tmg_share_tw)
 on a self-styled 'grammar vigilante', who corrects badly punctuated shop

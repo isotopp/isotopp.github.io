@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: "Von 10^3 nach 10^7: Wachstumsschmerzen mit Linux"
 aliases:
-  - /2004/06/23/von-10-hoch-3-nach-10-hoch-7.md.html
+  - /2004/06/23/von-10-hoch-3-nach-10-hoch-7.html
 ---
 
 # Warum Wachstum weh tut

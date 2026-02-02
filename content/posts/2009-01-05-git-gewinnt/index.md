@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Git "gewinnt"
 aliases:
-  - /2009/01/05/git-gewinnt.md.html
+  - /2009/01/05/git-gewinnt.html
 ---
 
 Irgendwann war allen klar, daß CVS es nicht mehr bringt und was Besseres her muss. 

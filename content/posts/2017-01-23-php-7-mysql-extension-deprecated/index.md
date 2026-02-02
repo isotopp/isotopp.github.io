@@ -8,7 +8,7 @@ tags:
 - php
 title: 'PHP 7: mysql extension deprecated'
 aliases:
-  - /2017/01/23/php-7-mysql-extension-deprecated.md.html
+  - /2017/01/23/php-7-mysql-extension-deprecated.html
 ---
 In [mysql() nach PHP 7
 retten](http://kuehnast.com/s9y/archives/650-mysql-nach-PHP-7-retten.html),

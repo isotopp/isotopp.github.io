@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: The Secret History of Wonder Woman'
 aliases:
-  - /2017/09/04/fertig-gelesen-the-secret-history-of-wonder-woman.md.html
+  - /2017/09/04/fertig-gelesen-the-secret-history-of-wonder-woman.html
 ---
 
 [![](2017/09/secret-history-of-wonder-woman.jpg)](https://www.amazon.de/Secret-History-Wonder-Woman-ebook/dp/B00PBVBLGA)

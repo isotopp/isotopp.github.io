@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Kistenschlacht
 aliases:
-  - /2007/06/09/kistenschlacht.md.html
+  - /2007/06/09/kistenschlacht.html
 ---
 
 ![](umzug_berlin1.jpg)

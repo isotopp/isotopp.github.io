@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: fork und exec vs. CreateProcess
 aliases:
-  - /2007/01/07/fork-und-exec-vs-createprocess.md.html
+  - /2007/01/07/fork-und-exec-vs-createprocess.html
 ---
 
 **Disclaimer:** Meine Windows-Kenntnisse sind beschränkt, veraltet und ausschließlich theoretischer Natur.

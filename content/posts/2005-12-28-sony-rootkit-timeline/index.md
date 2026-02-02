@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Sony Rootkit Timeline
 aliases:
-  - /2005/12/28/sony-rootkit-timeline.md.html
+  - /2005/12/28/sony-rootkit-timeline.html
 ---
 
 [Rootkit - Sonys digitaler Hausfriedensbruch](http://www.netzpolitik.org/2005/rookit-sonys-digitaler-hausfriedensbruch):

@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: "RabbitMQ Essentials"'
 aliases:
-  - /2014/08/11/fertig-gelesen-rabbitmq-essentials.md.html
+  - /2014/08/11/fertig-gelesen-rabbitmq-essentials.html
 ---
 AMQP, das Queueing-Protokoll, ist der zentrale Kommunikationsbus im verteilt arbeitenden Openstack-System: API-Server nehmen Arbeitsaufträge via Web-Interface oder REST-API entgegen, verwandeln sie in AMQP-Messages und die irgendwo im System laufenden Consumer arbeiten die Aufträge ab und geben Resultate zurück.
 

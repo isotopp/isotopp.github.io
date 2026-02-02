@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: DE-Mail
 aliases:
-  - /2008/11/24/de-mail.md.html
+  - /2008/11/24/de-mail.html
 ---
 
 Mit DE-Mail will der deutsche Staat zusammen mit dem Unternehmen Telekom sichere und vertrauenswürdige E-Mail implementieren.

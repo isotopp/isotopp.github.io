@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: "CS101: From NAND to Tetris in 14 simple steps"
 aliases:
-  - /2008/06/01/cs101-from-nand-to-tetris-in-14-simple-steps.md.html
+  - /2008/06/01/cs101-from-nand-to-tetris-in-14-simple-steps.html
 ---
 Shimon Schocken preist seinen Kurs "From NAND to Tetris in 14 steps" an: 
 

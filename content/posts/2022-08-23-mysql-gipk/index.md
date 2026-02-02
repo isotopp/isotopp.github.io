@@ -8,7 +8,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2022/08/23/mysql-gipk.md.html
+  - /2022/08/23/mysql-gipk.html
 ---
 
 The MySQL InnoDB storage engine lives off primary keys:

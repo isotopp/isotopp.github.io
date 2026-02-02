@@ -7,7 +7,7 @@ tags:
 - computer
 title: B.boring
 aliases:
-  - /2017/03/13/b-boring.md.html
+  - /2017/03/13/b-boring.html
 ---
 Some time ago, I gave a talk about 
 [boring technology at Booking](https://www.slideshare.net/mobile/isotopp/boring-dot-com-the-virtues-of-boring-technology),

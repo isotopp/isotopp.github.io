@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Friday Deploys, and other harmful BOFH memes
 aliases:
-  - /2017/07/03/friday-deploys-and-other-harmful-bofh-memes.md.html
+  - /2017/07/03/friday-deploys-and-other-harmful-bofh-memes.html
 ---
 ![](2017/07/friday-deploy.jpg)
 

@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: The Lean Startup'
 aliases:
-  - /2011/12/02/fertig-gelesen-the-lean-startup.md.html
+  - /2011/12/02/fertig-gelesen-the-lean-startup.html
 ---
 [The Lean Startup](http://www.amazon.de/Lean-Startup-Entrepreneurs-Continuous-ebook/dp/B004J4XGN6),
 Eric Ries, EUR 10.99

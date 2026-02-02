@@ -8,7 +8,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2021/11/24/mysql-moving-average.md.html
+  - /2021/11/24/mysql-moving-average.html
 ---
 
 MySQL window functions can be used to calculate daily averages or moving averages for a 24h time window relatively easily.

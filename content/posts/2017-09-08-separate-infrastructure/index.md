@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Separate Infrastructure
 aliases:
-  - /2017/09/08/separate-infrastructure.md.html
+  - /2017/09/08/separate-infrastructure.html
 ---
 ![](2017/09/separate-infrastructure-640x423.jpg)
 

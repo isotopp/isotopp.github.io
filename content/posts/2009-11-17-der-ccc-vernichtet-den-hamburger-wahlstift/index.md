@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Der CCC vernichtet den Hamburger Wahlstift
 aliases:
-  - /2009/11/17/der-ccc-vernichtet-den-hamburger-wahlstift.md.html
+  - /2009/11/17/der-ccc-vernichtet-den-hamburger-wahlstift.html
 ---
 ![](flying_whale.jpg)
 

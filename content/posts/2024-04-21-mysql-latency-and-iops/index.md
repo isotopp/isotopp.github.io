@@ -10,7 +10,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2024/04/21/mysql-latency-and-iops.md.html
+  - /2024/04/21/mysql-latency-and-iops.html
 ---
 
 When talking about storage performance, we often hear three terms that are important in describing storage performance.

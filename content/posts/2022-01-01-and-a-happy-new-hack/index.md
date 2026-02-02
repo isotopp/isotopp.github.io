@@ -9,7 +9,7 @@ tags:
 - microsoft
 - minecraft
 aliases:
-  - /2022/01/01/and-a-happy-new-hack.md.html
+  - /2022/01/01/and-a-happy-new-hack.html
 ---
 
 Und das neue Jahr beginnt für uns mit einem Minecraft-Server, auf dem wichtige Personen, die sich nichts haben zuschulden kommen lassen, plötzlich gebannt sind.

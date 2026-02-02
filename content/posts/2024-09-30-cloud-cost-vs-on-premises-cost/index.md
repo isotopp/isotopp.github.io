@@ -9,7 +9,7 @@ tags:
 - data center
 title: "Cloud Cost vs. On-Premises Cost"
 aliases:
-  - /2024/09/30/cloud-cost-vs-on-premises-cost.md.html
+  - /2024/09/30/cloud-cost-vs-on-premises-cost.html
 ---
 
 Ich wurde gefragt:

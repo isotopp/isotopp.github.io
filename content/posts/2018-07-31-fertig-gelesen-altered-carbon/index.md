@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Altered Carbon'
 aliases:
-  - /2018/07/31/fertig-gelesen-altered-carbon.md.html
+  - /2018/07/31/fertig-gelesen-altered-carbon.html
 ---
 Die Menschen haben es bis zum Mars geschafft und dort die Überreste einer interstellaren Zivilisation gefunden. Mit Hilfe der dort gefundenen Technologien haben sie sich in der Galaxis begrenzt ausgebreitet - begrenzt, denn Überlicht-Reisen funktionieren nicht, nur überlichtschnelle Kommunikation. Doch menschliche Bewußtseine lassen sich aufzeichnen, übertragen und in Gastkörper übertragen und das ist die Grundlage der Geschichte von Altered Carbon.
 

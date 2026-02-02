@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Adventures in Mac OS X maintenance
 aliases:
-  - /2010/02/19/adventures-in-mac-os-x-maintenance.md.html
+  - /2010/02/19/adventures-in-mac-os-x-maintenance.html
 ---
 ![](mbp.jpg)
 

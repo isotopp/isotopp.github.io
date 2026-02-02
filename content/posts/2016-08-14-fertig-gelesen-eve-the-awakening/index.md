@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: EVE: The Awakening'
 aliases:
-  - /2016/08/14/fertig-gelesen-eve-the-awakening.md.html
+  - /2016/08/14/fertig-gelesen-eve-the-awakening.html
 ---
 Kindle unlimited ist ja komplett risikolos und so kann man dann auch mal zu wilderen Ideen greifen und Dinge ausprobieren.
 

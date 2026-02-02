@@ -7,7 +7,7 @@ tags:
 - mysql
 title: Making an unexpected leap with interval syntax
 aliases:
-  - /2021/04/02/making-an-unexpected-leap-with-interval-syntax.md.html
+  - /2021/04/02/making-an-unexpected-leap-with-interval-syntax.html
 ---
 
 (based on a find by Ruud van Tol, and several Twitter contributions)

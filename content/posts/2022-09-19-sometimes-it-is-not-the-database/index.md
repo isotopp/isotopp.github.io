@@ -7,7 +7,7 @@ tags:
 - lang_en
 - mysql
 aliases:
-  - /2022/09/19/sometimes-it-is-not-the-database.md.html
+  - /2022/09/19/sometimes-it-is-not-the-database.html
 ---
 
 Query latencies in one data center are larger than elsewhere for one replication hierarchy, but only in the high percentiles.

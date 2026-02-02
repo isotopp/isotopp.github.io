@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Sam spielt es noch einmal: Das Lied vom Urheberrecht'
 aliases:
-  - /2012/03/09/sam-spielt-es-noch-einmal-das-lied-vom-urheberrecht.md.html
+  - /2012/03/09/sam-spielt-es-noch-einmal-das-lied-vom-urheberrecht.html
 ---
 Wolfgang Michal schreibt auf carta.info: 
 [Kleine Anfrage an die Kritiker des geistigen Eigentums](http://carta.info/41917/kleine-anfrage-an-die-kritiker-des-geistigen-eigentums/)

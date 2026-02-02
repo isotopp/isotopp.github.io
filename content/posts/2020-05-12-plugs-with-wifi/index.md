@@ -8,7 +8,7 @@ tags:
 - home automation
 title: Plugs with Wi-Fi
 aliases:
-  - /2020/05/12/plugs-with-wifi.md.html
+  - /2020/05/12/plugs-with-wifi.html
 ---
 So we are baking bread, and for that we have a Wiesheu minimat oven that comes in at a full 16A - supposedly it is using 3kW or more peak plus the condenser hood that comes in at another 500W top power draw. On the other hand, when running the thing is hardly lukewarm, it is running much cooler than the Neff household oven/microwave combo we have.
 

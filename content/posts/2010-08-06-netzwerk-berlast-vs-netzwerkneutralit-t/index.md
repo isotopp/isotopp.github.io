@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Netzwerk-Überlast vs. Netzwerkneutralität
 aliases:
-  - /2010/08/06/netzwerk-berlast-vs-netzwerkneutralit-t.md.html
+  - /2010/08/06/netzwerk-berlast-vs-netzwerkneutralit-t.html
 ---
 (Grr, nicht genug Zeit, das so klar zu machen, wie ich es haben will… Egal - ich drück jetzt "Post Article")
 

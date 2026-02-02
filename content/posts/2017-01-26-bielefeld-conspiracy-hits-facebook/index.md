@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Bielefeld Conspiracy hits Facebook
 aliases:
-  - /2017/01/26/bielefeld-conspiracy-hits-facebook.md.html
+  - /2017/01/26/bielefeld-conspiracy-hits-facebook.html
 ---
 
 [Westfalenblatt](http://m.westfalen-blatt.de/OWL/Lokales/Bielefeld/Bielefeld/2674777-Ortsangabe-bei-Facebook-stimmt-wieder-Bielefeldverschwoerung-verschwunden)

@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Anomaly'
 aliases:
-  - /2012/08/24/fertig-gelesen-anomaly.md.html
+  - /2012/08/24/fertig-gelesen-anomaly.html
 ---
 [Anomaly](http://www.amazon.com/Anomaly-ebook/dp/B005OJF0ZC),
 Peter Cawdron, USD 2.99

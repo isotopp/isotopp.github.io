@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: When Video Games are not quite playing things straight…
 aliases:
-  - /2017/10/12/when-video-games-are-not-quite-playing-things-straight.md.html
+  - /2017/10/12/when-video-games-are-not-quite-playing-things-straight.html
 ---
 ![](2017/10/games-are-cheating.jpg)]
 

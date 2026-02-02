@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: Children of Time'
 aliases:
-  - /2017/11/07/fertig-gelesen-children-of-time.md.html
+  - /2017/11/07/fertig-gelesen-children-of-time.html
 ---
 [![](2017/11/children-of-time.png)](https://www.amazon.de/Children-Time-Winner-Arthur-English-ebook/dp/B00SN93AHU)
 

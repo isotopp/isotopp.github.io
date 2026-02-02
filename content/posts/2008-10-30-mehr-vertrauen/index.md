@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Mehr Vertrauen...
 aliases:
-  - /2008/10/30/mehr-vertrauen.md.html
+  - /2008/10/30/mehr-vertrauen.html
 ---
 
 > P> [Generalbundesanwältin fordert Vertrauen in Ermittlungsmassnahmen](http://www.heise.de/newsticker/Generalbundesanwaeltin-fordert-Vertrauen-in-Ermittlungsmassnahmen--/meldung/118181)

@@ -10,7 +10,7 @@ tags:
 - devops
 title: Using Python to bash
 aliases:
-  - /2021/01/05/using-python-to-bash.md.html
+  - /2021/01/05/using-python-to-bash.html
 ---
 
 Heise writes [an introduction to bash programming (in german)](https://www.heise.de/hintergrund/Einfuehrung-in-die-Bash-Programmierung-Minesweeper-in-der-Linux-Shell-entwickeln-5002358.html):

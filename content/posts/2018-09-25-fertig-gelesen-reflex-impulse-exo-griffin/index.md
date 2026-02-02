@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Reflex, Impulse, Exo + Griffin'
 aliases:
-  - /2018/09/25/fertig-gelesen-reflex-impulse-exo-griffin.md.html
+  - /2018/09/25/fertig-gelesen-reflex-impulse-exo-griffin.html
 ---
 Reflex, Impulse and Exo are the continuation of [Jumper]({{< relref "2016-02-28-fertig-gelesen-jumper.md" >}}). Jumper was dealing with a young man, living with an alcohol dependent father and dealing with abuse. The young man leaves, builds a new existence and in this conflicts with secret services and terrorists. In the course of the story he makes peace with his father and his past, manages to build a meaningful relationship and build a stable life and income.
 

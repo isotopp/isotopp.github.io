@@ -8,7 +8,7 @@ tags:
 - erklaerbaer
 title: Trying lvmraid for real
 aliases:
-  - /2019/12/03/trying-lvmraid-for-real.md.html
+  - /2019/12/03/trying-lvmraid-for-real.html
 ---
 So after testing [LVM Raid]({{< relref "2019-12-02-cloning-and-splitting-logical-volumes.md" >}})
 in princple, I have been trying it on some real hardware to see

@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: The Alloy of Law, Shadows of Self, The Bands of Mourning'
 aliases:
-  - /2016/02/28/fertig-gelesen-the-alloy-of-law-shadows-of-self-the-bands-of-mourning.md.html
+  - /2016/02/28/fertig-gelesen-the-alloy-of-law-shadows-of-self-the-bands-of-mourning.html
 ---
 Einige hundert Jahre nach dem Kataklysmus von "Hero of Ages" und der Neugestaltung der Welt durch Harmony leben die Menschen im Wesentlichen im fruchtbaren Becken von Elendel. Die Außenbezirke - die Roughs - sind kaum besiedelt. Waxillium Ladrian - eigentlich der Stammhalter von House Ladrian - flüchtete vor seiner Verantwortung als House Lord dort hin und verfolgte eine Karrie als Lawman, Sheriff, dort draußen im Wilden Westen von Scadrial.
 

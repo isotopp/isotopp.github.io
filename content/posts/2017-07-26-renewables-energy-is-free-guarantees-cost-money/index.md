@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Renewables: Energy is free, guarantees cost money'
 aliases:
-  - /2017/07/26/renewables-energy-is-free-guarantees-cost-money.md.html
+  - /2017/07/26/renewables-energy-is-free-guarantees-cost-money.html
 ---
 Digging through my bookmarks and open tabs was interesting. The picture of
 the future that emerges: With costs for energy approaching the 1 cent range

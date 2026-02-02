@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Neue Releases im Datenbankland
 aliases:
-  - /2011/09/13/neue-releases-im-datenbankland.md.html
+  - /2011/09/13/neue-releases-im-datenbankland.html
 ---
 [MongoDB 2.0](http://www.mongodb.org/display/DOCS/2.0%2BRelease%2BNotes) 
 ist draußen, und implementiert eine Reihe interessanter neuer Dinge, die ich

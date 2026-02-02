@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: On the Steel Breeze'
 aliases:
-  - /2015/11/29/fertig-gelesen-on-the-steel-breeze.md.html
+  - /2015/11/29/fertig-gelesen-on-the-steel-breeze.html
 ---
 200 Jahre nach "Blue Remembered Earth": Die Generationenschiffe der Erde auf dem Weg nach Crucible sind auf dem besten Weg, ihre Reise zu versauen, denn im festen Vertrauen auf einen möglichen technischen Durchbruch hat man versucht, die Reisezeit zu verkürzen, indem man die Abbremsung nach hinten verschiebt. Inzwischen sind auf der Erde die untermeerischen Zivilisationen der UAN die dominierende politische und wirtschaftliche Macht.
 

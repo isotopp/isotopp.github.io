@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Leviathan Wakes'
 aliases:
-  - /2016/02/28/fertig-gelesen-leviathan-wakes.md.html
+  - /2016/02/28/fertig-gelesen-leviathan-wakes.html
 ---
 [Kardashev Scale](https://en.wikipedia.org/wiki/Kardashev_scale): Die Erde - eine bewohnbare Insel in der Mitte von Nichts, unterbrochen von tödlichen, unbewohnbaren Stücken Nicht-Nichts. Ein Affenfelsen. Die nackten Affen auf dem Affenfelsen haben sich mit Mühe in die Gegend von Kardashev 1 hoch gearbeitet und reiten auf nuklearen Reaktionsantrieben durch ihr Sonnensystem, auf der Suche nach Ressourcen und Waffen.
 

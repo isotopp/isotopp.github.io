@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Cholera
 aliases:
-  - /2004/10/19/cholera.md.html
+  - /2004/10/19/cholera.html
 ---
 Dies ist das Siegerplakat eines Plakatwetbewerbes zum Thema  "Farbe bekennen gegen globale Armut". Es wird nicht gezeigt, sondern nur in Worten beschrieben: 
 

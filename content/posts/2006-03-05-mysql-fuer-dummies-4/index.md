@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: MySQL für Dummies (4)
 aliases:
-  - /2006/03/05/mysql-fuer-dummies-4.md.html
+  - /2006/03/05/mysql-fuer-dummies-4.html
 ---
 
 Wie wir in den vorangegangenen Beispielen gesehen haben, reicht es nicht aus, einer Datenbank zu sagen, welche Daten sie zu suchen hat.

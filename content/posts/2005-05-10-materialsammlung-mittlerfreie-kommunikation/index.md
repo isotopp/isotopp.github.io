@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Materialsammlung "Mittlerfreie Kommunikation"
 aliases:
-  - /2005/05/10/materialsammlung-mittlerfreie-kommunikation.md.html
+  - /2005/05/10/materialsammlung-mittlerfreie-kommunikation.html
 ---
 Das Thema "Mittlerfreie Kommunikation" ist ein Komplex von Gedanken, mit dem
 ich mich im Laufe der Jahre immer wieder auseinandergesetzt habe und das mir

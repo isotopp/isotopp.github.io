@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Alastair Reynolds: "Pushing Ice"'
 aliases:
-  - /2005/11/20/fertig-gelesen-alastair-reynolds-pushing-ice.md.html
+  - /2005/11/20/fertig-gelesen-alastair-reynolds-pushing-ice.html
 ---
 
 ![](pushing_ice.jpg)

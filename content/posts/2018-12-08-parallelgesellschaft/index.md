@@ -8,7 +8,7 @@ tags:
 - lang_de
 - politik
 aliases:
-  - /2018/12/08/parallelgesellschaft.md.html
+  - /2018/12/08/parallelgesellschaft.html
 ---
 
 Morgenandacht mit [Nora Steen](https://de.wikipedia.org/wiki/Nora_Steen):

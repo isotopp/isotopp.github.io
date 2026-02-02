@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: The Story of CO2 (and other Greenhouse Gas Emissions)
 aliases:
-  - /2017/08/08/the-story-of-co2-and-other-greenhouse-gas-emissions.md.html
+  - /2017/08/08/the-story-of-co2-and-other-greenhouse-gas-emissions.html
 ---
 [![](2017/08/co2-per-capita-640x455.jpg)](https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions/)
 

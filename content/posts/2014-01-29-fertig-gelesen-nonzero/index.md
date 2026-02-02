@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: "Nonzero - The Logic of Human Destiny"'
 aliases:
-  - /2014/01/29/fertig-gelesen-nonzero.md.html
+  - /2014/01/29/fertig-gelesen-nonzero.html
 ---
 Wright vertritt die These, daß Makro-Geschichte eine Richtung oder Weiterentwicklung oder zumindest ein Thema hat, auch wenn es auf der Mikroebene immer wieder Rückschritte oder lokale Abweichungen gibt. 
 

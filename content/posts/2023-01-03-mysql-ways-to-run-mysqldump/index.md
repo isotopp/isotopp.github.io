@@ -8,7 +8,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2023/01/03/mysql-ways-to-run-mysqldump.md.html
+  - /2023/01/03/mysql-ways-to-run-mysqldump.html
 ---
 
 This text exists mainly so that I paste the URL into the `#mysql` channel in Libera IRC.

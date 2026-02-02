@@ -9,7 +9,7 @@ tags:
 - internet
 title: "Webserver Security"
 aliases:
-  - /2000/05/01/webserver-security.md.html
+  - /2000/05/01/webserver-security.html
 ---
 
 **aus: iX 5/2000.**

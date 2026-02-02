@@ -11,7 +11,7 @@ tags:
 - security
 - karlsruhe
 aliases:
-  - /2005/05/29/security-management.md.html
+  - /2005/05/29/security-management.html
 ---
 
 Der folgende Vortrag stammt einem "Dienstags-Vortrag" in Karlsruhe-Durlach, und versucht zu erklären, was der Kontext für ein Information Security Management System (ISMS) ist.

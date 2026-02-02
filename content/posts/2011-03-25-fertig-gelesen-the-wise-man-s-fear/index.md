@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: The Wise Man''s Fear'
 aliases:
-  - /2011/03/25/fertig-gelesen-the-wise-man-s-fear.md.html
+  - /2011/03/25/fertig-gelesen-the-wise-man-s-fear.html
 ---
 [The Wise Mans Fear](http://www.amazon.de/Wise-Mans-Fear-Kingkiller-Chronicles/dp/0756404738),
 Hardcover, 1008 Seiten. 1400 Gramm. Kindle auf dem Android ist eine feine Sache.

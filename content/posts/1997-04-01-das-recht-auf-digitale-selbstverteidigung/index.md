@@ -8,7 +8,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /1997/04/01/das-recht-auf-digitale-selbstverteidigung.md.html
+  - /1997/04/01/das-recht-auf-digitale-selbstverteidigung.html
 ---
 
 **für die Mailingliste debate@fitug.de**

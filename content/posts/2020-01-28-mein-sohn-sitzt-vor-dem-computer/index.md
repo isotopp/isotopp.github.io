@@ -8,7 +8,7 @@ tags:
 - bildung
 title: Mein Sohn sitzt vor dem Computer
 aliases:
-  - /2020/01/28/mein-sohn-sitzt-vor-dem-computer.md.html
+  - /2020/01/28/mein-sohn-sitzt-vor-dem-computer.html
 ---
 Oliver Rautenberg berichtet auf [Twitter](https://twitter.com/AnthroBlogger/status/1222112157787131905) von "Elternvereinbarungen zur Smartphone- und Mediennutzung" an Waldorfschulen in Deutschland.
 

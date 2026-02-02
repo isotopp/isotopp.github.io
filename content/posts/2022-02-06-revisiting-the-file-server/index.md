@@ -9,7 +9,7 @@ tags:
 - linux
 - storage
 aliases:
-  - /2022/02/06/revisiting-the-file-server.md.html
+  - /2022/02/06/revisiting-the-file-server.html
 ---
 
 The new disks in the file server had synchronized nicely, and that resulted in an interesting graph:

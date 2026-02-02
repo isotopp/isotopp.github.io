@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: 'Datenschutztheater: dynamische IPv6 Adressen'
 aliases:
-  - /2011/11/09/datenschutztheater-dynamische-ipv6-adressen.md.html
+  - /2011/11/09/datenschutztheater-dynamische-ipv6-adressen.html
 ---
 
 Wir hatten das Thema schon einmal in 

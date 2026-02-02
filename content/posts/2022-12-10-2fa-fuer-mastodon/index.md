@@ -7,7 +7,7 @@ tags:
 - lang_de
 - security
 aliases:
-  - /2022/12/10/2fa-fuer-mastodon.md.html
+  - /2022/12/10/2fa-fuer-mastodon.html
 ---
 
 Multi-Factor Authentication (Identifikation mit mehreren Faktoren) oder 2FA (Two-Factor-Authentication) sind ein Weg, einen Account vor der Übernahme durch Dritte zu schützen.

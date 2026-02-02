@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Nützliche Kombinationen
 aliases:
-  - /2005/11/04/nuetzliche-kombinationen.md.html
+  - /2005/11/04/nuetzliche-kombinationen.html
 ---
 Das Sony BMG Rootkit aus 
 [Legal, Illegal, Scheißegal]({{< relref "2005-11-01-legal-illegal-scheissegal.md" >}})

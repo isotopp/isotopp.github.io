@@ -9,7 +9,7 @@ tags:
 - microsoft
 - minecraft
 aliases:
-  - /2023/02/17/minecraft-unable-to-create-native-thread.md.html
+  - /2023/02/17/minecraft-unable-to-create-native-thread.html
 ---
 
 A minecraft server has problems creating threads. The error message reads:

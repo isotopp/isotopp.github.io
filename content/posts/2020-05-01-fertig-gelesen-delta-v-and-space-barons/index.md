@@ -9,7 +9,7 @@ tags:
 - media
 title: 'Fertig gelesen: Delta-V and Space Barons'
 aliases:
-  - /2020/05/01/fertig-gelesen-delta-v-and-space-barons.md.html
+  - /2020/05/01/fertig-gelesen-delta-v-and-space-barons.html
 ---
 A lot of super rich people are currently busy blowing their money into space. Who are these people, and what drives them?
 

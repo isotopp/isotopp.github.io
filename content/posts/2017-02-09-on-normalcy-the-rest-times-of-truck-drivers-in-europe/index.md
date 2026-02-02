@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: 'On Normalcy: The rest times of truck drivers in Europe'
 aliases:
-  - /2017/02/09/on-normalcy-the-rest-times-of-truck-drivers-in-europe.md.html
+  - /2017/02/09/on-normalcy-the-rest-times-of-truck-drivers-in-europe.html
 ---
 [DVZ Landverkehr reports](http://www.dvz.de/rubriken/landverkehr/single-view/nachricht/eugh-generalanwalt-fahrer-duerfen-wochenruhezeit-nicht-im-lkw-verbringen.html)
 (article in German):

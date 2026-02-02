@@ -8,7 +8,7 @@ tags:
 - mysql
 - lang_en
 aliases:
-  - /2022/06/07/mysql-binlog-compression-and-large-transactions.md.html
+  - /2022/06/07/mysql-binlog-compression-and-large-transactions.html
 ---
 
 ([Twitter thread](https://twitter.com/isotopp/status/1532752730229559300), reproduction in english, and update)

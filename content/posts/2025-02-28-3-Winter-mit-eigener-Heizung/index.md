@@ -9,7 +9,7 @@ tags:
   - homeassistant
 title: "Drei Winter mit eigener Heizung"
 aliases:
-  - /2025/02/28/3-Winter-mit-eigener-Heizung.md.html
+  - /2025/02/28/3-Winter-mit-eigener-Heizung.html
 ---
 
 # 2022

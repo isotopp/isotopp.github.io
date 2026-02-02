@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Das gespaltene piratische Verhältnis zur Identität
 aliases:
-  - /2010/03/07/das-gespaltene-piratische-verh-ltnis-zur-identit-t.md.html
+  - /2010/03/07/das-gespaltene-piratische-verh-ltnis-zur-identit-t.html
 ---
 Die inhaltliche Debatte um Aaron Koenig ist ein wenig abgeklungen, und auch
 der Berliner Landesparteitag der Piratenpartei ist durch, sodaß ich einmal

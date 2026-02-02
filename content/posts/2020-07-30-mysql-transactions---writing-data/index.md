@@ -11,7 +11,7 @@ tags:
 - mysqldev
 title: MySQL Transactions - writing data
 aliases:
-  - /2020/07/30/mysql-transactions---writing-data.md.html
+  - /2020/07/30/mysql-transactions---writing-data.html
 ---
 Using the framework for testing we created in earlier articles, let's try to
 modify some data. We are writing a small program that increments a counter.

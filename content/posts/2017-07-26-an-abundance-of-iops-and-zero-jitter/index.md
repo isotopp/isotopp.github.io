@@ -11,7 +11,7 @@ tags:
 - lang_en
 title: An abundance of IOPS and Zero Jitter
 aliases:
-  - /2017/07/26/an-abundance-of-iops-and-zero-jitter.md.html
+  - /2017/07/26/an-abundance-of-iops-and-zero-jitter.html
 ---
 Two weeks ago, I wrote about 
 [The Data Center in the Age of Abundance]({{< relref "2017-07-07-the-data-center-in-the-age-of-abundance.md" >}})

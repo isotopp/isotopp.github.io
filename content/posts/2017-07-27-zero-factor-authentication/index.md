@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Zero Factor Authentication
 aliases:
-  - /2017/07/27/zero-factor-authentication.md.html
+  - /2017/07/27/zero-factor-authentication.html
 ---
 Dear Internet, Today I Learned that oath-toolkit exists in Homebrew. So, this is a thing:
 

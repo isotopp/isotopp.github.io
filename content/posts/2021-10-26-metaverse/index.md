@@ -9,7 +9,7 @@ tags:
 - media
 title: Metaverse
 aliases:
-  - /2021/10/26/metaverse.md.html
+  - /2021/10/26/metaverse.html
 ---
 
 Ich [schrieb auf Twitter](https://twitter.com/isotopp/status/1450739310546886657) was zum aktuellen Begriff "Metaverse".

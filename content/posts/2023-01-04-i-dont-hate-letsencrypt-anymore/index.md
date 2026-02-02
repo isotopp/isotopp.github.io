@@ -8,7 +8,7 @@ tags:
 - security
 - devops
 aliases:
-  - /2023/01/04/i-dont-hate-letsencrypt-anymore.md.html
+  - /2023/01/04/i-dont-hate-letsencrypt-anymore.html
 ---
 
 So, Rachel is in a bad mood:

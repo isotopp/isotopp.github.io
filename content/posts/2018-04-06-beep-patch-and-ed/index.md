@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: beep, patch and ed
 aliases:
-  - /2018/04/06/beep-patch-and-ed.md.html
+  - /2018/04/06/beep-patch-and-ed.html
 ---
 So a few days ago, somebody found an exploit in beep - now
 [CVE-2018-0492](https://nvd.nist.gov/vuln/detail/CVE-2018-0492).

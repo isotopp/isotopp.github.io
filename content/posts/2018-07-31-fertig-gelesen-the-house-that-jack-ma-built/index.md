@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: The House That Jack Ma Built'
 aliases:
-  - /2018/07/31/fertig-gelesen-the-house-that-jack-ma-built.md.html
+  - /2018/07/31/fertig-gelesen-the-house-that-jack-ma-built.html
 ---
 Eine Biographie von Jack Ma, dem Gründer von Alibaba. Zugleich eine Geschichte über die Entwicklung in Asien.
 

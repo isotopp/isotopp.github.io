@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: How to live safely in a science fictional universe'
 aliases:
-  - /2012/08/22/fertig-gelesen-how-to-live-safely-in-a-science-fictional-universe.md.html
+  - /2012/08/22/fertig-gelesen-how-to-live-safely-in-a-science-fictional-universe.html
 ---
 [How to live safely in a science-fictional universe](http://www.amazon.com/Safely-Science-Fictional-Universe-ebook/dp/B003WUYQ50),
 Charles Yu, inzwischen USD 11.99,   dafür aber mit Bonusmaterial das keiner

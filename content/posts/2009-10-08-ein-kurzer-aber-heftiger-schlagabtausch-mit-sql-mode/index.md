@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Ein kurzer, aber heftiger Schlagabtausch mit SQL_MODE
 aliases:
-  - /2009/10/08/ein-kurzer-aber-heftiger-schlagabtausch-mit-sql-mode.md.html
+  - /2009/10/08/ein-kurzer-aber-heftiger-schlagabtausch-mit-sql-mode.html
 ---
 Letzte Woche Montag haben wir beschlossen, den [SQL_MODE](http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html) in unseren Entwicklungsservern auf einen strengeren Wert als "" (den Default) zu setzen. Das war ein Fehlschlag und wir haben den Change diese Woche zurück gerollt. Aber von vorne.
 

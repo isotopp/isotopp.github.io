@@ -9,7 +9,7 @@ tags:
 - book
 title: 'Fertig gelesen: These Savage Shores'
 aliases:
-  - /2021/09/05/fertig-gelesen-these-savage-shores.md.html
+  - /2021/09/05/fertig-gelesen-these-savage-shores.html
 ---
 
 [Ram V](https://twitter.com/therightram) is a writer, sometimes for comics.

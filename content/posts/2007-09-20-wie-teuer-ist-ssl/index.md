@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Wie teuer ist SSL?
 aliases:
-  - /2007/09/20/wie-teuer-ist-ssl.md.html
+  - /2007/09/20/wie-teuer-ist-ssl.html
 ---
 
 Ich hatte als amtierender Securityfuzzi einmal die Aufgabe, die benötigte Verschlüsselungskapazität eines großen Webdienstleisters für eine Konsolidierungsmaßnahme auszurechnen.

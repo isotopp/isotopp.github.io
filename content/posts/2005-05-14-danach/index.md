@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Danach...
 aliases:
-  - /2005/05/14/danach.md.html
+  - /2005/05/14/danach.html
 ---
 
 ![](mana.jpg)

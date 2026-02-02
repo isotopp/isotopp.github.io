@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Die Wahrheit über Wi-Fi
 aliases:
-  - /2007/05/29/die-wahrheit-ueber-wifi.md.html
+  - /2007/05/29/die-wahrheit-ueber-wifi.html
 ---
 
 ![](wireless-devices-small.png)

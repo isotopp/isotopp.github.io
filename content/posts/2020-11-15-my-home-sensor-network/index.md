@@ -8,7 +8,7 @@ tags:
 - home automation
 title: My home sensor network
 aliases:
-  - /2020/11/15/my-home-sensor-network.md.html
+  - /2020/11/15/my-home-sensor-network.html
 ---
 
 I have been asked to document my home sensor network.

@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: Libriomancer'
 aliases:
-  - /2013/09/23/fertig-gelesen-libriomancer.md.html
+  - /2013/09/23/fertig-gelesen-libriomancer.html
 ---
 Cornelia Funke hat mit Tintenherz eine Geschichte geschrieben, in der ein Buchmagier und Vorleser die Gestalten und Gegenstände aus Büchern zum Leben in der realen Welt erwecken kann. Aber Tintenherz denkt die Logik der Magie von Büchern nicht konsequent zu Ende und ist nicht einmal im Ansatz dreckig genug.
 

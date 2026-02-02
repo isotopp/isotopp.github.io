@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: The Traitor Baru Cormorant'
 aliases:
-  - /2016/02/28/fertig-gelesen-the-traitor.md.html
+  - /2016/02/28/fertig-gelesen-the-traitor.html
 ---
 Auf der Insel Taranoke lebt das Mädchen Baru Cormorant, als ihr Volk mit den Händlern des Imperiums von Falcrest Kontakt macht und Taranoke durch den sich entwickelnden Wirtschaftskrieg und Kulturkampf assimiliert wird. Baru ist eine begnadete Buchhalterin und wird in einer Falcresti Eliteschule auf Taranoke indoktriniert - sie spielt ihre Rolle gut, denn es ist ihr Ziel, für die Zerstörung ihrer Familie und ihrer Heimat am Imperium Rache zu nehmen.
 

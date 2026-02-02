@@ -8,7 +8,7 @@ tags:
 - sonos
 title: "Sonos S2 Analysis"
 aliases:
-  - /2024/07/12/sonos-s2-analysis.md.html
+  - /2024/07/12/sonos-s2-analysis.html
 ---
 
 Auf LinkedIn gibt es einen

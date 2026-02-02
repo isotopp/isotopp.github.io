@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Kulturelles Defizit
 aliases:
-  - /2010/02/28/kulturelles-defizit.md.html
+  - /2010/02/28/kulturelles-defizit.html
 ---
 Seitdem ich für Geld andere Leute glücklich mache bin ich immer wieder
 einige Jahre auf der Walz gewesen, und habe mich als Angehöriger des

@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: jq
 aliases:
-  - /2017/04/26/jq.md.html
+  - /2017/04/26/jq.html
 ---
 When dealing with Kubernetes, you will inevitably have to deal with config
 and data that is in JSON format. [jq](https://github.com/stedolan/jq) is a

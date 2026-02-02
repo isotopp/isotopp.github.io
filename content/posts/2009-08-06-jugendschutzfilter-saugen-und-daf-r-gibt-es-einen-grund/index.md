@@ -10,7 +10,7 @@ tags:
 - web
 - lang_de
 aliases:
-  - /2009/08/06/jugendschutzfilter-saugen-und-daf-r-gibt-es-einen-grund.md.html
+  - /2009/08/06/jugendschutzfilter-saugen-und-daf-r-gibt-es-einen-grund.html
 ---
 
 Heise newstickert: 

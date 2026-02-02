@@ -9,7 +9,7 @@ tags:
 - book
 title: 'Fertig gelesen: The Antivirus Hackers Handbook'
 aliases:
-  - /2021/05/14/fertig-gelesen-the-antivirus-hackers-handbook.md.html
+  - /2021/05/14/fertig-gelesen-the-antivirus-hackers-handbook.html
 ---
 
 [The Antivirus Hackers Handbook](https://www.amazon.de/Antivirus-Hackers-Handbook-English-ebook/dp/B014MJ6AKS/) by [Jaxeon Koret](https://twitter.com/joxeankoret) and Elias Bachaalany is part book, part a research report, detailing the findings of Jaxeon Koret and Elias Bachaalany in how Antivirus programs work, try to protect themselves and can be attacked and exploited.

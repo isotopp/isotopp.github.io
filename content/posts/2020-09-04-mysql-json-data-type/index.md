@@ -10,7 +10,7 @@ tags:
 - erklaerbaer
 title: 'MySQL: Basic usage of the JSON data type'
 aliases:
-  - /2020/09/04/mysql-json-data-type.md.html
+  - /2020/09/04/mysql-json-data-type.html
 ---
 MySQL 8 provides solid support for the JSON data type. The manual has [an overview of the data type](https://dev.mysql.com/doc/refman/8.0/en/json.html), a [JSON function reference](https://dev.mysql.com/doc/refman/8.0/en/json-functions.html), an [an overview on generated column indexes](https://dev.mysql.com/doc/refman/8.0/en/create-table-secondary-indexes.html#json-column-indirect-index), and [explains multi-values indexes](https://dev.mysql.com/doc/refman/8.0/en/create-index.html#create-index-multi-valued).
 

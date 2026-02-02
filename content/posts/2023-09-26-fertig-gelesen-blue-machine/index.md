@@ -9,7 +9,7 @@ tags:
 - media
 - book
 aliases:
-  - /2023/09/26/fertig-gelesen-blue-machine.md.html
+  - /2023/09/26/fertig-gelesen-blue-machine.html
 ---
 
 [Helen Czerski](https://fediscience.org/@helenczerski) wrote a book.

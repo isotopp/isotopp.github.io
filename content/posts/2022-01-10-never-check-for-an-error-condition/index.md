@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: "Never check for an error condition you don't know how to handle"
 aliases:
-  - /2022/01/10/never-check-for-an-error-condition.md.html
+  - /2022/01/10/never-check-for-an-error-condition.html
 ---
 
 This is the english version of an [older text in German]({{< relref "2009-08-21-was-bedeutet-eigentlich-never-check-for-an-error-condition-you-don-t-know-how-to-handle.md" >}})

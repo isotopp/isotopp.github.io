@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Backdoor
 aliases:
-  - /2012/05/28/backdoor.md.html
+  - /2012/05/28/backdoor.html
 ---
 Sergei Skorobogatov von der Uni Cambridge kündigt sein neues Paper an, das
 jedoch erst im September veröffentlicht werden wird ([PDF](https://www.cl.cam.ac.uk/~sps32/ches2012-backdoor.pdf)): 

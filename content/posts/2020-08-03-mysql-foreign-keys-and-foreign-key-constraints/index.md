@@ -11,7 +11,7 @@ tags:
 - erklaerbaer
 title: MySQL Foreign Keys and Foreign Key Constraints
 aliases:
-  - /2020/08/03/mysql-foreign-keys-and-foreign-key-constraints.md.html
+  - /2020/08/03/mysql-foreign-keys-and-foreign-key-constraints.html
 ---
 
 Foreign Keys are what links tables together and turns a set of tables into a model. Foreign Key Constraints are conditions that must be true for the content of the tables to be an internally consistent model. Foreign Key Constraints can be defined and enforced in InnoDB, but this comes at a considerable price, and for some it may hurt more than it is worth.

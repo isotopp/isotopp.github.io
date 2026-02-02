@@ -8,7 +8,7 @@ tags:
 - security
 - lang_de
 aliases:
-  - /2019/02/08/mehr-passwort-sicherheit.md.html
+  - /2019/02/08/mehr-passwort-sicherheit.html
 ---
 
 Basierend auf [einem Twitter-Thread](https://twitter.com/isotopp/status/1093771082400714753)

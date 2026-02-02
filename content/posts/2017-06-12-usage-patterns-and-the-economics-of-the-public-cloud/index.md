@@ -9,7 +9,7 @@ tags:
 - container
 title: '"Usage Patterns and the Economics of the Public Cloud"'
 aliases:
-  - /2017/06/12/usage-patterns-and-the-economics-of-the-public-cloud.md.html
+  - /2017/06/12/usage-patterns-and-the-economics-of-the-public-cloud.html
 ---
 The paper ([PDF](http://vita.mcafee.cc/PDF/EconPublicCloud.pdf))
 is, to say it in the words of Sascha Konietzko, [eine

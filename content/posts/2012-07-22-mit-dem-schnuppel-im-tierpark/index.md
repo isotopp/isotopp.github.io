@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Mit dem Schnuppel im Tierpark
 aliases:
-  - /2012/07/22/mit-dem-schnuppel-im-tierpark.md.html
+  - /2012/07/22/mit-dem-schnuppel-im-tierpark.html
 ---
 ![](mit_dem_schnuppel_im_tierpark/bild_0.jpg)
 

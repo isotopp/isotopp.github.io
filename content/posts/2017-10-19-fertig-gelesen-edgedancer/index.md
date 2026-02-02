@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: Edgedancer'
 aliases:
-  - /2017/10/19/fertig-gelesen-edgedancer.md.html
+  - /2017/10/19/fertig-gelesen-edgedancer.html
 ---
 [![](2017/10/edgedancer.jpg)](https://www.amazon.de/Edgedancer-Stormlight-Archive-Brandon-Sanderson/dp/1250166543)
 

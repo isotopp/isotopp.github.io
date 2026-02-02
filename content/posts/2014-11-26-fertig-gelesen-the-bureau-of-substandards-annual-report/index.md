@@ -10,7 +10,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: The Bureau of Substandards Annual Report'
 aliases:
-  - /2014/11/26/fertig-gelesen-the-bureau-of-substandards-annual-report.md.html
+  - /2014/11/26/fertig-gelesen-the-bureau-of-substandards-annual-report.html
 ---
 Eine kurze Sammlung von Kurzgeschichten, die ein größeres Ganzes ergeben. Spannend, lustig, ein wenig hakelig, hängt sich die Story schematisch an Charles Stross "Laundry" - Bürokratie rettet den Tag, oder gar die ganze Welt vor Monstern aus den Zwischendimensionen.
 

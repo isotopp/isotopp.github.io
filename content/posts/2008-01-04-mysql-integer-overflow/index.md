@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'MySQL: Integer Overflow'
 aliases:
-  - /2008/01/04/mysql-integer-overflow.md.html
+  - /2008/01/04/mysql-integer-overflow.html
 ---
 
 Der Fotodienst 

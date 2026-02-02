@@ -9,7 +9,7 @@ tags:
 - erklaerbaer
 - work
 aliases:
-  - /2024/04/17/support-as-a-public-performance.md.html
+  - /2024/04/17/support-as-a-public-performance.html
 ---
 
 Support has been working in Slack for years.

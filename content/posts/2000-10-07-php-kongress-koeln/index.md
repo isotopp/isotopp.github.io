@@ -8,7 +8,7 @@ tags:
 - php
 - web 
 aliases:
-  - /2000/10/07/php-kongress-koeln.md.html
+  - /2000/10/07/php-kongress-koeln.html
 ---
 
 # Day 1

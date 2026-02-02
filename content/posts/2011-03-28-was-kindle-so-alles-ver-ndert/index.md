@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Was Kindle so alles verändert
 aliases:
-  - /2011/03/28/was-kindle-so-alles-ver-ndert.md.html
+  - /2011/03/28/was-kindle-so-alles-ver-ndert.html
 ---
 Nachdem ich jetzt ein wenig mit dem Lesen auf Kindle for Mac und Kindle for
 Android herumprobiert habe, kann ich sagen, daß es für mich funktioniert.

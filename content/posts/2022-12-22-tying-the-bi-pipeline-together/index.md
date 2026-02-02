@@ -9,7 +9,7 @@ tags:
 - mysqldev
 - data warehouse
 aliases:
-  - /2022/12/22/tying-the-bi-pipeline-together.md.html
+  - /2022/12/22/tying-the-bi-pipeline-together.html
 ---
 
 In

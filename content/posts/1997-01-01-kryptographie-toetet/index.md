@@ -8,7 +8,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /1997/01/01/kryptographie-toetet.md.html
+  - /1997/01/01/kryptographie-toetet.html
 ---
 
 **Für die Mailingliste debate@fitug.de**

@@ -10,7 +10,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: The Invisible Library'
 aliases:
-  - /2016/02/28/fertig-gelesen-the-invisible-library.md.html
+  - /2016/02/28/fertig-gelesen-the-invisible-library.html
 ---
 Auch hier gibt es Parallelwelten, sie sich zwischen der durch die Drachen kontrollierten Ordnung und dem von den Fae beherrschten Chaos aufspannen - je Fae, desto Magie. Alle diese Welten sind durch die Türen zur unsichtbaren Bibliothek miteinander verbunden - warum und was ihre Aufgabe ist, wird in diesem Band noch nicht klar.
 

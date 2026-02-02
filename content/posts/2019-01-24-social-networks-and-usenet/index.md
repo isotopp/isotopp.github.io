@@ -8,7 +8,7 @@ tags:
 - social networking
 - usenet
 aliases:
-  - /2019/01/24/social-networks-and-usenet.md.html
+  - /2019/01/24/social-networks-and-usenet.html
 ---
 
 Some thoughts on Social Networking and Usenet, in response to [https://jfm.carcosa.net/blog/computing/usenet/](https://jfm.carcosa.net/blog/computing/usenet/).

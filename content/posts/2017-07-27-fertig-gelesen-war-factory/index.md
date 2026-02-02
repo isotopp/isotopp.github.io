@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: War Factory'
 aliases:
-  - /2017/07/27/fertig-gelesen-war-factory.md.html
+  - /2017/07/27/fertig-gelesen-war-factory.html
 ---
 [![](2017/07/war-factory.jpg)](https://www.amazon.de/War-Factory-Transformation-Book-English-ebook/dp/B018XV0AFW)
 

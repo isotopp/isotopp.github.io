@@ -9,7 +9,7 @@ tags:
 - book
 title: 'Fertig gelesen: 88 Names'
 aliases:
-  - /2021/08/03/fertig-gelesen-88-names.md.html
+  - /2021/08/03/fertig-gelesen-88-names.html
 ---
 
 It began with a tweet by [Sebastian Bergmann](https://twitter.com/s_bergmann/status/1392518815897030661), which made me buy "[88 names](https://www.amazon.de/gp/product/B07T6938D1)" by Matt Ruff.

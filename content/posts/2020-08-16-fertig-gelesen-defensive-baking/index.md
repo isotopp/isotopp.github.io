@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: A Wizard''s Guide To Defensive Baking'
 aliases:
-  - /2020/08/16/fertig-gelesen-defensive-baking.md.html
+  - /2020/08/16/fertig-gelesen-defensive-baking.html
 ---
 [A Wizard's Guide To Defensive Baking](https://www.amazon.de/Wizards-Guide-Defensive-Baking-English-ebook/dp/B08CJ86Y1W)
 is a Yound Adult Coming-of-Age story about Mona. Mona works in her aunt's

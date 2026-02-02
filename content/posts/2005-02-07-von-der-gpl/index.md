@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: "Von der GPL"
 aliases:
-  - /2005/02/07/von-der-gpl.md.html
+  - /2005/02/07/von-der-gpl.html
 ---
 
 Trolltech hat seine [Qt Bibliothek ab der Version 4 komplett unter GPL]({{< relref "2005-02-07-qt4-wird-vollstaendig-gpl.md" >}})

@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Outland'
 aliases:
-  - /2021/07/23/fertig-gelesen-outland.md.html
+  - /2021/07/23/fertig-gelesen-outland.html
 ---
 
 "[Outland](https://www.amazon.de/Outland-Dennis-Taylor-ebook/dp/B07TP6TKP1)" is the first book by Dennis E. Taylor, preceding the Bobiverse and also "The Singularity Trap".

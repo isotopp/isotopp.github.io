@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Leben mit Fehlern - der Schlüssel zum Scaleout
 aliases:
-  - /2006/07/30/leben-mit-fehlern-der-schluessel-zum-scaleout.md.html
+  - /2006/07/30/leben-mit-fehlern-der-schluessel-zum-scaleout.html
 ---
 ![](scale.jpg)
 

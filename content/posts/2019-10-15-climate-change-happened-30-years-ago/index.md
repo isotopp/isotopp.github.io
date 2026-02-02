@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Climate change happened 30 years ago
 aliases:
-  - /2019/10/15/climate-change-happened-30-years-ago.md.html
+  - /2019/10/15/climate-change-happened-30-years-ago.html
 ---
 Water is a very weird substance. Melting ice at 0C to water at
 0C takes a fantastic amount of energy: Water has a [latent

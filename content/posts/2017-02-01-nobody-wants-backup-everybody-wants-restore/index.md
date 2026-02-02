@@ -9,7 +9,7 @@ tags:
 - lang_en
 - devops
 aliases:
-  - /2017/02/01/nobody-wants-backup-everybody-wants-restore.md.html
+  - /2017/02/01/nobody-wants-backup-everybody-wants-restore.html
 ---
 ![](2017/02/mysql-backup-and-recovery-15-638.jpg)
 

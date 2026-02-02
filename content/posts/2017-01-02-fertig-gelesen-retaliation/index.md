@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Retaliation'
 aliases:
-  - /2017/01/02/fertig-gelesen-retaliation.md.html
+  - /2017/01/02/fertig-gelesen-retaliation.html
 ---
 In Teil 2 setzt sich das Motiv der Erzählung als Reiseroman fort und das ist es auch, was trotz aller Action das Tempo bestimmt. Wir erfahren mehr über Kims Hintergrund und Entwicklung und angenehmerweise viel über Show, Don't Tell und ohne das Pacing zu brechen.
 

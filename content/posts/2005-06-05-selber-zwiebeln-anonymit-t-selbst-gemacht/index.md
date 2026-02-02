@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Selber Zwiebeln - Anonymität selbst gemacht
 aliases:
-  - /2005/06/05/selber-zwiebeln-anonymit-t-selbst-gemacht.md.html
+  - /2005/06/05/selber-zwiebeln-anonymit-t-selbst-gemacht.html
 ---
 Projekt 300 ist der Versuch, die 300 GB Quota pro Monat, die mit dem
 kleinsten Strato Rootserver mitkommen, auszunutzen. Weil dies zu leicht ist,

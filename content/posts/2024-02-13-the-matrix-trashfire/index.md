@@ -10,7 +10,7 @@ tags:
 - remote first
 - work
 aliases:
-  - /2024/02/13/the-matrix-trashfire.md.html
+  - /2024/02/13/the-matrix-trashfire.html
 ---
 
 For reasons, I tried to evaluate the distributed Matrix chat and their clients.

@@ -10,7 +10,7 @@ tags:
 - internet
 - karlsruhe
 aliases:
-  - /2005/05/30/vortraege-richtig-halten.md.html
+  - /2005/05/30/vortraege-richtig-halten.html
 ---
 
 Der folgende Vortrag stammt einem "Dienstags-Vortrag" in Karlsruhe-Durlach.

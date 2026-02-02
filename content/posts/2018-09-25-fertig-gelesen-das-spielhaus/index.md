@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: Das Spielhaus'
 aliases:
-  - /2018/09/25/fertig-gelesen-das-spielhaus.md.html
+  - /2018/09/25/fertig-gelesen-das-spielhaus.html
 ---
 Das Spielhaus hat viele Türen und sie führen zu vielen Orten und Zeiten auf der Erde. Gelangt man hinein, entdeckt man, daß die Spiele, die hier gespielt werden, alle auf Planung, Umsicht und Taktik basieren und nicht auf Zufall. Doch nur die besten Spieler gelangen in das Obergeschoß, in dem um die wirklich interessanten Einsätze gespielt wird: Lebensjahre, Fähigkeiten, Erinnerungen, und andere Dinge, die wirklich wichtig sind.
 

@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Racing our galaxy
 aliases:
-  - /2017/02/02/racing-our-galaxy.md.html
+  - /2017/02/02/racing-our-galaxy.html
 ---
 Why is our galaxy moving through space, and into which directions is
 everything else moving?

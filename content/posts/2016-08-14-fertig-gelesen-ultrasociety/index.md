@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Ultrasociety'
 aliases:
-  - /2016/08/14/fertig-gelesen-ultrasociety.md.html
+  - /2016/08/14/fertig-gelesen-ultrasociety.html
 ---
 Peter Turchin, in Russland geboren und zusammen mit seinem Vater 1977 in die USA exiliert worden, hat Biologie, Mathematik und Anthropologie studiert und modelliert jetzt an der Universität Connecticut die Entwicklung menschlicher Gesellschaften durch Multilevel Selection. Das Buch "Ultrasociety" ist die populärwissenschaftliche Kommunikation seiner Erkenntnisse bisher, und verweist auf eine ganze Leseliste richtiger wissenschaftlicher Dokumentation in den Anhängen.
 

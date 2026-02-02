@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Vertrauensvorschuß
 aliases:
-  - /2007/03/11/vertrauensvorschu.md.html
+  - /2007/03/11/vertrauensvorschu.html
 ---
 Soll ich meiner Regierung, meinem Staat vertrauen, daß er seine
 investigativen Möglichkeiten lediglich zu meinem Schutz und nicht zu meiner

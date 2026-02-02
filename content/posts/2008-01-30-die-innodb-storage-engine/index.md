@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Die InnoDB Storage Engine
 aliases:
-  - /2008/01/30/die-innodb-storage-engine.md.html
+  - /2008/01/30/die-innodb-storage-engine.html
 ---
 Die Storage Engine InnoDB ist eine Storage Engine, die ACID-konform
 betrieben werden kann, Transaktionen beherrscht und Foreign Key Constraints

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Ein paar Worte zu SSL
 aliases:
-  - /2009/02/11/ein-paar-worte-zu-ssl.md.html
+  - /2009/02/11/ein-paar-worte-zu-ssl.html
 ---
 Slowtiger antwortet in einem Kommentar zu [Mein natives IP V6]({{< relref "2009-02-10-mein-natives-ip-v6.md" >}}):
 

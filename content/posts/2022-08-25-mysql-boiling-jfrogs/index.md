@@ -8,7 +8,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2022/08/25/mysql-boiling-jfrogs.md.html
+  - /2022/08/25/mysql-boiling-jfrogs.html
 ---
 
 A work problem:

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Steve Ballmer lernt etwas
 aliases:
-  - /2008/04/20/steve-ballmer-lernt-etwas.md.html
+  - /2008/04/20/steve-ballmer-lernt-etwas.html
 ---
 
 [Microsoft's Ballmer gives unvarnished take on Windows, online businesses](http://blog.seattletimes.nwsource.com/techtracks/2008/04/microsoft_ceo_steve_ballmer_spoke.html):

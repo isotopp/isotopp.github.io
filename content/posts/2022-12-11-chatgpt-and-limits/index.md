@@ -7,7 +7,7 @@ tags:
 - lang_en
 - security
 aliases:
-  - /2022/12/11/chatgpt-and-limits.md.html
+  - /2022/12/11/chatgpt-and-limits.html
 ---
 
 Like everybody else, I have been playing with ChatGPT from [OpenAI](https://openai.com/).

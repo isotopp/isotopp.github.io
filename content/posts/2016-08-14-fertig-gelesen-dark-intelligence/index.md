@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Dark Intelligence'
 aliases:
-  - /2016/08/14/fertig-gelesen-dark-intelligence.md.html
+  - /2016/08/14/fertig-gelesen-dark-intelligence.html
 ---
 Nach dem Tode seiner Frau ist Neal Asher durch eine ziemlich fiese Depression gelaufen und war naturgemäß wenig produktiv. Nun, wie sag ichs, es geht ihm besser und er schreibt wieder.
 

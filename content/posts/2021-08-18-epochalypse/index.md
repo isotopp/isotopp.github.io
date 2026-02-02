@@ -7,7 +7,7 @@ tags:
 - computer
 title: Epochalypse
 aliases:
-  - /2021/08/18/epochalypse.md.html
+  - /2021/08/18/epochalypse.html
 ---
 
 I had reason to look into the UNIX Eschaton, the time when the signed 32 bit counter of seconds since Midnight, 1970-01-01 UTC overflows. Going [to Wikipedia](https://en.wikipedia.org/wiki/Unix_time#Notable_events_in_Unix_time), I learned we will die two years earlier, because in 2036-02-07, 06:28:16 UTC NTP will kill us all:

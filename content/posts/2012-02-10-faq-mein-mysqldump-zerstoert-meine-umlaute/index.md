@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: 'FAQ: Mein mysqldump zerstört meine Umlaute'
 aliases:
-  - /2012/02/10/faq-mein-mysqldump-zerstoert-meine-umlaute.md.html
+  - /2012/02/10/faq-mein-mysqldump-zerstoert-meine-umlaute.html
 ---
 In den letzten Tagen habe ich das mehrmals erklären müssen, daher jetzt
 einmal im Blog, damit ich das verlinken kann.  Dieser Artikel ist, anders

@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: d = a*b+c at scale
 aliases:
-  - /2017/11/25/d-abc-at-scale.md.html
+  - /2017/11/25/d-abc-at-scale.html
 ---
 ![](2017/11/dabc.png)
 

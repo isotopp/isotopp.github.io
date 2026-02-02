@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'GPL: Microsoft, Novell, Samba.org und die Freiheiten der GPL'
 aliases:
-  - /2006/11/12/gpl-microsoft-novell-samba-org-und-die-freiheiten-der-gpl.md.html
+  - /2006/11/12/gpl-microsoft-novell-samba-org-und-die-freiheiten-der-gpl.html
 ---
 
 In 

@@ -9,7 +9,7 @@ tags:
 - energy
 - climate
 aliases:
-  - /2022/06/28/the-new-energy-bill.md.html
+  - /2022/06/28/the-new-energy-bill.html
 ---
 
 We got our solar roof around 1st of April.

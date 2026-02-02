@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Datenschutztheater: Die informierte Zustimmung'
 aliases:
-  - /2012/01/02/datenschutztheater-die-informierte-zustimmung.md.html
+  - /2012/01/02/datenschutztheater-die-informierte-zustimmung.html
 ---
 Das BDSG, ein Produkt der 80er.  Damals waren
 Computer wahlweise

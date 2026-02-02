@@ -8,7 +8,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /1999/07/17/oss-funding.md.html
+  - /1999/07/17/oss-funding.html
 ---
 
 **von Thomas Roessler und Kristian Köhntopp**

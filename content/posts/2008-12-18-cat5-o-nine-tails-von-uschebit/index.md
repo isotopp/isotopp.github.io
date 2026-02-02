@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Cat5-o-Nine-Tails von uschebit
 aliases:
-  - /2008/12/18/cat5-o-nine-tails-von-uschebit.md.html
+  - /2008/12/18/cat5-o-nine-tails-von-uschebit.html
 ---
 
 ![](cat5onine1.jpg)

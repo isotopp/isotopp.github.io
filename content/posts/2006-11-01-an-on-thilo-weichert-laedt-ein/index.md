@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'AN.ON: Thilo Weichert lädt ein'
 aliases:
-  - /2006/11/01/an-on-thilo-weichert-laedt-ein.md.html
+  - /2006/11/01/an-on-thilo-weichert-laedt-ein.html
 ---
 
 ![](datenschutz.gif) 

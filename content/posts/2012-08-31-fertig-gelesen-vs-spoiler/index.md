@@ -9,7 +9,7 @@ tags:
 - spoiler
 title: Fertig gelesen vs. Spoiler.
 aliases:
-  - /2012/08/31/fertig-gelesen-vs-spoiler.md.html
+  - /2012/08/31/fertig-gelesen-vs-spoiler.html
 ---
 Aus den Kommentaren in meinem Stream herausgezogen und noch einmal, ein einziges Mal, prominent hier herein gestellt.
 

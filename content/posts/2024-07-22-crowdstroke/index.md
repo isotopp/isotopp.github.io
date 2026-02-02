@@ -11,7 +11,7 @@ tags:
 - computer
 - erklaerbaer
 aliases:
-  - /2024/07/22/crowdstroke.md.html
+  - /2024/07/22/crowdstroke.html
 ---
 
 This is the Monday after the Friday 

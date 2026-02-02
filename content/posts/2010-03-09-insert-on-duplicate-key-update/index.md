@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: INSERT  ON DUPLICATE KEY UPDATE
 aliases:
-  - /2010/03/09/insert-on-duplicate-key-update.md.html
+  - /2010/03/09/insert-on-duplicate-key-update.html
 ---
 Auf Yourhelpcenter.de gibt es einen Artikel mit dem irreführenden Titel
 [Update if exists else insert record](http://www.yourhelpcenter.de/2010/03/mysql-update-if-exists-else-insert-record-sql-statement/),

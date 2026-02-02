@@ -9,7 +9,7 @@ tags:
 - mastodon
 - usenet
 aliases:
-  - /2023/09/18/the-need-for-smarter-clients.md.html
+  - /2023/09/18/the-need-for-smarter-clients.html
 ---
 
 Somebody asked me very politely on the Fedi:

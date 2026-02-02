@@ -8,7 +8,7 @@ tags:
 - macos
 title: Ignoring Catalina nags
 aliases:
-  - /2019/10/15/ignoring-catalina-nags.md.html
+  - /2019/10/15/ignoring-catalina-nags.html
 ---
 Note to self: Ignoring the Catalina Nagscreens is done like this:
 

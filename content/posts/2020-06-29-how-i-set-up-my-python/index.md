@@ -8,7 +8,7 @@ tags:
 - development
 title: How I set up my Python
 aliases:
-  - /2020/06/29/how-i-set-up-my-python.md.html
+  - /2020/06/29/how-i-set-up-my-python.html
 ---
 Because Martin wanted some starting point, here is how I set up my Python. There are a lot of other things one can do, but this is supposed to be just a starting point.
 

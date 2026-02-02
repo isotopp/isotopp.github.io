@@ -9,7 +9,7 @@ tags:
 - damals
 title: How does the 8008 processor work?
 aliases:
-  - /2017/03/15/how-does-the-8008-processor-work.md.html
+  - /2017/03/15/how-does-the-8008-processor-work.html
 ---
 The historic 8008 processor is 45 years old: It was released on the 13th of
 March 1972. Ken Shirriff has a blog post that explains features of the CPU,

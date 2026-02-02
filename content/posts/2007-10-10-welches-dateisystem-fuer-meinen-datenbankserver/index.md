@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: "Welches Dateisystem für meinen Datenbank-Server"
 aliases:
-  - /2007/10/10/welches-dateisystem-fuer-meinen-datenbankserver.md.html
+  - /2007/10/10/welches-dateisystem-fuer-meinen-datenbankserver.html
 ---
 
 Hier wieder eines meiner berüchtigten Irc-Logs. Ich geh dann mal wieder ins Bett.

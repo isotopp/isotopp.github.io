@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: HDFS - billig im Cluster speichern
 aliases:
-  - /2012/06/11/hdfs-billig-im-cluster-speichern.md.html
+  - /2012/06/11/hdfs-billig-im-cluster-speichern.html
 ---
 Wer Clustern will, der muß erst mal einen solchen haben.  Also, einen
 Cluster von möglichst vielen Rechnern.  Die Anforderungen sind dabei klar:

@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Containment'
 aliases:
-  - /2012/08/18/fertig-gelesen-containment.md.html
+  - /2012/08/18/fertig-gelesen-containment.html
 ---
 [Containment](http://www.amazon.com/Containment-ebook/dp/B007264H36),
 Christian Cantrell, USD 2.99

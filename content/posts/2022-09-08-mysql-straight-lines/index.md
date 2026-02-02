@@ -7,7 +7,7 @@ tags:
 - lang_en
 - mysql
 aliases:
-  - /2022/09/08/mysql-straight-lines.md.html
+  - /2022/09/08/mysql-straight-lines.html
 ---
 
 A database is showing replication delay, and so are all the other instances of the same replication hierarchy, all of which reside in Openstack.

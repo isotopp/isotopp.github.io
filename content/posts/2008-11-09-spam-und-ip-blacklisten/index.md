@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Spam und IP-Blacklisten
 aliases:
-  - /2008/11/09/spam-und-ip-blacklisten.md.html
+  - /2008/11/09/spam-und-ip-blacklisten.html
 ---
 
 [Axel hat Ärger](http://blog.balrog.de/archives/490-Anti-Spam-Appliances-Considered-Harmful.html

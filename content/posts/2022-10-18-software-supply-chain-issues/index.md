@@ -8,7 +8,7 @@ tags:
 - security
 - software
 aliases:
-  - /2022/10/18/software-supply-chain-issues.md.html
+  - /2022/10/18/software-supply-chain-issues.html
 ---
 
 The GitHub Security Lab has a long hard look at "Apache Commons Text" in March this year.

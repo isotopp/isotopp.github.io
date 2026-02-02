@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: DENIC erklärt sich
 aliases:
-  - /2010/05/14/denic-erkl-rt-sich.md.html
+  - /2010/05/14/denic-erkl-rt-sich.html
 ---
 Gestern ab halb zwei ging es los: Immer mehr DE-Domains waren nicht mehr
 erreichbar. Schlimmer noch, anstatt keine Antwort zu liefern lieferten die

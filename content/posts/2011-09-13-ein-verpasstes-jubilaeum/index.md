@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Ein verpaßtes Jubiläum
 aliases:
-  - /2011/09/13/ein-verpasstes-jubilaeum.md.html
+  - /2011/09/13/ein-verpasstes-jubilaeum.html
 ---
 Ich las gerade 
 [über den Streit um den Like-Button](http://www.heise.de/newsticker/meldung/Facebook-vs-Datenschuetzer-Streit-um-Like-Button-geht-weiter-1338660.html) 

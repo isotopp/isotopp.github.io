@@ -9,7 +9,7 @@ tags:
 - gaming
 - elite-dangerous
 aliases:
-  - /2023/09/20/elite.md.html
+  - /2023/09/20/elite.html
 ---
 
 [![](2023/09/elite.jpg)](https://www.youtube.com/watch?v=LhTTpV5qFrs)

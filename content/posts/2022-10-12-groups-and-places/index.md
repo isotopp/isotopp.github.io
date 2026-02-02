@@ -9,7 +9,7 @@ tags:
 - work
 - chat
 aliases:
-  - /2022/10/12/groups-and-places.md.html
+  - /2022/10/12/groups-and-places.html
 ---
 
 In a distributed, asynchronous environment, there is a need for distributed, asynchronous interaction.

@@ -11,7 +11,7 @@ tags:
 - mysqldev
 title: 'MySQL: Deleting data'
 aliases:
-  - /2020/09/24/mysql-deleting-data.md.html
+  - /2020/09/24/mysql-deleting-data.html
 ---
 
 Completing the data lifecycle is often harder than originally expected:

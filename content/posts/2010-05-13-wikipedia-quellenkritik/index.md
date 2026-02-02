@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Wikipedia - Quellenkritik
 aliases:
-  - /2010/05/13/wikipedia-quellenkritik.md.html
+  - /2010/05/13/wikipedia-quellenkritik.html
 ---
 Vor einiger Zeit schrieb ich einen Artikel 
 [Wie man einen Wikipedia-Artikel… liest]({{< relref "2009-11-28-wie-man-einen-wikipedia-artikel-liest.md" >}})

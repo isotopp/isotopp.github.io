@@ -8,7 +8,7 @@ tags:
 - lang_en
 - cloud
 aliases:
-  - /2019/04/25/what-has-kubernetes-ever-done-for-us.md.html
+  - /2019/04/25/what-has-kubernetes-ever-done-for-us.html
 ---
 
 # Kubernetes and Complexity

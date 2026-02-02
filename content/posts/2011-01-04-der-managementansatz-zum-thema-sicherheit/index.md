@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Der Managementansatz zum Thema Sicherheit...
 aliases:
-  - /2011/01/04/der-managementansatz-zum-thema-sicherheit.md.html
+  - /2011/01/04/der-managementansatz-zum-thema-sicherheit.html
 ---
 In der aktuellen KES findet sich der Artikel _Epische Macht_ (
 [keine stabile URL](http://www.kes.info/aktuell/akheft/artikel1.htm), da der

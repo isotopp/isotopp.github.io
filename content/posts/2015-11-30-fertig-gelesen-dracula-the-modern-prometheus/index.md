@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: Dracula: The Modern Prometheus'
 aliases:
-  - /2015/11/30/fertig-gelesen-dracula-the-modern-prometheus.md.html
+  - /2015/11/30/fertig-gelesen-dracula-the-modern-prometheus.html
 ---
 Ok. So I read earlier works from Rafael Chandler and while they have been grim und bloody they also have been light and funny. This one is different.
 

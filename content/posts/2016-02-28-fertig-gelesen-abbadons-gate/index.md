@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Abbadon''s Gate'
 aliases:
-  - /2016/02/28/fertig-gelesen-abbadons-gate.md.html
+  - /2016/02/28/fertig-gelesen-abbadons-gate.html
 ---
 Venus hat einen Ring ausgespuckt und das hat sich irgendwo weit draußen, noch hinter dem Uranus, da wo das System zu Ende ist, positioniert. Die nackten Affen auf ihrem Reaktionsantrieb brauchen ewig, um da hin zu kommen.
 

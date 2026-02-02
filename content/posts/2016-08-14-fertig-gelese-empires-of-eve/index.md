@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Empires of EVE'
 aliases:
-  - /2016/08/14/fertig-gelese-empires-of-eve.md.html
+  - /2016/08/14/fertig-gelese-empires-of-eve.html
 ---
 Spreadsheets in Space ist eines der tollsten Computerspiele und MMOGs, die ich nie spielen werde, weil ich schon ein Leben habe, und weil ich mich gut erinnern kann, wie schlimm PernMUSH damals für mein erstes Leben war. Außerdem glaube ich fest daran, daß Zusammenfassungen und Geschichten über EVE zu lesen viel toller ist als EVE tatsächlich zu spielen. Das muß ich schon, damit ich es nicht ausprobiere. :-)
 

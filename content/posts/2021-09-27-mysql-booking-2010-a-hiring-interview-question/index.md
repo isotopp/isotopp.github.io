@@ -8,7 +8,7 @@ tags:
 - mysqldev
 title: 'MySQL: Our MySQL in 2010, a hiring interview question'
 aliases:
-  - /2021/09/27/mysql-booking-2010-a-hiring-interview-question.md.html
+  - /2021/09/27/mysql-booking-2010-a-hiring-interview-question.html
 ---
 
 I ranted about hiring interviews, and the canned questions that people have to answer.

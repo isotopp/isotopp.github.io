@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Umzug, mal wieder
 aliases:
-  - /2008/09/17/umzug-mal-wieder.md.html
+  - /2008/09/17/umzug-mal-wieder.html
 ---
 
 ![](wenckebachstrasse.png)

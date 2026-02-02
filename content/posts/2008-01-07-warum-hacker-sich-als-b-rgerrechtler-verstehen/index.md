@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Warum Hacker sich als Bürgerrechtler verstehen
 aliases:
-  - /2008/01/07/warum-hacker-sich-als-b-rgerrechtler-verstehen.md.html
+  - /2008/01/07/warum-hacker-sich-als-b-rgerrechtler-verstehen.html
 ---
 Die  [Welt](http://www.welt.de/webwelt/article1526108/Warum_Hacker_sich_als_Buergerrechtler_verstehen.html)
 thematisiert das schon seit längerem gewandelte Profil des Chaos Computer

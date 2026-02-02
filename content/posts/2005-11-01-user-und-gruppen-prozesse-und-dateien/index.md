@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: User und Gruppen, Prozesse und Dateien
 aliases:
-  - /2005/11/01/user-und-gruppen-prozesse-und-dateien.md.html
+  - /2005/11/01/user-und-gruppen-prozesse-und-dateien.html
 ---
 Heute im Irc stellte eine Teilnehmerin den folgenden Fragenschwall: 
 > Wie finde ich eigentlich heraus, was für Gruppen es auf einem

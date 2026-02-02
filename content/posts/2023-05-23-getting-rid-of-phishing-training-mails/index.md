@@ -9,7 +9,7 @@ tags:
 - security
 - spam
 aliases:
-  - /2023/05/23/getting-rid-of-phishing-training-mails.md.html
+  - /2023/05/23/getting-rid-of-phishing-training-mails.html
 ---
 
 Just like your work computer is being infested with corporate malware as to prevent it from being taken over from other people's malware,

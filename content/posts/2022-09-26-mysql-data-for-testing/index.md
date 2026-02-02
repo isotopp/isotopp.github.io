@@ -8,7 +8,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2022/09/26/mysql-data-for-testing.md.html
+  - /2022/09/26/mysql-data-for-testing.html
 ---
 
 Where I work, there is an ongoing discussion about test data generation.

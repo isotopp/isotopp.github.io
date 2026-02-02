@@ -10,7 +10,7 @@ tags:
 - security
 - lang_en
 aliases:
-  - /2024/02/10/snake-oil.md.html
+  - /2024/02/10/snake-oil.html
 ---
 
 Dieser Text ist auch in 

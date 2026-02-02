@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: "Zero Point"'
 aliases:
-  - /2014/01/19/fertig-gelesen-zero-point-neal-asher.md.html
+  - /2014/01/19/fertig-gelesen-zero-point-neal-asher.html
 ---
 In "[The Departure]({{< relref "2013-12-05-fertig-gelesen-the-departure-neal-asher.md" >}})" treffen wir auf eine überbevölkerte, dystopische und hoffnungslose Erde, in der "Das Komitee" eine Überwachungsbürokratur und einen Sicherheitsstaat zur Verwaltung des allfälligen Mangels etabliert hat. Der Protagonist, Alan Saul, entwickelt sich zum Hybridwesen aus Mensch, Maschine und Wetware-Extensions und übernimmt die Raumstation "Argus", um sie in einer langen Reise zum Mars zu bewegen. In seinem Übernahmekampf löst er auf der Erde eine Revolution gegen das Komitee aus.
 

@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Site Reliability Engineering'
 aliases:
-  - /2016/08/14/fertig-gelesen-site-reliability-engineering.md.html
+  - /2016/08/14/fertig-gelesen-site-reliability-engineering.html
 ---
 Das Buch ist eine Serie von Essays, jedes zu einem bestimmten Aspekt von Operations, in dem die betreffenden Gruppen bei Google von den Hintergründen, der Organisation und der Technik ihrer Arbeit berichten. Das Buch zeigt eine Weise, wie man einen modernen Operations-Betrieb in der IT organisieren kann, der insbesondere auch für große verteilte Systeme in einem wirtschaftlichen Umfeld mit hohem Transaktionsvolumen, geringem End-User-Service und geringen Margen funktioniert.
 

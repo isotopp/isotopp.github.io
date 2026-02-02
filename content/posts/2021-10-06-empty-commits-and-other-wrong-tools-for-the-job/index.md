@@ -8,7 +8,7 @@ tags:
 - development
 title: Empty commits and other wrong tools for the job
 aliases:
-  - /2021/10/06/empty-commits-and-other-wrong-tools-for-the-job.md.html
+  - /2021/10/06/empty-commits-and-other-wrong-tools-for-the-job.html
 ---
 
 [This]( https://twitter.com/akrey/status/1445656529877680129) is how you can make an empty commit:

@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: CSO vs. Sony
 aliases:
-  - /2005/11/06/cso-vs-sony.md.html
+  - /2005/11/06/cso-vs-sony.html
 ---
 Update zu 
 [Nützliche Kombinationen]({{< relref "2005-11-04-nuetzliche-kombinationen.md" >}}):

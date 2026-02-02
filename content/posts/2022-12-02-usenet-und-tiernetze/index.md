@@ -8,7 +8,7 @@ tags:
 - usenet
 - kiel
 aliases:
-  - /2022/12/02/usenet-und-tiernetze.md.html
+  - /2022/12/02/usenet-und-tiernetze.html
 ---
 
 Vor ziemlich genau 30 Jahren gab es in Deutschland die 

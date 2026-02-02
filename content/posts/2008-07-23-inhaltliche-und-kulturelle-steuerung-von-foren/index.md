@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: "Inhaltliche und kulturelle Steuerung von Foren"
 aliases:
-  - /2008/07/23/inhaltliche-und-kulturelle-steuerung-von-foren.md.html
+  - /2008/07/23/inhaltliche-und-kulturelle-steuerung-von-foren.html
 ---
 
 (*Update:* 2020-06-19 [Russian version](https://howtorecover.me/kontent-i-kulturnyy-kontrol-forumov) contributed by Vladimir Htr)

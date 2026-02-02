@@ -9,7 +9,7 @@ tags:
 - politik
 - work
 aliases:
-  - /2021/11/12/die-kommende-kuendigungswelle.md.html
+  - /2021/11/12/die-kommende-kuendigungswelle.html
 ---
 
 Ein guter Freund sinnierte gestern mit anderen Freunden von mir über die Situation auf der Arbeit und schrieb mir heute:

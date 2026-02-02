@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: A blast from the past
 aliases:
-  - /2019/11/18/a-blast-from-the-past.md.html
+  - /2019/11/18/a-blast-from-the-past.html
 ---
 **TL:DR:** If you have long running transactions, MySQL does not
 deal well with this, and it will slow down the box. That's

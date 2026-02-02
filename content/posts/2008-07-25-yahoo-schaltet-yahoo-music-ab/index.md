@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Yahoo! schaltet Yahoo Music ab
 aliases:
-  - /2008/07/25/yahoo-schaltet-yahoo-music-ab.md.html
+  - /2008/07/25/yahoo-schaltet-yahoo-music-ab.html
 ---
 In 
 [Yahoo! Music going dark, taking keys with it](http://arstechnica.com/news.ars/post/20080724-drm-still-sucks-yahoo-music-going-dark-taking-keys-with-it.html).

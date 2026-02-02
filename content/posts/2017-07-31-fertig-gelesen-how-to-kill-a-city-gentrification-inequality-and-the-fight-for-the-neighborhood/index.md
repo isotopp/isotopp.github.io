@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: How to Kill a City, Gentrification, Inequality and the Fight for the Neighborhood'
 aliases:
-  - /2017/07/31/fertig-gelesen-how-to-kill-a-city-gentrification-inequality-and-the-fight-for-the-neighborhood.md.html
+  - /2017/07/31/fertig-gelesen-how-to-kill-a-city-gentrification-inequality-and-the-fight-for-the-neighborhood.html
 ---
 [![](2017/07/how-to-kill-a-city.jpg)](https://www.amazon.de/dp/B06XKSMZDP)
 

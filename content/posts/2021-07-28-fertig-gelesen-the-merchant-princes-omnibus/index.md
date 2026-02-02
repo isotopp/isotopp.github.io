@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: The Merchant Princes Omnibus'
 aliases:
-  - /2021/07/28/fertig-gelesen-the-merchant-princes-omnibus.md.html
+  - /2021/07/28/fertig-gelesen-the-merchant-princes-omnibus.html
 ---
 
 Charles Stross "[The Merchant Princes](https://www.amazon.de/gp/kindle/series/B00WKNMLD4)" series of six books is another "[Sliders](https://en.wikipedia.org/wiki/Sliders)" type of story, with the usual Stross-like twist.

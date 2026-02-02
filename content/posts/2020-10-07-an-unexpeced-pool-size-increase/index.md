@@ -10,7 +10,7 @@ tags:
 - mysqldev
 title: An unexpected pool size increase
 aliases:
-  - /2020/10/07/an-unexpeced-pool-size-increase.md.html
+  - /2020/10/07/an-unexpeced-pool-size-increase.html
 ---
 At work, replication chains have a single primary database node, to which you write, and then multiple replicas, in multiple AZs.
 

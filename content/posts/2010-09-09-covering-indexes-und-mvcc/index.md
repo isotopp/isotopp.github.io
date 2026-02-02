@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Covering indexes und MVCC
 aliases:
-  - /2010/09/09/covering-indexes-und-mvcc.md.html
+  - /2010/09/09/covering-indexes-und-mvcc.html
 ---
 Für viele MySQL-Anwendungen sind 
 [Covering Indexes](https://en.wikipedia.org/wiki/Database_index#Covering_index) eine

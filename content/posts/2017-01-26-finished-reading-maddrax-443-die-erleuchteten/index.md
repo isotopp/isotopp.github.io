@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Finished Reading: Maddrax 443 "Die Erleuchteten"'
 aliases:
-  - /2017/01/26/finished-reading-maddrax-443-die-erleuchteten.md.html
+  - /2017/01/26/finished-reading-maddrax-443-die-erleuchteten.html
 ---
 ![](2017/01/Bildschirmfoto-2017-01-26-um-21.14.42.png)
 

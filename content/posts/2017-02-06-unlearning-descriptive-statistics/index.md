@@ -8,7 +8,7 @@ tags:
 - science
 title: Unlearning Descriptive Statistics
 aliases:
-  - /2017/02/06/unlearning-descriptive-statistics.md.html
+  - /2017/02/06/unlearning-descriptive-statistics.html
 ---
 [![](2017/02/640px-Anscombes_quartet_3.svg_.png)](https://en.wikipedia.org/wiki/Anscombe's_quartet#/media/File:Anscombe%27s_quartet_3.svg)
 

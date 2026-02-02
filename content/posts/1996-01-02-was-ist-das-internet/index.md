@@ -8,7 +8,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /1996/01/02/was-ist-das-internet.md.html
+  - /1996/01/02/was-ist-das-internet.html
 ---
 
 **aus "Die Netzrevolution - auf dem Weg in die Weltgesellschaft", Rost (Hrsg.), 1996, Frankfurt/ Main: Eichborn-Verlag, 230 Seiten**

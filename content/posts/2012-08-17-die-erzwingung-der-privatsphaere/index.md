@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Die Erzwingung der Privatsphäre
 aliases:
-  - /2012/08/17/die-erzwingung-der-privatsphaere.md.html
+  - /2012/08/17/die-erzwingung-der-privatsphaere.html
 ---
 In
 []({{< relref "2012-03-03-wieso-wir-uns-veroeffentlichen.md" >}})

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Fragmentierung (für Jannik)
 aliases:
-  - /2006/05/08/fragmentierung-fuer-jannik.md.html
+  - /2006/05/08/fragmentierung-fuer-jannik.html
 ---
 ircnet, #lug-kiel, am 7. und 8. Mai.
 

@@ -7,7 +7,7 @@ tags:
 - lang_de
 - security
 aliases:
-  - /2021/12/14/funktioniert-wie-spezifiziert.md.html
+  - /2021/12/14/funktioniert-wie-spezifiziert.html
 ---
 
 Dieser Artikel basiert auf

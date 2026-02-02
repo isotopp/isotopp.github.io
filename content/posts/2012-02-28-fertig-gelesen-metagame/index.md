@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Metagame'
 aliases:
-  - /2012/02/28/fertig-gelesen-metagame.md.html
+  - /2012/02/28/fertig-gelesen-metagame.html
 ---
 [Metagame](http://www.amazon.de/MetaGame-ebook/dp/B003LSTK7C),
 5.49 EUR, 422 Seiten in der gedruckten Fassung.

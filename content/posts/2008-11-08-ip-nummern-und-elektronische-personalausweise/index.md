@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: IP-Nummern und elektronische Personalausweise
 aliases:
-  - /2008/11/08/ip-nummern-und-elektronische-personalausweise.md.html
+  - /2008/11/08/ip-nummern-und-elektronische-personalausweise.html
 ---
 ![](zorro.jpg)
 

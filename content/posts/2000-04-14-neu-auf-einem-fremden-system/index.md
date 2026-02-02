@@ -12,7 +12,7 @@ tags:
 - talk
 - publication
 aliases:
-  - /2000/04/14/neu-auf-einem-fremden-system.md.html
+  - /2000/04/14/neu-auf-einem-fremden-system.html
 ---
 
 Dies ist eine aktualisierte Version der Schulung „Unix Systemsicherheit“, die ich vor einiger Zeit schon einmal gehalten habe.

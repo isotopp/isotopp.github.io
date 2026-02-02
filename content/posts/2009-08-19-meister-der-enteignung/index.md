@@ -8,7 +8,7 @@ tags:
 - internet
 title: Meister der Enteignung
 aliases:
-  - /2009/08/19/meister-der-enteignung.md.html
+  - /2009/08/19/meister-der-enteignung.html
 ---
 In der Digitaz erschien vor zwei Tagen ein Gastbeitrag von Kai Schächtle, dem Vorsitzenden des Berufsverbandes freier Journalisten und Journalistinnen, "Freischreiber". Unter dem Titel [Meister der Enteignung](http://www.taz.de/1/archiv/print-archiv/printressorts/digi-artikel/?ressort=fl&dig=2009%2F08%2F17%2Fa0119&cHash=1419c6d3f5) stellt er die gängige Vertragspraxis der nach ihrem Bekunden "Qualitätsjournalismusverlage" der Kampagne von Hubert Burda und anderen zur Einführung eines Verlinkungsgebühr gegenüber: 
 

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: GPL V3 (2nd draft)
 aliases:
-  - /2006/07/30/gpl-v3-2nd-draft.md.html
+  - /2006/07/30/gpl-v3-2nd-draft.html
 ---
 [![](gpl3-dd1to2-markup.png)](/uploads/gpl3-dd1to2-markup.pdf)
 

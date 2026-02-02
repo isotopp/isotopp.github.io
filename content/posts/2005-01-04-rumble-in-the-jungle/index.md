@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Rumble in the Jungle
 aliases:
-  - /2005/01/04/rumble-in-the-jungle.md.html
+  - /2005/01/04/rumble-in-the-jungle.html
 ---
 Eine RSS-Plattform, izynews.de, repliziert RSS-Feeds nach IMAP. Das ist neu, und für viele Leute sicherlich praktisch. izynews.de macht das jedoch für Geld, und ohne Lizenzen für die Feeds zu kaufen oder die Lizenzen auf den Feeds zu beachten. Das ist schlecht, und verärgert den <a href="http://blog.schockwellenreiter.de/7558">Schockwellenreiter</a>, <a href="http://www.industrial-technology-and-witchcraft.de/index.php/ITW/13214">IT&W</a> und <a href="http://www.lawblog.de/index.php/archives/2005/01/04/content-klau/">Herrn Vetter vom Lawblog</a>.
 

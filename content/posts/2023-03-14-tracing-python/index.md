@@ -9,7 +9,7 @@ tags:
 - python
 - debug
 aliases:
-  - /2023/03/14/tracing-python.md.html
+  - /2023/03/14/tracing-python.html
 ---
 
 Based on a discussion on IRC and Mastodon: "How can I get access to the return values of my (Python-) programs functions?"

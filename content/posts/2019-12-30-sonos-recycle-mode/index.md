@@ -8,7 +8,7 @@ tags:
 - sonos
 title: Sonos Recycle Mode
 aliases:
-  - /2019/12/30/sonos-recycle-mode.md.html
+  - /2019/12/30/sonos-recycle-mode.html
 ---
 
 Sonos is a company that makes Wi-Fi Connected speakers.

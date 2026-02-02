@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: Auf der Suche nach einem funktionierenden Urheberrecht
 aliases:
-  - /2010/05/13/auf-der-suche-nach-einem-funktionierenden-urheberrecht.md.html
+  - /2010/05/13/auf-der-suche-nach-einem-funktionierenden-urheberrecht.html
 ---
 Letztes Jahr um diese Zeit schrieb ich in 
 [Politik, Polemik und eine Agenda]({{< relref "2009-04-27-politik-polemik-und-eine-agenda.md" >}})

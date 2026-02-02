@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: Falscher Planet, falsches Jahrtausend
 aliases:
-  - /2009/06/23/falscher-planet-falsches-jahrtausend.md.html
+  - /2009/06/23/falscher-planet-falsches-jahrtausend.html
 ---
 Ingo hat in 
 [Dirk Hillbrecht bei "Unter den Linden", Phönix](http://blog.windfluechter.net/index.php?/archives/567-Dirk-Hillbrecht-bei-Unter-den-Linden,-Phoenix.html) 

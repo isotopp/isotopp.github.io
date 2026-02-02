@@ -8,7 +8,7 @@ tags:
 - mysqldev
 title: 'MySQL: Python and WHERE ... IN ()'
 aliases:
-  - /2021/10/28/python-where-in.md.html
+  - /2021/10/28/python-where-in.html
 ---
 
 > As a developer using Python, I want to be able to hand 

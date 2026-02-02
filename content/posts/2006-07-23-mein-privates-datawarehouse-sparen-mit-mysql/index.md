@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Mein privates Datawarehouse - Sparen mit MySQL
 aliases:
-  - /2006/07/23/mein-privates-datawarehouse-sparen-mit-mysql.md.html
+  - /2006/07/23/mein-privates-datawarehouse-sparen-mit-mysql.html
 ---
 Meine Sparkasse exportiert mir die Kontoauszüge aus Wunsch auch als CSV. Die
 Dateien sehen so aus:

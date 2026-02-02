@@ -9,7 +9,7 @@ tags:
 - linux
 - devops
 aliases:
-  - /2024/01/09/deploying-websites.md.html
+  - /2024/01/09/deploying-websites.html
 ---
 
 We are still playing minecraft.

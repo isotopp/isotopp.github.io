@@ -8,7 +8,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2022/09/02/mysql-yolo-mode.md.html
+  - /2022/09/02/mysql-yolo-mode.html
 ---
 
 OH:

@@ -9,7 +9,7 @@ tags:
 - erklaerbaer
 - politik
 aliases:
-  - /2024/06/10/die-welt-deiner-kindheit-existiert-nicht-mehr.md.html
+  - /2024/06/10/die-welt-deiner-kindheit-existiert-nicht-mehr.html
 ---
 
 Ich schrieb einige Dinge im Fedi, und wurde gebeten, die hier in einen Blogpost zu kippen.

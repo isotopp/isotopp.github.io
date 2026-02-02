@@ -7,7 +7,7 @@ tags:
 - iot
 title: Air Quality Sensors
 aliases:
-  - /2020/05/25/air-quality-sensors.md.html
+  - /2020/05/25/air-quality-sensors.html
 ---
 In an earlier episode I asked for [Plugs with Wi-Fi]({{< relref "2020-05-12-plugs-with-wifi.md" >}}) and ended up with [Gosund and Tasmota]({{< relref "2020-05-20-gosund-and-tasmota.md" >}}). Considering this to be a success, I asked the Twitters for Temperature and Humidity Sensors. Of course, this got complicated.
 

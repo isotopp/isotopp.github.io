@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Legal, Illegal, ...
 aliases:
-  - /2007/01/17/legal-illegal.md.html
+  - /2007/01/17/legal-illegal.html
 ---
 
 [Urheberrechtsschützer nutzen widerrechtlich fremde Inhalte](http://www.heise.de/newsticker/meldung/83849): 

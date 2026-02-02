@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Unerklärlicher Umsatzrückgang
 aliases:
-  - /2004/01/27/unerklaerlicher-umsatzrueckgang.md.html
+  - /2004/01/27/unerklaerlicher-umsatzrueckgang.html
 ---
 
 Auf

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Gesetz über die Deutsche Nationalbibliothek
 aliases:
-  - /2006/09/22/gesetz-ber-die-deutsche-nationalbibliothek.md.html
+  - /2006/09/22/gesetz-ber-die-deutsche-nationalbibliothek.html
 ---
 Deutsche Politiker haften nicht für die Produkte ihrer Arbeit. Dadurch
 unterscheidet sich ihre Tätigkeit von der so ziemlich aller anderen Leute.

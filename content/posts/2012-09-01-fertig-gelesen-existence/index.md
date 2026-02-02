@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Existence'
 aliases:
-  - /2012/09/01/fertig-gelesen-existence.md.html
+  - /2012/09/01/fertig-gelesen-existence.html
 ---
 [Existence](http://www.amazon.com/Existence-ebook/dp/B0079XPMQS),
 David Brin, USD 14.99

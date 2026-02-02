@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Das Schweigen der Lemmata
 aliases:
-  - /2009/11/22/das-schweigen-der-lemmata.md.html
+  - /2009/11/22/das-schweigen-der-lemmata.html
 ---
 Ich huste mir daheim zwar einen ab, aber es handelt sich nur um die
 geräuschvollen Nachwirkungen eines gewöhnlichen viralen Infektes, und nicht

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Schemaless?
 aliases:
-  - /2011/04/19/schemaless.md.html
+  - /2011/04/19/schemaless.html
 ---
 ## Die Frage:
 

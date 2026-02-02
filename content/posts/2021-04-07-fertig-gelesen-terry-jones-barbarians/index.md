@@ -9,7 +9,7 @@ tags:
 - media
 title: 'Fertig gelesen: Terry Jones'' Barbarians'
 aliases:
-  - /2021/04/07/fertig-gelesen-terry-jones-barbarians.md.html
+  - /2021/04/07/fertig-gelesen-terry-jones-barbarians.html
 ---
 [Terry Jones' Barbarians: An Alternative Roman History](https://www.amazon.de/Terry-Jones-Barbarians-English-Ereira-ebook/dp/B0031RDVRS) by Alan Ereira is the writeup to the BBC series "[Terry Jones' Barbarians](https://en.wikipedia.org/wiki/Terry_Jones%27_Barbarians)".
 

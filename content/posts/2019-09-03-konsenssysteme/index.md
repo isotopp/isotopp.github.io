@@ -8,7 +8,7 @@ tags:
 - distributed computing
 title: Konsenssysteme
 aliases:
-  - /2019/09/03/konsenssysteme.md.html
+  - /2019/09/03/konsenssysteme.html
 ---
 Ein Thread über Konsenssysteme aus
 [Twitter](https://twitter.com/isotopp/status/1168969885512286210)

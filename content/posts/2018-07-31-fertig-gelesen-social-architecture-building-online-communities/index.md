@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Social Architecture: Building Online Communities'
 aliases:
-  - /2018/07/31/fertig-gelesen-social-architecture-building-online-communities.md.html
+  - /2018/07/31/fertig-gelesen-social-architecture-building-online-communities.html
 ---
 Der leider viel zu früh verstorbene Pieter Hintjens ist nicht nur Urheber und Contributor bei zahlreichen Open Source Projekten gewesen (darunter ZeroMQ), sondern hat sich auch sehr weitreichende Gedanken zu dem Umfeld von erfolgreichen Open Source Projekten gemacht.
 

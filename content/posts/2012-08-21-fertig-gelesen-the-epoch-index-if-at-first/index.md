@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: The Epoch Index und If at first...'
 aliases:
-  - /2012/08/21/fertig-gelesen-the-epoch-index-if-at-first.md.html
+  - /2012/08/21/fertig-gelesen-the-epoch-index-if-at-first.html
 ---
 [The Epoch Index](http://www.amazon.com/The-Epoch-Index-ebook/dp/B0041846M0),
 Christian Cantrell, USD 0.99

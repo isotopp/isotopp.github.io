@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Stockholm's congestion charge vs. Asthma
 aliases:
-  - /2017/02/06/stockholms-congestion-charge-vs-asthma.md.html
+  - /2017/02/06/stockholms-congestion-charge-vs-asthma.html
 ---
 [Inside Science reports](https://www.insidescience.org/news/driving-fee-rolls-back-asthma-attacks-stockholm)
 on the congestion charge in Stockholm 

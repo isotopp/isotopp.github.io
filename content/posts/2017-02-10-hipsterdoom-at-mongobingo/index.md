@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Hipsterdoom with Mongobingo
 aliases:
-  - /2017/02/10/hipsterdoom-at-mongobingo.md.html
+  - /2017/02/10/hipsterdoom-at-mongobingo.html
 ---
 Felix Gessert does a postmortem of the failed Parse startup and product:
 "[The AWS and MongoDB Infrastructure of Parse: Lessons Learned](https://medium.baqend.com/parse-is-gone-a-few-secrets-about-their-infrastructure-91b3ab2fcf71#.ve5hi5lcd)".

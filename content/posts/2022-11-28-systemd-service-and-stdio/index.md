@@ -8,7 +8,7 @@ tags:
 - python
 - devops
 aliases:
-  - /2022/11/28/systemd-service-and-stdio.md.html
+  - /2022/11/28/systemd-service-and-stdio.html
 ---
 
 After yesterday's article, Arne Blankerts pointed me at 

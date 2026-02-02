@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: The Cassandra Project'
 aliases:
-  - /2013/11/23/fertig-gelesen-the-cassandra-project.md.html
+  - /2013/11/23/fertig-gelesen-the-cassandra-project.html
 ---
 Was Watergate mit der neunten und zehnten Apollo Mission zu tun hat, und wieso das auch 50 Jahre später noch ein Problem ist, erklären McDevitt und Resnick hier, in einer Geschichte, die für McDevitt durchaus alle typischen Elemente enthält.
 

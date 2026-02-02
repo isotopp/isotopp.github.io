@@ -9,7 +9,7 @@ tags:
 - media
 - book
 aliases:
-  - /2022/05/07/fertig-gelesen-fietsparkeren-bij-stations.md.html
+  - /2022/05/07/fertig-gelesen-fietsparkeren-bij-stations.html
 ---
 
 The Netherlands realized around 2000 that they have a problem with bike parking around train stations, and with parking around stations in general.

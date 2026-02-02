@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: The Heat Is On
 aliases:
-  - /2006/08/07/the-heat-is-on.md.html
+  - /2006/08/07/the-heat-is-on.html
 ---
 
 ![](cpu_kuehler.jpg)

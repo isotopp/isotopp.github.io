@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Legal, Illegal, Scheißegal...
 aliases:
-  - /2005/11/01/legal-illegal-scheissegal.md.html
+  - /2005/11/01/legal-illegal-scheissegal.html
 ---
 Sony BMG baut ein Rootkit, um damit das ihrer Meinung nach illegale Kopieren
 von Dateien auf den Rechnern ihrer Kunden zu verhindern. Die Software

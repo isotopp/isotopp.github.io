@@ -9,7 +9,7 @@ tags:
 - apple
 title: So I am a Windows User now
 aliases:
-  - /2020/07/07/so-i-am-a-windows-user-now.md.html
+  - /2020/07/07/so-i-am-a-windows-user-now.html
 ---
 So I am a Windows User now. I have an old MacBook pro, Late-2013 13" Retina, i7, 16 GB, 1 TB SSD, and the battery is done now, after 7 years. Also, the hardware is aging, and I want it refurbished and upgrade the son's equipment (which is the previous 2010 MBP I had at that time).
 

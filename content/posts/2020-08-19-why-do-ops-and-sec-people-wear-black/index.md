@@ -8,7 +8,7 @@ tags:
 - unix
 title: Why do Ops and Sec people wear black
 aliases:
-  - /2020/08/19/why-do-ops-and-sec-people-wear-black.md.html
+  - /2020/08/19/why-do-ops-and-sec-people-wear-black.html
 ---
 For [reasons that don't need exploring at this juncture](https://www.imdb.com/title/tt0108756) I [tweeted](https://twitter.com/isotopp/status/1296073392655933444)
 

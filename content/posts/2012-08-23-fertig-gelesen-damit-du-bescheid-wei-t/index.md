@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Damit Du Bescheid weißt'
 aliases:
-  - /2012/08/23/fertig-gelesen-damit-du-bescheid-wei-t.md.html
+  - /2012/08/23/fertig-gelesen-damit-du-bescheid-wei-t.html
 ---
 [Damit Du Bescheid weißt](http://www.amazon.de/Damit-Bescheid-weisst-Klemens-Tilmann/dp/B0000BOLXJ),
 Klemens Tilmann, EUR 0.54 (antiquarisch, stark variabel)

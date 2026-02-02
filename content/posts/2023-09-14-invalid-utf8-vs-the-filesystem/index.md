@@ -10,7 +10,7 @@ tags:
 - computer
 - unix
 aliases:
-  - /2023/09/14/invalid-utf8-vs-the-filesystem.md.html
+  - /2023/09/14/invalid-utf8-vs-the-filesystem.html
 ---
 
 A UNIX filename can contain arbitrary bytes in an arbitrary sequence, with two exceptions:

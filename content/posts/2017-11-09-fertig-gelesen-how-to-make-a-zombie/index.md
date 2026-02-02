@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: How to Make a Zombie'
 aliases:
-  - /2017/11/09/fertig-gelesen-how-to-make-a-zombie.md.html
+  - /2017/11/09/fertig-gelesen-how-to-make-a-zombie.html
 ---
 [![](2017/11/make-zombie.jpg)](https://www.amazon.de/How-Make-Zombie-Science-Reanimation-ebook/dp/B00D5SR638)
 

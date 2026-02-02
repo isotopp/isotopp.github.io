@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Wie viel Strom verbraucht ein Stromzähler?
 aliases:
-  - /2009/06/05/wie-viel-strom-verbraucht-ein-stromzaehler.md.html
+  - /2009/06/05/wie-viel-strom-verbraucht-ein-stromzaehler.html
 ---
 
 Ab 2010 soll ja die Umrüstung von Stromzählern auf sogenannte Smart Meter verpflichtend werden.

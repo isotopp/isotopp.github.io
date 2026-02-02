@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: SCO Xenix 386 und mesg n
 aliases:
-  - /2009/01/06/sco-xenix-386-und-mesg-n.md.html
+  - /2009/01/06/sco-xenix-386-und-mesg-n.html
 ---
 
 Früher in SCO Xenix gab es in deren Terminalemulation eine Escape-Sequenz, die eine Hardcopy des Screens auslöste.

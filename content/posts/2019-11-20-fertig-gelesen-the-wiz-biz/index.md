@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: The Wiz Biz'
 aliases:
-  - /2019/11/20/fertig-gelesen-the-wiz-biz.md.html
+  - /2019/11/20/fertig-gelesen-the-wiz-biz.html
 ---
 [The Wiz Biz](https://www.amazon.de/gp/product/B01APMDJZU) by Rick Cook is
 a book in the genre of 'magical realism'. Some real-world person

@@ -7,7 +7,7 @@ tags:
 - mail
 title: Unlimited Mail Addresses
 aliases:
-  - /2021/01/20/unlimited-mail-adresses.md.html
+  - /2021/01/20/unlimited-mail-adresses.html
 ---
 
 When people ask for my mail address, they usually get a personalized address from me. That is particularly true for all commercial email. So you don't get to send mail to my main account, but to kris-yourbusiness@koehntopp.de, and that will end up going into `INBOX.special.yourbusiness`. At least until it leaks, receives spam or is otherwise burned. In which case I will short it out and route all incoming mail on that address to `/dev/null`. Here is how it is done.

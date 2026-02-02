@@ -10,7 +10,7 @@ tags:
 - work
 title: Vijzelbuurt is changing
 aliases:
-  - /2020/10/08/vijzelbuurt-is-changing.md.html
+  - /2020/10/08/vijzelbuurt-is-changing.html
 ---
 Back when I was still commuting to work in an office, in the far past, I used to be in the Spaces building in Vijzelgracht in Amsterdam, every day. Mark Wagenbuur of [BicycleDutch](https://twitter.com/bicycledutch) has been there today, and [tweeted](https://twitter.com/BicycleDutch/status/1314213038908559361):
 

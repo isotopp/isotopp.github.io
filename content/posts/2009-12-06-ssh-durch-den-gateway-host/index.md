@@ -6,7 +6,7 @@ tags:
 - lang_de
 title: ssh durch den Gateway Host
 aliases:
-  - /2009/12/06/ssh-durch-den-gateway-host.md.html
+  - /2009/12/06/ssh-durch-den-gateway-host.html
 ---
 Ich sitze hier daheim beim PHPlätzchenbacken und Kore fragt mich eben: "Sage
 einmal, ich habe daheim so einen Router, der NAT macht und den ich als

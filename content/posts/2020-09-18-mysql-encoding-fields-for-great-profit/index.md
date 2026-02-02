@@ -11,7 +11,7 @@ tags:
 - mysqldev
 title: 'MySQL: Encoding fields for great profit.'
 aliases:
-  - /2020/09/18/mysql-encoding-fields-for-great-profit.md.html
+  - /2020/09/18/mysql-encoding-fields-for-great-profit.html
 ---
 
 Iterating schemas over time is not an uncommon thing. Often requirements emerge only after you have data, and then directed action is possible. Consequently, working on existing data, and structuring and cleaning it up is a common task.

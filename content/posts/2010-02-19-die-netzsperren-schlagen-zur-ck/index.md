@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Die Netzsperren schlagen zurück
 aliases:
-  - /2010/02/19/die-netzsperren-schlagen-zur-ck.md.html
+  - /2010/02/19/die-netzsperren-schlagen-zur-ck.html
 ---
 [Bundespräsident Horst Köhler](http://www.spiegel.de/netzwelt/netzpolitik/0,1518,678608,00.html)
 hat das Zugangserschwerungsgesetz, vulgo Zensursula-Gesetz, nun doch

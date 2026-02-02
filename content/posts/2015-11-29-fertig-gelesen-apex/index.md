@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Apex'
 aliases:
-  - /2015/11/29/fertig-gelesen-apex.md.html
+  - /2015/11/29/fertig-gelesen-apex.html
 ---
 Dritter Teil der Nexus-Trilogie von Ramez Naam, nach [Nexus]({{< relref "2013-09-04-fertig-gelesen-nexus-mankind-gets-an-upgrade-ramez-naam.md" >}}) und [Crux]({{< relref "2013-09-27-fertig-gelesen-crux-ramez-naam.md" >}}).
 

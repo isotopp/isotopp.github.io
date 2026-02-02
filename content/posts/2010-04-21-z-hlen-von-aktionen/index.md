@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Zählen von Aktionen
 aliases:
-  - /2010/04/21/z-hlen-von-aktionen.md.html
+  - /2010/04/21/z-hlen-von-aktionen.html
 ---
 Hier ist noch ein dreckiges kleines MySQL-Problem. Matthias Fiedler fragt: 
 

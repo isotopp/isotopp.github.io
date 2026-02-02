@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: RTT-based vs. drop based congestion management
 aliases:
-  - /2017/05/09/rtt-based-vs-drop-based-congestion-management.md.html
+  - /2017/05/09/rtt-based-vs-drop-based-congestion-management.html
 ---
 [APNIC discusses different TCP congestion control algorithms](https://blog.apnic.net/2017/05/09/bbr-new-kid-tcp-block/),
 coming from Reno, going through CUBIC and Vegas, then introducing BBR (seems

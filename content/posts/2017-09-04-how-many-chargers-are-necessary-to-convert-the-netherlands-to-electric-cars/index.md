@@ -8,7 +8,7 @@ tags:
 - netherlands
 title: How many chargers are necessary to convert the Netherlands to electric cars?
 aliases:
-  - /2017/09/04/how-many-chargers-are-necessary-to-convert-the-netherlands-to-electric-cars.md.html
+  - /2017/09/04/how-many-chargers-are-necessary-to-convert-the-netherlands-to-electric-cars.html
 ---
 [Here](https://pepijnvloemans.wordpress.com/2017/07/08/charging-infrastructure/amp/) is the question: 
 

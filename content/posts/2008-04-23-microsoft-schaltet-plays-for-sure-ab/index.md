@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Microsoft schaltet "Plays for Sure" ab
 aliases:
-  - /2008/04/23/microsoft-schaltet-plays-for-sure-ab.md.html
+  - /2008/04/23/microsoft-schaltet-plays-for-sure-ab.html
 ---
 [Ars Technica](http://arstechnica.com/news.ars/post/20080422-drm-sucks-redux-microsoft-to-nuke-msn-music-drm-keys.html)
 berichtet, daß "Plays For Sure" mal gar nicht so sure playt. Denn:

@@ -8,7 +8,7 @@ tags:
 - media
 title: Sonos recycled their recycle mode
 aliases:
-  - /2020/03/06/sonos-recycled-their-recycle-mode.md.html
+  - /2020/03/06/sonos-recycled-their-recycle-mode.html
 ---
 
 So I wrote about [the Sonos Recycle Program]({{< relref "2019-12-30-sonos-recycle-mode.md" >}})

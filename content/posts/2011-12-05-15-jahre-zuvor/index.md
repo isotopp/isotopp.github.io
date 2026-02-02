@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 15 Jahre zuvor...
 aliases:
-  - /2011/12/05/15-jahre-zuvor.md.html
+  - /2011/12/05/15-jahre-zuvor.html
 ---
 ![Kris, 31-Dec-1996](kris_19961231.jpg)
 

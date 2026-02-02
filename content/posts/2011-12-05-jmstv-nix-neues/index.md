@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'JMStV: Nix neues'
 aliases:
-  - /2011/12/05/jmstv-nix-neues.md.html
+  - /2011/12/05/jmstv-nix-neues.html
 ---
 [Christian Scholz berichtet](http://mrtopf.de/blog/politik-politics/jugendmedienschutztagung-zdf/)
 berichtet von der 

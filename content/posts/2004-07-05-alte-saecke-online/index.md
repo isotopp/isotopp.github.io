@@ -9,6 +9,6 @@ tags:
 - lang_de
 title: Alte Säcke online
 aliases:
-  - /2004/07/05/alte-saecke-online.md.html
+  - /2004/07/05/alte-saecke-online.html
 ---
 [Ältestes auffindbares USENET Posting von mir](https://groups.google.com/g/sub.sources.unix/c/a6bP7qb_ML4/m/QMCgRGKa4zUJ). Das war vor 15 Jahren.

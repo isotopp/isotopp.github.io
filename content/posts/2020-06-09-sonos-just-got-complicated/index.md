@@ -8,7 +8,7 @@ tags:
 - sonos
 title: Sonos just got complicated
 aliases:
-  - /2020/06/09/sonos-just-got-complicated.md.html
+  - /2020/06/09/sonos-just-got-complicated.html
 ---
 So this morning the 08:10 alarm in the living room did not go off.
 It was set to remind the son that it is time to get going for school.

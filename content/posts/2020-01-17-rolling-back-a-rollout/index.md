@@ -9,7 +9,7 @@ tags:
 - testing
 title: Rolling back a rollout
 aliases:
-  - /2020/01/17/rolling-back-a-rollout.md.html
+  - /2020/01/17/rolling-back-a-rollout.html
 ---
 Florian Haas [asks on Twitter](https://twitter.com/xahteiwi/status/1217903825824120834):
 

@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: What Do You Care What Other People Think?'
 aliases:
-  - /2016/01/28/fertig-gelesen-what-do-you-care-what-other-people-think.md.html
+  - /2016/01/28/fertig-gelesen-what-do-you-care-what-other-people-think.html
 ---
 »"What Do You Care What Other People Think?": Further Adventures of a Curious Character. Biographie von Richard P. Feynman, Nobelpreisträger und Mitglied der Untersuchungskommision zur Explosion des Space Shuttle "Challenger" vor genau 30 Jahren.
 

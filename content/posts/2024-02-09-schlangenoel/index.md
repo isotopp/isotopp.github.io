@@ -10,7 +10,7 @@ tags:
 - security
 - lang_de
 aliases:
-  - /2024/02/09/schlangenoel.md.html
+  - /2024/02/09/schlangenoel.html
 ---
 
 This text also has a version in 

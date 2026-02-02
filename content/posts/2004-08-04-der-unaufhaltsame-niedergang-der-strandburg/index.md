@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Der unaufhaltsame Niedergang der Strandburg
 aliases:
-  - /2004/08/04/der-unaufhaltsame-niedergang-der-strandburg.md.html
+  - /2004/08/04/der-unaufhaltsame-niedergang-der-strandburg.html
 ---
 Dies ist nicht mehr das Strandbild, das ich aus meiner Jugend kenne. Früher war der Strand in Ording sauber geteilt zwischen Strandkorbinhabern und Strandburgenbauern. 
 

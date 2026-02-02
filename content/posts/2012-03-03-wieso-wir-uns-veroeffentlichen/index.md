@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Wieso wir uns veröffentlichen
 aliases:
-  - /2012/03/03/wieso-wir-uns-veroeffentlichen.md.html
+  - /2012/03/03/wieso-wir-uns-veroeffentlichen.html
 ---
 Der folgende Text entstand aus einigen Zeilen, die ich zwischen Tür und 
 Angel in #spackeria abgeworfen habe, und die von Jürgen Geuter und Sven Türpe

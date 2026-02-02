@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: "Databases: How large is too large?"
 aliases:
-  - /2022/02/16/databases-how-large-is-too-large.md.html
+  - /2022/02/16/databases-how-large-is-too-large.html
 ---
 
 A database is a special kind of structured, persistent, global variable with concurrent access over the network.

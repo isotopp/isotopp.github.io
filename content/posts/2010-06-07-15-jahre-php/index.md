@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: 15 Jahre PHP
 aliases:
-  - /2010/06/07/15-jahre-php.md.html
+  - /2010/06/07/15-jahre-php.html
 ---
 Morgen ist der 8. Juni 2010, und damit wird [PHP 15 Jahre
 alt](http://groups.google.ch/group/comp.infosystems.www.authoring.cgi/msg/cc7d43454d64d133).

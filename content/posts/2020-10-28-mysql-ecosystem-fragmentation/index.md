@@ -8,7 +8,7 @@ tags:
 - database
 title: 'MySQL: Ecosystem fragmentation'
 aliases:
-  - /2020/10/28/mysql-ecosystem-fragmentation.md.html
+  - /2020/10/28/mysql-ecosystem-fragmentation.html
 ---
 Sometimes things change in a way that is hard to put a finger on, but I am doing this MySQL thing since 3.23, and commercially since 2005, and the environment is changing. These days, when you talk to people in need of MySQL, the first thing you have to ask them is "Which MySQL". And by that I do not mean a version number in the first place.
 

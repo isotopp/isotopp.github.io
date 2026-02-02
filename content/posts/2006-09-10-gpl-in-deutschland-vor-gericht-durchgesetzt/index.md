@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: GPL in Deutschland vor Gericht durchgesetzt
 aliases:
-  - /2006/09/10/gpl-in-deutschland-vor-gericht-durchgesetzt.md.html
+  - /2006/09/10/gpl-in-deutschland-vor-gericht-durchgesetzt.html
 ---
 Auf dem
 [Heise Newsticker](http://www.heise.de/newsticker/meldung/77951) heißt es: 

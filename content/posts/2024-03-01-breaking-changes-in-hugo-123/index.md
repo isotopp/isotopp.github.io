@@ -8,7 +8,7 @@ tags:
 - lang_en
 - hugo
 aliases:
-  - /2024/03/01/breaking-changes-in-hugo-123.md.html
+  - /2024/03/01/breaking-changes-in-hugo-123.html
 ---
 
 I had my GitHub pipeline for this blog running with `latest`.

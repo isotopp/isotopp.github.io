@@ -11,7 +11,7 @@ tags:
 - mysqldev
 title: Importing account statements and building a data warehouse
 aliases:
-  - /2020/09/26/my-private-data-warehouse.md.html
+  - /2020/09/26/my-private-data-warehouse.html
 ---
 
 This is an update and translation of a

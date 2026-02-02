@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Ein Ring mit zwei MySQL-Servern und auto_increment_increment
 aliases:
-  - /2010/08/17/ein-ring-mit-zwei-mysql-servern-und-auto-increment-increment.md.html
+  - /2010/08/17/ein-ring-mit-zwei-mysql-servern-und-auto-increment-increment.html
 ---
 Lalufu fragte in den Kommentaren von
 [Master-Master]({{< relref "2010-08-16-master-master-und-distributed-transactions.md" >}}):

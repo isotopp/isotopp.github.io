@@ -8,7 +8,7 @@ tags:
 - lang_de
 - computer
 aliases:
-  - /2019/04/29/mozilla-irc.md.html
+  - /2019/04/29/mozilla-irc.html
 ---
 
 Heise berichtet: [Mozilla will weg von IRC und sucht Alternative](https://www.heise.de/newsticker/meldung/Mozilla-will-weg-von-IRC-und-sucht-Alternative-4409327.html).

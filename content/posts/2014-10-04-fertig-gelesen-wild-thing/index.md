@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Wild Thing'
 aliases:
-  - /2014/10/04/fertig-gelesen-wild-thing.md.html
+  - /2014/10/04/fertig-gelesen-wild-thing.html
 ---
 >It’s gotten dark out, sliver moon over the lake but everything inland mostly blackness with occasional streetlights. The chill and the smell of woodsmoke remind her of Halloweens back in Lawrence. She can see her breath.
 >

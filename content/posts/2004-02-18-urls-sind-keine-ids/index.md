@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: URLs sind keine IDs
 aliases:
-  - /2004/02/18/urls-sind-keine-ids.md.html
+  - /2004/02/18/urls-sind-keine-ids.html
 ---
 Ich habe mich an 
 [anderer Stelle]({{< relref "2004-02-12-wir-sind-so-geil.md" >}})

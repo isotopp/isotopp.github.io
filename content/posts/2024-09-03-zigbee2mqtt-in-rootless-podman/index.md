@@ -8,7 +8,7 @@ tags:
 - home automation
 title: "zigbee2mqtt in rootless podman"
 aliases:
-  - /2024/09/03/zigbee2mqtt-in-rootless-podman.md.html
+  - /2024/09/03/zigbee2mqtt-in-rootless-podman.html
 ---
 
 I have a Zigbee Controller from Dresden Electronics, a Conbee II.

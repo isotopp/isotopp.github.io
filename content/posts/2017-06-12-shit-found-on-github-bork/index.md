@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Shit found on github: bork'
 aliases:
-  - /2017/06/12/shit-found-on-github-bork.md.html
+  - /2017/06/12/shit-found-on-github-bork.html
 ---
 I\> Good Morning!
 

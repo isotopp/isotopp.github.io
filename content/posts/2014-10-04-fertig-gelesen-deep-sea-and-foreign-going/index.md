@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Deep Sea and Foreign Going'
 aliases:
-  - /2014/10/04/fertig-gelesen-deep-sea-and-foreign-going.md.html
+  - /2014/10/04/fertig-gelesen-deep-sea-and-foreign-going.html
 ---
 Eine klassische Reisereportage: Rose George fährt auf einem modernen Containerfrachter auf einer Handelsroute. Die verschiedenen Stationen nimmt sie zum Anlaß, über die Wandlung der Handelsmarine durch die Einführtung des Containers nachzudenken, die soziale Situation von Seeleuten, die Piraten vor Somalia, oder Maersk als Fracht-Firma und andere Aspekte der Containerindustrie. Ein spannender und kurzweiliger EInblick in einen zentralen und fast unsichtbaren Bestandteil unserer Welt.
 

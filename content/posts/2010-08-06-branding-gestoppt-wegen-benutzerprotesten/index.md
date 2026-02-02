@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Branding gestoppt wegen Benutzerprotesten
 aliases:
-  - /2010/08/06/branding-gestoppt-wegen-benutzerprotesten.md.html
+  - /2010/08/06/branding-gestoppt-wegen-benutzerprotesten.html
 ---
 Lustige Dinge passieren. Alle Welt rüstet ihre Android-Telefone zum Beispiel
 auf das aktuelle 2.2 "FroYo" auf, nur Vodafone nicht. Als strikte Anhänger

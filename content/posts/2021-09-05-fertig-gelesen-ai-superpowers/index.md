@@ -9,7 +9,7 @@ tags:
 - book
 title: 'Fertig gelesen: AI Superpowers'
 aliases:
-  - /2021/09/05/fertig-gelesen-ai-superpowers.md.html
+  - /2021/09/05/fertig-gelesen-ai-superpowers.html
 ---
 
 This 2018 book in some aspects is already outdated: Silicon Valley Techbro Kai-Fu Lee describes what AI is and what he thinks it will do to our future, the nature of work and the job market.

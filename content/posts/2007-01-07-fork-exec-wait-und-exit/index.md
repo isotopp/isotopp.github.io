@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: fork, exec, wait und exit
 aliases:
-  - /2007/01/07/fork-exec-wait-und-exit.md.html
+  - /2007/01/07/fork-exec-wait-und-exit.html
 ---
 In 
 [de.comp.os.unix.linux.misc](news:de.comp.os.unix.linux.misc) 

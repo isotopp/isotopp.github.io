@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Google baut ein Telefon
 aliases:
-  - /2009/12/15/google-baut-ein-telefon.md.html
+  - /2009/12/15/google-baut-ein-telefon.html
 ---
 ![](before-google.png)
 

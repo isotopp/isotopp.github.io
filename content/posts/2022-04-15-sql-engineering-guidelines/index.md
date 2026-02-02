@@ -10,7 +10,7 @@ tags:
 - mysqldev
 - lang_en
 aliases:
-  - /2022/04/15/sql-engineering-guidelines.md.html
+  - /2022/04/15/sql-engineering-guidelines.html
 ---
 
 Where I work, the native database is MySQL.

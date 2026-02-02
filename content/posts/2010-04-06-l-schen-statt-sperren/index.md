@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Löschen statt Sperren
 aliases:
-  - /2010/04/06/l-schen-statt-sperren.md.html
+  - /2010/04/06/l-schen-statt-sperren.html
 ---
 [FDP und CSU streiten über Websperren](http://www.heise.de/newsticker/meldung/FDP-und-CSU-streiten-ueber-Websperren-970706.html).
 Und zwar auf hohem intellektuellen und sprachlichem Niveau. Das Wort des

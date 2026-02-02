@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Wenn es mal wieder länger dauert...
 aliases:
-  - /2005/05/14/wenn-es-mal-wieder-laenger-dauert.md.html
+  - /2005/05/14/wenn-es-mal-wieder-laenger-dauert.html
 ---
 
 ![](pizza.jpg)

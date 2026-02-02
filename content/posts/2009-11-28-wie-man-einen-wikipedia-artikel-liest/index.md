@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Wie man einen Wikipedia-Artikel... liest
 aliases:
-  - /2009/11/28/wie-man-einen-wikipedia-artikel-liest.md.html
+  - /2009/11/28/wie-man-einen-wikipedia-artikel-liest.html
 ---
 ![](batman1.png)
 

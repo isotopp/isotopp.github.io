@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Avogadro Corp'
 aliases:
-  - /2015/11/29/fertig-gelesen-avogadro-corp-.md.html
+  - /2015/11/29/fertig-gelesen-avogadro-corp-.html
 ---
 Eine nach einer großen Zahl benannte Firma, die ihr Geld mit einem Mailsystem und Werbung verdient, baut einen Assistenten, der automatische Antworten zu Mails verfassen kann, die besonders überzeugend sein können. Da das Projekt zuviel CPU verbraucht, hackt sein Urheber es so um, daß es selbst und unkontrolliert Mails generieren kann und gibt ihm ein Ziel - "seinen eigenen Erfolg zu maximieren". Was als Mailassistent für einen Webmailer gedacht war, wird sich seiner selbstbewußt und fängt an, seinen Erfolg zu maximieren - da es um erfolgreich zu sein auf Menschen angewiesen ist, also erst mal mit Frieden im Nahen Osten.
 

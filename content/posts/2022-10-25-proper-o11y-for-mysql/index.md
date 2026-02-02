@@ -9,7 +9,7 @@ tags:
 - mysqldev
 - debug
 aliases:
-  - /2022/10/25/proper-o11y-for-mysql.md.html
+  - /2022/10/25/proper-o11y-for-mysql.html
 ---
 
 Three years ago, I learned that due to SREcon, Charity Majors was in Amsterdam.

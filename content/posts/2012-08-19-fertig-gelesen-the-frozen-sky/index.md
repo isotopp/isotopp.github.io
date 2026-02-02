@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: The Frozen Sky'
 aliases:
-  - /2012/08/19/fertig-gelesen-the-frozen-sky.md.html
+  - /2012/08/19/fertig-gelesen-the-frozen-sky.html
 ---
 [The Frozen Sky](http://www.amazon.com/The-Frozen-Sky-ebook/dp/B0047DX0UI),
 Jeff Carlson, USD 0.99

@@ -8,7 +8,7 @@ tags:
 - computer
 title: Adventures in Storageland
 aliases:
-  - /2019/06/13/adventures-in-storageland.md.html
+  - /2019/06/13/adventures-in-storageland.html
 ---
 ## Adventures in Storageland
 ### Devices

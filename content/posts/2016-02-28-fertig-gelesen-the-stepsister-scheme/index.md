@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: The Stepsister Scheme'
 aliases:
-  - /2016/02/28/fertig-gelesen-the-stepsister-scheme.md.html
+  - /2016/02/28/fertig-gelesen-the-stepsister-scheme.html
 ---
 Aschenputtel - Prinzessin Danielle - hat ihren Prinz geheiratet - doch der wird entführt. Stellt sich raus, die Königin hat ihren eigenen Geheimdienst und Danielle bekommt Gelegenheit, sich im Auftrag ihrer Majestät zu bewähren. Zusammen mit Talia "Sleeping Beauty" und Snow White zieht sie los, um ihren Distressed Dude zu retten - und das Königreich natürlich auch. 
 

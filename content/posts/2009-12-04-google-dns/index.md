@@ -8,7 +8,7 @@ tags:
 - google
 title: Google DNS
 aliases:
-  - /2009/12/04/google-dns.md.html
+  - /2009/12/04/google-dns.html
 ---
 Google teilt mit, daß sie nun 
 [eigene öffentliche DNS-Server](http://code.google.com/intl/de/speed/public-dns/docs/using.html) betreiben, und erklärt dabei für Laien, wie man DNS-Server des Providers ausnullt und durch den DNS-Server von Google ersetzt.

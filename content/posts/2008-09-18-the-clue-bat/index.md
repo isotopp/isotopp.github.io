@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: The Clue Bat
 aliases:
-  - /2008/09/18/the-clue-bat.md.html
+  - /2008/09/18/the-clue-bat.html
 ---
 
 ![](helpdesk_duty.jpg)

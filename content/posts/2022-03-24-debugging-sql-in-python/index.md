@@ -8,7 +8,7 @@ tags:
 - mysqldev
 - lang_en
 aliases:
-  - /2022/03/24/debugging-sql-in-python.md.html
+  - /2022/03/24/debugging-sql-in-python.html
 ---
 When using MySQL with Python, you may want to use the `mysqlclient` library, which is what most people do and which will work just fine.
 Or you are using the official MySQL 8 Connector/Python package, which will behave slightly differently, but maybe supports the unique MySQL 8 feature already that is not in `mysqlclient`, yet.

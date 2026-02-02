@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Vergeben, vergessen und vernichten
 aliases:
-  - /2011/01/18/vergeben-vergessen-und-vernichten.md.html
+  - /2011/01/18/vergeben-vergessen-und-vernichten.html
 ---
 Drei unterschiedliche Dinge: Vergeben, vergessen und vernichten. Sie werden
 gerade vielfach falsch oder fälschlich synonym gebraucht. Das sollte man

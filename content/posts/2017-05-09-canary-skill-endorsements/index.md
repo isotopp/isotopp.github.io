@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Canary Skill Endorsements
 aliases:
-  - /2017/05/09/canary-skill-endorsements.md.html
+  - /2017/05/09/canary-skill-endorsements.html
 ---
 [![](2017/05/canary-skill-endorsements-1024x768.jpg)](https://twitter.com/iantien/status/861248220428738560/photo/1)
 

@@ -9,7 +9,7 @@ tags:
 - devops
 - data center
 aliases:
-  - /2023/08/23/dont-say-backup-say-restore.md.html
+  - /2023/08/23/dont-say-backup-say-restore.html
 ---
 This is about the third story I hear about a Fedi instance losing all their data because of a CI/CD mistake.
 

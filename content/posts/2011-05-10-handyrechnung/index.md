@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Handyrechnung
 aliases:
-  - /2011/05/10/handyrechnung.md.html
+  - /2011/05/10/handyrechnung.html
 ---
 
 ![](handy-kosten.png)

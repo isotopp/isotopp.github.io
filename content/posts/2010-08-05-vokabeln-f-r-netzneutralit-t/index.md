@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Vokabeln für Netzneutralität
 aliases:
-  - /2010/08/05/vokabeln-f-r-netzneutralit-t.md.html
+  - /2010/08/05/vokabeln-f-r-netzneutralit-t.html
 ---
 Dies ist Teil 1, 
 [Teil 2]({{< relref "2010-08-06-netzwerk-berlast-vs-netzwerkneutralit-t.md" >}})

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Abschied aus dem USENET
 aliases:
-  - /2005/02/15/abschied-aus-dem-usenet.md.html
+  - /2005/02/15/abschied-aus-dem-usenet.html
 ---
 
 Das älteste Posting, das Google Groups von mir hat, ist 

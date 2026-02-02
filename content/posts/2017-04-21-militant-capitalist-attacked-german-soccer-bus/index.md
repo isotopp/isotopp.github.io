@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Militant capitalist attacked german soccer bus
 aliases:
-  - /2017/04/21/militant-capitalist-attacked-german-soccer-bus.md.html
+  - /2017/04/21/militant-capitalist-attacked-german-soccer-bus.html
 ---
 The bomb attack on the bus of the german soccer club BVB has been solved.
 The attacker was not an islamist extremist, as the fake letters found on

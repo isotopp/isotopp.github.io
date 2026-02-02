@@ -7,7 +7,7 @@ tags:
 - discord
 title: 'Note to self: Archiving Discord Chats'
 aliases:
-  - /2020/05/18/note-to-self-archiving-discord-chats.md.html
+  - /2020/05/18/note-to-self-archiving-discord-chats.html
 ---
 When the Coronacrisis began, a good friend of mine started a Discord server and brought the band back together. As with any of the Coronavirus Quarantine Chats, the initial discussion revolved around baking proper bread. I wanted to archive this, so I needed a way to download Discord chat histories for archive.
 

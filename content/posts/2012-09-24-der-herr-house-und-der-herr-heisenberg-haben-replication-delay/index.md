@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: Der Herr House und der Herr Heisenberg haben Replication Delay
 aliases:
-  - /2012/09/24/der-herr-house-und-der-herr-heisenberg-haben-replication-delay.md.html
+  - /2012/09/24/der-herr-house-und-der-herr-heisenberg-haben-replication-delay.html
 ---
 
 Heute erreicht mich eine Mail,

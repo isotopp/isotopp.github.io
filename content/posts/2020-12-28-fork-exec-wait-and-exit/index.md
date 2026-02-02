@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: fork, exec, wait and exit
 aliases:
-  - /2020/12/28/fork-exec-wait-and-exit.md.html
+  - /2020/12/28/fork-exec-wait-and-exit.html
 ---
 This is the [english version of a 2007 article]({{< relref "2007-01-07-fork-exec-wait-und-exit.md" >}}).
 

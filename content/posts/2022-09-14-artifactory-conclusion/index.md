@@ -7,7 +7,7 @@ tags:
 - lang_en
 - mysql
 aliases:
-  - /2022/09/14/artifactory-conclusion.md.html
+  - /2022/09/14/artifactory-conclusion.html
 ---
 
 Two weeks ago I was being drawn into the debug of artdb, the Replication hierarchy used by our Artifactory instance.

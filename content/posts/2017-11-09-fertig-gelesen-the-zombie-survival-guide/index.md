@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: The Zombie Survival Guide'
 aliases:
-  - /2017/11/09/fertig-gelesen-the-zombie-survival-guide.md.html
+  - /2017/11/09/fertig-gelesen-the-zombie-survival-guide.html
 ---
 [![](2017/11/zombie-survival.jpg)](https://www.amazon.de/Zombie-Survival-Guide-Complete-Protection-ebook/dp/B00YLQY8K2)
 

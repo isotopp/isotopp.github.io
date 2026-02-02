@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'ULD Schleswig-Holstein vs. LRH Schleswig Holstein:'
 aliases:
-  - /2006/05/20/uld-schleswig-holstein-vs-lrh-schleswig-holstein.md.html
+  - /2006/05/20/uld-schleswig-holstein-vs-lrh-schleswig-holstein.html
 ---
 
 ![](datenschutz.gif)

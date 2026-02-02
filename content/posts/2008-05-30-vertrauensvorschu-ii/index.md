@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Vertrauensvorschuß II
 aliases:
-  - /2008/05/30/vertrauensvorschu-ii.md.html
+  - /2008/05/30/vertrauensvorschu-ii.html
 ---
 Im Anschluß an 
 [Vertrauensvorschuß]({{< relref "2007-03-11-vertrauensvorschu.md" >}}):

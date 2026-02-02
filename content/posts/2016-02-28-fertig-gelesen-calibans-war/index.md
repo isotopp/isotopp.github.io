@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Caliban''s War'
 aliases:
-  - /2016/02/28/fertig-gelesen-calibans-war.md.html
+  - /2016/02/28/fertig-gelesen-calibans-war.html
 ---
 Ok, nachdem Julie Mao und das Protomolekül auf der Venus gelandet sind, fangen sie dort an, den Zielplaneten umzubauen - wozu ist bis auf weiteres noch unklar.
 

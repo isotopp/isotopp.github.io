@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Ypsilon Minus'
 aliases:
-  - /2016/08/14/fertig-gelesen-ypsilon-minus.md.html
+  - /2016/08/14/fertig-gelesen-ypsilon-minus.html
 ---
 Ein früher Teil meines Lebens, der vor dem Commodore 64 stattgefunden hat, besteht darin, Büchereien durchzulesen. In der ersten und zweiten Klasse war das die Schülerbücherei meiner Grundschule in Russee, und nach dem Umzug nach Heikendorf waren es dann die Schulbüchereien der dortigen Grundschule und des Gymnasiums und die Stadtteilbücherei am Dorfplatz, an dem wir praktischerweise gewohnt haben.
 

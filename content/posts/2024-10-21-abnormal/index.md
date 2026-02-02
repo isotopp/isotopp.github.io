@@ -8,7 +8,7 @@ tags:
 - media
 title: "Abnormal"
 aliases:
-  - /2024/10/21/abnormal.md.html
+  - /2024/10/21/abnormal.html
 ---
 
 [Deloitte Media Consumer Survey 2024](https://www.deloitte.com/de/de/Industries/tmt/media-consumer-survey.html)

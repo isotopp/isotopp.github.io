@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: EFF vs. Sony
 aliases:
-  - /2005/11/22/eff-vs-sony.md.html
+  - /2005/11/22/eff-vs-sony.html
 ---
 ![](sonyelectronics.jpg)
 

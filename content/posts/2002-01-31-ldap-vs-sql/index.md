@@ -9,7 +9,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /2002/01/31/ldap-vs-sql.md.html
+  - /2002/01/31/ldap-vs-sql.html
 ---
 
 # Directory Services vs. Relationale Datenbanken

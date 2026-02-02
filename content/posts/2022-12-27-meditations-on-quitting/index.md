@@ -7,7 +7,7 @@ tags:
 - lang_en
 - work
 aliases:
-  - /2022/12/27/meditations-on-quitting.md.html
+  - /2022/12/27/meditations-on-quitting.html
 ---
 
 I quit often.

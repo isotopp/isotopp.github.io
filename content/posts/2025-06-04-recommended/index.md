@@ -9,7 +9,7 @@ tags:
   - ai
   - advertising
 aliases:
-  - /2025/06/04/recommended.md.html
+  - /2025/06/04/recommended.html
 ---
 
 [France forces TikTok to ban #SkinnyTok but harmful content still persists](https://www.europesays.com/uk/156725/).

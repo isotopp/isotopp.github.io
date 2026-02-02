@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Yellow Cable
 aliases:
-  - /2006/03/27/yellow-cable.md.html
+  - /2006/03/27/yellow-cable.html
 ---
 
     20:43 huzzel> ich brauch aber dieses dumme wlan

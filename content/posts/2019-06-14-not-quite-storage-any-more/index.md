@@ -8,7 +8,7 @@ tags:
 - computer
 title: Not quite storage any more
 aliases:
-  - /2019/06/14/not-quite-storage-any-more.md.html
+  - /2019/06/14/not-quite-storage-any-more.html
 ---
 While I was testing away on all the SSD and NVME toys, I got my hand on a test box with even stranger that usual equipment. It was a Dual Platinum-8280 box with a really weird amount of memory: 7.5 TB.
 

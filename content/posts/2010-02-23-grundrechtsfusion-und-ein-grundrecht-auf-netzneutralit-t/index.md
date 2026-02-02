@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: Grundrechtsfusion und ein Grundrecht auf Netzneutralität
 aliases:
-  - /2010/02/23/grundrechtsfusion-und-ein-grundrecht-auf-netzneutralit-t.md.html
+  - /2010/02/23/grundrechtsfusion-und-ein-grundrecht-auf-netzneutralit-t.html
 ---
 Es gibt in Deutschland ein Grundrecht, die 
 [Meinungsfreiheit](http://de.wikipedia.org/wiki/Meinungsfreiheit). Es ist

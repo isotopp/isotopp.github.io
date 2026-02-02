@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Hardware für ein MySQL
 aliases:
-  - /2007/07/28/hardware-f-r-ein-mysql.md.html
+  - /2007/07/28/hardware-f-r-ein-mysql.html
 ---
 "Ich muß Hardware für einen Rechner kaufen, auf dem dediziert nur ein MySQL laufen soll. Was soll ich beschaffen?" ist eine Frage, die ich recht oft höre. Hier ist die lange Antwort.
 

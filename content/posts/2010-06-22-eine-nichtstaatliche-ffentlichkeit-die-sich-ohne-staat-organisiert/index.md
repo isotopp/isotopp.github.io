@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Eine nichtstaatliche Öffentlichkeit, die sich ohne Staat organisiert
 aliases:
-  - /2010/06/22/eine-nichtstaatliche-ffentlichkeit-die-sich-ohne-staat-organisiert.md.html
+  - /2010/06/22/eine-nichtstaatliche-ffentlichkeit-die-sich-ohne-staat-organisiert.html
 ---
 Unser Innenminister hat Angst. Vor dem Internet. Für ihn ist das eine
 nichtstaatliche Öffentlichkeit, die sich ohne Staat organisiert und ohne

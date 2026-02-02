@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Nexus - Mankind gets an upgrade'
 aliases:
-  - /2013/09/04/fertig-gelesen-nexus-mankind-gets-an-upgrade-ramez-naam.md.html
+  - /2013/09/04/fertig-gelesen-nexus-mankind-gets-an-upgrade-ramez-naam.html
 ---
 Noch schnell was zu lesen für heute Nacht?
 

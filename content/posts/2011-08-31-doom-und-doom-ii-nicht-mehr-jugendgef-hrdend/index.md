@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Doom und Doom II nicht mehr jugendgefährdend
 aliases:
-  - /2011/08/31/doom-und-doom-ii-nicht-mehr-jugendgef-hrdend.md.html
+  - /2011/08/31/doom-und-doom-ii-nicht-mehr-jugendgef-hrdend.html
 ---
 Nachtrag zu 
 [Jugendmediendoom]({{< relref "2010-07-21-jugendmediendoom.md" >}}):

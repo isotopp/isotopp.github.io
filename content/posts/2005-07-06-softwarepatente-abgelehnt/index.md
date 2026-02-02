@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: Softwarepatente? Abgelehnt!
 aliases:
-  - /2005/07/06/softwarepatente-abgelehnt.md.html
+  - /2005/07/06/softwarepatente-abgelehnt.html
 ---
 
 Die Abstimmung zu Software-Patenten im EU-Parlament hat stattgefunden und das Parlament lehnt die umstrittene Richtlinie ab. 

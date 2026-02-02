@@ -9,7 +9,7 @@ tags:
 - erklaerbaer
 title: Rolling out patches and changes, often and fast
 aliases:
-  - /2017/05/18/rolling-out-patches-and-changes-often-and-fast.md.html
+  - /2017/05/18/rolling-out-patches-and-changes-often-and-fast.html
 ---
 
 Fefe had a [short pointer](https://blog.fefe.de/?ts=a7e82d0e) to an article

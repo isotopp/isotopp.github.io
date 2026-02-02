@@ -10,7 +10,7 @@ tags:
 - development
 - python
 aliases:
-  - /2025/12/20/pysembr.md.html
+  - /2025/12/20/pysembr.html
 ---
 
 With the 2025.3 release, JetBrains retired the Gracie Pro Plugin, a tool that until recently provided,

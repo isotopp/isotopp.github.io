@@ -7,7 +7,7 @@ tags:
 - lang_en
 - development
 aliases:
-  - /2022/06/27/jetbrains-remote-development.md.html
+  - /2022/06/27/jetbrains-remote-development.html
 ---
 
 I am on a Mac or on a Windows machine, and always I have to develop for a Linux target.

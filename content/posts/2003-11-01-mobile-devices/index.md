@@ -9,7 +9,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /2003/11/01/mobile-devices.md.html
+  - /2003/11/01/mobile-devices.html
 ---
 
 **Vortrag auf der NuBIT 2003**

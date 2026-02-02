@@ -9,7 +9,7 @@ tags:
 - hack
 - networking
 aliases:
-  - /2021/11/22/arista-type-7-passwords.md.html
+  - /2021/11/22/arista-type-7-passwords.html
 ---
 
 A friend of mine wanted to provision BGP passwords for their Arista switch configuration.

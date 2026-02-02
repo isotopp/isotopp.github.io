@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Where do you see yourself in five years?
 aliases:
-  - /2017/09/11/where-do-you-see-yourself-in-five-years.md.html
+  - /2017/09/11/where-do-you-see-yourself-in-five-years.html
 ---
 ### Seriously, HR people ask the weirdest questions.
 

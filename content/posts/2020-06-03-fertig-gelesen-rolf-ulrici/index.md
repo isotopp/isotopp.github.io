@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Rolf Ulrici'
 aliases:
-  - /2020/06/03/fertig-gelesen-rolf-ulrici.md.html
+  - /2020/06/03/fertig-gelesen-rolf-ulrici.html
 ---
 Als ich noch ein ganz kleiner Kris war, habe ich die Schülerbüchereien von mehreren Schulen durchgelesen und mich dann über die [Gemeindebücherei](http://www.gemeindebuecherei-heikendorf.de/team.htm) hergemacht. Es ist jetzt mehr als 40 Jahre her, daß ich da im Schülerteam mitgearbeitet habe, aber die Chefin, die damals gerade angefangen hatte und die auch das Schülerteam begründet hat, ist immer noch da und macht ihren Job. Das ist unglaublich großartig.
 

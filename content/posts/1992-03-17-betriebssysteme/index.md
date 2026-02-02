@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: "Betriebssysteme"
 aliases:
-  - /1992/03/17/betriebssysteme.md.html
+  - /1992/03/17/betriebssysteme.html
 ---
 
 **Abgeschickt an die c't am 17. März 1992.**

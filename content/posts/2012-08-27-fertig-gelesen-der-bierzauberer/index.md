@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Der Bierzauberer'
 aliases:
-  - /2012/08/27/fertig-gelesen-der-bierzauberer.md.html
+  - /2012/08/27/fertig-gelesen-der-bierzauberer.html
 ---
 [Der Bierzauberer](http://www.amazon.de/Der-Bierzauberer-Historischer-Roman-ebook/dp/B004U5P7UY),
 Günther Thömmes, EUR 9.99

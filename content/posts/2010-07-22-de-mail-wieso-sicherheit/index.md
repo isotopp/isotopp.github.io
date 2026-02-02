@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: DE-Mail - Wieso Sicherheit?
 aliases:
-  - /2010/07/22/de-mail-wieso-sicherheit.md.html
+  - /2010/07/22/de-mail-wieso-sicherheit.html
 ---
 [Netzpolitik](http://www.netzpolitik.org/2010/de-mail-freund-liest-mit/) verweist auf 
 [Golem](http://www.golem.de/1007/76609.html) verweist auf 

@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'GPL: Marktdurchdringung ist kein Wert an sich'
 aliases:
-  - /2006/09/19/gpl-marktdurchdringung-ist-kein-wert-an-sich.md.html
+  - /2006/09/19/gpl-marktdurchdringung-ist-kein-wert-an-sich.html
 ---
 [Kommentar]({{< relref "2006-09-10-gpl-in-deutschland-vor-gericht-durchgesetzt.md" >}}) zu GPL in Deutschland vor Gericht durchgesetzt.
 

@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Modern PHP (7.x)
 aliases:
-  - /2025/07/30/modern-php.md.html
+  - /2025/07/30/modern-php.html
 ---
 
 I have not been doing PHP in a long time, and so I am writing this here as a memo to self,

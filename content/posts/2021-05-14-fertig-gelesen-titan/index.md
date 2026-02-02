@@ -9,7 +9,7 @@ tags:
 - media
 title: 'Fertig gelesen: Titan'
 aliases:
-  - /2021/05/14/fertig-gelesen-titan.md.html
+  - /2021/05/14/fertig-gelesen-titan.html
 ---
 The story of 
 [Heaven's River]({{< relref "2021-04-07-fertig-gelesen-heavens-river.md" >}})

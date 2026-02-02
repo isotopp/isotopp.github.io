@@ -9,7 +9,7 @@ tags:
 - erklaerbaer
 - work
 aliases:
-  - /2024/04/18/operations-review-meeting.md.html
+  - /2024/04/18/operations-review-meeting.html
 ---
 
 [In Deutsch]({{< relref "2024-04-18-operations-review-meeting-deutsch.md" >}})

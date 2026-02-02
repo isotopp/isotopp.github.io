@@ -9,7 +9,7 @@ tags:
 - publication
 - free software
 aliases:
-  - /2023/11/11/eine-revolution-frisst-ihre-kinder.md.html
+  - /2023/11/11/eine-revolution-frisst-ihre-kinder.html
 ---
 
 Dieser Text erschien in c't 26/23 auf Seite 70.

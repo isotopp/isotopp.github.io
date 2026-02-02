@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Kilowattstunden
 aliases:
-  - /2004/07/01/kilowattstunden.md.html
+  - /2004/07/01/kilowattstunden.html
 ---
 
 Ich verbrauche wohl ganz schön viel Strom. 

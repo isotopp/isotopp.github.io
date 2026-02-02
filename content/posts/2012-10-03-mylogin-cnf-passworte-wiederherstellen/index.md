@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: .mylogin.cnf Passworte wiederherstellen
 aliases:
-  - /2012/10/03/mylogin-cnf-passworte-wiederherstellen.md.html
+  - /2012/10/03/mylogin-cnf-passworte-wiederherstellen.html
 ---
 
 Wie Todd Farmer in

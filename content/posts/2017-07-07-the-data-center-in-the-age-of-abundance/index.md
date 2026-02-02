@@ -7,7 +7,7 @@ tags:
 - container
 title: The Data Center in the Age of Abundance
 aliases:
-  - /2017/07/07/the-data-center-in-the-age-of-abundance.md.html
+  - /2017/07/07/the-data-center-in-the-age-of-abundance.html
 ---
 We are currently experiencing a fundamental transition in the
 data center. In recent discussions, it occured to me how little

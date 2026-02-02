@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Google kauft YouTube
 aliases:
-  - /2006/10/10/google-kauft-youtube.md.html
+  - /2006/10/10/google-kauft-youtube.html
 ---
 
 [Google Pressemeldung](http://www.google.com/press/pressrel/google_youtube.html):

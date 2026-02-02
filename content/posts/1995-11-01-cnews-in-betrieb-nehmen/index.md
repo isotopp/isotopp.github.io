@@ -8,7 +8,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /1995/11/01/cnews-in-betrieb-nehmen.md.html
+  - /1995/11/01/cnews-in-betrieb-nehmen.html
 ---
 
 **Linux Magazin, Heft 11/1995**

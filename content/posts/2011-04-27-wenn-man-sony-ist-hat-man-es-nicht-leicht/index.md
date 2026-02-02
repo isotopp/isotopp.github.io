@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Wenn man Sony ist, hat man es nicht leicht
 aliases:
-  - /2011/04/27/wenn-man-sony-ist-hat-man-es-nicht-leicht.md.html
+  - /2011/04/27/wenn-man-sony-ist-hat-man-es-nicht-leicht.html
 ---
 ![](sonyelectronics.jpg)
 

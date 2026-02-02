@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Using MySQL Partitions (a Python example)
 aliases:
-  - /2017/07/09/using-mysql-partitions-a-python-example.md.html
+  - /2017/07/09/using-mysql-partitions-a-python-example.html
 ---
 Today somebody had a problem with expiring a large table (a Serendipity
 Blog table). 

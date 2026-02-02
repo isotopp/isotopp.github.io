@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Change Request
 aliases:
-  - /2005/07/26/change-request.md.html
+  - /2005/07/26/change-request.html
 ---
 
 - *Changekoordinator:* kris@webde-ag.de (Kristian Köhntopp)

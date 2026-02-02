@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Einen  openvpn Server aufsetzen
 aliases:
-  - /2009/08/10/einen-openvpn-server-aufsetzen.md.html
+  - /2009/08/10/einen-openvpn-server-aufsetzen.html
 ---
 openvpn ist ein bequem aufzusetzender VPN-Server, der mit einer
 einfachen TCP-Verbindung angesprochen werden kann. Da kein

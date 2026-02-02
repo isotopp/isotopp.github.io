@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Internetpiraten in der Netzwerk-Ökonomie
 aliases:
-  - /2005/05/23/internetpiraten-in-der-netzwerk-konomie.md.html
+  - /2005/05/23/internetpiraten-in-der-netzwerk-konomie.html
 ---
 
 Nachdem

@@ -10,7 +10,7 @@ tags:
 - macos
 - python
 aliases:
-  - /2022/07/30/macos-how-to-prevent-screen-blanker.md.html
+  - /2022/07/30/macos-how-to-prevent-screen-blanker.html
 ---
 
 When running Keynote, MacOS prevents the screen blanker from kicking in.

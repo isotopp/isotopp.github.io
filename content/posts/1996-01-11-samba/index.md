@@ -8,7 +8,7 @@ tags:
 - unix
 title: "Samba"
 aliases:
-  - /1996/01/11/samba.md.html
+  - /1996/01/11/samba.html
 ---
 
 **erschienen in der iX 1/96**

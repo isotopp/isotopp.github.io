@@ -9,7 +9,7 @@ tags:
 - climate
 - germany
 aliases:
-  - /2022/07/03/energieverbrauch-in-deutschland.md.html
+  - /2022/07/03/energieverbrauch-in-deutschland.html
 ---
 
 Der Wikipedia-Artikel zum Thema [Energieverbrauch](https://de.wikipedia.org/wiki/Energieverbrauch#Energieverbrauch_in_Deutschland) ist wirklich interessant.

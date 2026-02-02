@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Checkpoint Blues
 aliases:
-  - /2011/09/19/checkpoint-blues.md.html
+  - /2011/09/19/checkpoint-blues.html
 ---
 Wer 
 [dies]({{< relref "2008-01-30-die-innodb-storage-engine.md" >}}) und

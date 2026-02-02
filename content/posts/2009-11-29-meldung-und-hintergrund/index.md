@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Meldung und Hintergrund
 aliases:
-  - /2009/11/29/meldung-und-hintergrund.md.html
+  - /2009/11/29/meldung-und-hintergrund.html
 ---
 [Medienecho](http://news.google.com/archivesearch?q=taxi+potsdam+karlsruhe+adac&scoring=a&hl=de&ned=de&sa=N&start=10) zur Taxi-Studie des ADAC auf Google News.</div></div>
 

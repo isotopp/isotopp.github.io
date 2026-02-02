@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Facebook oder was?
 aliases:
-  - /2011/05/23/facebook-oder-was.md.html
+  - /2011/05/23/facebook-oder-was.html
 ---
 Aus recht offensichtlichen Gründen halten sich eine ganze Menge sozialer
 Netzwerke mehr und mehr für Facebook. Das heißt, sie versuchen da so einen

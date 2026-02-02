@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: "Spaces"
 aliases:
-  - /2022/02/21/spaces.md.html
+  - /2022/02/21/spaces.html
 ---
 
 On the morning of Saturday, 22nd February 2020, two years ago, my colleagues and I woke up to the a message from the company that said:

@@ -8,7 +8,7 @@ tags:
 - mysqldev
 - lang_en
 aliases:
-  - /2022/03/24/truncated-incorrect-double-value.md.html
+  - /2022/03/24/truncated-incorrect-double-value.html
 ---
 
 I record this for posteriority without much comment.

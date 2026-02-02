@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: Indexing'
 aliases:
-  - /2015/02/14/fertig-gelesen-indexing.md.html
+  - /2015/02/14/fertig-gelesen-indexing.html
 ---
 "Grimm" trifft auf "Libriomancer": Die Geschichten unserer Kindheit, die Sagen unserer Vorväter, die Märchen der Gebrüder Grimm sind wahr. Oder können es ständig werden. Denn wenn wir nicht aufpassen, kommt es zu einer memetischen Invasion, dem Eindringen der Märchen in die Realität.
 

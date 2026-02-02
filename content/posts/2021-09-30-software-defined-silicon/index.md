@@ -8,7 +8,7 @@ tags:
 - cloud
 title: Software Defined Silicon
 aliases:
-  - /2021/09/30/software-defined-silicon.md.html
+  - /2021/09/30/software-defined-silicon.html
 ---
 
 Golem titelt [Intel will Xeon-Funktionen als Lizenz-Update verkaufen](https://www.golem.de/news/software-defined-silicon-intel-will-xeon-funktionen-als-lizenz-update-verkaufen-2109-159912.html):

@@ -9,7 +9,7 @@ tags:
 - publication
 - php
 aliases:
-  - /1999/04/01/phplib-deutsch.md.html
+  - /1999/04/01/phplib-deutsch.html
 ---
 
 **Dieser Text bildet Kapitel 24 von *php, dynamische webautritte

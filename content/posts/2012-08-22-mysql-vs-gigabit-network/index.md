@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: MySQL vs. Gigabit Network
 aliases:
-  - /2012/08/22/mysql-vs-gigabit-network.md.html
+  - /2012/08/22/mysql-vs-gigabit-network.html
 ---
 Wir generieren eine neue Art von 
 [Materialized View]({{< relref "2012-08-15-materialized-view.md" >}})

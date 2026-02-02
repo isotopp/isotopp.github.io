@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Wieso zehn Prozent?
 aliases:
-  - /2010/05/16/wieso-zehn-prozent.md.html
+  - /2010/05/16/wieso-zehn-prozent.html
 ---
 In [Sicherheitsmetrik](http://erichsieht.wordpress.com/2010/05/15/sicherheitsmetrik/)
 heißt es als Antwort auf meinen Artikel

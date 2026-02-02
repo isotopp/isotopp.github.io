@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Zehn Jahre PHP
 aliases:
-  - /2005/06/07/zehn-jahre-php.md.html
+  - /2005/06/07/zehn-jahre-php.html
 ---
 Wie
 [anderswo](http://blog.coggeshall.org/archives/203_A_Decade_of_PHP.html)

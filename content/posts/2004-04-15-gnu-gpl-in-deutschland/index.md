@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: GNU GPL in Deutschland
 aliases:
-  - /2004/04/15/gnu-gpl-in-deutschland.md.html
+  - /2004/04/15/gnu-gpl-in-deutschland.html
 ---
 (via [Groklaw](http://www.groklaw.net/article.php?story=20040415115414858))
 

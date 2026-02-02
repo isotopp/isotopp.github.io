@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Google Chrome integrates Adblocker
 aliases:
-  - /2017/06/02/google-chrome-integrates-adblocker.md.html
+  - /2017/06/02/google-chrome-integrates-adblocker.html
 ---
 The Ad and Adblock situations both are now so bad that even 
 [Google considers integrating an Adblocker](https://www.blog.google/topics/journalism-news/building-better-web-everyone/)

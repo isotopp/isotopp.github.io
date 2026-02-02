@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Wie 'kaputt' ist das Internet?
 aliases:
-  - /2009/06/17/wie-kaputt-ist-das-internet.md.html
+  - /2009/06/17/wie-kaputt-ist-das-internet.html
 ---
 Jemand fragt mich per Mail: 
 

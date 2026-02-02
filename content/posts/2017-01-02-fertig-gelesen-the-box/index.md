@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: The Box'
 aliases:
-  - /2017/01/02/fertig-gelesen-the-box.md.html
+  - /2017/01/02/fertig-gelesen-the-box.html
 ---
 The Box ist vordergründig ein Buch über die Erfindung des Containers und die vierzig Jahre des Strukturwandels, die seiner Erfindung und seinem Siegeszug um die Welt folgen.
 

@@ -9,7 +9,7 @@ tags:
 - energy
 - climate
 aliases:
-  - /2022/08/15/good-energy-news.md.html
+  - /2022/08/15/good-energy-news.html
 ---
 
 Two good news in one day. First, my energy provider tells me:

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Jack McDevitt'
 aliases:
-  - /2006/07/23/fertig-gelesen-jack-mcdevitt.md.html
+  - /2006/07/23/fertig-gelesen-jack-mcdevitt.html
 ---
 
 ![](jackmvdevitt.jpg)

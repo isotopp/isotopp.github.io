@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: This Is How You Lose The Time War'
 aliases:
-  - /2021/09/05/fertig-gelesen-this-is-how-you-lose-the-time-war.md.html
+  - /2021/09/05/fertig-gelesen-this-is-how-you-lose-the-time-war.html
 ---
 
 Max Gladstone and Amal El-Mohtar co-authored [This Is How You Lose The Time-War](https://www.amazon.de/This-How-Lose-Time-English-ebook/dp/B07RTYNHRM), not exactly a Science Fiction novel.

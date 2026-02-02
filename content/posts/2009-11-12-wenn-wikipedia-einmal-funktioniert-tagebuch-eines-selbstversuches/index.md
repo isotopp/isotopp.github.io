@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Wenn Wikipedia einmal funktioniert... Tagebuch eines Selbstversuches
 aliases:
-  - /2009/11/12/wenn-wikipedia-einmal-funktioniert-tagebuch-eines-selbstversuches.md.html
+  - /2009/11/12/wenn-wikipedia-einmal-funktioniert-tagebuch-eines-selbstversuches.html
 ---
 Während ich mir in 
 [Communitygift]({{< relref "2009-11-11-communitygift.md" >}})

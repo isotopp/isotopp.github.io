@@ -10,7 +10,7 @@ tags:
 - energy
 - climate
 aliases:
-  - /2025/06/10/heizen-mit-klimaanlagen.md.html
+  - /2025/06/10/heizen-mit-klimaanlagen.html
 ---
 
 Ich habe

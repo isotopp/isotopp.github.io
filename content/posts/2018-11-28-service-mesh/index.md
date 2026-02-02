@@ -9,7 +9,7 @@ tags:
 - cloud
 - erklaerbaer
 aliases:
-  - /2018/11/28/service-mesh.md.html
+  - /2018/11/28/service-mesh.html
 ---
 
 Wenn man was mit Infrastructure As Code macht, also Openstack, AWS, GCS, oder auch Kubernetes, dann hat man meistens eine ganze Flotte von willkürlichen IPs mit komischen Ports, auf denen je eine Instanz desselben Dienstes läuft.

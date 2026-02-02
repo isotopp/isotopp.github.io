@@ -9,7 +9,7 @@ tags:
 - nosql
 title: Zusammenfassung 'Schemaless'
 aliases:
-  - /2011/04/20/zusammenfassung-schemaless.md.html
+  - /2011/04/20/zusammenfassung-schemaless.html
 ---
 ## Die Antwort: ALTER TABLE vs. Schemaless
 

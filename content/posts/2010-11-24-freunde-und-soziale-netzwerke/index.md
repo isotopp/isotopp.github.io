@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: '"Freunde" und soziale Netzwerke'
 aliases:
-  - /2010/11/24/freunde-und-soziale-netzwerke.md.html
+  - /2010/11/24/freunde-und-soziale-netzwerke.html
 ---
 Ich habe ja lange Zeit gehofft, daß die Medien als Gruppe irgendwann einmal
 die Kurve kriegen und es schaffen, sich vom Begriff des "friendens" und

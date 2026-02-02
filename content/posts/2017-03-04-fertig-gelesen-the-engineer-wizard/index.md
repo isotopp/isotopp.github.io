@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: The Engineer Wizard'
 aliases:
-  - /2017/03/04/fertig-gelesen-the-engineer-wizard.md.html
+  - /2017/03/04/fertig-gelesen-the-engineer-wizard.html
 ---
 [![](2017/03/the-engineer-wizard.png)](https://www.amazon.de/Engineer-Wizard-Genie-Book-English-ebook/dp/B00TEPXEX2)
 

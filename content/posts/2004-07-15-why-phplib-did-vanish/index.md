@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Why PHPLIB did vanish
 aliases:
-  - /2004/07/15/why-phplib-did-vanish.md.html
+  - /2004/07/15/why-phplib-did-vanish.html
 ---
 In ["ADO-donkey" will prevail](http://phplens.com/phpeverywhere/?q=node/view/69), johnlim writes:
 

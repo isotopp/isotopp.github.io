@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Gamification
 aliases:
-  - /2012/02/28/gamification.md.html
+  - /2012/02/28/gamification.html
 ---
 ![Google Maps Leaderboard](google-maps-leaderboard.png)
 

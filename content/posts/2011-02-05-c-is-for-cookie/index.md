@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: C is for Cookie
 aliases:
-  - /2011/02/05/c-is-for-cookie.md.html
+  - /2011/02/05/c-is-for-cookie.html
 ---
 
 [Krümelmonster: C is for Cookie](http://www.youtube.com/watch?v=Ye8mB6VsUHw)

@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: The Interview in the Enterprise
 aliases:
-  - /2017/03/27/the-interview-in-the-enterprise.md.html
+  - /2017/03/27/the-interview-in-the-enterprise.html
 ---
 
 See also 

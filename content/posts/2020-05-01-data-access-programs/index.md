@@ -7,7 +7,7 @@ tags:
 - database
 title: Data Access Programs and Pre-SQL systems
 aliases:
-  - /2020/05/01/data-access-programs.md.html
+  - /2020/05/01/data-access-programs.html
 ---
 Let's have a look at very old database systems. Things like dBase or compatible systems ("xBases") allowed to manipulate record based files (with indexes) in a procedural way. What does that mean?
 

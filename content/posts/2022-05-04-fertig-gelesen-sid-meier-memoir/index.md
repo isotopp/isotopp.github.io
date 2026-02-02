@@ -9,7 +9,7 @@ tags:
 - media
 - book
 aliases:
-  - /2022/05/04/fertig-gelesen-sid-meier-memoir.md.html
+  - /2022/05/04/fertig-gelesen-sid-meier-memoir.html
 ---
 
 The subtitle of "Sid Meier's Memoir!" is "A Life in Computer Games".

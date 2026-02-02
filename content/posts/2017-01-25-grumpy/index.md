@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: Grumpy
 aliases:
-  - /2017/01/25/grumpy.md.html
+  - /2017/01/25/grumpy.html
 ---
 
 So Python is a beautiful language, which is also kind of slow. 

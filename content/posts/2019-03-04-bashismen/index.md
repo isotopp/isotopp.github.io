@@ -10,7 +10,7 @@ tags:
 - linux
 - unix
 aliases:
-  - /2019/03/04/bashismen.md.html
+  - /2019/03/04/bashismen.html
 ---
 
 I [trolled Twitter](https://twitter.com/isotopp/status/1102527703033491456

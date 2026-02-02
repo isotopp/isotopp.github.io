@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Firefight'
 aliases:
-  - /2015/02/14/fertig-gelesen-firefight.md.html
+  - /2015/02/14/fertig-gelesen-firefight.html
 ---
 In Brandon Sandersons "Firefight" geht es, wie der Name schon sagt, um Megan, die nach der Vernichtung von Steelhart aus Newcago verschwand. Die Geschichte führt den jetzt berümten David "Steelslayer" und die Reckoners nach Babylon Restored, vormals New York City. Babylon ist jetzt nicht nur durch die Kräfte der Wasser kontrollierenden Regalia überflutet, sondern auch mit wunderbaren, leuchtenden psychedelischen Pflanzen überwuchert.
 

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Qt4 wird vollständig GPL
 aliases:
-  - /2005/02/07/qt4-wird-vollstaendig-gpl.md.html
+  - /2005/02/07/qt4-wird-vollstaendig-gpl.html
 ---
 ![](trolltech.jpg)
 

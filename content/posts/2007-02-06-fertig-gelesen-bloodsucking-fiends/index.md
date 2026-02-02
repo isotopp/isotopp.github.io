@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Bloodsucking Fiends'
 aliases:
-  - /2007/02/06/fertig-gelesen-bloodsucking-fiends.md.html
+  - /2007/02/06/fertig-gelesen-bloodsucking-fiends.html
 ---
 ![](bloodsucking_fiends.jpg)
 

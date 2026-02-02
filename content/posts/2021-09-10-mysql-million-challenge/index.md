@@ -8,7 +8,7 @@ tags:
 - mysqldev
 title: 'MySQL: The Million Challenge'
 aliases:
-  - /2021/09/10/mysql-million-challenge.md.html
+  - /2021/09/10/mysql-million-challenge.html
 ---
 A long-standing idea that I have is to test the servers limits: 
 How does it fail and break if there are very many of a thing? 

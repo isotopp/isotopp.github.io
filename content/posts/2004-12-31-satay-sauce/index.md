@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Satay Sauce
 aliases:
-  - /2004/12/31/satay-sauce.md.html
+  - /2004/12/31/satay-sauce.html
 ---
 
 Für Fondue oder Satay-Spieße.

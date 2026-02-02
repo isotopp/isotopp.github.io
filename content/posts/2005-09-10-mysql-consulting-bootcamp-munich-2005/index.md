@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: MySQL Consulting Bootcamp Munich 2005
 aliases:
-  - /2005/09/10/mysql-consulting-bootcamp-munich-2005.md.html
+  - /2005/09/10/mysql-consulting-bootcamp-munich-2005.html
 ---
 
 ![](mysql_bootcamp/bootcamp.jpg)

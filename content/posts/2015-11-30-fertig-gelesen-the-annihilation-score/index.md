@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: The Annihilation Score'
 aliases:
-  - /2015/11/30/fertig-gelesen-the-annihilation-score.md.html
+  - /2015/11/30/fertig-gelesen-the-annihilation-score.html
 ---
 Laundry #6, "Superhelden und Superkräfte", aus der Perspektive von Mo. Endlich. Bob aus der Außenansicht ist auch großartig, und Mo auf Ramona und Mhari treffen zu sehen…
 

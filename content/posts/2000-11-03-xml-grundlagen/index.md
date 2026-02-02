@@ -8,7 +8,7 @@ tags:
 - talk
 - publication
 aliases:
-  - /2000/11/03/xml-grundlagen.md.html
+  - /2000/11/03/xml-grundlagen.html
 ---
 
 # XML Normensalat

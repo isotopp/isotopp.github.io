@@ -9,7 +9,7 @@ tags:
 - media
 - book
 aliases:
-  - /2022/05/05/fertig-gelesen-the-kaiju-preservation-society.md.html
+  - /2022/05/05/fertig-gelesen-the-kaiju-preservation-society.html
 ---
 
 On an alternate earth alternate biology produces beings that can grow up to 150 meters tall and that are powered by natural biological nuclear reactor: The Kaiju.

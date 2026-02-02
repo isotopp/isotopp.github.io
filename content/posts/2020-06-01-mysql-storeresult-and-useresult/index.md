@@ -10,7 +10,7 @@ tags:
 - reddit
 title: MySQL store_result and use_result
 aliases:
-  - /2020/06/01/mysql-storeresult-and-useresult.md.html
+  - /2020/06/01/mysql-storeresult-and-useresult.html
 ---
 A [question](https://www.reddit.com/r/mysql/comments/gun836/are_cursors_always_slow/) from Reddit’s /r/mysql led to a longer discussion of cursors and how they are implemented in MySQL, and what the advantages and drawbacks are.
 

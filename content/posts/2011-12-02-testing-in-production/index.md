@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Testing in Production
 aliases:
-  - /2011/12/02/testing-in-production.md.html
+  - /2011/12/02/testing-in-production.html
 ---
 Mitte November ist auf The Testing Planet ein Artikel von Seth Eliot
 (Microsoft) erschienen mit dem Titel

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Über Anonymität reden
 aliases:
-  - /2005/05/24/ueber-anonymitaet-reden.md.html
+  - /2005/05/24/ueber-anonymitaet-reden.html
 ---
 [Anonymity, Unobservability, Pseudonymity and Identity Management - A Proposal for Terminology](http://www.freehaven.net/anonbib/cache/terminology.pdf) pflegt
 Marit Hansen mit Andreas Pfitzmann und anderen eine Liste von Begriffen,

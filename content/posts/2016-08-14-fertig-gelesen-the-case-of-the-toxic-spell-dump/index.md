@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: The Case of the Toxic Spell Dump'
 aliases:
-  - /2016/08/14/fertig-gelesen-the-case-of-the-toxic-spell-dump.md.html
+  - /2016/08/14/fertig-gelesen-the-case-of-the-toxic-spell-dump.html
 ---
 Okay, der Stross war nicht daheim und hat Alyx Dellamonica an das Mikrofon gelassen: 
 [Magic Ecospeak](http://www.antipope.org/feorag/testbed/2015/11/magic-ecospeak-and-genre-distinctions.html) und so kommt es, daß "The Case of the Toxic Spell Dump" auf meinem SuB gelandet ist.

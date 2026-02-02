@@ -8,7 +8,7 @@ tags:
 - blog
 title: Feeds tagged, and a MySQL feed
 aliases:
-  - /2020/09/09/feeds-tagged-and-a-mysql-feed.md.html
+  - /2020/09/09/feeds-tagged-and-a-mysql-feed.html
 ---
 I have made changes to the RSS Feed of this blog:
 

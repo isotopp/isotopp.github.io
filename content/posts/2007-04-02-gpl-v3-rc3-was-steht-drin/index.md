@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: GPL V3 RC3 - Was steht drin?
 aliases:
-  - /2007/04/02/gpl-v3-rc3-was-steht-drin.md.html
+  - /2007/04/02/gpl-v3-rc3-was-steht-drin.html
 ---
 
 Die GPL V3 ist sehr einfach zu lesen - wenn man wissen will, was drin steht, muss man lediglich die Präambel lesen, die in sehr klaren Worten und ohne juristisches Blafasel genau erklärt, was die Ziele und Methoden der GPL V3 sind und wieso sie Lizenz so aussieht wie sie aussieht. 

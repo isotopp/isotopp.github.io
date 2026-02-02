@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: MySQL Does Disk I/O
 aliases:
-  - /2019/09/27/mysql-does-disk-io.md.html
+  - /2019/09/27/mysql-does-disk-io.html
 ---
 We had a discussion at work about MySQL doing Disk I/O to a NVME
 disk, and if it is valid to turn off the doublewrite buffer when

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Sturm über roten Wassern'
 aliases:
-  - /2010/08/12/fertig-gelesen-sturm-ber-roten-wassern.md.html
+  - /2010/08/12/fertig-gelesen-sturm-ber-roten-wassern.html
 ---
 [Sturm über roten Wassern](http://www.amazon.de/Sturm-roten-Wassern-Scott-Lynch/dp/3453531132),
 Scott Lynch, EUR 16.00, 944 Seiten.

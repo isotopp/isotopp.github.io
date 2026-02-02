@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: MySQL für Dummies (1)
 aliases:
-  - /2006/03/02/mysql-fuer-dummies-1.md.html
+  - /2006/03/02/mysql-fuer-dummies-1.html
 ---
 
 Ein MySQL Datenbankserver hat ein `datadir`. Das Kommando

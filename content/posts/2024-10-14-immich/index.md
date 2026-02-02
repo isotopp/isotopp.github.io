@@ -8,7 +8,7 @@ tags:
 - image
 title: "Immich"
 aliases:
-  - /2024/10/14/immich.md.html
+  - /2024/10/14/immich.html
 ---
 
 [Immich](https://immich.app) is a web application for self-hosting that emulates the Google Photos interface on the web,

@@ -10,7 +10,7 @@ tags:
 - macos
 - apple
 aliases:
-  - /2018/12/18/kauth-handlers-in-macos.md.html
+  - /2018/12/18/kauth-handlers-in-macos.html
 ---
 
 [kauth handlers in MacOS](https://flylib.com/books/en/3.126.1.140/1/

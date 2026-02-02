@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Netzneutralität ist der Schlüssel zur Wahrung des freien Internets!
 aliases:
-  - /2010/08/11/netzneutralit-t-ist-der-schl-ssel-zur-wahrung-des-freien-internets.md.html
+  - /2010/08/11/netzneutralit-t-ist-der-schl-ssel-zur-wahrung-des-freien-internets.html
 ---
 
 ![](pro-netzneutralitt.png)

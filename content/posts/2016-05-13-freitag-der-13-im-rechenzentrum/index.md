@@ -7,7 +7,7 @@ tags:
 - data center
 title: Freitag, der 13. im Rechenzentrum
 aliases:
-  - /2016/05/13/freitag-der-13-im-rechenzentrum.md.html
+  - /2016/05/13/freitag-der-13-im-rechenzentrum.html
 ---
 (salvaged and edited Google+ Content)
 

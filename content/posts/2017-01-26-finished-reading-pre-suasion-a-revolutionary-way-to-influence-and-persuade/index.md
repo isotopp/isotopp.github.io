@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Finished Reading: Pre-Suasion: A Revolutionary Way to Influence and Persuade'
 aliases:
-  - /2017/01/26/finished-reading-pre-suasion-a-revolutionary-way-to-influence-and-persuade.md.html
+  - /2017/01/26/finished-reading-pre-suasion-a-revolutionary-way-to-influence-and-persuade.html
 ---
 
 ![](2017/01/Bildschirmfoto-2017-01-26-um-21.50.01.png)]

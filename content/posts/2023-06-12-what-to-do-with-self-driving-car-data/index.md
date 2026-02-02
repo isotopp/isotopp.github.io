@@ -9,7 +9,7 @@ tags:
 - bike
 - überwachung
 aliases:
-  - /2023/06/12/what-to-do-with-self-driving-car-data.md.html
+  - /2023/06/12/what-to-do-with-self-driving-car-data.html
 ---
 
 This is what a self-driving car sees, or constructs from the sensor data it uses:

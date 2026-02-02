@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Blackout'
 aliases:
-  - /2012/08/26/fertig-gelesen-blackout.md.html
+  - /2012/08/26/fertig-gelesen-blackout.html
 ---
 [Blackout](http://www.amazon.de/BLACKOUT-Morgen-sp%C3%A4t-Roman-ebook/dp/B007FOKFEU),
 Marc Elsberg, EUR 15.99

@@ -8,7 +8,7 @@ tags:
 - publication
 - unix
 aliases:
-  - /1996/03/01/rwx-sonst-nix.md.html
+  - /1996/03/01/rwx-sonst-nix.html
 ---
 
 **aus "Linux Magazin", Ausgabe 3/96.**

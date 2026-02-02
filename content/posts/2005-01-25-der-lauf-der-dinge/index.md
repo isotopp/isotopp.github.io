@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Der Lauf der Dinge
 aliases:
-  - /2005/01/25/der-lauf-der-dinge.md.html
+  - /2005/01/25/der-lauf-der-dinge.html
 ---
 
  Im [Spielzeugmuseum](http://www.spielzeugmuseum-soltau.de/) wurde neben vielen anderen Dingen auch einer der eigenartigsten Filme gezeigt, den ich je gesehen habe.

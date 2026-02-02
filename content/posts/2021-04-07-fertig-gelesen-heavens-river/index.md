@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: Heaven''s River'
 aliases:
-  - /2021/04/07/fertig-gelesen-heavens-river.md.html
+  - /2021/04/07/fertig-gelesen-heavens-river.html
 ---
 [Heaven's River](https://www.amazon.de/Heavens-River-English-Dennis-Taylor-ebook/dp/B08P3NTSSR) is the fourth part of the Bobiverse Trilogy, in which the original Bob finds a decaying alien megastructure, and investigates.
 

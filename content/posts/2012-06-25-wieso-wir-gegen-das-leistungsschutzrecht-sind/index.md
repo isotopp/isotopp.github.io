@@ -8,7 +8,7 @@ tags:
 - copyright
 title: Wieso wir gegen das Leistungsschutzrecht sind
 aliases:
-  - /2012/06/25/wieso-wir-gegen-das-leistungsschutzrecht-sind.md.html
+  - /2012/06/25/wieso-wir-gegen-das-leistungsschutzrecht-sind.html
 ---
 Auf Google Plus schreibt Christoph Kappes:
 

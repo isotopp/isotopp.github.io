@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: Other Minds'
 aliases:
-  - /2021/04/07/fertig-gelesen-other-minds.md.html
+  - /2021/04/07/fertig-gelesen-other-minds.html
 ---
 Peter Godfrey-Smith writes [Other Minds: The Octopus and the Evolution of Intelligent Life](https://www.amazon.de/Other-Minds-Octopus-Evolution-Intelligent-ebook/dp/B01LXKA6FO), a book about the body, the mind and the life of Octopi.
 

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Greg Bear: Vitals'
 aliases:
-  - /2006/07/30/greg-bear-vitals.md.html
+  - /2006/07/30/greg-bear-vitals.html
 ---
 [Jäger](https://www.amazon.de/gp/product/3453521943) (
 [Vitals](https://www.amazon.de/Vitals-English-Greg-Bear-ebook/dp/B003VIWI1C)): Eine Geschichte über russische Puppen: Bakterien, die in Bakterien leben, und Bakterien, die das Verhalten der Lebewesen, die sie bewohnen von innen heraus steuern. Aber auch Verschwörungen in Verschwörungen und Menschen, die das Verhalten von anderen Menschen von innen heraus steuern. 

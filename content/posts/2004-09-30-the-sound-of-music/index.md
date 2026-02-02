@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: The Sound of Music
 aliases:
-  - /2004/09/30/the-sound-of-music.md.html
+  - /2004/09/30/the-sound-of-music.html
 ---
 Wir haben 2004. Fünf Jahre nach Napster. Noch immer beherrschen Klagen über Raubkopierer statt innovativer Konzepte die Musikindustrie. Wenn man die Berichterstattung in den Medien über die Popkomm auswertet, dann bekommen wir ein klares Bild von einer Industrie, die jeden Bezug zu ihren Kunden verloren hat, und die seit fünf Jahren statt mit Produkten mit Klagen agiert.
 

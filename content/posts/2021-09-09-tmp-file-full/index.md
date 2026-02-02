@@ -8,7 +8,7 @@ tags:
 - mysqldev
 title: 'MySQL: The table ''../tmp/#sql…'' is full'
 aliases:
-  - /2021/09/09/tmp-file-full.md.html
+  - /2021/09/09/tmp-file-full.html
 ---
 We observe a large number of messages of the kind
 

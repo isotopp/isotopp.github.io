@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Gruppenweises TOP N in MySQL: Der Tabellengrößenreport'
 aliases:
-  - /2010/03/09/gruppenweises-top-n-in-mysql-der-tabellengr-enreport.md.html
+  - /2010/03/09/gruppenweises-top-n-in-mysql-der-tabellengr-enreport.html
 ---
 
 Jeder Datenbankserver bei uns hat ein Script laufen, daß den Inhalt von

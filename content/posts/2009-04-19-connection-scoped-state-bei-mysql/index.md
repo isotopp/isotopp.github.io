@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Connection Scoped State bei MySQL
 aliases:
-  - /2009/04/19/connection-scoped-state-bei-mysql.md.html
+  - /2009/04/19/connection-scoped-state-bei-mysql.html
 ---
 Aus einer Diskussion in der deutschsprachigen MySQL Gruppe im USENET. Dort ging es um die Frage, warum phpMyAdmin ein eingeschränktes Werkzeug ist und bei vielen Helfern im Netz unbeliebt. Meine Antwort lautete so:
 

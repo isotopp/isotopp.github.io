@@ -10,7 +10,7 @@ tags:
 - reddit
 title: MySQL Window Functions
 aliases:
-  - /2020/06/21/mysql-window-functions.md.html
+  - /2020/06/21/mysql-window-functions.html
 ---
 Two questions from Reddit's /r/mysql related to Window Functions: [How do I make row.numbers happen](https://www.reddit.com/r/mysql/comments/gue9ct/how_do_i_make_rownumbers_happen/) and [Get the difference between two values in different recordings](https://www.reddit.com/r/mysql/comments/hbx5kk/get_the_difference_between_two_values_in/).
 

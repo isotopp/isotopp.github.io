@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Electric car confusion
 aliases:
-  - /2017/03/23/electric-car-confusion.md.html
+  - /2017/03/23/electric-car-confusion.html
 ---
 Autoblog titles: 
 [The race for autonomous cars is over. Silicon Valley lost](http://www.autoblog.com/2017/02/21/race-for-autonomous-cars-is-over-mcelroy-autoline-opinion/).

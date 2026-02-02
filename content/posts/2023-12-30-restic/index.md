@@ -9,7 +9,7 @@ tags:
 - linux
 - devops
 aliases:
-  - /2023/12/30/restic.md.html
+  - /2023/12/30/restic.html
 ---
 
 Ich hatte Grund, mich mit [Restic]() für Backup auseinander zu setzen.

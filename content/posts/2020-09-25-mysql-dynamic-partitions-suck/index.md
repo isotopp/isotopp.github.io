@@ -11,7 +11,7 @@ tags:
 - mysqldev
 title: 'MySQL: automatic partitions surely would be nice'
 aliases:
-  - /2020/09/25/mysql-dynamic-partitions-suck.md.html
+  - /2020/09/25/mysql-dynamic-partitions-suck.html
 ---
 
 In [Deleting data]({{< relref "2020-09-24-mysql-deleting-data.md" >}}) we have been looking at a process that loads data into MySQL, leveraging partitions to make it easier and faster to later get rid of the data again. For this, we created three processes, a data loader process, and two observers - one for creating partitions, and one for deleting them.

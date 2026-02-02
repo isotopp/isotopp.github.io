@@ -9,7 +9,7 @@ tags:
 - erklaerbaer
 - science
 aliases:
-  - /2019/03/02/nur-eine-theorie.md.html
+  - /2019/03/02/nur-eine-theorie.html
 ---
 
 Die Frage war:

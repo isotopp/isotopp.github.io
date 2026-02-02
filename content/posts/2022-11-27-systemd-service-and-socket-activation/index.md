@@ -8,7 +8,7 @@ tags:
 - python
 - devops
 aliases:
-  - /2022/11/27/systemd-service-and-socket-activation.md.html
+  - /2022/11/27/systemd-service-and-socket-activation.html
 ---
 
 In today's Yak Shaving session I needed to understand how to expose the docker socket of a remote machine over the network.

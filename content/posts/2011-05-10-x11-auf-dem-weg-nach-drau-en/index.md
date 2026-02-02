@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: X11 auf dem Weg nach draußen
 aliases:
-  - /2011/05/10/x11-auf-dem-weg-nach-drau-en.md.html
+  - /2011/05/10/x11-auf-dem-weg-nach-drau-en.html
 ---
 Im September 1987 wurde die Version 11 des X-Protokolls erfunden. Damals war
 alles schlimm: Wir hatten keinen Speicher, keine leistungsfähigen CPUs,

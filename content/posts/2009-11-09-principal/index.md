@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: '''Principal''?'
 aliases:
-  - /2009/11/09/principal.md.html
+  - /2009/11/09/principal.html
 ---
 ![](principal.png)
 

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Migros schaltet i-m.ch ab
 aliases:
-  - /2009/07/28/migros-schaltet-i-m-ch-ab.md.html
+  - /2009/07/28/migros-schaltet-i-m-ch-ab.html
 ---
 [Migros schaltet seine Server aus](http://netzwertig.com/2009/07/27/drm-migros-schliesst-download-shop-i-m-ch-kunden-verlieren-gekaufte-songs/).
 

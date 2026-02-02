@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Das Google-Mißverständnis
 aliases:
-  - /2009/11/07/das-google-missverstaendnis.md.html
+  - /2009/11/07/das-google-missverstaendnis.html
 ---
 Ich glaube ja, daß Google eine der am meisten mißverstandenen Firmen auf
 diesem Planeten ist. Die meisten Leute halten Google für eine globale

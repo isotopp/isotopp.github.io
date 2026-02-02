@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Die fließende Königin'
 aliases:
-  - /2004/01/31/fertig-gelesen-die-fliessende-koenigin.md.html
+  - /2004/01/31/fertig-gelesen-die-fliessende-koenigin.html
 ---
 [Die fließende Königin](https://www.amazon.de/Merle-Die-Fließende-Königin-Merle-Zyklus-ebook/dp/B07ZR53C3M) ist die Beschützerin von Venedig. Nur sie allein hat mit ihrer Magie die Mumien-Truppen des Pharao über 30 Jahre zurückhalten können.
 

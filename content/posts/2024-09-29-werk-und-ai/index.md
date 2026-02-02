@@ -9,7 +9,7 @@ tags:
 - copyright
 title: "Werk und AI"
 aliases:
-  - /2024/09/29/werk-und-ai.md.html
+  - /2024/09/29/werk-und-ai.html
 ---
 
 Jemand fragt im Kontext

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Berliner Mauer
 aliases:
-  - /2008/08/13/berliner-mauer.md.html
+  - /2008/08/13/berliner-mauer.html
 ---
 
 [![](brandenburger_tor_19810.jpg)](http://www.flickr.com/photos/roessler/2168110679/)

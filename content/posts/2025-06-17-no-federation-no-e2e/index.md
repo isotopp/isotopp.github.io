@@ -9,7 +9,7 @@ tags:
 - chat
 - security
 aliases:
-  - /2025/06/17/no-federation-no-e2e.md.html
+  - /2025/06/17/no-federation-no-e2e.html
 ---
 
 An unpopular opinion:

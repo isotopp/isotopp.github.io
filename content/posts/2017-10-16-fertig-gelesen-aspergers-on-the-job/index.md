@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: Asperger''s on the Job'
 aliases:
-  - /2017/10/16/fertig-gelesen-aspergers-on-the-job.md.html
+  - /2017/10/16/fertig-gelesen-aspergers-on-the-job.html
 ---
 [![](2017/10/as-on-the-job-194x300.jpg)](Asperger's on the Job) 
 

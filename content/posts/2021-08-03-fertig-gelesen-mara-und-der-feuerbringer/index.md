@@ -9,7 +9,7 @@ tags:
 - book
 title: 'Fertig gelesen: Mara und der Feuerbringer'
 aliases:
-  - /2021/08/03/fertig-gelesen-mara-und-der-feuerbringer.md.html
+  - /2021/08/03/fertig-gelesen-mara-und-der-feuerbringer.html
 ---
 
 Tommmy Krappweis ist nicht nur der Schöpfer von "Bernd, das Brot", sondern auch ein Musiker, Stuntman, Filmemacher und Autor diverser Bücher.

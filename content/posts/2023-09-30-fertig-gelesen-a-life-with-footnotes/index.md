@@ -9,7 +9,7 @@ tags:
 - media
 - book
 aliases:
-  - /2023/09/30/fertig-gelesen-a-life-with-footnotes.md.html
+  - /2023/09/30/fertig-gelesen-a-life-with-footnotes.html
 ---
 
 Rob Wilkins was the assistant and a good friend of Terry Pratchett.

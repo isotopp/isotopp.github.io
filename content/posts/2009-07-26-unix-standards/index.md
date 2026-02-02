@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Unix-"Standards"
 aliases:
-  - /2009/07/26/unix-standards.md.html
+  - /2009/07/26/unix-standards.html
 ---
 Die Geschichte von Unix ist eine Geschichte der gescheiterten oder unbrauchbaren Standards - ihre Zahl ist Legion. 
 

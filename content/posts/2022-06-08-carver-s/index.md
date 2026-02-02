@@ -7,7 +7,7 @@ tags:
 - lang_en
 - mobility
 aliases:
-  - /2022/06/08/carver-s.md.html
+  - /2022/06/08/carver-s.html
 ---
 
 After getting [a solar roof]({{< relref "2022-05-02-a-solar-roof.md" >}}) we have been looking at electric mobility solutions.

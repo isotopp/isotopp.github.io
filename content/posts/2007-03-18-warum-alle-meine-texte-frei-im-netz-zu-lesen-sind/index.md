@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Warum alle meine Texte frei im Netz zu lesen sind
 aliases:
-  - /2007/03/18/warum-alle-meine-texte-frei-im-netz-zu-lesen-sind.md.html
+  - /2007/03/18/warum-alle-meine-texte-frei-im-netz-zu-lesen-sind.html
 ---
 
 Die Süddeutsche Zeitung hat einen etwas unklaren Artikel mit dem Titel

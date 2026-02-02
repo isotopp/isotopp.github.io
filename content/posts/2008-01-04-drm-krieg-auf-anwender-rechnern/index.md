@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: DRM Krieg auf Anwender-Rechnern
 aliases:
-  - /2008/01/04/drm-krieg-auf-anwender-rechnern.md.html
+  - /2008/01/04/drm-krieg-auf-anwender-rechnern.html
 ---
 [Bad COPP No Netflix](http://davisfreeberg.com/2008/01/03/bad-copp-no-netflix/): 
 

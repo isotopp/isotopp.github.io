@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Regeln vs. Genrekonventionen
 aliases:
-  - /2005/07/06/regeln-vs-genrekonventionen.md.html
+  - /2005/07/06/regeln-vs-genrekonventionen.html
 ---
 Bei den Rollenspielern gibt es einige Versuche, eine Taxonomie aufzustellen.
 Letztendlich dient es dazu, die Frage zu klären: "Warum spielst Du?" oder

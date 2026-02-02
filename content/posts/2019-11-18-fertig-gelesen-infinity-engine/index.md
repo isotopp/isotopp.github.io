@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: Infinity Engine'
 aliases:
-  - /2019/11/18/fertig-gelesen-infinity-engine.md.html
+  - /2019/11/18/fertig-gelesen-infinity-engine.html
 ---
 [Infinity Engine](https://www.amazon.de/Infinity-Engine-Transformation-Book-Three/dp/159780889X)
 is the third and final book in Neal Asher's

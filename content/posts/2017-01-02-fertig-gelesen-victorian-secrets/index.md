@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Victorian Secrets'
 aliases:
-  - /2017/01/02/fertig-gelesen-victorian-secrets.md.html
+  - /2017/01/02/fertig-gelesen-victorian-secrets.html
 ---
 Sarah Chrisman ist ein Portländer Original mit starken Meinungen. Während ihr Mann einen DeLorean DMC-12 restauriert und fährt, bekommt sie aus Gründen ein Korsett geschenkt und beginnt, es zu tragen und in Folge historische viktorianische Kleidung zu restaurieren und zu tragen.
 

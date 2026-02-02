@@ -8,7 +8,7 @@ tags:
 - mysql
 - lang_en
 aliases:
-  - /2022/07/01/i-have-met-the-enemy-and-they-are-us.md.html
+  - /2022/07/01/i-have-met-the-enemy-and-they-are-us.html
 ---
 
 Another Friday, another replication hierarchy lost.

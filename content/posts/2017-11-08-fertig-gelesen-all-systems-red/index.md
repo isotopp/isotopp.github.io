@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: All Systems Red'
 aliases:
-  - /2017/11/08/fertig-gelesen-all-systems-red.md.html
+  - /2017/11/08/fertig-gelesen-all-systems-red.html
 ---
 »I COULD HAVE BECOME a mass murderer after I hacked my governor
 module, but then I realized I could access the combined feed of

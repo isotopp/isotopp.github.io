@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: 'MySQL: Zeichensatz-Grundlagen'
 aliases:
-  - /2006/10/01/mysql-zeichensatz-grundlagen.md.html
+  - /2006/10/01/mysql-zeichensatz-grundlagen.html
 ---
 Markus fragt:
 

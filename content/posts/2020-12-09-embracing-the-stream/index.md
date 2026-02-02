@@ -7,7 +7,7 @@ tags:
 - devops
 title: Embracing the Stream
 aliases:
-  - /2020/12/09/embracing-the-stream.md.html
+  - /2020/12/09/embracing-the-stream.html
 ---
 
 So this happened: [CentOS Project shifts focus to CentOS Stream](https://lists.centos.org/pipermail/centos-announce/2020-December/048208.html)

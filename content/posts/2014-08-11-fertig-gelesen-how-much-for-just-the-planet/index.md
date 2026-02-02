@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: "How Much for Just the Planet?"'
 aliases:
-  - /2014/08/11/fertig-gelesen-how-much-for-just-the-planet.md.html
+  - /2014/08/11/fertig-gelesen-how-much-for-just-the-planet.html
 ---
 >The door opened again, and Ship’s Surgeon Leonard McCoy came in. Without a word to anyone, he walked crookedly to the wall, leaned heavily against it, and said something that sounded like “Plergb hfarizz ungemby, and coffee.” Bones McCoy was not a morning person.
 

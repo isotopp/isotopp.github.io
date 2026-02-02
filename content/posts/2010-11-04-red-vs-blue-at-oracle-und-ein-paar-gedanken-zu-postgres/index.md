@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Red vs Blue at Oracle, und ein paar Gedanken zu Postgres
 aliases:
-  - /2010/11/04/red-vs-blue-at-oracle-und-ein-paar-gedanken-zu-postgres.md.html
+  - /2010/11/04/red-vs-blue-at-oracle-und-ein-paar-gedanken-zu-postgres.html
 ---
 [Ich schrieb](http://www.heise.de/ix/news/foren/S-Re-Kann-MySQL-eigentlich-irgendetwas/forum-188566/msg-19386125/read/): 
 > heretic666 schrieb am 4. November 2010 12:11

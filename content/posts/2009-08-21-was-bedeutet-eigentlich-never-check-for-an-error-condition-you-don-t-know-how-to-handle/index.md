@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Was bedeutet eigentlich "Never check for an error condition you don't know how to handle"
 aliases:
-  - /2009/08/21/was-bedeutet-eigentlich-never-check-for-an-error-condition-you-don-t-know-how-to-handle.md.html
+  - /2009/08/21/was-bedeutet-eigentlich-never-check-for-an-error-condition-you-don-t-know-how-to-handle.html
 ---
 Der Informatiker ist ein seltsames Wesen. In seiner Wissenschaft gibt es zum Beispiel ein paar Regeln, die beim ersten Mal gehört sehr seltsam klingen, die aber beim längeren Nachdenken und mit ein bischen Erklärung dazu Weisheiten enthalten, die manchmal auch außerhalb der Informatik von einigem Belang sein können.
 

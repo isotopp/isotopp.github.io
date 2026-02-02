@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Alte Männer mit Kugelschreibern
 aliases:
-  - /2007/09/18/alte-m-nner-mit-kugelschreibern.md.html
+  - /2007/09/18/alte-m-nner-mit-kugelschreibern.html
 ---
 Bov Bjerg schreibt in 
 [Alte Männer mit Kugelschreibern](https://jungle.world/artikel/2007/36/alte-maenner-mit-kugelschreibern) für die Jungle World: 

@@ -8,7 +8,7 @@ tags:
 - mysql
 - lang_en
 aliases:
-  - /2022/04/04/devops-meets-databases.md.html
+  - /2022/04/04/devops-meets-databases.html
 ---
 
 On Twitter, [Samuel Nitsche](https://twitter.com/Der_Pesse/status/1510386289924837383) asked:

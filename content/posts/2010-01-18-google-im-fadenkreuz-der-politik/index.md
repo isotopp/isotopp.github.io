@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Google im Fadenkreuz der Politik
 aliases:
-  - /2010/01/18/google-im-fadenkreuz-der-politik.md.html
+  - /2010/01/18/google-im-fadenkreuz-der-politik.html
 ---
 Einmal schreibt Susanne Gaschke in der Zeit 
 [einen weiteren Hetzartikel gegen Google](http://www.zeit.de/2010/03/01-Google) und wie wir alle in den Händen

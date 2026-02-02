@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Wir sind so geil, ...
 aliases:
-  - /2004/02/12/wir-sind-so-geil.md.html
+  - /2004/02/12/wir-sind-so-geil.html
 ---
 Wir sind so geil, 
 [wir sprechen XML](http://www.supergarv.de/serendipity/archives/311_s9y_Individualisierter_RSSFeed_per_Conditional_Get.html).

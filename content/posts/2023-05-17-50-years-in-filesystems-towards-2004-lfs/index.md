@@ -9,7 +9,7 @@ tags:
 - unix
 - filesystems
 aliases:
-  - /2023/05/17/50-years-in-filesystems-towards-2004-lfs.md.html
+  - /2023/05/17/50-years-in-filesystems-towards-2004-lfs.html
 ---
 
 This is part 5 of a series.

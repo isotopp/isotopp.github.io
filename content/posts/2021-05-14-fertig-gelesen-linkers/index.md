@@ -9,7 +9,7 @@ tags:
 - media
 title: 'Fertig gelesen: Linkers'
 aliases:
-  - /2021/05/14/fertig-gelesen-linkers.md.html
+  - /2021/05/14/fertig-gelesen-linkers.html
 ---
 
 Ian Lance Taylor is the author of a UUCP program that I have been using for a long time to connect to other USENET systems, long before I had access to the actual Internet.

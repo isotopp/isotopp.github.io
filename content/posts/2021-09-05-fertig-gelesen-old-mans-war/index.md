@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Old Man''s War'
 aliases:
-  - /2021/09/05/fertig-gelesen-old-mans-war.md.html
+  - /2021/09/05/fertig-gelesen-old-mans-war.html
 ---
 
 "[Old Man's War](https://www.amazon.de/Old-Mans-English-John-Scalzi-ebook/dp/B000SEIK2S)" is the first "large" works by John Scalzi,

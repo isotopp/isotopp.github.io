@@ -9,7 +9,7 @@ tags:
 - book
 title: 'Fertig gelesen: A Kim Jong-Il Production'
 aliases:
-  - /2021/08/03/fertig-gelesen-a-kim-jong-il-production.md.html
+  - /2021/08/03/fertig-gelesen-a-kim-jong-il-production.html
 ---
 
 Paul Fischer writes "[A Kim Jong-Il Production](https://www.amazon.de/gp/product/B00OMH54L2)", a documentary the 1978 abduction of the famous South Korean actress Madam Choi, and her ex-husband, the filmmaker Shin Sang-Ok.

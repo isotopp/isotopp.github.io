@@ -9,7 +9,7 @@ tags:
 - mysqldev
 - data warehouse
 aliases:
-  - /2022/11/16/of-stars-and-snowflakes.md.html
+  - /2022/11/16/of-stars-and-snowflakes.html
 ---
 
 # A sample system

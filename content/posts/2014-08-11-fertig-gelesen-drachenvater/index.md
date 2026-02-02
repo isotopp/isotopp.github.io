@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: "Drachenväter"'
 aliases:
-  - /2014/08/11/fertig-gelesen-drachenvater.md.html
+  - /2014/08/11/fertig-gelesen-drachenvater.html
 ---
 Eine Reise in die Geschichte und die Ursprünge des Rollenspiels und der Erzählspiele. D&D, Empires of the Petal Throne und was alles danach passierte, wieso wir uns in den 80er Jahren trotz des unsagbar schlechten Fernsehprogrammes nicht gelangweilt haben und viel zu viele Cover von Rollenspielbüchern.
 

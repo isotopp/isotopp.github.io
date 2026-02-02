@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Acht Jahre SCO-Prozeß
 aliases:
-  - /2011/08/31/acht-jahre-sco-proze.md.html
+  - /2011/08/31/acht-jahre-sco-proze.html
 ---
 Im März 2003 begann die Firma, die mal Caldera hieß und sich in SCO Group
 umbenannte, IBM auf eine Fantasiesumme von Schadenersatz zu verklagen, weil

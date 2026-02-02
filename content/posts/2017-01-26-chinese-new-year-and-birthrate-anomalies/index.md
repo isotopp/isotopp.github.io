@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Chinese New Year, and birthrate anomalies
 aliases:
-  - /2017/01/26/chinese-new-year-and-birthrate-anomalies.md.html
+  - /2017/01/26/chinese-new-year-and-birthrate-anomalies.html
 ---
 ![](2017/01/f9463344d3ed41479d28dcd7.jpg) 
 

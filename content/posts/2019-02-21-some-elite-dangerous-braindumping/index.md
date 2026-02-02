@@ -8,7 +8,7 @@ tags:
 - lang_de
 - elite dangerous
 aliases:
-  - /2019/02/21/some-elite-dangerous-braindumping.md.html
+  - /2019/02/21/some-elite-dangerous-braindumping.html
 ---
 
 # Some Elite: Dangerous Braindumping

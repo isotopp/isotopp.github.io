@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Land of Desire'
 aliases:
-  - /2013/11/23/fertig-gelesen-land-of-desire.md.html
+  - /2013/11/23/fertig-gelesen-land-of-desire.html
 ---
 Ein Sachbuch über die Ursprünge der Konsumentenkultur in den USA, und dem Rest der Welt im Kontext der industriellen Revolution zu Anfang des zwanzigsten Jahrhunderts. Gezeigt werden die technischen und sozialen Veränderungen und wie sie die Gesellschaft und ihre Werte verändert haben. Dabei verzichtet das Buch weitgehend auf Wertungen und beschränkt sich auf Darstellung der Zusammenhänge und Belege.
 

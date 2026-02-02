@@ -8,7 +8,7 @@ tags:
 - storage
 title: Cloning and splitting logical volumes
 aliases:
-  - /2019/12/02/cloning-and-splitting-logical-volumes.md.html
+  - /2019/12/02/cloning-and-splitting-logical-volumes.html
 ---
 Where I work, we routinely run our databases on XFS on LVM2.
 

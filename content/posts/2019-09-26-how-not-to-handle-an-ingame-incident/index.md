@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: The Rockforth Fertilizer Incident
 aliases:
-  - /2019/09/26/how-not-to-handle-an-ingame-incident.md.html
+  - /2019/09/26/how-not-to-handle-an-ingame-incident.html
 ---
 So I have been playing this Internet Spaceships Game. 
 [No, the other one](https://www.frontierstore.net/games/elite-dangerous-cat.html).

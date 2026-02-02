@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Persona - was Julia Seeliger mit Marcel D'Avis verbindet
 aliases:
-  - /2010/03/15/persona-was-julia-seeliger-mit-marcel-d-avis-verbindet.md.html
+  - /2010/03/15/persona-was-julia-seeliger-mit-marcel-d-avis-verbindet.html
 ---
 Ich schreibe diesen Beitrag einmal provisorisch in meine Kategorie 'Blog',
 aber es könnte genau so gut auch in die Kategorie 'Politik', 'Piraten', in

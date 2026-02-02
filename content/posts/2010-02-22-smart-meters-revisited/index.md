@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Smart Meters revisited
 aliases:
-  - /2010/02/22/smart-meters-revisited.md.html
+  - /2010/02/22/smart-meters-revisited.html
 ---
 
 Im Juni letzten Jahres fragte ich 

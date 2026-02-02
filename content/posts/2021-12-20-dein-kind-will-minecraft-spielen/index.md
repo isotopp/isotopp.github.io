@@ -9,7 +9,7 @@ tags:
 - microsoft
 - minecraft
 aliases:
-  - /2021/12/20/dein-kind-will-minecraft-spielen.md.html
+  - /2021/12/20/dein-kind-will-minecraft-spielen.html
 ---
 
 Nachdem mich jetzt das dritte Paar computer-affiner Eltern mal gefragt hat, was man denn braucht, sobald der Nachwuchs sich "Minecraft" wünscht, hier der Aufschrieb zum Thema.

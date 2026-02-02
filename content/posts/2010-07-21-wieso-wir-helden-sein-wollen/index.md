@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Wieso wir Helden sein wollen
 aliases:
-  - /2010/07/21/wieso-wir-helden-sein-wollen.md.html
+  - /2010/07/21/wieso-wir-helden-sein-wollen.html
 ---
 Vor drei Jahren schrieb ich etwas zu 
 [Echten Helden]({{< relref "2007-09-07-echte-helden.md" >}})

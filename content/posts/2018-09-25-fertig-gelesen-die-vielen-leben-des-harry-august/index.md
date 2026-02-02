@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: Die vielen Leben des Harry August'
 aliases:
-  - /2018/09/25/fertig-gelesen-die-vielen-leben-des-harry-august.md.html
+  - /2018/09/25/fertig-gelesen-die-vielen-leben-des-harry-august.html
 ---
 Harry August lebt sein Leben das erste Mal, und es war nicht schön, 1919 als uneheliches Kind eines ziemlich verkommenen englischen Landadeligen als Bastard aufgezogen zu werden, aufzuwachsen, Weltkrieg, Nachkriegszeit, Tod 1989 in Newcastle...
 

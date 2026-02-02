@@ -10,7 +10,7 @@ tags:
 - development
 - java
 aliases:
-  - /2024/03/03/dynamically-loading-classes-in-java.md.html
+  - /2024/03/03/dynamically-loading-classes-in-java.html
 ---
 
 The son needed to dynamically load some Java class into Minecraft, 

@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Project Zero
 aliases:
-  - /2017/06/29/project-zero.md.html
+  - /2017/06/29/project-zero.html
 ---
 [![](2017/06/zer_google_project_zero-150x150.jpg)](http://fortune.com/2017/06/23/google-project-zero-hacker-swat-team/)
 

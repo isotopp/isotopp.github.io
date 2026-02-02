@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Unfälle mit dem Bundestrojaner
 aliases:
-  - /2007/05/02/unf-lle-mit-dem-bundestrojaner.md.html
+  - /2007/05/02/unf-lle-mit-dem-bundestrojaner.html
 ---
 
 ![](bundestrojaner.jpg)

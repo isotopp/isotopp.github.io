@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Good Taste'
 aliases:
-  - /2018/07/15/fertig-gelesen-good-taste-isaac-asimov-1976.md.html
+  - /2018/07/15/fertig-gelesen-good-taste-isaac-asimov-1976.html
 ---
 "Good Taste", Isaac Asimov (1976)
 

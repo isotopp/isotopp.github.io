@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Neue Ideen in Dateisystemen (oder: BTRFS in Fedora 11)'
 aliases:
-  - /2009/02/06/neue-ideen-in-dateisystemen-oder-btrfs-in-fedora-11.md.html
+  - /2009/02/06/neue-ideen-in-dateisystemen-oder-btrfs-in-fedora-11.html
 ---
 > There are two kinds of fool. One says, “This is old, and therefore good..” And one says “This is new, and therefore better..”	—John Brunner, in The Shockwave Rider
 

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Das generelle Mißverständnis beim Bundestrojaner
 aliases:
-  - /2007/03/12/das-generelle-mi-verst-ndnis-beim-bundestrojaner.md.html
+  - /2007/03/12/das-generelle-mi-verst-ndnis-beim-bundestrojaner.html
 ---
 Eine Million Leute fragen nach technischen Interviews zum Thema
 Bundestrojaner. Nichts könnte irrelevanter sein.

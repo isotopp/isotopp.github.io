@@ -8,7 +8,7 @@ tags:
 - mobility
 - bike
 aliases:
-  - /2022/06/08/how-to-buy-an-ebike.md.html
+  - /2022/06/08/how-to-buy-an-ebike.html
 ---
 
 I [have been asked](https://twitter.com/isotopp/status/1534158787891843073) what kind of bike I ride and how to choose one.

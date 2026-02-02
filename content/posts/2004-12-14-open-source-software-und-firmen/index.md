@@ -8,7 +8,7 @@ tags:
 - free software
 title: Open Source Software und Firmen
 aliases:
-  - /2004/12/14/open-source-software-und-firmen.md.html
+  - /2004/12/14/open-source-software-und-firmen.html
 ---
 
 Viele Firmen verwenden Open Source.

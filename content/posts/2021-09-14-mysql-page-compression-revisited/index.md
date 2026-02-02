@@ -8,7 +8,7 @@ tags:
 - mysqldev
 title: 'MySQL: Page compression revisited'
 aliases:
-  - /2021/09/14/mysql-page-compression-revisited.md.html
+  - /2021/09/14/mysql-page-compression-revisited.html
 ---
 Like I said, I never had much reason to use table compression, and only recently looked into the topic.
 MySQL Page Compression looks a lot easier at the database end of things, but relies on hole punching support in the file system.

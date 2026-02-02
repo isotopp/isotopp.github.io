@@ -9,7 +9,7 @@ tags:
 - database
 title: 'MySQL: Provisioning .mylogin.cnf'
 aliases:
-  - /2020/09/23/mylogin-cnf.md.html
+  - /2020/09/23/mylogin-cnf.html
 ---
 MySQL uses connection and config parameters from a number of possible sources. The easiest way to find out where it is looking for config files is to run
 

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Mein natives IP V6
 aliases:
-  - /2009/02/10/mein-natives-ip-v6.md.html
+  - /2009/02/10/mein-natives-ip-v6.html
 ---
 Mein dedizierter Server in Berlin hat seit Ende Januar IP V6 nativ. Als
 Testkunde habe ich die Connectivity vor dem Rollout bekommen - eine IP V6

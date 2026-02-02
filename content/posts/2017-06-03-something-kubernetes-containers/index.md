@@ -9,7 +9,7 @@ tags:
 - kubernetes
 title: Something Kubernetes Containers
 aliases:
-  - /2017/06/03/something-kubernetes-containers.md.html
+  - /2017/06/03/something-kubernetes-containers.html
 ---
 
 Talk given at the Netways Open Source Data Center Conference 2017.

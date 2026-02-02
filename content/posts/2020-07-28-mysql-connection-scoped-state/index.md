@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: MySQL Connection Scoped State
 aliases:
-  - /2020/07/28/mysql-connection-scoped-state.md.html
+  - /2020/07/28/mysql-connection-scoped-state.html
 ---
 MySQL speaks its own proprietary protocol.
 It cannot be routed by an HTTP proxy, and a MySQL connection is entire unlike an HTTP connection.

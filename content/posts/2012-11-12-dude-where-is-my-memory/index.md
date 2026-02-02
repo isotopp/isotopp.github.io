@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Dude, where is my memory?
 aliases:
-  - /2012/11/12/dude-where-is-my-memory.md.html
+  - /2012/11/12/dude-where-is-my-memory.html
 ---
 "Kris, bitte schau Dir mal unsere Datenbank an.  Wir haben hier einen
 Generator für unsere Materialized Views, und auf einer Datenbank von 6 GB

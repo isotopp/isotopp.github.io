@@ -9,7 +9,7 @@ tags:
 - remote first
 title: The company as a social engine
 aliases:
-  - /2017/08/07/the-company-as-a-social-engine.md.html
+  - /2017/08/07/the-company-as-a-social-engine.html
 ---
 So why is everything so complicated? At work, I mean. 
 

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Architektur heißt umbauen
 aliases:
-  - /2012/03/06/architektur-hei-t-umbauen.md.html
+  - /2012/03/06/architektur-hei-t-umbauen.html
 ---
 ![Theatre of Marcellus](Architekturheisstumbauen.jpg)
 

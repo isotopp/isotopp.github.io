@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: mysql> quit;
 aliases:
-  - /2008/05/28/mysql-quit.md.html
+  - /2008/05/28/mysql-quit.html
 ---
 
 Mit dem Ende dieser Woche [endet nicht nur die MySQL Deutschland GmbH]({{< relref "2008-01-16-sunw-aeh-java.md" >}})</a>, sondern auch meine Tätigkeit bei MySQL. 

@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Die relationale Datenbank wird 40.
 aliases:
-  - /2010/06/08/die-relationale-datenbank-wird-40.md.html
+  - /2010/06/08/die-relationale-datenbank-wird-40.html
 ---
 Nicht nur wird PHP im Juni 15 Jahre alt, sondern ein anderer, älterer
 Begleiter von PHP feiert ebenfalls ein Jubiläum:

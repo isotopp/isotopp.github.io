@@ -8,7 +8,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2022/11/07/bandwidth-iops-and-latency.md.html
+  - /2022/11/07/bandwidth-iops-and-latency.html
 ---
 
 ![](2022/11/db-metrics-01.jpg)

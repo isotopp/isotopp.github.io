@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'Erst Dienste wie Street View machen den öffentlichen Raum wirklich öffentlich '
 aliases:
-  - /2010/08/19/erst-dienste-wie-street-view-machen-den-ffentlichen-raum-wirklich-ffentlich.md.html
+  - /2010/08/19/erst-dienste-wie-street-view-machen-den-ffentlichen-raum-wirklich-ffentlich.html
 ---
 In [Kennzeichen Digital](http://blog.zdf.de/zdfdasblog/2010/08/erst-dienste-wie-street-view-m.html)
 beim ZDF schreibt Mario Sixtus einen ganz wunderbaren Text über die ganze

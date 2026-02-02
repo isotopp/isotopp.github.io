@@ -9,7 +9,7 @@ tags:
 - erklaerbaer
 - work
 aliases:
-  - /2023/10/10/sitzende-taetigkeit.md.html
+  - /2023/10/10/sitzende-taetigkeit.html
 ---
 
 Ich arbeite im Sitzen, 8h am Tag beruflich, und dann noch ein wenig mehr aus Spaß:

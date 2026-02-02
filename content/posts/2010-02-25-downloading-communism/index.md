@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Downloading communism...
 aliases:
-  - /2010/02/25/downloading-communism.md.html
+  - /2010/02/25/downloading-communism.html
 ---
 ![](Download_communism.jpg)
 

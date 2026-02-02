@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Flash Boys'
 aliases:
-  - /2014/10/04/fertig-gelesen-flash-boys.md.html
+  - /2014/10/04/fertig-gelesen-flash-boys.html
 ---
 Ein Buch darüber, wie die Börse sich in den vergangenen 10 Jahren verändert hat, und warum sie nichts mehr mit den Ideen und Konzepten zu tun hat, die in unseren Köpfen existieren.
 

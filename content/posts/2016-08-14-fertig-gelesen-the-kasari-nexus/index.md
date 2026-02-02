@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: The Kasari Nexus'
 aliases:
-  - /2016/08/14/fertig-gelesen-the-kasari-nexus.md.html
+  - /2016/08/14/fertig-gelesen-the-kasari-nexus.html
 ---
 Was bisher geschah: [The Rho Agenda Trilogy]({{< relref "2011-05-08-fertig-gelesen-the-rho-agenda-the-second-ship-und-immune.md" >}})
 

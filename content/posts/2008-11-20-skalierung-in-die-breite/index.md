@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Skalierung in die Breite
 aliases:
-  - /2008/11/20/skalierung-in-die-breite.md.html
+  - /2008/11/20/skalierung-in-die-breite.html
 ---
 
 Dies ist quasi der 2. Teil zum 

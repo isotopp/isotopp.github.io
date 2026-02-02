@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Die Drohnen des Monsieur Leclerq'
 aliases:
-  - /2015/11/29/fertig-gelesen-die-drohnen-des-monsieur-leclerq.md.html
+  - /2015/11/29/fertig-gelesen-die-drohnen-des-monsieur-leclerq.html
 ---
 Das Buch ist eine Sammlung von lose verbundenen Vignetten. Der namengebende Monsieur Leclerq ist ein in Brüssel lebender Koreaner, der dort als PR-Berater in einer Agentur tätig ist. Das Buch spielt im Universum von Drohnenland, und die Geschichten werfen eine Reihe von pointierten Schlaglichtern auf diese Welt.
 

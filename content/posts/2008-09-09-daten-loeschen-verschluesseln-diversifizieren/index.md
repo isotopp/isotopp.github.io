@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: "Daten - löschen, verschlüsseln, diversifizieren"
 aliases:
-  - /2008/09/09/daten-loeschen-verschluesseln-diversifizieren.md.html
+  - /2008/09/09/daten-loeschen-verschluesseln-diversifizieren.html
 ---
 
 [Gestohlene Datensätze von PwC missbraucht](http://www.heise.de/newsticker/Gestohlene-PwC-Datensaetze-fuer-Missbrauch-von-Click-Buy-benutzt-Update--/meldung/115621) titelt Heise.

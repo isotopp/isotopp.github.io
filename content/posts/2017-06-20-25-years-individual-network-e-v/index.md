@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 25 years "Individual Network e.V."
 aliases:
-  - /2017/06/20/25-years-individual-network-e-v.md.html
+  - /2017/06/20/25-years-individual-network-e-v.html
 ---
 Heiko Schlichting reminds us that 
 [25 years ago, on the 20./21. of June 1992, the Individual Network e.V. was created](https://plus.google.com/101393200017787888697/posts/RD5VLcaQDaA)

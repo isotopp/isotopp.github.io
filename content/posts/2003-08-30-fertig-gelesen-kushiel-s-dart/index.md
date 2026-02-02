@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Kushiel''s Dart'
 aliases:
-  - /2003/08/30/fertig-gelesen-kushiel-s-dart.md.html
+  - /2003/08/30/fertig-gelesen-kushiel-s-dart.html
 ---
 [Kushiel's Dart](https://www.amazon.de/Kushiels-Dart-Legacy-Book-English-ebook/dp/B0055DLCAY) - Eine Mantel-und-Degen Geschichte in einer seltsamen Parallelwelt, in der die Römer Britannien nicht erobert haben und in der Jesus Sohn in Frankreich freie Liebe gepredigt hat.
 

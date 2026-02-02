@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Wider die Verflachung! Gefahren des Tonfilms
 aliases:
-  - /2009/06/23/wider-die-verflachung-gefahren-des-tonfilms.md.html
+  - /2009/06/23/wider-die-verflachung-gefahren-des-tonfilms.html
 ---
 ![](salbader-tonfilm.gif)
 

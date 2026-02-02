@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Kostenloskultur
 aliases:
-  - /2010/06/30/kostenloskultur.md.html
+  - /2010/06/30/kostenloskultur.html
 ---
 Dirk von Gehlen schreibt in 
 [Journalistisches Freibier](http://www.dirkvongehlen.de/index.php/netz/journalistisches-freibier/) 

@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Understanding sysdig
 aliases:
-  - /2017/04/20/understanding-sysdig.md.html
+  - /2017/04/20/understanding-sysdig.html
 ---
 The [open source](https://github.com/draios/sysdig)
 [sysdig](http://www.sysdig.org/) is a piece of software that does not quite,

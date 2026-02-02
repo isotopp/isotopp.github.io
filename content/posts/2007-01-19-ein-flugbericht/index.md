@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Ein Flugbericht
 aliases:
-  - /2007/01/19/ein-flugbericht.md.html
+  - /2007/01/19/ein-flugbericht.html
 ---
 
 Martin schreibt mir:

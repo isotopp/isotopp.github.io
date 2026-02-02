@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Dennis Ritchie (Sep 1941-Okt 2011)
 aliases:
-  - /2011/10/13/dennis-ritchie-sep-1941-okt-2011.md.html
+  - /2011/10/13/dennis-ritchie-sep-1941-okt-2011.html
 ---
 Das da ist 
 [Dennis Ritchie](http://en.wikipedia.org/wiki/Dennis_Ritchie),

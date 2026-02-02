@@ -11,7 +11,7 @@ tags:
   - web
   - lang_de
 aliases:
-  - /2024/01/16/jusprog-ist-nur-der-anfang.md.html
+  - /2024/01/16/jusprog-ist-nur-der-anfang.html
 ---
 
 Es ist also dies hier passiert:

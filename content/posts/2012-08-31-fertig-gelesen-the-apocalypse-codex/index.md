@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: The Apocalypse Codex'
 aliases:
-  - /2012/08/31/fertig-gelesen-the-apocalypse-codex.md.html
+  - /2012/08/31/fertig-gelesen-the-apocalypse-codex.html
 ---
 [The Apocalypse Codex](http://www.amazon.com/The-Apocalypse-Codex-ebook/dp/B0072NWKIS),
 Charles Stross, USD 12.99

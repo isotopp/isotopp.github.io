@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Die Torte schlägt zurück'
 aliases:
-  - /2016/02/28/fertig-gelesen-die-torte-schlagt-zuruck.md.html
+  - /2016/02/28/fertig-gelesen-die-torte-schlagt-zuruck.html
 ---
 > Hör Du meine Worte
 > und suche eine Torte

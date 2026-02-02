@@ -8,7 +8,7 @@ tags:
 - computer
 title: Projektschmerzen
 aliases:
-  - /2021/10/01/projektschmerzen.md.html
+  - /2021/10/01/projektschmerzen.html
 ---
 
 Es beginnt mit [einem Tweet von Manuel Atug](https://mobile.twitter.com/HonkHase/status/1443623907064492035):

@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: Explorations - First Contact'
 aliases:
-  - /2017/02/28/fertig-gelesen-explorations-first-contact.md.html
+  - /2017/02/28/fertig-gelesen-explorations-first-contact.html
 ---
 [![](2017/02/Screen-Shot-2017-02-28-at-22.19.32.png)](https://www.amazon.de/Explorations-Contact-English-Isaac-Hooke-ebook/dp/B01NCUWEF8)
 

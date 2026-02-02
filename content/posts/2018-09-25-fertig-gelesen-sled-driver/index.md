@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Sled Driver'
 aliases:
-  - /2018/09/25/fertig-gelesen-sled-driver.md.html
+  - /2018/09/25/fertig-gelesen-sled-driver.html
 ---
 The SR-71 was the fastest, highest, stealthiest airplane, built from exotic materials, and it looked really mean - but was unarmed. Its engines were its only defense and the only thing it ever shot were pictures. How did it come to be, how did it fly, what did it do and what was it like to fly it.
 

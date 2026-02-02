@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Broken Tablet'
 aliases:
-  - /2016/08/14/fertig-gelesen-broken-tablet.md.html
+  - /2016/08/14/fertig-gelesen-broken-tablet.html
 ---
 Ok, ein Aspie-Kandidat hat 
 [Snow Crash](https://en.wikipedia.org/wiki/Snow_Crash) gelesen und ist von den Erwähnungen sumerischer Kultur und Alt-Enochisch als Sprache fasziniert und tut das, was ein Aspie in so einer Situation als normal empfindet: Er lernt alles über das Thema, verdaut es und erzeugt dann einen Braindump. Der ist durchaus lesbar.

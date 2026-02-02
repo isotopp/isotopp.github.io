@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Out of the Black'
 aliases:
-  - /2011/05/08/fertig-gelesen-out-of-the-black.md.html
+  - /2011/05/08/fertig-gelesen-out-of-the-black.html
 ---
 "[Out of the Black](http://www.amazon.com/Out-of-the-Black-ebook/dp/B00295RII6)", 
 Lee Doty, 2.93 USD

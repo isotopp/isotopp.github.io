@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Historische Kernelsourcen
 aliases:
-  - /2008/05/27/historische-kernelsourcen.md.html
+  - /2008/05/27/historische-kernelsourcen.html
 ---
 In anderen Artikeln habe ich ja schon an Hand von [http://lxr.linux.no/](http://lxr.linux.no/) Strukturen im Linux-Kernel referenziert und in Erklärungen verwendet.
 

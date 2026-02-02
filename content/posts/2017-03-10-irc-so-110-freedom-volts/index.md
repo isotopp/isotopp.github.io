@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: 'IRC so: 110 Freedom Volts'
 aliases:
-  - /2017/03/10/irc-so-110-freedom-volts.md.html
+  - /2017/03/10/irc-so-110-freedom-volts.html
 ---
 > Work Chat said: [On boiling water with Gas instead of an electric cooker]
 >

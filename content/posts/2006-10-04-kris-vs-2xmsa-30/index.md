@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Kris vs. 2xMSA 30
 aliases:
-  - /2006/10/04/kris-vs-2xmsa-30.md.html
+  - /2006/10/04/kris-vs-2xmsa-30.html
 ---
 
 <![](msa30-prod.gif)

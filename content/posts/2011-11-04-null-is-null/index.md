@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: NULL is NULL
 aliases:
-  - /2011/11/04/null-is-null.md.html
+  - /2011/11/04/null-is-null.html
 ---
 Q> Sag mal, NULL zählt nicht bei einem UNIQUE INDEX? Zum Beispiel ein UNIQUE INDEX auf (a,b) und dann
 

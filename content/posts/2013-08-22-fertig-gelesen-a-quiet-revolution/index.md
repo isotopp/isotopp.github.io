@@ -7,7 +7,7 @@ tags:
 - media
 title: 'Fertig gelesen: A Quiet Revolution: The Veil''s Resurgence'
 aliases:
-  - /2013/08/22/fertig-gelesen-a-quiet-revolution.md.html
+  - /2013/08/22/fertig-gelesen-a-quiet-revolution.html
 ---
 Fertig gelesen: "Leila Ahmed - A Quiet Revolution: The Veil's Resurgence, from the Middle East to America"
 

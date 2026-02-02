@@ -11,7 +11,7 @@ tags:
 - lang_en
 title: 'MySQL: NULL is NULL'
 aliases:
-  - /2020/08/25/null-is-null.md.html
+  - /2020/08/25/null-is-null.html
 ---
 *Question:* Hey, I got a UNIQUE INDEX, but I can store multiple rows with the same value, NULL. That is surprising. Is that a bug?
 

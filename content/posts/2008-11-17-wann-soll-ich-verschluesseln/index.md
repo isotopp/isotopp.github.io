@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Wann soll ich verschlüsseln?
 aliases:
-  - /2008/11/17/wann-soll-ich-verschluesseln.md.html
+  - /2008/11/17/wann-soll-ich-verschluesseln.html
 ---
 
 Drüben bei 

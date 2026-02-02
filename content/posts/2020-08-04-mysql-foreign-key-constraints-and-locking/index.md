@@ -11,7 +11,7 @@ tags:
 - erklaerbaer
 title: MySQL Foreign Key Constraints and Locking
 aliases:
-  - /2020/08/04/mysql-foreign-key-constraints-and-locking.md.html
+  - /2020/08/04/mysql-foreign-key-constraints-and-locking.html
 ---
 Since we now know how to look at the state of locking in a live database, let's look at what happens when we run a normal insert or update and an insert or update with foreign key relationships defined, and compare.
 

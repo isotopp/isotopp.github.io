@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Busybox, die GPL und Wirrniss
 aliases:
-  - /2012/02/11/busybox-die-gpl-und-wirrniss.md.html
+  - /2012/02/11/busybox-die-gpl-und-wirrniss.html
 ---
 Was bisher geschah: Jemand bei Sony schreibt 
 [einen Aufruf](http://www.elinux.org/Busybox_replacement_project),

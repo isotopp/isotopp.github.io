@@ -9,7 +9,7 @@ tags:
 - book
 title: 'Fertig gelesen: Needle'
 aliases:
-  - /2021/05/14/fertig-gelesen-needle.md.html
+  - /2021/05/14/fertig-gelesen-needle.html
 ---
 
 [Needle](https://www.amazon.de/Needle-Book-Gateway-Essentials-English-ebook/dp/B005K8H1QS/) and [Through the Eye of a Needle](https://www.amazon.de/Through-Eye-Needle-Gateway-Essentials-ebook/dp/B005OAHE7I) are books by Hal Clement. Hal Clement was a Hard Sci-Fi author born in 1922, and "Needle" was written in 1950 as his first book, for Campbell, no less, and sold to Doubleday. The followup was produced almost 30 years later, in 1978.

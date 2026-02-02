@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Über Umzüge
 aliases:
-  - /2005/08/13/ueber-umzuege.md.html
+  - /2005/08/13/ueber-umzuege.html
 ---
 
 ![](wmf.jpg)

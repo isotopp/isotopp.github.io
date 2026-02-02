@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: So you want to write a Shell script
 aliases:
-  - /2017/08/07/so-you-want-to-write-a-shell-script.md.html
+  - /2017/08/07/so-you-want-to-write-a-shell-script.html
 ---
 
 So some people, companies even, have 

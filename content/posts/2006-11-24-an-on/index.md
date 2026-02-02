@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: AN.ON
 aliases:
-  - /2006/11/24/an-on.md.html
+  - /2006/11/24/an-on.html
 ---
 ![](zorro.jpg)
 

@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Ein komplett überflüssiger Artikel
 aliases:
-  - /2004/09/16/ein-komplett-ueberfluessiger-artikel.md.html
+  - /2004/09/16/ein-komplett-ueberfluessiger-artikel.html
 ---
 Diesen Artikel sollte ich eigentlich gar nicht mehr schreiben müssen. Er basiert auf alten Dokumenten, die ich für eine Folge von Consultingjobs in den Jahren 1993, 1994 und 1995 verfaßt habe, und den Erfahrungen mit einer Redhat Enterprise 2.3-Installation mit den HP/Compaq-Packages, die ich heute habe machen dürfen. Ich bin sehr, sehr deprimiert.
 

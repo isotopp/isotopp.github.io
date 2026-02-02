@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: Politik, Polemik und eine Agenda.
 aliases:
-  - /2009/04/27/politik-polemik-und-eine-agenda.md.html
+  - /2009/04/27/politik-polemik-und-eine-agenda.html
 ---
 
 Es begann als Kommentar in diesem Blog, aber ich mach jetzt einmal einen

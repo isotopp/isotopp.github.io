@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: MySQL hakt...
 aliases:
-  - /2012/08/21/mysql-hakt.md.html
+  - /2012/08/21/mysql-hakt.html
 ---
 "Hey, Kris!  Wir haben zwischen 16:20 und 17:20 CEST einen Lasttest
 durchgeführt und kurz vor 17:00 Uhr einen unerklärlichen Spike und einen

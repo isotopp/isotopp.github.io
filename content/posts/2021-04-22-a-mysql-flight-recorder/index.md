@@ -7,7 +7,7 @@ tags:
 - mysql
 title: A MySQL flight recorder
 aliases:
-  - /2021/04/22/a-mysql-flight-recorder.md.html
+  - /2021/04/22/a-mysql-flight-recorder.html
 ---
 
 Sometimes things go wrong, and it surely would be nice if you at least knew afterwards what happened. Where I work, we are running a shell script older than time itself, once a minute. The script writes files to `/var/log/mysql_pl`, into a directory named after the current weekday and named after the current hour and minute.

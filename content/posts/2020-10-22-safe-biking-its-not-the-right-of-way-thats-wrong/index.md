@@ -9,7 +9,7 @@ tags:
 - netherlands
 title: 'Safe Biking: It''s not the right of way that''s wrong'
 aliases:
-  - /2020/10/22/safe-biking-its-not-the-right-of-way-thats-wrong.md.html
+  - /2020/10/22/safe-biking-its-not-the-right-of-way-thats-wrong.html
 ---
 Sven Geggus [trolled me](https://twitter.com/realgiggls/status/1319205107318378498). A bunch of nerds were speaking about what's wrong with biking in Germany, and he wrote:
 

@@ -9,7 +9,7 @@ tags:
 - media
 title: 'Fertig gelesen: A confusion of princes'
 aliases:
-  - /2012/08/23/fertig-gelesen-a-confusion-of-princes.md.html
+  - /2012/08/23/fertig-gelesen-a-confusion-of-princes.html
 ---
 [A Confusion of Princes](http://www.amazon.com/A-Confusion-of-Princes-ebook/dp/B007ED6VWW),
 Garth Nix, USD 9.99

@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: ObjC - oder warum DCOP so kompliziert ist
 aliases:
-  - /2003/10/24/objc-oder-warum-dcop-so-kompliziert-ist.md.html
+  - /2003/10/24/objc-oder-warum-dcop-so-kompliziert-ist.html
 ---
 ## Methoden mit Klasse
 

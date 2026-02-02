@@ -9,7 +9,7 @@ tags:
 title: "Der eigene USENET Server"
 toc: true
 aliases:
-  - /2005/03/19/der-eigene-usenet-server.md.html
+  - /2005/03/19/der-eigene-usenet-server.html
 ---
 
 Der Wegfall von "news.individual.net" als kostenloser Server für USENET News mag den einen oder anderen Benutzer des Servers motiviert haben,

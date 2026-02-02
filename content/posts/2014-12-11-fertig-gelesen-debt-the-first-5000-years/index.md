@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Debt, the first 5000 years'
 aliases:
-  - /2014/12/11/fertig-gelesen-debt-the-first-5000-years.md.html
+  - /2014/12/11/fertig-gelesen-debt-the-first-5000-years.html
 ---
 Graeber erklärt die Herkunft von Geld und Schuld, wie sie unser Denken und unsere Sprache geprägt haben und wieso Schulden nicht so funktionieren und nicht so entstanden sind, wie libertäre Volkswirtschafter es gerne darstellen. Auf dieser Basis diskutiert er die politischen Auswirkungen von Schulden im Kleinen und im Großen.
 

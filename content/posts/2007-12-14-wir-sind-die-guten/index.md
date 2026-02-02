@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Wir sind die Guten!
 aliases:
-  - /2007/12/14/wir-sind-die-guten.md.html
+  - /2007/12/14/wir-sind-die-guten.html
 ---
 Zum Thema 
 [Vertrauensvorschuß]({{< relref "2008-05-30-vertrauensvorschu-ii.md" >}})

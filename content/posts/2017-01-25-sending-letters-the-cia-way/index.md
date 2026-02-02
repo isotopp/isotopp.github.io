@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Sending letters the CIA way
 aliases:
-  - /2017/01/25/sending-letters-the-cia-way.md.html
+  - /2017/01/25/sending-letters-the-cia-way.html
 ---
 
 Palaeofuture has an 

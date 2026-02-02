@@ -8,7 +8,7 @@ tags:
 - blockchain
 title: Hashes and their uses
 aliases:
-  - /2018/02/26/hashes-and-their-uses.md.html
+  - /2018/02/26/hashes-and-their-uses.html
 ---
 A hash function is a function that maps a large number of arbitrary data
 types onto a smaller number of contiguous integers.

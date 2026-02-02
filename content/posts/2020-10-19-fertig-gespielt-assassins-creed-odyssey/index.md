@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Fertig gespielt: Assassins Creed: Odyssey'
 aliases:
-  - /2020/10/19/fertig-gespielt-assassins-creed-odyssey.md.html
+  - /2020/10/19/fertig-gespielt-assassins-creed-odyssey.html
 ---
 Ok, so the title is a bit of an exaggeration, I am about 80% done with the main games quests. Still, the shape and feel of the story is firmly established and it is fascinating. I have some 110 hours in "Assassins Creed: Origin", and some 65 hours or so in "Assassins Creed: Odyssey".
 

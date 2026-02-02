@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: Under the Empyrean Sky'
 aliases:
-  - /2014/10/04/fertig-gelesen-under-the-empyrean-sky.md.html
+  - /2014/10/04/fertig-gelesen-under-the-empyrean-sky.html
 ---
 Die Mitte der USA ist von mutierten Genmaisfeldern überwuchert, die zwar nicht eßbar sind, aber wichtigen Treibstoff für die fliegenden Inselstädte der Empyrean liefern. Unten leben in Armut, Verfall und Mutation die Heartlander, deren Situation  nicht nur schlecht, aussichtslos und hoffnungslos ist, sondern auch laufend schlimmer wird - we get it, Chuck, aber Chuck bringt gute 2/3 seines Buches damit zu, Expose zu machen und seine Figuren in Stellung zu bringen.
 

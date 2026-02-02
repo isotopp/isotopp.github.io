@@ -8,7 +8,7 @@ tags:
 - database
 title: Validating storage
 aliases:
-  - /2021/02/24/validating-storage.md.html
+  - /2021/02/24/validating-storage.html
 ---
 
 Where I work, we try to run databases in a memory saturated way. That is, we try to provide so much memory that the working set of the database is memory resident, or in other words, the number of disk reads after an initial warmup is no longer dependent on the database load.

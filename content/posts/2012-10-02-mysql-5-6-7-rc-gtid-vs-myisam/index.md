@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'MySQL 5.6.7-RC: GTID vs. MyISAM'
 aliases:
-  - /2012/10/02/mysql-5-6-7-rc-gtid-vs-myisam.md.html
+  - /2012/10/02/mysql-5-6-7-rc-gtid-vs-myisam.html
 ---
 So we tested the 5.6.7-RC. And ran into a strange problem:
 

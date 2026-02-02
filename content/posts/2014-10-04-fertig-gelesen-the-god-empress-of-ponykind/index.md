@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: The God Empress of Ponykind'
 aliases:
-  - /2014/10/04/fertig-gelesen-the-god-empress-of-ponykind.md.html
+  - /2014/10/04/fertig-gelesen-the-god-empress-of-ponykind.html
 ---
 Does what it says on the tin. Also, as a Genesis story for the FIMiverse, it kind of makes sense. Geek level is over 9000.
 

@@ -9,7 +9,7 @@ tags:
   - sensoren
 title: "Thermometer"
 aliases:
-  - /2025/04/06/thermometer.md.html
+  - /2025/04/06/thermometer.html
 ---
 
 # Thermometer

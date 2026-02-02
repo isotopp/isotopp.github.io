@@ -6,7 +6,7 @@ status: publish
 tags: []
 title: 'Fertig gelesen: Coaching, Beratung und Gehirn'
 aliases:
-  - /2017/02/28/fertig-gelesen-coaching-beratung-und-gehirn.md.html
+  - /2017/02/28/fertig-gelesen-coaching-beratung-und-gehirn.html
 ---
 
 [![](2017/02/Screen-Shot-2017-02-28-at-21.39.31.png)](https://www.amazon.de/Coaching-Beratung-Gehirn-Neurobiologische-Ver-nderungskonzepte-ebook/dp/B01F3AVX98/)

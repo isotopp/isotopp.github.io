@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Stoppt die Katholikenflut!
 aliases:
-  - /2010/05/19/stoppt-die-katholikenflut.md.html
+  - /2010/05/19/stoppt-die-katholikenflut.html
 ---
 Ingeborg meint: 
 [Dieses Land hat ein Katholikenproblem!](http://www.derwesten.de/blogs/ingeborch/stories/7862/): 

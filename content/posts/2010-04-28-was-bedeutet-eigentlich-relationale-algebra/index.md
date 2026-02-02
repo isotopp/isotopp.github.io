@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Was bedeutet eigentlich 'Relationale Algebra'?
 aliases:
-  - /2010/04/28/was-bedeutet-eigentlich-relationale-algebra.md.html
+  - /2010/04/28/was-bedeutet-eigentlich-relationale-algebra.html
 ---
 ![](vorsicht_mathe.png)
 

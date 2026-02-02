@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Crux'
 aliases:
-  - /2013/09/27/fertig-gelesen-crux-ramez-naam.md.html
+  - /2013/09/27/fertig-gelesen-crux-ramez-naam.html
 ---
 Das Buch ist der 2. Teil von [Nexus]({{< relref "2013-09-04-fertig-gelesen-nexus-mankind-gets-an-upgrade-ramez-naam.md" >}}). Entsprechend macht das Buch dort weiter, wo der erste Teil aufgehört hat:
 

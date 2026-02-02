@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Crazy Rich Asians'
 aliases:
-  - /2013/09/27/fertig-gelesen-crazy-rich-asians-kevin-kwan.md.html
+  - /2013/09/27/fertig-gelesen-crazy-rich-asians-kevin-kwan.html
 ---
 In einem Tumblr-Feed ein Pinterest-Link und ein Hinweis des Autors, daß er einige Sachen in seinem Buch hat entschärfen müssen, weil es sonst 'unglaubwürdig' gewesen wäre. Und einundachzig Cent. Ein überschaubares Risiko.
 

@@ -9,7 +9,7 @@ tags:
 - data center
 title: Post like it is 2015
 aliases:
-  - /2017/02/14/post-like-its-2015.md.html
+  - /2017/02/14/post-like-its-2015.html
 ---
 Following a great idea from their friends at GitLab, Soup.io loses all
 postings since 2015 because of malfunctioning backups. 

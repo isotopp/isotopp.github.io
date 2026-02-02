@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: Monitoring - the data you have and the data you want
 aliases:
-  - /2017/08/09/monitoring-the-data-you-have-and-the-data-you-want.md.html
+  - /2017/08/09/monitoring-the-data-you-have-and-the-data-you-want.html
 ---
 So you are running systems in production and you want to collect data from
 your systems. You need to build a monitoring system. That won't work and it

@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: The Topography of the Death Star
 aliases:
-  - /2017/01/25/the-topography-of-the-death-star.md.html
+  - /2017/01/25/the-topography-of-the-death-star.html
 ---
 
 The trench ain't here:

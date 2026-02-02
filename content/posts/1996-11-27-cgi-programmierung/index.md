@@ -9,7 +9,7 @@ tags:
 - web
 - development
 aliases:
-  - /1996/11/27/cgi-programmierung.md.html
+  - /1996/11/27/cgi-programmierung.html
 ---
 
 # Der Apache WWW-Server

@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Parser Bug Hell
 aliases:
-  - /2017/02/03/parser-bug-hell.md.html
+  - /2017/02/03/parser-bug-hell.html
 ---
 [![](2017/02/Screen-Shot-2017-02-03-at-10.51.36-300x106.png)](http://www.cvedetails.com/vendor/4861/Wireshark.html)
 

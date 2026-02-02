@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Die Schallmauer durchbrechen...
 aliases:
-  - /2004/06/22/die-schallmauer-durchbrechen.md.html
+  - /2004/06/22/die-schallmauer-durchbrechen.html
 ---
 [SonicWall](http://www.sonicwall.com/products/sslrx.html) preist den SSL Offloader SSL-RX an als 
 

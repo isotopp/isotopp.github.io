@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: MySQL für Dummies (3)
 aliases:
-  - /2006/03/04/mysql-fuer-dummies-3.md.html
+  - /2006/03/04/mysql-fuer-dummies-3.html
 ---
 
 Suchen dauern auf unserer Tabelle sehr lange.

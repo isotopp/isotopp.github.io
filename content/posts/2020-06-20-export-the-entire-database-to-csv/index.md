@@ -10,7 +10,7 @@ tags:
 - reddit
 title: Export the entire database to CSV
 aliases:
-  - /2020/06/20/export-the-entire-database-to-csv.md.html
+  - /2020/06/20/export-the-entire-database-to-csv.html
 ---
 A [question](https://www.reddit.com/r/mysql/comments/hbg712/export_entire_database_to_csv/) from Reddit's /r/mysql:
 > Really new to MySQL and had a request to export an entire database to csv for review. I can manually export each table using workbench but there are 10+ tables and 10+ databases so I was looking to export the entire database to csv.

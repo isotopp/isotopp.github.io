@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Die Kosten von SSL
 aliases:
-  - /2011/02/10/die-kosten-von-ssl.md.html
+  - /2011/02/10/die-kosten-von-ssl.html
 ---
 Bei web.de waren schon 2003 mehr als 80% des Datenverkehrs
 SSL-verschlüsselt, da dort die Policy herrschte "Paßworte werden nur

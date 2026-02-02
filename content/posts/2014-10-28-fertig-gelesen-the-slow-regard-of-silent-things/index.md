@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: The Slow Regard of Silent Things'
 aliases:
-  - /2014/10/28/fertig-gelesen-the-slow-regard-of-silent-things.md.html
+  - /2014/10/28/fertig-gelesen-the-slow-regard-of-silent-things.html
 ---
 Nachdem Auri im zweiten Teil von Kingkiller immer wichtiger wurde, hat sie im Kopf von Patrick Rothfuss drin ein gewisses Eigenleben entwickelt. "The Slow Regard of Silent Things" ist Buch 2.5 von Kingkiller und führt den Story Arc nicht weiter. Stattdessen ist das Buch ein Blick in den Kopf von Auri, und eine literarische Abandoned Places Expedition in The Underthing unter der Universität.
 

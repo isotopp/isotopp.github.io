@@ -11,7 +11,7 @@ tags:
 - c
 - unix
 aliases:
-  - /2021/09/05/fertig-gelesen-unix-a-history-and-a-memoir.md.html
+  - /2021/09/05/fertig-gelesen-unix-a-history-and-a-memoir.html
 ---
 
 The memoir of Brian Kernighan, and the story of how UNIX came to be and what working at Bell Labs was like at that time:

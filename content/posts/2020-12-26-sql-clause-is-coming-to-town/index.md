@@ -8,7 +8,7 @@ tags:
 - mysql
 title: SQL Clause is coming to town
 aliases:
-  - /2020/12/26/sql-clause-is-coming-to-town.md.html
+  - /2020/12/26/sql-clause-is-coming-to-town.html
 ---
 
 [Olya Kudriavtseva has an ugly Christmas sweater](https://twitter.com/roliepoly/status/1342549035211661312):

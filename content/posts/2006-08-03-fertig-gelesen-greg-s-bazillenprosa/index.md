@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Greg''s Bazillenprosa'
 aliases:
-  - /2006/08/03/fertig-gelesen-greg-s-bazillenprosa.md.html
+  - /2006/08/03/fertig-gelesen-greg-s-bazillenprosa.html
 ---
 Okay, weil es so schön war, hier gleich noch mehr Bazillenprosa von Greg Bear, denn das Thema hat es ihm schon seit langer Zeit angetan. In Blutmusik erschafft ein verrückter Wissenschaftler einen bazillenbasierten Hivemind/Supercomputer, der nicht nur alle Zellen auf diesem Planeten in seine tumorhafte Superstruktur integriert, sondern dabei die derzeit auf dieser Wetware laufenden Programme assimiliert, illegal kopiert und in einer Reihe von Was-Wäre-Wenn Matrix-Szenarien laufen läßt. Las sich damals, weit vor Matrix und Bear's Selbstkopie recht flott und amüsant. Da hat er sich aber auch mehr um die Handlung gekümmert als um den wissenschaftlichen Unterbau.
 

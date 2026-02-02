@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Nermalisation
 aliases:
-  - /2005/09/11/nermalisation.md.html
+  - /2005/09/11/nermalisation.html
 ---
 
 This article was previously shared on mysqldump.azundris.com, and salvaged from the old blog:

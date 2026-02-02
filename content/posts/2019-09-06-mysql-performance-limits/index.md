@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: MySQL Performance Limits
 aliases:
-  - /2019/09/06/mysql-performance-limits.md.html
+  - /2019/09/06/mysql-performance-limits.html
 ---
 The last time I saw a MySQL server operating at a performance limit
 was in 2012. Back them we had a production master on (then) current

@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: The Fuller Memorandum'
 aliases:
-  - /2010/08/16/fertig-gelesen-the-fuller-memorandum.md.html
+  - /2010/08/16/fertig-gelesen-the-fuller-memorandum.html
 ---
 [The Fuller Memorandum](http://www.amazon.de/Laundry-03-Fuller-Memorandum/dp/1841497703),
 Charles Stross, EUR 9.90, 384 Seiten

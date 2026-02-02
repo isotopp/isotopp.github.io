@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Logging
 aliases:
-  - /2012/05/28/logging.md.html
+  - /2012/05/28/logging.html
 ---
 "Kris", fragt man mich, "Kris, gibt es außer 'Volltextsuche' noch andere
 Gründe, für neue Anwendungen noch MyISAM zu verwenden?  Im konkreten Fall

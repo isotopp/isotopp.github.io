@@ -8,7 +8,7 @@ tags:
 - germany
 title: Normalitär
 aliases:
-  - /2020/03/09/normalitaer.md.html
+  - /2020/03/09/normalitaer.html
 ---
 "Normalitär", ein Begriff, der von @beimwort geprägt wurde. Nach einem [Twitter Thread](https://twitter.com/isotopp/status/1234762176902107137). In seinem [Artikel auf T-Online](https://www.t-online.de/nachrichten/deutschland/gesellschaft/id_84519312/wieso-es-keinen-rechtsruck-gibt-aber-die-extreme-rechte-trotzdem-waechst.html) propagiert Schaible eine Bruchlinie innerhalb der "rechten" Parteien, weil Teile der Mitglieder die Weltbildverschiebung der frühen 2000er mitgemacht haben, andere sie ablehnen.
 

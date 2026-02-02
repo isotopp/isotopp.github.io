@@ -9,7 +9,7 @@ tags:
 - data center
 title: NVME is not a hard disk
 aliases:
-  - /2021/05/25/nvme-is-not-a-hard-disk.md.html
+  - /2021/05/25/nvme-is-not-a-hard-disk.html
 ---
 
 So [somebody tweeted](https://twitter.com/leclercfl/status/1396909628949155845) about the [Seagate Mach.2](https://techxplore.com/news/2021-05-seagate-mach2-fastest-hard.html), a harddisk with two independent heads "combs", and I [commented in german](https://twitter.com/isotopp/status/1397077206111821824): "It's two drives in one chassis, even shown as two drives. And it still is rotating rust, so slow with seeks. Linear IO will be fine."

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Defaultseitenhieb("Post-Privacy")
 aliases:
-  - /2011/11/16/defaultseitenhieb-post-privacy.md.html
+  - /2011/11/16/defaultseitenhieb-post-privacy.html
 ---
 Es begannt mit einem <a
 href='https://plus.google.com/u/0/117024231055768477646/posts/JYteShQvzHi'>Google

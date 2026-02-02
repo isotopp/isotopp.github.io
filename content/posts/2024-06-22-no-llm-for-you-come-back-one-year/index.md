@@ -10,7 +10,7 @@ tags:
 - apple
 - computer
 aliases:
-  - /2024/06/22/no-llm-for-you-come-back-one-year.md.html
+  - /2024/06/22/no-llm-for-you-come-back-one-year.html
 ---
 
 Es war Samstag, ich las die Nachrichten und ich mußte dazu was im Fedi sagen.

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Ein Nagios-Plugin für MySQL
 aliases:
-  - /2007/01/20/ein-nagios-plugin-fuer-mysql.md.html
+  - /2007/01/20/ein-nagios-plugin-fuer-mysql.html
 ---
 
 Auf Sourceforge findet man 

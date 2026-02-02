@@ -8,7 +8,7 @@ tags:
 - schulung
 title: Rechenaufgaben lösen
 aliases:
-  - /2021/02/28/rechenaufgaben-loesen.md.html
+  - /2021/02/28/rechenaufgaben-loesen.html
 ---
 
 

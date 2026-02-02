@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Flames - Kommunikationszusammenbrüche im Netz
 aliases:
-  - /2007/02/11/flames-kommunikationszusammenbrueche-im-netz.md.html
+  - /2007/02/11/flames-kommunikationszusammenbrueche-im-netz.html
 ---
 
 Vergangenen Donnerstag habe ich den Vortrag "Flames - Kommunikationszusammenbrüche im Netz" für den CCC Stuttgart gehalten.

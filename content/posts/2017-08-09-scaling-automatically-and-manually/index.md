@@ -9,7 +9,7 @@ tags:
 - container
 title: Scaling, automatically and manually
 aliases:
-  - /2017/08/09/scaling-automatically-and-manually.md.html
+  - /2017/08/09/scaling-automatically-and-manually.html
 ---
 There is an interesting article by Brendan Gregg out there, about 
 [the actual data that goes into the Load Average](http://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html)

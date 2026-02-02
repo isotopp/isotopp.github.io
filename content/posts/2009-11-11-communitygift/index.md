@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Communitygift
 aliases:
-  - /2009/11/11/communitygift.md.html
+  - /2009/11/11/communitygift.html
 ---
 **Update:** Diejenigen von Euch, die vom Trackback hierher kommen, finden
 alle Artikel zum Thema Wikipedia unter dem Tag Wikipedia. Die Diskussion ist

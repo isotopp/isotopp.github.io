@@ -9,7 +9,7 @@ tags:
 - apple
 - unix
 aliases:
-  - /2023/08/17/macos-vim-git-and-exit.md.html
+  - /2023/08/17/macos-vim-git-and-exit.html
 ---
 
 On `git commit`, `git` invokes an editor (by default: `vi`) and allows you to edit a commit message.

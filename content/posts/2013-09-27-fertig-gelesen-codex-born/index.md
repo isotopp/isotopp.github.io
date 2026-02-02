@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Codex Born'
 aliases:
-  - /2013/09/27/fertig-gelesen-codex-born.md.html
+  - /2013/09/27/fertig-gelesen-codex-born.html
 ---
 Codex born ist der zweite Teil von Libriomancer und konzentriert sich mehr auf die Hintergrundgeschichte von Lena Greenwood, der Dryade aus der fiktionalen Softcore-Romance "Nymphs of Neptune".
 

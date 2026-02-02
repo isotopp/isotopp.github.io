@@ -9,7 +9,7 @@ tags:
 - macos
 title: Watchman
 aliases:
-  - /2018/02/01/watchman.md.html
+  - /2018/02/01/watchman.html
 ---
 [![](2018/01/watchman-603x640.png)](https://facebook.github.io/watchman/)
 

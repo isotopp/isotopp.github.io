@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Everything was a file, but we got better
 aliases:
-  - /2019/11/14/everything-was-a-file-but-we-got-better.md.html
+  - /2019/11/14/everything-was-a-file-but-we-got-better.html
 ---
 I fell into the Twitters again. [@CarrickDB](https://twitter.com/carrickdb/status/1194842452361789441) joked about Unix,
 Files and Directories:

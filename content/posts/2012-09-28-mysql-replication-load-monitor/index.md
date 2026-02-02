@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: MySQL Replication Load Monitor
 aliases:
-  - /2012/09/28/mysql-replication-load-monitor.md.html
+  - /2012/09/28/mysql-replication-load-monitor.html
 ---
 Mein Kollege Dennis Kaarsemaker hat jetzt einen 
 [Artikel](//www.kaarsemaker.net/blog/2012/09/27/monitoring-replication-load-graphite/)

@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: 1491'
 aliases:
-  - /2014/12/01/fertig-gelesen-1491.md.html
+  - /2014/12/01/fertig-gelesen-1491.html
 ---
 "1491" ist ein Buch, daß versucht zu verstehen und zu erklären, wer auf den beiden amerikanischen Kontinenten gelebt hat, bevor die spanischen, portugiesischen und englischen Eroberer ankamen und wie diese Personen gelebt haben. Das Buch gliedert sich grob in drei Teile, die die Frage klären, wie viele Leute dort gelebt haben (Das Buch vertritt die These, daß die amerikanischen Kontinente wesentlich dichter bevölkert waren als Europa zu dieser Zeit), seit wann sie dort gelebt haben (Das Buch vertritt die These, daß es drei Einwanderungswellen gegeben hat, von denen die erste wesentlich älter ist, als man gemeinhin annehmen mag - nämlich vor oder zum Beginn der letzten großen Eiszeit) und wie sie dort gelebt und überlebt haben (Das Buch zeigt eine Reihe von Artefakten, die auf Kulturtechniken und Staaten mit von europäischen Kulturen vollkommen Techniken und Schwerpunkten hindeuten. Es zeigt auch, daß die Landschaften, die die europäischen Eroberer vorgefunden haben, verwilderte, von Seuchen entvölkerte, postapokalyptische Kulturlandschaften sind).
 

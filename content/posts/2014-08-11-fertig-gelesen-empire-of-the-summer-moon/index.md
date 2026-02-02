@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Empire of the Summer Moon'
 aliases:
-  - /2014/08/11/fertig-gelesen-empire-of-the-summer-moon.md.html
+  - /2014/08/11/fertig-gelesen-empire-of-the-summer-moon.html
 ---
 Comanche. Das ist das Ute-Wort für "Feind".
 

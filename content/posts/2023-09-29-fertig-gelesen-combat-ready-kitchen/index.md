@@ -9,7 +9,7 @@ tags:
 - media
 - book
 aliases:
-  - /2023/09/29/fertig-gelesen-combat-ready-kitchen.md.html
+  - /2023/09/29/fertig-gelesen-combat-ready-kitchen.html
 ---
 
 In [Combat Ready Kitchen](https://www.amazon.de/gp/product/B00TY3ZOQE),

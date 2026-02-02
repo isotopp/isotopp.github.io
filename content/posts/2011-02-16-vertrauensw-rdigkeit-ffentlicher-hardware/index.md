@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Vertrauenswürdigkeit öffentlicher Hardware
 aliases:
-  - /2011/02/16/vertrauensw-rdigkeit-ffentlicher-hardware.md.html
+  - /2011/02/16/vertrauensw-rdigkeit-ffentlicher-hardware.html
 ---
 
 [Hardware keyloggers found in Manchester library PCs](http://www.theregister.co.uk/2011/02/15/hardware_keyloggers_manchester_libraries/) schreibt The Register: 

@@ -10,7 +10,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2024/06/12/mysql-add-missing-ids.md.html
+  - /2024/06/12/mysql-add-missing-ids.html
 ---
 
 A support question:

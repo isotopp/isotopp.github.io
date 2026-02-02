@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Rumo oder Die Wunder im Dunkeln'
 aliases:
-  - /2004/02/15/fertig-gelesen-rumo-oder-die-wunder-im-dunkeln.md.html
+  - /2004/02/15/fertig-gelesen-rumo-oder-die-wunder-im-dunkeln.html
 ---
 [Rumo](http://www.amazon.de/exec/obidos/ASIN/3492045480/kristiankohntopp) ist ein kleiner Wolpertingerwelpe, der auf einem idyllischen Fhernhachenbauernhof auf Walter Moers Kontinent Zamonien aufwächst. Und wer immer noch geglaubt hat, daß Walter Moers' Bücher Kinderbücher seien, der wird schon auf den ersten paar Seiten eines Besseren belehrt.
 

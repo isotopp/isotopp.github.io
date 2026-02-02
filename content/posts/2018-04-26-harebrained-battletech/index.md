@@ -9,7 +9,7 @@ tags:
 - review
 - lang_en
 aliases:
-  - /2018/04/26/harebrained-battletech.md.html
+  - /2018/04/26/harebrained-battletech.html
 ---
 ![](2018/04/battletech1.jpg)
 

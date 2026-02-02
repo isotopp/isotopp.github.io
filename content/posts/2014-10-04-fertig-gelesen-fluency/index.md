@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Fluency'
 aliases:
-  - /2014/10/04/fertig-gelesen-fluency.md.html
+  - /2014/10/04/fertig-gelesen-fluency.html
 ---
 EUR 3.80 und die war es nicht wert. Jede Menge verschenktes Potential. Irgendwo im Asteroidengürtel hängt seit Dekaden ein Alien-Schiff antriebslos rum, und endlich gelingt es einer Mission, dort hin zu kommen und es zu betreten. Doch es bleibt nicht bei einer Xeno-Archäologie-Mission, sondern es wird zu einer Erstkontakt-Mission.
 

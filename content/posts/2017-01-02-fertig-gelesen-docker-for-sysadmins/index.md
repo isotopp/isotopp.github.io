@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Docker for Sysadmins'
 aliases:
-  - /2017/01/02/fertig-gelesen-docker-for-sysadmins.md.html
+  - /2017/01/02/fertig-gelesen-docker-for-sysadmins.html
 ---
 Ein schnelles Einsteigerbuch in die operativen Handgriffe für den Umgang mit Docker. Weitgehend an einem Nachmittag durchgescanned und verarbeitet, mit spannenderen Informationen im hinteren Teil, wo es um Image Formate (intern) und Docker Overlay Networking geht.
 

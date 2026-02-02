@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Wieviel Load darf es denn sein?
 aliases:
-  - /2005/06/24/wieviel-load-darf-es-denn-sein.md.html
+  - /2005/06/24/wieviel-load-darf-es-denn-sein.html
 ---
 
 ![](load-beispiel.png)

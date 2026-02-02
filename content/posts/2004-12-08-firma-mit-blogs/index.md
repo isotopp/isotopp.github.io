@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Firma mit Blogs
 aliases:
-  - /2004/12/08/firma-mit-blogs.md.html
+  - /2004/12/08/firma-mit-blogs.html
 ---
 Bei meinem Arbeitgeber ist es verpflichtend, ein Daily zu schreiben.
 

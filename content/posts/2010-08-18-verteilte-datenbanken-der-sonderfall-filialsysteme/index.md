@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'Verteilte Datenbanken: Der Sonderfall Filialsysteme'
 aliases:
-  - /2010/08/18/verteilte-datenbanken-der-sonderfall-filialsysteme.md.html
+  - /2010/08/18/verteilte-datenbanken-der-sonderfall-filialsysteme.html
 ---
 In einem Kommentar zu [Master-Master]({{< relref "2010-08-16-master-master-und-distributed-transactions.md" >}}) schrieb
 ich:

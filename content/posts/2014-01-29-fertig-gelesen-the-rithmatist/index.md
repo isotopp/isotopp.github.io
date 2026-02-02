@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: "The Rithmatist"'
 aliases:
-  - /2014/01/29/fertig-gelesen-the-rithmatist.md.html
+  - /2014/01/29/fertig-gelesen-the-rithmatist.html
 ---
 Sebastian Bergmann hat mir Brandon Sanderson im Allgemeinen und "The Rithmatist" im besonderen zum Froscon 2013 ans Herz gelegt, und ich habe ihn mir damals noch gleich auf den Kindle geklickt, aber es hat bis Weihnachten gedauert, um das Buch durchzulesen.
 

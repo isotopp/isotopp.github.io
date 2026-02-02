@@ -8,7 +8,7 @@ tags:
 - internet
 title: "TCP/IP Technik"
 aliases:
-  - /1993/04/01/tcpip-technik.md.html
+  - /1993/04/01/tcpip-technik.html
 ---
 
 - [TCP/IP Technik](#tcpip-technik)

@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 10 Jahre PHPLIB
 aliases:
-  - /2008/05/29/10-jahre-phplib.md.html
+  - /2008/05/29/10-jahre-phplib.html
 ---
 Vor etwas mehr als 10 Jahren, am 19. Mai 1998, schrieb ich
 [auf php-general](http://marc.info/?l=php-general&m=90222497032618&w=2) von einer PHP Standardbibliothek. 

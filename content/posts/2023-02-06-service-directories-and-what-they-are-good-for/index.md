@@ -8,7 +8,7 @@ tags:
 - devops
 - security
 aliases:
-  - /2023/02/06/service-directories-and-what-they-are-good-for.md.html
+  - /2023/02/06/service-directories-and-what-they-are-good-for.html
 ---
 
 At a previous job we had a home-grown application "Service Directory", which allowed a team to declare a service or deployed application.

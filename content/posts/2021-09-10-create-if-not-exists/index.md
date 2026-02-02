@@ -8,7 +8,7 @@ tags:
 - mysqldev
 title: 'MySQL: CREATE IF NOT EXISTS TABLE, but CREATE OR REPLACE VIEW'
 aliases:
-  - /2021/09/10/create-if-not-exists.md.html
+  - /2021/09/10/create-if-not-exists.html
 ---
 
 For the MySQL Million Challenge, I was going through the server syntax in order to understand what things can be created in the server.

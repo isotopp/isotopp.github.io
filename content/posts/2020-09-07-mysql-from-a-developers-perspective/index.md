@@ -11,7 +11,7 @@ tags:
 - mysqldev
 title: MySQL from a Developers Perspective
 aliases:
-  - /2020/09/07/mysql-from-a-developers-perspective.md.html
+  - /2020/09/07/mysql-from-a-developers-perspective.html
 ---
 So this has turned into a small series, explaining how to work with MYSQL from a developers perspective. This post is intended as a directory for the individual articles. It will be amended and re-dated as necessary.
 

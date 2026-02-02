@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Ein paar Gedanken zum Thema NoSQL
 aliases:
-  - /2010/11/05/ein-paar-gedanken-zum-thema-nosql.md.html
+  - /2010/11/05/ein-paar-gedanken-zum-thema-nosql.html
 ---
 Beim Durchstöbern der verschiedenen NoSQL-Datenspeicher stellt sich mir die
 Frage, wieso man das alles überhaupt will. Genauer: Was genau ist das

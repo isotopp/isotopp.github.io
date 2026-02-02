@@ -7,7 +7,7 @@ tags:
 - mysql
 title: Not JOINing on PERFORMANCE_SCHEMA
 aliases:
-  - /2020/12/01/not-joining-on-performance-schema.md.html
+  - /2020/12/01/not-joining-on-performance-schema.html
 ---
 
 The tables in `PERFORMANCE_SCHEMA` (`P_S`) are not actually tables. You should not think of them as tables, even if your SQL works on them. You should not JOIN them, and you should not GROUP or ORDER BY them.

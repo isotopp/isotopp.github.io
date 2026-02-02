@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Internet und Produktivität aus der Sicht eines Cyborgs
 aliases:
-  - /2009/10/09/internet-und-produktivit-t-aus-der-sicht-eines-cyborgs.md.html
+  - /2009/10/09/internet-und-produktivit-t-aus-der-sicht-eines-cyborgs.html
 ---
 Auf dem wunderbaren Blog Netzwertig findet man 
 [Zeitverschwendung vs. Effizienzgewinn](http://netzwertig.com/2009/10/09/internet-und-produktivitaet-zeitverschwendung-vs-effizienzgewinn/):

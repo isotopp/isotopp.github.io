@@ -8,7 +8,7 @@ tags:
 - mysqldev
 title: 'MySQL: A job queue in Python'
 aliases:
-  - /2021/07/13/mysql-a-job-queue-in-python.md.html
+  - /2021/07/13/mysql-a-job-queue-in-python.html
 ---
 
 Somebody needed a job queue in Python:

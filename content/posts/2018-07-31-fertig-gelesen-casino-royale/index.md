@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Casino Royale'
 aliases:
-  - /2018/07/31/fertig-gelesen-casino-royale.md.html
+  - /2018/07/31/fertig-gelesen-casino-royale.html
 ---
 Dieses erste James Bond Buch soll stellvertretend für die ganze Reihe aufgeführt werden, die in Kinde unlimited verfügbar ist. Fleming hat beginnend in 1953 pünktlich zum April so gut wie jedes Jahr einen neuen Agentenroman veröffentlicht.
 

@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Static vs. dynamic typing
 aliases:
-  - /2004/05/02/static-vs-dynamic-typing.md.html
+  - /2004/05/02/static-vs-dynamic-typing.html
 ---
 Irgendwann Ende der 80er fiel mir ein Zortech C++ Compiler in die Hand. Den mochte ich, weil er anders als das cfront auf dem AIX ein nativer Compiler war. Ich habe also das VP/ix in meinem SCO Xenix hochgefahren, ein MS-DOS rein installiert und ein wenig mit der Sprache rumexperimentiert.
 

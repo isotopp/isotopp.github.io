@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Webanwendungen und der FHS
 aliases:
-  - /2005/06/13/webanwendungen-und-der-fhs.md.html
+  - /2005/06/13/webanwendungen-und-der-fhs.html
 ---
 Auf der S9Y Mailingliste fragte ein zukünftiger Paketmaintainer nach, ob er Serendipity für seine Distribution packen solle und wir ihn dabei unterstützten wollen. Abgesehen von allgemeinen Überlegungen die dagegen sprechen, gibt es noch andere Gründe, die das nicht wünschenswert machen.
 

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Kernphysik mit Kikka
 aliases:
-  - /2008/09/18/kernphysik-mit-kikka.md.html
+  - /2008/09/18/kernphysik-mit-kikka.html
 ---
 _Channelkind Kikka fragte nach Hilfe bei den Physikhausaufgaben. Und da ich
 gerade mit dem E90 alleine in Amsterdam bei einem Hamburger und einem Bier

@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Daemon, Freedom™'
 aliases:
-  - /2011/05/08/fertig-gelesen-daemon-freedom.md.html
+  - /2011/05/08/fertig-gelesen-daemon-freedom.html
 ---
 "Daemon" [german](http://www.amazon.de/DAEMON-Die-Welt-ist-Spiel/dp/3499256436),
 [english](http://www.amazon.de/Daemon-Daniel-Suarez/dp/0451228731),

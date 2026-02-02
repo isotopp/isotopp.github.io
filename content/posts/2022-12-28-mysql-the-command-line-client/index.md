@@ -8,7 +8,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2022/12/28/mysql-the-command-line-client.md.html
+  - /2022/12/28/mysql-the-command-line-client.html
 ---
 
 When asking for help in [Libera Chat](https://libera.chat/), in the `#mysql` channel, people will ask you to use the `mysql` command line client.

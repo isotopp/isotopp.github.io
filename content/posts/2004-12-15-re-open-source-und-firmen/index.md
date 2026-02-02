@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Re Open Source Software und Firmen
 aliases:
-  - /2004/12/15/re-open-source-und-firmen.md.html
+  - /2004/12/15/re-open-source-und-firmen.html
 ---
 
 Ein Gastblogeintrag von 

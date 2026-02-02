@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: Handling Wannacrypt - a few words about technical debt
 aliases:
-  - /2017/05/15/handling-wannacrypt-a-few-words-about-technical-debt.md.html
+  - /2017/05/15/handling-wannacrypt-a-few-words-about-technical-debt.html
 ---
 So Microsoft had a bug in their systems. Many of their sytems. For many
 years. That happens. People write code. These people write bugs. Microsoft

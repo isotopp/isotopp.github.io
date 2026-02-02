@@ -8,7 +8,7 @@ tags:
 - lang_en
 - work
 aliases:
-  - /2023/06/22/a-great-resignation-management-edition.md.html
+  - /2023/06/22/a-great-resignation-management-edition.html
 ---
 
 This is not much of a blog post, but just a [thread dump from Mastodon](https://chaos.social/@isotopp/110586700595558261) as requested by a friend,

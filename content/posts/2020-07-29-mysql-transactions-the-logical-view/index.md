@@ -10,7 +10,7 @@ tags:
 - mysqldev
 title: MySQL Transactions - the logical side
 aliases:
-  - /2020/07/29/mysql-transactions-the-logical-view.md.html
+  - /2020/07/29/mysql-transactions-the-logical-view.html
 ---
 After having a look [how MySQL handles transactions physically]({{< relref "2020-07-27-mysql-transactions.md" >}}), let's have a look at what is
 going on from a logical point of view.

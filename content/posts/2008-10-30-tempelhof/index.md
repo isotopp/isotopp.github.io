@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Tempelhof
 aliases:
-  - /2008/10/30/tempelhof.md.html
+  - /2008/10/30/tempelhof.html
 ---
 
 > Es gibt zwei Arten von Narren. Der eine sagt: 'Dies ist alt und deshalb gut.' Und der andere sagt: 'Dies ist neu und deshalb besser.'"

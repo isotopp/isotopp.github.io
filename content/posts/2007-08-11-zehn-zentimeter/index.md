@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Zehn Zentimeter
 aliases:
-  - /2007/08/11/zehn-zentimeter.md.html
+  - /2007/08/11/zehn-zentimeter.html
 ---
 > Kristian, wenn Du über Performance redest, dann redest Du immer von
 > [verteilten, asynchronen Systemen]({{< relref "2006-07-30-leben-mit-fehlern-der-schluessel-zum-scaleout.md" >}}).

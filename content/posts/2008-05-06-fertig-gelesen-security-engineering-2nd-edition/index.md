@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Security Engineering, 2nd edition'
 aliases:
-  - /2008/05/06/fertig-gelesen-security-engineering-2nd-edition.md.html
+  - /2008/05/06/fertig-gelesen-security-engineering-2nd-edition.html
 ---
 
 ![](security_engineering_v2.jpg)

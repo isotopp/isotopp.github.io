@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: Solar plus Storage in Australia
 aliases:
-  - /2017/02/24/solar-plus-storage-in-australia.md.html
+  - /2017/02/24/solar-plus-storage-in-australia.html
 ---
 
 In the [2016 South Australia Blackout](https://en.wikipedia.org/wiki/2016_South_Australian_blackout), a

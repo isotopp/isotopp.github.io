@@ -10,7 +10,7 @@ tags:
 - erklaerbaer
 title: 'MySQL: ALTER TABLE for UUID'
 aliases:
-  - /2020/09/22/alter-table-for-uuid.md.html
+  - /2020/09/22/alter-table-for-uuid.html
 ---
 A question to the internal `#DBA` channel at work: »Is it possible to change a column type from `BIGINT` to `VARCHAR `? Will the numbers be converted into a string version of the number or will be it a byte-wise transition that will screw the values?«
 

@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: All these worlds'
 aliases:
-  - /2017/11/06/fertig-gelesen-all-these-worlds.md.html
+  - /2017/11/06/fertig-gelesen-all-these-worlds.html
 ---
 [![](2017/11/all-these-worlds.png)](https://www.amazon.de/These-Worlds-Bobiverse-Book-English-ebook/dp/B0736185ZL)
 

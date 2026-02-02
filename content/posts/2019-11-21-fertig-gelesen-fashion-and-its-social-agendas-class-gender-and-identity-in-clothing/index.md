@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: Fashion and Its Social Agendas: Class, Gender, and Identity in Clothing'
 aliases:
-  - /2019/11/21/fertig-gelesen-fashion-and-its-social-agendas-class-gender-and-identity-in-clothing.md.html
+  - /2019/11/21/fertig-gelesen-fashion-and-its-social-agendas-class-gender-and-identity-in-clothing.html
 ---
 [Fashion and Its Social Agendas: Class, Gender, and Identity in Clothing](https://www.amazon.de/gp/product/B00D3GOTZK)
 by Diane Crane is an analysis of the changes in society during

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Discoverable culture: Das Buch als Konversationsstück'
 aliases:
-  - /2012/08/23/discoverable-culture-das-buch-als-konversationsst-ck.md.html
+  - /2012/08/23/discoverable-culture-das-buch-als-konversationsst-ck.html
 ---
 In  [The problem with eBooks](http://blog.flameeyes.eu/2012/08/the-problem-with-ebooks)
 schreibt Diego Elio Pettenò über einen Aufenthalt in Los Angeles: 

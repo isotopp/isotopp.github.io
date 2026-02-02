@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Conway's Law
 aliases:
-  - /2018/01/12/conways-law.md.html
+  - /2018/01/12/conways-law.html
 ---
 [Melvin Conway](https://en.wikipedia.org/wiki/Melvin_Conway) is a compiler
 developer and systems designer, who is well known for the eponymous

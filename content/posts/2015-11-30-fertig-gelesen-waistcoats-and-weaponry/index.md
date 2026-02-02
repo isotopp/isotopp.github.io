@@ -10,7 +10,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: Waistcoats and Weaponry'
 aliases:
-  - /2015/11/30/fertig-gelesen-waistcoats-and-weaponry.md.html
+  - /2015/11/30/fertig-gelesen-waistcoats-and-weaponry.html
 ---
 Siehe auch [Finishing School Series]({{< relref "2014-01-19-fertig-gelesen-finishing-school-series.md" >}}) für #1 und #2 der Serie.
 

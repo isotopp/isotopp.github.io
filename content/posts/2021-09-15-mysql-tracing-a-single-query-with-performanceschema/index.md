@@ -8,7 +8,7 @@ tags:
 - mysqldev
 title: 'MySQL: Tracing a single query with PERFORMANCE_SCHEMA'
 aliases:
-  - /2021/09/15/mysql-tracing-a-single-query-with-performanceschema.md.html
+  - /2021/09/15/mysql-tracing-a-single-query-with-performanceschema.html
 ---
 My task is to collect performance data about a single query, using `PERFORMANCE_SCHEMA` (P_S for short) in MySQL, to ship it elsewhere for integration with other data.
 

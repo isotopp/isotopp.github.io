@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: github updates its TOS, and they are not trying to cheat
 aliases:
-  - /2017/03/09/github-updates-its-tos-and-they-are-not-trying-to-cheat.md.html
+  - /2017/03/09/github-updates-its-tos-and-they-are-not-trying-to-cheat.html
 ---
 ![](2017/03/github-300x300.png)
 

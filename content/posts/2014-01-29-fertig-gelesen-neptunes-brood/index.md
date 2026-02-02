@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: "Neptune''s Brood"'
 aliases:
-  - /2014/01/29/fertig-gelesen-neptunes-brood.md.html
+  - /2014/01/29/fertig-gelesen-neptunes-brood.html
 ---
 Ein SciFi-Roman über Buchhaltung in einer interstellaren Gesellschaft ohne FTL-Reisen. Wie kann man in so einem Umfeld Finanztransaktionen über Lichtjahre abwickeln, Investments und Kredite über Jahrhunderte vorfinanzieren und Verträge zwischen Entities schaffen, die sich konstruktionsbedingt nie treffen können?
 

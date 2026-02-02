@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Latency Numbers, visualised and memorised
 aliases:
-  - /2017/10/12/latency-numbers-visualised-and-memorised.md.html
+  - /2017/10/12/latency-numbers-visualised-and-memorised.html
 ---
 There is a well known Github Gist 
 "[Latency Numbers Every Programmer Should Know](https://gist.github.com/jboner/2841832)", 

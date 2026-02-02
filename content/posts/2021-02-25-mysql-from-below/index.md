@@ -8,7 +8,7 @@ tags:
 - database
 title: MySQL from Below
 aliases:
-  - /2021/02/25/mysql-from-below.md.html
+  - /2021/02/25/mysql-from-below.html
 ---
 
 When you insert data into a database and run COMMIT you expect things to be there: [Atomically, Consistent, Isolated and Durable](https://en.wikipedia.org/wiki/ACID), like Codd commanded us 40 years ago, but also quickly. There is a surprising amount of sophistication being poured into this, but since I do not want to shame MongoDB and Redis developers in this post, I am not going to talk about that much in this place.

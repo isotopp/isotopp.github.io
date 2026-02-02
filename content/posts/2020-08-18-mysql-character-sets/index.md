@@ -10,7 +10,7 @@ tags:
 - erklaerbaer
 title: 'MySQL: Some Character Set Basics'
 aliases:
-  - /2020/08/18/mysql-character-sets.md.html
+  - /2020/08/18/mysql-character-sets.html
 ---
 This is the updated and english version of some older posts of mine in German. It is likely still incomplete, and will need information added to match current MySQL, but hopefully it is already useful.
 

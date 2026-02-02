@@ -7,7 +7,7 @@ tags:
 - netherlands
 title: Under the sea...
 aliases:
-  - /2020/02/21/under-the-sea.md.html
+  - /2020/02/21/under-the-sea.html
 ---
 Welcome to the Netherlands.
 I am living at the bottom of a lake, 3.50 meters below the sea level, and there are sea shells in my garden.

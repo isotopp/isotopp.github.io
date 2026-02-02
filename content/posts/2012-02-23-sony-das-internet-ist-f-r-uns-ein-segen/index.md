@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: 'Sony: "Das Internet ist für uns ein Segen"'
 aliases:
-  - /2012/02/23/sony-das-internet-ist-f-r-uns-ein-segen.md.html
+  - /2012/02/23/sony-das-internet-ist-f-r-uns-ein-segen.html
 ---
 ![Sory](sonyelectronics.jpg)
 

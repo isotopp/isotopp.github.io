@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Ein Sturm aus Scheiße ist auch eine Art flüssiges Feedback
 aliases:
-  - /2010/08/06/ein-sturm-aus-schei-e-ist-auch-eine-art-fl-ssiges-feedback.md.html
+  - /2010/08/06/ein-sturm-aus-schei-e-ist-auch-eine-art-fl-ssiges-feedback.html
 ---
 Ich wollte eigentlich nichts zu Liquid Feedback schreiben, nachdem 
 [Frank Rieger](http://frank.geekheim.de/?p=928) das bereits alternativlos

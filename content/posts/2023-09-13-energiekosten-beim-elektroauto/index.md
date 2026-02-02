@@ -9,7 +9,7 @@ tags:
 - energy
 - verkehr
 aliases:
-  - /2023/09/13/energiekosten-beim-elektroauto.md.html
+  - /2023/09/13/energiekosten-beim-elektroauto.html
 ---
 
 Das neue Auto hat eine Batterie mit 60 kWh Kapazität, also muss es 42 kWh aufnehmen, um von 10 % auf 80 % zu kommen.

@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Spatial Indices
 aliases:
-  - /2010/04/11/spatial-indices.md.html
+  - /2010/04/11/spatial-indices.html
 ---
 On 2010-04-06 12:26:49 +0200, 
 [Egon Schmid](http://groups.google.com/group/de.comp.datenbanken.mysql/msg/a7f1b9043c202ef1?hl=de&dmode=source&output=gplain) said: 

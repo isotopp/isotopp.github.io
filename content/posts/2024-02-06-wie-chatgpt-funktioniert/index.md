@@ -10,7 +10,7 @@ tags:
 - ai
 - lang_de
 aliases:
-  - /2024/02/06/wie-chatgpt-funktioniert.md.html
+  - /2024/02/06/wie-chatgpt-funktioniert.html
 ---
 
 Es gibt einen wunderbaren Artikel von Stephen Wolfram,

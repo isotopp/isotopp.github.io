@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Steve Ballmer lernt noch was
 aliases:
-  - /2008/05/10/steve-ballmer-lernt-noch-was.md.html
+  - /2008/05/10/steve-ballmer-lernt-noch-was.html
 ---
 [Steve Ballmer schläft derzeit schlecht]({{< relref "2008-04-20-steve-ballmer-lernt-etwas.md" >}}).
 Da bin ich mir ziemlich sicher. Spätestens seit ich bei Till einen EEE-PC

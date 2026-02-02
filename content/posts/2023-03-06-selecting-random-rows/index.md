@@ -8,7 +8,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2023/03/06/selecting-random-rows.md.html
+  - /2023/03/06/selecting-random-rows.html
 ---
 
 Given a table named `tbl` with one million entries, we want to select a random row from this table, fast.

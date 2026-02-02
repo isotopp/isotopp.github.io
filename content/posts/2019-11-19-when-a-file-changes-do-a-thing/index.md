@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: When a file changes, do a thing
 aliases:
-  - /2019/11/19/when-a-file-changes-do-a-thing.md.html
+  - /2019/11/19/when-a-file-changes-do-a-thing.html
 ---
 When developing there is often an edit-compile-test cycle, or an
 edit-distribute-changes cycle or a similar repetetive task. You

@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Alcyone'
 aliases:
-  - /2017/01/02/fertig-gelesen-alcyone.md.html
+  - /2017/01/02/fertig-gelesen-alcyone.html
 ---
 Cary Caffrey schreibt etwas, daß vom Cover und dem Beginn der Geschichten sehr gut in ein SciFi Anime Setting passen könnte, dann aber schnell eine ganze Menge mehr Tiefe entwickelt und faszinieren kann.
 

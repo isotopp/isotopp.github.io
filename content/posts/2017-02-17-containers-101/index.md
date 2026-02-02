@@ -8,7 +8,7 @@ tags:
 - container
 title: Containers 101
 aliases:
-  - /2017/02/17/containers-101.md.html
+  - /2017/02/17/containers-101.html
 ---
 It is helpful to remember that containers are just normal Unix
 processes with two special tricks.

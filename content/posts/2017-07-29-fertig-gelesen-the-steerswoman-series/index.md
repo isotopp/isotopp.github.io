@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: The Steerswoman Series'
 aliases:
-  - /2017/07/29/fertig-gelesen-the-steerswoman-series.md.html
+  - /2017/07/29/fertig-gelesen-the-steerswoman-series.html
 ---
 ![](2017/07/the-steerswoman.jpg)
 

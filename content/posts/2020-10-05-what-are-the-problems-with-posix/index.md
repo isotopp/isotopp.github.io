@@ -10,7 +10,7 @@ tags:
 - mysql
 title: What are the problems with POSIX?
 aliases:
-  - /2020/10/05/what-are-the-problems-with-posix.md.html
+  - /2020/10/05/what-are-the-problems-with-posix.html
 ---
 Every once in a while there is the IT news article that kind of triggers me. This time it was ["Object-Storage-Protokoll könnte Posix ablösen"](https://www.golem.de/news/object-storage-object-storage-protokoll-koennte-posix-abloesen-2010-151294.html) in german computer news site [Golem](https://golem.de). The article speaks about mmap(), NVMEoF and object storage and how it could revolutionize or complete object storages, but does not link to an original article, names no persons and no paper. Also, what do these things - mmap, NVMEoF, object storage and Posix, even have in common? It is not explained anywhere in the article.
 

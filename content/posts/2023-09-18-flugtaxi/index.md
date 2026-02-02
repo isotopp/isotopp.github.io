@@ -9,7 +9,7 @@ tags:
 - erklaerbaer
 - technik
 aliases:
-  - /2023/09/18/flugtaxi.md.html
+  - /2023/09/18/flugtaxi.html
 ---
 
 Golem schreibt: [Über 2000 Skydrive-Lufttaxis vorbestellt](https://www.golem.de/news/urban-air-mobility-ueber-200-skydrive-lufttaxis-vorbestellt-2309-177728.html).

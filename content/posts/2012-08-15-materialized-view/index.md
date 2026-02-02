@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Materialized View
 aliases:
-  - /2012/08/15/materialized-view.md.html
+  - /2012/08/15/materialized-view.html
 ---
 Daten in einer SQL-Datenbank werden in einer Tabelle abgelegt, also einer
 Struktur mit Spalten, die Namen und in vielen Fällen auch einen Datentyp

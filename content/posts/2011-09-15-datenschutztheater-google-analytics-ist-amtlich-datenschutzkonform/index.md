@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: 'Datenschutztheater: Google Analytics ist amtlich datenschutzkonform '
 aliases:
-  - /2011/09/15/datenschutztheater-google-analytics-ist-amtlich-datenschutzkonform.md.html
+  - /2011/09/15/datenschutztheater-google-analytics-ist-amtlich-datenschutzkonform.html
 ---
 [Heise Newsticker](http://www.heise.de/newsticker/meldung/Google-Analytics-ist-amtlich-datenschutzkonform-1343698.html)
 titelt "Google Analytics ist amtlich datenschutzkonform": 

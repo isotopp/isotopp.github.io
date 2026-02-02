@@ -9,7 +9,7 @@ tags:
 - computer
 - python
 aliases:
-  - /2024/02/19/python-slots.md.html
+  - /2024/02/19/python-slots.html
 ---
 
 I am playing a bit with `__slots__` in Python, and I am trying to understand if I am holding them wrongly.

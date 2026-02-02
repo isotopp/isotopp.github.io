@@ -8,7 +8,7 @@ tags:
 - erklaerbaer
 title: Pizza, People, Projects and Processes
 aliases:
-  - /2020/06/15/pizza-people-projects-and-processes.md.html
+  - /2020/06/15/pizza-people-projects-and-processes.html
 ---
 *An older talk from 2 years ago, which for some reason I was not able to find in the blog.*
 

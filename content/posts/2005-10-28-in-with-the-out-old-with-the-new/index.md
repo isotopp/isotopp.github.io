@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: In with the out, old with the new...
 aliases:
-  - /2005/10/28/in-with-the-out-old-with-the-new.md.html
+  - /2005/10/28/in-with-the-out-old-with-the-new.html
 ---
 
 ![](webde-sse.jpg)

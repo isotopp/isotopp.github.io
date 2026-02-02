@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Malvertising - we have only seen the beginning
 aliases:
-  - /2017/03/21/malvertising-we-have-only-seen-the-beginning.md.html
+  - /2017/03/21/malvertising-we-have-only-seen-the-beginning.html
 ---
 [Netzpolitik.org has an article](https://netzpolitik.org/2017/interview-ueber-adblocker-und-das-wohlergehen-der-schadsoftware-branche-das-problem-malvertising-nicht-aussitzen/)
 (in German) in which they are interviewing IT-Security Consultant Thorsten

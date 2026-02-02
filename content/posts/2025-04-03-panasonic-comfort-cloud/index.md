@@ -10,7 +10,7 @@ tags:
 - energy
 - climate
 aliases:
-  - /2025/04/03/panasonic-comfort-cloud.md.html
+  - /2025/04/03/panasonic-comfort-cloud.html
 ---
 
 As discussed [previously]({{< relref "2025-03-10-going-fully-electric.md" >}}),

@@ -11,7 +11,7 @@ tags:
 - lang_en
 title: Load, Load Testing and Benchmarking
 aliases:
-  - /2017/02/16/load-load-testing-and-benchmarking.md.html
+  - /2017/02/16/load-load-testing-and-benchmarking.html
 ---
 (This article also available in [german language]({{< relref "2012-08-28-load-load-testing-und-benchmarks.md" >}}).)
 

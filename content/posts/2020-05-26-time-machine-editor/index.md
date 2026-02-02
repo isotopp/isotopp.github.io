@@ -8,7 +8,7 @@ tags:
 - macos
 title: Time Machine Editor
 aliases:
-  - /2020/05/26/time-machine-editor.md.html
+  - /2020/05/26/time-machine-editor.html
 ---
 I have an embedded Mac mini, it drives the local TV screen by doing OpenVPN to Germany, Netflix, Amazon and the local [Subsonic](https://subsonic.org). It does not really do much with the local disk, and it does not need to wake up every hour to make a Time Machine backup over the network.
 

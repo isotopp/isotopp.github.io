@@ -11,7 +11,7 @@ tags:
 - mysql
 - lang_de
 aliases:
-  - /2012/03/15/grundsaetze-verteilter-datenbanken.md.html
+  - /2012/03/15/grundsaetze-verteilter-datenbanken.html
 ---
 
 Wonka>

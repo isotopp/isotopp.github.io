@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: The bike as a feeder system to the train system
 aliases:
-  - /2017/04/29/the-bike-as-a-feeder-system-to-the-train-system.md.html
+  - /2017/04/29/the-bike-as-a-feeder-system-to-the-train-system.html
 ---
 A talk by Marco te Brömmelstroet and others about how neither the Bike nor
 the train themselves are a viable transport alternative, but how they

@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Automatisierung und Skalierung
 aliases:
-  - /2011/02/17/automatisierung-und-skalierung.md.html
+  - /2011/02/17/automatisierung-und-skalierung.html
 ---
 Ich hatte im Vorfeld der OSDC 2011 eine interessante Unterhaltung mit Julian
 Hein zum Thema Automatisierung. Er wollte, daß ich einmal erkläre, warum man

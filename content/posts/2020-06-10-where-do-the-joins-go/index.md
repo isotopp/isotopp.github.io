@@ -8,7 +8,7 @@ tags:
 - development
 title: Where do the JOINs go?
 aliases:
-  - /2020/06/10/where-do-the-joins-go.md.html
+  - /2020/06/10/where-do-the-joins-go.html
 ---
 I was asking on Twitter:
 

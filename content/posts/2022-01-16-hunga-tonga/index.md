@@ -8,7 +8,7 @@ tags:
 - anderswo
 - iot
 aliases:
-  - /2022/01/16/hunga-tonga.md.html
+  - /2022/01/16/hunga-tonga.html
 ---
 
 This is the Hunga Tonga underwater volcano explosion in Pacific Ocean (animated gif, click to start):

@@ -8,7 +8,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2022/11/09/databases-on-unraided-storage.md.html
+  - /2022/11/09/databases-on-unraided-storage.html
 ---
 
 Where I work, we run bare-metal databases on non-redundant local storage.

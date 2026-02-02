@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Wie man einen Graph plottet
 aliases:
-  - /2012/03/12/wie-man-einen-graph-plottet.md.html
+  - /2012/03/12/wie-man-einen-graph-plottet.html
 ---
 ![Graph: Schlechtes Beispiel](graph-schlecht.png)
 

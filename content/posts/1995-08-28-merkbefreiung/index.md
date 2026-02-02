@@ -8,7 +8,7 @@ tags:
 - inkomploehntopp
 title: "Merkbefreiung"
 aliases:
-  - /1995/08/28/merkbefreiung.md.html
+  - /1995/08/28/merkbefreiung.html
 ---
 
 <pre>

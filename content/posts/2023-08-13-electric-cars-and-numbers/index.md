@@ -8,7 +8,7 @@ tags:
 - lang_en
 - energy
 aliases:
-  - /2023/08/13/electric-cars-and-numbers.md.html
+  - /2023/08/13/electric-cars-and-numbers.html
 ---
 
 (based on a series of posts on Mastodon)

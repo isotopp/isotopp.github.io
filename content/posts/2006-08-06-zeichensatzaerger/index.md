@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Zeichensatzärger
 aliases:
-  - /2006/08/06/zeichensatzaerger.md.html
+  - /2006/08/06/zeichensatzaerger.html
 ---
 ![](font.jpg)
 

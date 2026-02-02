@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: "Die Grauen Herren vs. das Internet"
 aliases:
-  - /2008/05/06/die-grauen-herren-vs-das-internet.md.html
+  - /2008/05/06/die-grauen-herren-vs-das-internet.html
 ---
 
 In [The Gospel of Consumption](https://orionmagazine.org/article/the-gospel-of-consumption/):

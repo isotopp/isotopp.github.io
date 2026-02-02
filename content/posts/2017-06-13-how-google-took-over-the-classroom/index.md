@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: How Google took over the classroom
 aliases:
-  - /2017/06/13/how-google-took-over-the-classroom.md.html
+  - /2017/06/13/how-google-took-over-the-classroom.html
 ---
 Using electronic devices in the classroom seems to be a topic older than
 time, and the implementation often involved a lot of tedium. The problems

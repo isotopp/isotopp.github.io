@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Fertig gelesen: Der Name des Windes'
 aliases:
-  - /2010/08/08/fertig-gelesen-der-name-des-windes.md.html
+  - /2010/08/08/fertig-gelesen-der-name-des-windes.html
 ---
 [Der Name des Windes: Die Königsmörder-Chronik. Erster Tag](http://www.amazon.de/Name-Windes-Die-Königsmörder-Chronik-Erster/dp/3608938788/kristiankohntopp),
 Patrick Rothfuss, 16.95 EUR, 896 Seiten.

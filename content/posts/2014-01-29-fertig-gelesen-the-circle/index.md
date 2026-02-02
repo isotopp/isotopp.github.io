@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: "The Circle"'
 aliases:
-  - /2014/01/29/fertig-gelesen-the-circle.md.html
+  - /2014/01/29/fertig-gelesen-the-circle.html
 ---
 "The Circle" ist eine hypothetische Google-Facebook-Twitter-Nachfolgefirma und der Star des Silicon Valley. Die Firma hat sich totale Transparenz und umfassende Datenerfassung auf die Fahnen geschrieben. Mae Holland fängt durch Beziehungen bei The Circle an und wird auf Grund konstruierter Verwicklungen dort durch die Abteilungen geschoben und über die Zeit zum Firmenmaskottchen.
 

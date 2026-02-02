@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: No such thing as a wilderness, part II
 aliases:
-  - /2017/03/21/no-such-thing-as-a-wilderness-part-ii.md.html
+  - /2017/03/21/no-such-thing-as-a-wilderness-part-ii.html
 ---
 [Science Daily writes](https://www.sciencedaily.com/releases/2017/03/170314111320.htm): 
 

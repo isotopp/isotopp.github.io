@@ -7,7 +7,7 @@ tags:
 - mysql
 title: That's a lot of databases
 aliases:
-  - /2021/03/24/a-lot-of-mysql.md.html
+  - /2021/03/24/a-lot-of-mysql.html
 ---
 
 Where I work, we are using MySQL a lot. The databases are being organized in replication hierarchies, and each hierarchy is a tree topology with a single primary and a number of intermediate replicas.

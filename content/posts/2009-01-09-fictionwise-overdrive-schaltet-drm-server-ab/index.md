@@ -8,7 +8,7 @@ tags:
 - lang_de
 title: Fictionwise/Overdrive schaltet DRM-Server ab
 aliases:
-  - /2009/01/09/fictionwise-overdrive-schaltet-drm-server-ab.md.html
+  - /2009/01/09/fictionwise-overdrive-schaltet-drm-server-ab.html
 ---
 Richtig, wieder sind die Käufer legaler Digitalisate die Gearschten: Wie
 sich schon bei Musik gezeigt hatte, sind es nur die legaler Käufer

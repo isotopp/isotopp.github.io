@@ -7,7 +7,7 @@ tags:
 - lang_de
 title: Namensregeln für Schemadesign
 aliases:
-  - /2011/05/20/namensregeln-f-r-schemadesign.md.html
+  - /2011/05/20/namensregeln-f-r-schemadesign.html
 ---
 Ein Freund fragte mich nach Konventionen für die Benennung von Tabellen bei
 der Entwicklung von Schemata für MySQL Datenbanken. Es begann damit, daß er

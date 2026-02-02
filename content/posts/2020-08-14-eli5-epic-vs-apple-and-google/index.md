@@ -10,7 +10,7 @@ tags:
 - erklaerbaer
 title: 'ELI5: Epic vs Apple and Google'
 aliases:
-  - /2020/08/14/eli5-epic-vs-apple-and-google.md.html
+  - /2020/08/14/eli5-epic-vs-apple-and-google.html
 ---
 [@jpmens asked](https://twitter.com/jpmens/status/1294156181100007425) on Twitter:
 

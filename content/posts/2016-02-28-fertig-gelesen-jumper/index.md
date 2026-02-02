@@ -10,7 +10,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Jumper'
 aliases:
-  - /2016/02/28/fertig-gelesen-jumper.md.html
+  - /2016/02/28/fertig-gelesen-jumper.html
 ---
 Ein Junge lebt bei seinem alkoholsüchtigen Vater und will der Mißhandlung und dem Mißbrauch entkommen. Er flieht, baut sich eine neue Existenz auf, und gerät dabei auf die schiefe Bahn und mit Geheimdiensten und Terroristen in Konflikt. Im Laufe der Geschichte gelingt es ihm, seinen Frieden mit seinem Vater und seiner Vergangenheit zu machen, eine sinnvolle Beziehung aufzubauen und seine Existenzgrundlage wieder auf Spur zu bringen.
 

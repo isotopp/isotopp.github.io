@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Video: 20 Years of continuous improvement in crash safety'
 aliases:
-  - /2017/02/09/video-20-years-of-continuous-improvement-in-crash-safety.md.html
+  - /2017/02/09/video-20-years-of-continuous-improvement-in-crash-safety.html
 ---
 Continual improvement is sometimes hard to see, because each iteration, each
 incremental step itself is tiny so that the actual change escapes our

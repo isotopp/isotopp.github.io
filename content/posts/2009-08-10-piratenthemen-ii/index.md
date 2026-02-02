@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Piratenthemen II
 aliases:
-  - /2009/08/10/piratenthemen-ii.md.html
+  - /2009/08/10/piratenthemen-ii.html
 ---
 
 Die Welt veröffentlicht einen Wahlkampfartikel pro Piratenpartei:

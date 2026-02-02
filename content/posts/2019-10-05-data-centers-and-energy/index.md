@@ -11,7 +11,7 @@ tags:
 - lang_en
 title: Data Centers and Energy
 aliases:
-  - /2019/10/05/data-centers-and-energy.md.html
+  - /2019/10/05/data-centers-and-energy.html
 ---
 Deutsche Welle is shocked: 
 [Generation Greta is watching Netflix](https://www.dw.com/de/co2-aussto%C3%9F-von-online-video-streaming-als-klima-killer/a-49469109?maca=de-Twitter-sharing)

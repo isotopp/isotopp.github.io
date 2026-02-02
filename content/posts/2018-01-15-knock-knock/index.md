@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Knock, Knock
 aliases:
-  - /2018/01/15/knock-knock.md.html
+  - /2018/01/15/knock-knock.html
 ---
 What does your Mac do on Startup? [Knockknock knows](https://github.com/synack/knockknock). 
 

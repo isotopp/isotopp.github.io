@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Bundestrojaner in den Tagesthemen
 aliases:
-  - /2007/10/11/bundestrojaner-in-den-tagesthemen.md.html
+  - /2007/10/11/bundestrojaner-in-den-tagesthemen.html
 ---
 [Bundestrojaner vor dem Verfassungsgericht](https://www.youtube.com/watch?v=8uuk_XFW9oA)
 

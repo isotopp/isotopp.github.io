@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: Anathema'
 aliases:
-  - /2018/07/31/fertig-gelesen-anathema.md.html
+  - /2018/07/31/fertig-gelesen-anathema.html
 ---
 Die Grundidee hinter Anathema ist gar nicht schlecht, auch wenn die Verpackung so Klischee ist, daß es schmerzt: Ein Mädchen wächst behütet (als Sklavin in einem Haushalt) auf und weiß nix über die Welt. Sie ist zugleich das Subjekt einer Prophezeihung (in diesem Fall ein Orakel) und wird große Veränderung herbei führen. Das Expose in einem Gratiskapitel las sich spannend.
 

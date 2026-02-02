@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Moral Mazes'
 aliases:
-  - /2013/09/27/fertig-gelesen-moral-mazes-robert-jackall.md.html
+  - /2013/09/27/fertig-gelesen-moral-mazes-robert-jackall.html
 ---
 "Das Sachbuch zu Office Space"?
 

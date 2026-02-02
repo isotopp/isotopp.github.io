@@ -11,7 +11,7 @@ tags:
 - climate
 - erklaerbaer
 aliases:
-  - /2024/07/16/energy.md.html
+  - /2024/07/16/energy.html
 ---
 
 Let's talk about power and household items.

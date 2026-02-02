@@ -10,7 +10,7 @@ tags:
 - fantasy
 title: 'Fertig gelesen: Voidhawk'
 aliases:
-  - /2014/12/30/fertig-gelesen-voidhawk.md.html
+  - /2014/12/30/fertig-gelesen-voidhawk.html
 ---
 Die Idee: Fantasy mit Zwergen und Elfen in einem Fantasie-Weltraum. Die Ausführung: Leider auf eine Weise, die meine Suspension Of Disbelief zerstört, und eine Schreibweise und Storyführung, die mir auf die Nerven geht.
 

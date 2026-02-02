@@ -8,7 +8,7 @@ tags:
 - publication
 - internet
 aliases:
-  - /2000/04/01/datenspuren-im-internet.md.html
+  - /2000/04/01/datenspuren-im-internet.html
 ---
 
 [Datenspuren im Internet](2000/04/CR_Datenspuren_im_Internet.pdf) (PDF)

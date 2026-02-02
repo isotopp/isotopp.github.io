@@ -8,7 +8,7 @@ tags:
 - mysql
 title: Deleting data from MySQL
 aliases:
-  - /2020/05/13/deleting-data-from-mysql.md.html
+  - /2020/05/13/deleting-data-from-mysql.html
 ---
 I have been pointed at the following question: »Has anyone ever used mySQL events to auto-delete rows from a table after set period? Wondering your experience of doing this.«
 

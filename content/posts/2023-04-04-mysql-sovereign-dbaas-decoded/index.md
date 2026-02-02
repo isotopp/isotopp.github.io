@@ -8,7 +8,7 @@ tags:
 - mysql
 - database
 aliases:
-  - /2023/04/04/mysql-sovereign-dbaas-decoded.md.html
+  - /2023/04/04/mysql-sovereign-dbaas-decoded.html
 ---
 
 Back in October last year, I had been speaking to a few long-time friends at SeveralNines for a podcast.

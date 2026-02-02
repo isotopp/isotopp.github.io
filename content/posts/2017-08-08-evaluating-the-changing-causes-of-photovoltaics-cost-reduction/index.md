@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: Evaluating the Changing Causes of Photovoltaics Cost Reduction
 aliases:
-  - /2017/08/08/evaluating-the-changing-causes-of-photovoltaics-cost-reduction.md.html
+  - /2017/08/08/evaluating-the-changing-causes-of-photovoltaics-cost-reduction.html
 ---
 [![](2017/08/pv-module-cost.png)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2891516)
 

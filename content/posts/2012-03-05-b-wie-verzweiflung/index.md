@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: /b/ wie "Verzweiflung"
 aliases:
-  - /2012/03/05/b-wie-verzweiflung.md.html
+  - /2012/03/05/b-wie-verzweiflung.html
 ---
 ![Blogmarke /b/](fsk-b.jpeg)
 

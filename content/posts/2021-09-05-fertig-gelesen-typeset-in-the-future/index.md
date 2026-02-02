@@ -9,7 +9,7 @@ tags:
 - book
 title: 'Fertig gelesen: Typeset in the Future'
 aliases:
-  - /2021/09/05/fertig-gelesen-typeset-in-the-future.md.html
+  - /2021/09/05/fertig-gelesen-typeset-in-the-future.html
 ---
 
 Dave Addey ran a Tumblr once, titled "Typeset in the Future", in which he dissected the typography of Science Fiction films.

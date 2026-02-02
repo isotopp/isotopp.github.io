@@ -8,7 +8,7 @@ tags:
 - lang_en
 title: The Measles vs your immune system
 aliases:
-  - /2017/05/26/the-measles-vs-your-immune-system.md.html
+  - /2017/05/26/the-measles-vs-your-immune-system.html
 ---
 [NPR has an article](http://www.npr.org/sections/goatsandsoda/2015/05/07/404963436/scientists-crack-a-50-year-old-mystery-about-the-measles-vaccine)
 about the measles. It is already known that after a 

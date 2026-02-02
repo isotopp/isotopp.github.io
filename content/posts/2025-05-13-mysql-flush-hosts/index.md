@@ -10,7 +10,7 @@ tags:
 - mysql
 - mysqldev
 aliases:
-  - /2025/05/13/mysql-flush-hosts.md.html
+  - /2025/05/13/mysql-flush-hosts.html
 ---
 
 Sometimes, MySQL throws an error like this:
