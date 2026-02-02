@@ -162,6 +162,7 @@ def migrate_post(
     uploads_root: Path,
     base_url: str,
     apply_changes: bool,
+    move_assets: bool,
 ) -> tuple[list[Path], list[Path]]:
     text = path.read_text(encoding="utf-8")
     parts = split_front_matter(text)
@@ -203,7 +204,10 @@ def migrate_post(
         moved.append(dest)
         if apply_changes:
             dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(src, dest)
+            if move_assets:
+                shutil.move(src, dest)
+            else:
+                shutil.copy2(src, dest)
 
     return moved, missing
 
@@ -242,6 +246,11 @@ def main() -> None:
         action="store_true",
         help="Write changes to disk. Omit for a dry run.",
     )
+    parser.add_argument(
+        "--move",
+        action="store_true",
+        help="Move assets out of uploads instead of copying them.",
+    )
 
     args = parser.parse_args()
 
@@ -260,6 +269,7 @@ def main() -> None:
             args.uploads,
             args.base_url,
             args.apply,
+            args.move,
         )
         moved_total += len(moved)
         missing_total += len(missing)
