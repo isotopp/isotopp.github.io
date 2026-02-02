@@ -1,0 +1,71 @@
+---
+author: isotopp
+date: "2010-06-07T12:01:00Z"
+feature-img: assets/img/background/rijksmuseum.jpg
+tags:
+- php
+- lang_de
+title: 15 Jahre PHP
+aliases:
+  - /2010/06/07/15-jahre-php.md.html
+---
+Morgen ist der 8. Juni 2010, und damit wird [PHP 15 Jahre
+alt](http://groups.google.ch/group/comp.infosystems.www.authoring.cgi/msg/cc7d43454d64d133).
+
+Die aktuelle Version von PHP ist 5.3.
+
+Seit [dem letzten großen Jubiläum]({{< relref "2005-06-07-zehn-jahre-php.md" >}}) vor 5
+Jahren hat sich PHP weiterentwickelt:
+
+- [PHP 5.1](http://php.net/releases/5_1_0.php) vom 24. November 2005 war in
+  erster Linie ein Performance-Release,
+- [PHP 5.2](http://php.net/releases/5_2_0.php) folgte kaum ein Jahr später, am
+  2. November 2006, und brachte weitere Performanceverbesserungen, die immer
+  noch viel zu wenig verwendete ext/filter und den FAQ-Klassiker 'upload
+  progress tracking'.
+
+Bis zu 
+[PHP 5.3](http://php.net/releases/5_3_0.php) sollte es noch weitere 3 Jahre
+dauern: Am 30. Juni 2009, kurz nach dem 14. Geburtstag von PHP, erschien
+dieses Release, mit vielen lange ersehnten und vielen lange umstrittenen
+neuen Eigenschaften - hätte der Unicode-Support nicht gefehlt, hätte es PHP
+6.x heißen können. 
+
+Neu in 5.3 sind:
+
+- [Namespaces](http://de2.php.net/namespaces) zum Beispiel, die eigentlich
+  alle haben wollten, bei denen aber kaum jemand mit der Wahl des
+  Namespace-Separators, dem Backslash, einverstanden war.
+- [Late Static Binding](http://de2.php.net/lsb), das viele OOP-Schmerzen linderte, 
+- [anonyme Funktionen](http://de2.php.net/manual/en/functions.anonymous.php)
+  (Lambda-Funktionen und Closures), 
+- NOW Dokumente (eine Erweiterung von Here-Dokumenten), 
+- der verkürzte Ternary "expr1?:expr3", ein
+- [goto](http://de2.php.net/goto) (komplett mit Velociraptor!), 
+- und das lange fehlende 
+  [__callStatic](http://de2.php.net/__callstatic). 
+
+Dazu dann noch Garbage Collection als Ergänzung zum Refcounting, der mysqlnd
+MySQL Native Driver (der ZVAL zur Repräsentation von MySQL-Resultsets
+verwendet), Windows 64 Bit-Support, und natürlich wie jedes PHP Release
+bisher: noch mehr Module.
+
+Denn trotz all der OOP-Dekoration und den vielen anderen Verbesserungen ist
+PHP immer noch eines: Die Borg. Es ist eine Plattform, mit der sich externe
+C-Bibliotheken sehr leicht als Bibliotheken in einer dynamischen Sprache
+verfügbar machen lassen. PHP ist daher eine Basis für Glue-Code, Rapid
+Prototyping und schnelle und flexible Anwendungserstellung.
+
+Wobei jetzt seit dem 2. Februar diesen Jahres auch der umgekehrte Weg offen
+steht:
+[Facebooks HipHop](http://developers.facebook.com/news.php?story=358&blog=1)
+macht aus PHP-Skripten C- bzw. C++-Source, der sich dann compilieren und als
+statisches Binary verwenden läßt.
+
+Und so kommt es, daß die beliebteste Anfänger-Programmiersprache der Welt
+zugleich diejenige Plattform ist, auf denen die größten Websites der Welt
+laufen.
+
+Nebenbei bemerkt: Falls Ihr _immer_ noch PHP 4 einsetzt - heute wäre ein
+guter Tag, ein PHP 5.3 zu installieren und den Kram da hin zu migrieren. PHP
+5 erschien am 13. Juli 2004. Das ist beinahe 6 Jahre her.

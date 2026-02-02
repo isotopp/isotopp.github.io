@@ -1,0 +1,103 @@
+---
+author: isotopp
+date: "2024-10-21T04:05:06Z"
+feature-img: assets/img/background/rijksmuseum.jpg
+toc: true
+tags:
+- lang_ede
+- media
+title: "Abnormal"
+aliases:
+  - /2024/10/21/abnormal.md.html
+---
+
+[Deloitte Media Consumer Survey 2024](https://www.deloitte.com/de/de/Industries/tmt/media-consumer-survey.html)
+
+![](2024/10/abnormal-01.png)
+*Mediennutzung 2021 vs. 2024: Auch 2021 hat Deloitte im Rahmen der Media Consumer Survey 2.000 Konsument:innen zur TV- und Videonutzung befragt. Was hat sich seitdem verändert?*
+
+*2021 Immer mehr Zuschauer wenden sich vom linearen TV ab // 2024 Trotz weiterer Zuschauerverluste schauen weiterhin 81% überwiegend linear.*
+
+*2021 Eine deutliche Mehrzahl der TV-Geräte ist mit dem Internet verbunden // 2024 Der Anteil der mit dem Internet verbundenen TV-Geräte hat um 20 Prozentpunkte zugenommen.*
+
+What the actual fuck?
+
+Wenn ich hier im Winter morgens zur Bushaltestelle gehe, dann kann ich – es sind die Niederlande – durch die Fenster der Nachbarn sehen, wie sie am Frühstückstisch den Tag beginnen.
+Es ist unhöflich, so etwas zu tun oder zu erwähnen, aber kaum zu vermeiden.
+
+In den weitaus meisten Haushalten hier steht in Sichtweite des Esstisches ein Fernseher und er ist morgens an.
+
+Etwas, das in dem Kontext, in dem ich aufgewachsen bin und den ich lebe vollkommen ausgeschlossen ist.
+Allerdings war bei uns daheim oft NDR2 an, in der Küche oder im Bad.
+Das ist allerdings auch schon lange nicht mehr der Fall.
+
+# MP3
+
+Als es losging mit MP3-Dateien, habe ich meine erste ATA-Festplatte gekauft – vorher hatte ich immer nur SCSI-Platten.
+Aber ich brauchte billigen Platz.
+Ich habe meine CD-Sammlung komplett gerippt, und bin dann mit der Platte und ihrem Inhalt bei meinen Freunden vorbei und habe sie gefragt, ob ich deren CDs ausleihen kann.
+
+"Ja, klar. Welche denn?" "Äh, alle?"
+
+Ich habe dann auch deren CDs gerippt, in die Sammlung eingefügt,
+und die CDs mit einer Kopie der Platte zurückgegeben.
+
+Das war spannend.
+Egal wie oft ich das gemacht habe (und es sind inzwischen nicht ganz 100k Titel),
+der Overlap zwischen den Beständen war minimal, 
+einzelne Alben aus Sammlungen von hunderten von Titeln – mit Ausnahme von Soundtracks und Filmmusik.
+
+Das war die Zeit, als auf Radio Schleswig-Holstein 
+der Djingle "Eine Million für Zehn!" für deren Gewinnspiel tot gedudelt wurde,
+und meine fast ein halbes Jahr dauernde Aktion war im Grunde eine direkte Reaktion darauf.
+Das Ding hat irgendetwas in mir abgetötet und danach war mir dann alles egal.
+
+Seitdem ist das Radio weitgehend aus.
+
+Also, auch wortwörtlich – sie haben es dann ja auf ein digitales Format umgestellt (DAB), 
+dann gleich noch einmal auf ein anderes digitales Format (DAB2? DAB+? Egal),
+und ich hatte so gar keine Motivation, ein Empfangsgerät dafür zu beschaffen.
+
+Das aktuelle Auto hat offenbar irgendein Digitalradio, aber das hat noch nie jemand benutzt, 
+denn das aktuelle Auto hat auch Internet.
+
+# TV
+
+Etwas später, kurz nach 2000, hat ein Arbeitskollege mich zum Mediamarkt genommen,
+und gesagt "Kauf das da".
+"Das da" war ein Schneider PrimeTimer DVR, und der konnte – das war die wichtigste Funktion, +30s Skippen.
+
+Das war die letzte Werbung, die ich je im Fernsehen gesehen habe.
+
+Die zweitwichtigste Funktion war die Serienautomatik, 
+und so war immer was zum Gucken auf der Platte und für lineares Fernsehen war keine Zeit mehr.
+
+Der analoge Fernseher ging kaputt, und analoges Fernsehen auch.
+Elgato hatte aber einen Digitalfernseh-Stick und Software dafür, 
+die im Wesentlichen genau das tat, 
+was der Prime Timer auch machte – also kam ein Mac Mini unter den Fernseher und blieb da,
+bis er durch einen anderen Mini ersetzt wurde.
+
+Der aktuelle Mini ist der 3. in 20 Jahren, das kleinste M1 Modell (kein RAM, keine Platte).
+
+Der Mini macht VPN zum deutschen Dedi, Mediathekwebview, Youtube-DL und Youtube im Browser mit uBlock origin,
+BBC, und VLC vom Fileserver.
+Der Fileserver hat irgendwo ein wenig mehr als ein TB ungesehenes Zeug rumliegen.
+
+Wir haben eine Decoder-Box für niederländisches Fernsehen über IP, 
+weil die mit dem Internet mit kam. 
+Die war auch mal an, um zu gucken, dass sie funktioniert.
+
+Der aktuelle Fernseher ist ein 4K Spionage-Gerät von LG, das sich vor allen Dingen dadurch auszeichnet,
+dass es viele HDMI-Eingänge hat.
+Es gibt eine eiserne Regel, das Gerät nicht mit dem Internet zu verbinden – egal wie doll es darum bittet.
+Es darf sich keinesfalls irgendwie Updaten oder Anmelden können, denn es funktioniert gut!
+
+Am Gerät hängen der besagte Mini, die Decoderbox und ein Steamlink.
+Das Steamlink ersetzt die Google Chromecast, die ja durch die Werbeinvasion auf Youtube unbenutzbar geworden ist.
+
+# Abnormal
+
+Und so kommt es, dass ich hier jetzt knapp 25 Jahre Werbefrei und Nichtlinear bin.
+
+Laut Studie definitiv abnormal.

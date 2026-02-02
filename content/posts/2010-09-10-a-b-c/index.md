@@ -1,0 +1,61 @@
+---
+author: isotopp
+date: "2010-09-10T08:22:24Z"
+feature-img: assets/img/background/mysql.jpg
+tags:
+- mysql
+- oracle
+- sql
+- lang_de
+title: '''a'' = ''b'' = ''c'''
+aliases:
+  - /2010/09/10/a-b-c.md.html
+---
+Kurzer SQL WTF von heute: 
+
+```sql
+mysql> SELECT 'a'='b'; 
+0
+
+mysql> SELECT 'a'='b'='c';
+1
+```
+
+Warum ist das so?
+
+Im MySQL Sourcecode ist in sql/sql_yacc.yy definiert: 
+
+```console
+%left   EQ EQUAL_SYM GE GT_SYM LE LT NE IS LIKE REGEXP IN_SYM
+```
+
+Damit ist der Operator EQ (das Vergleichheitszeichen) als links-assoziativ
+definiert. Vergleiche von Vergleichen sind also zugelassen, 
+
+`1 = 2 = 3` ist also ein zulässiges Konstrukt und es wird als `( 1 = 2 ) =
+3` evaluiert.
+
+Statt links-assoziativ könnte es auch als rechts-assoziativ `1 = (2 = 3)` 
+oder als nicht-assoziativ (ein Mehrfachvergleich ist unzulässig)
+definiert sein.
+
+Daher ist der boolsche Ausdruck `'a' = 'b'` offensichtlich falsch, also 0. Und
+damit wird `0 = 'c'` zu einem Vergleich eines Integers links mit einem
+Character rechts. In einem links-assoziativen Ausdruck bestimmt der linke
+Ausdruck den Typ, zu dem der rechte Teil des Ausdrucks hin konvertiert wird.
+Das `c` wird also zu einem Integer umgewandelt, also zu `0`. Damit ist 
+`0 = 0` und das ist wahr, also `1`.
+
+Ist es ungewöhnlich, daß MySQL so etwas tut? 
+
+Auch in Sybase und in Oracle ist das Symbol `EQ` (der
+Vergleichheitszeichen-Operator) ein `%left`.
+
+Und Oracle sagt 
+[im Handbuch](http://download.oracle.com/docs/cd/B10501_01/appdev.920/a96624/02_funds.htm): 
+
+> PL/SQL is case sensitive within character literals. For example, PL/SQL
+> considers the literals 'Z' and 'z' to be different. Also, the character
+> literals '0'..'9' are not equivalent to integer literals but can be used
+> in arithmetic expressions because they are implicitly convertible to
+> integers.

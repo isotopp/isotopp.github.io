@@ -1,0 +1,279 @@
+---
+author: isotopp
+date: "2024-07-16T04:05:06Z"
+feature-img: assets/img/background/rijksmuseum.jpg
+description: "Graphical visualization of the amount of power (Watts) various things in a household consume, to provide a feeling for scale."
+title: "Power (and Energy)"
+toc: true
+tags:
+- lang_en
+- energy
+- climate
+- erklaerbaer
+aliases:
+  - /2024/07/16/energy.md.html
+---
+
+Let's talk about power and household items.
+
+Power is measured in Watt (W). 
+1000 Watt make a Kilowatt (kW).
+
+Work (Energy) is power expended for an amount of time.
+1000 Watt (a Kilowatt) used for one hour is a Kilowatt-hour (kWh).
+
+How much is a Watt?
+In our graphics, a Watt is a single red pixel, right of the word cellphone
+One Watt is what an iPhone uses when you are running Ice Cubes, scrolling social media.
+
+![](2024/07/energy-01.png)
+*Zoom into this image to see the pixel. It symbolizes 1 W.*
+
+# Media appliances
+
+When you are using 5 W your cellphone gets hot.
+It is the approximate maximum a device can use without having active cooling, a spinning fan.
+
+A device with an active cooler such as a Mac mini uses 5 W when used normally, and up to 25 W under load.
+It can use up to 50 W.
+
+25 W is also what a typical cheap Intel laptop uses when idle.
+For example, the Lenovo Yoga I once had.
+
+80 W is what a medium large TV uses in your living room. showing the news.
+
+80 W is also what my gaming machine uses, with a Ryzen CPU, an Nvidia 4070 and 64 GB of memory,
+when idle showing steam and the Windows desktop.
+
+400 W is what my gaming machine uses when I play.
+
+![](2024/07/energy-02.png)
+*Typical household media consumption, Energy used. One pixel = one W.*
+
+# Household heat
+
+Let's walk over from the living room to the kitchen.
+A lot of these household devices produce heat, for washing, drying or cooking.
+At 10 Ampere, you get around 2300 W from 230 V. At 16 Ampere, 3680 W.
+
+Most of these heaters are very simple devices: They are fully on or completely off.
+So we see a lot of devices that are using either full power or almost no power.
+
+![](2024/07/energy-09.png)
+
+*A Wiesheu Minimat 43s, a professional baking oven of the kind that you find in gas stations or supermarkets.
+It uses single phase normal power, 16A, so that still can fit into a normal household. 
+The device heats up, using 3000W, and then switches on and off to maintain temperature.
+This pattern is typical for household appliances that produce process heat:
+Ovens, cooking plates, washing machines, dryers.*
+
+![](2024/07/energy-03.png)
+*Adding a 2000 W (10 A) and a 3000 W (16 A) household device.*
+
+# Driving and charging a car
+
+Many people now drive electrical cars.
+Those that have the space often use a local charge-point that uses three-phase power at 16 A per phase to charge.
+Three phases at 16 A and 230 V deliver 3 * 16 A * 230 V = 11000 W.
+
+![](2024/07/energy-04.png)
+*Adding the charge-point, 11000 W.*
+
+Over one hour, this uses 11 kWh of Energy.
+A battery of 60 kWh that was at 10% is typically charged to 80%.
+
+```console
+>>> scale=4
+>>> 60 * (0.8-0.1)
+42.0
+>>> ./11
+3.8181
+```
+
+Charging a car with a 60 kWh battery from 10% to 80% replaces 70% of the total battery capacity, 42 kWh.
+At a charge rate of 11 kW, it takes 3.8 h to charge the car.
+Since charging slows down as the battery fills up, it will take approximately 4 h to complete the charge.
+
+You could get a 3 phase, 32 A connection, for a 22 kW charge-point.
+But the electricity company will charge you a lot more for that,
+and it is kind of pointless.
+Already at 11kW, even a 100 kWh Tesla battery will charge from 10% to 80% in 6.5 h,
+and you do not have to drive the battery to empty before you charge.
+
+In fact, if you charge every evening, just because you can, you are going to replace what you used up this day.
+For 100 km, that is typically 20 kWh or less, so the car will be back at 80% after one or two hours.
+
+Don't get a 22 kW charge-point, it is pointless.
+
+Many people want charge-points that can do surplus charging,
+using only as much power as the solar array on their roof can provide.
+Most charge-points can go from 3 phases to 1 phase, and from 16 A down to 6 A.
+
+```console
+>>> 1 * 6 * 230
+1380
+>>> 3 * 6 * 230
+4140
+```
+
+For a single phase, you can go down as low as 1380 W at 6 A.
+For three-phase, you can go down as low as 4140 W at 6 A.
+That is good for 5.5 kWh or 16.5 kWh on a sunny afternoon (4 h of time at 1.4 kW or 4.1 kW).
+
+With a proper charge controller, you could charge your electric car from the solar array of the house slowly,
+but for free.
+Even on somewhat cloudy days.
+
+When driving, that car (in my case, a Renault Megane e-Tech 60 kWh) straight on a flat Netherlands Autobahn,
+the car consumes 15,000 W.
+
+![](2024/07/energy-05.png)
+
+*If your car shows "15 kWh being used",
+it means that if you continued to drive this way for an hour, it would use 15 kWh of the battery.
+It is actually using 15 kW, 15,000 W, right now.*
+
+Motors in electrical cars are not like motors in combustion engine cars.
+They can use an almost infinite amount of energy for a short amount of time.
+The current the battery can provide limits their output 
+(which is a function of the battery's internal resistance).
+Also limiting are the thickness of the wires,
+and ultimately the amount of cooling we provide for the motor.
+
+So for a short time, the car can provide astronomical amounts of power.
+The Renault Megane we used as an example further up can be
+driven on the autobahn at 100 km/h with 15,000 W.
+But it can consume 160,000 W (220 horsepower) for a short time to get away from the traffic light in a race.
+
+[![](2024/07/energy-06.png)](/uploads/2024/07/energy-06.png)
+
+*Hitting a Megane on the head will use 160 kW, 220 hp. [full size](2024/07/energy-06.png)*
+
+If you drove using that much energy for an hour, you'd use 160 kWh.
+At 42 kWh of useful battery content from a 60 kWh battery,
+with a discharge rate of 160 kW the 42 kWh will be drained in 16 minutes.
+
+```console
+>>> 42/160
+0.2625
+```
+42 kWh battery content, 160 kW used, so we will have that used up in 0.2625 h.
+
+```console
+>>> 60*0.2625
+15.75
+```
+Sixty minutes to the hour, so 0.2625 of an hour are 15.75 minutes.
+
+An electrical flow heater, dispensing water in a household, is using around 21 kW.
+
+A Tesla V4 fast charger will provide 250,000 W.
+
+A Porsche Taycan can provide 560 000 Watt (760 hp) for a short time.
+
+[![](2024/07/energy-07.png)](/uploads/2024/07/energy-07.png)
+
+*Hitting a Porsche Taycan on the head will use 560 kW, 760 hp. [full size](2024/07/energy-07.png)*
+
+# Bonus picture: Being dumb
+
+![](2024/07/energy-08.png)
+
+*I am opening the deep freezer door to take out the chocolate ice cream, and I do not close the door properly.
+The deep freezer goes into overdrive.
+Since I am plotting the 1d average power, I can see how that affects the freezer:
+Average goes up from 13 W to 19 W, peak from 35 W to 90 W.*
+
+# How can I save energy?
+
+The numbers you see here are power, not energy.
+They only become energy if you are using the power over longer amounts of time.
+
+Saving energy would mean to measure kWh, not kW, and then cut down on the kWh used.
+Or even convert the household so that it generates kWh, i.e., by installing roof solar or balcony solar.
+
+Still, kW is often a good indicator:
+
+Driving 100 km in an electric car at 100 km/h uses 15 kWh.
+Doing the same at 130 km/h uses 22 kWh.
+Doing the same in a combustion engine car at 130 km/h uses 6l of diesel, 60 kWh of raw energy content.
+
+Washing machines, dryers, and dishwashers tend to use a lot of energy, but often only for an hour or so.
+A modern washer uses around 1.3 kWh to wash 7 kg of clothing.
+
+Permanently running devices such as file-servers use a lot of energy because they are always on.
+Multiply their power by 24 to get energy.
+
+![](2024/07/energy-10.png)
+
+*Running the washing machine used 1.3 kWh at 13:00.
+But over the whole day, my desk and all the computers on it are using the most energy,
+because the file server is running 24/7 at 100 W.*
+
+All that energy use is completely dwarfed by driving.
+Here is a day
+that shows what happens when we charge the Megane e-Tech at the charge-point and the Carver S+ using a normal wall-plug.
+
+![](2024/07/energy-11.png)
+
+*Charging the Megane for 20 kWh and the Carver for 7 kWh. The rest of households power consumption is much smaller.*
+
+Is that bad?
+
+![](2024/07/energy-12.png)
+
+*On that particular day, 2024-Jul-12, we produced 38.8 kWh of energy using the solar array on our roof.
+We consumed 33.9 kWh. 
+Overall, we returned 4.92 kWh to the grid,
+but we actually put 29.7 kWh into the grid and took 24.8 kWh out of the grid at other times.*
+
+This was a sunny day.
+While we have been drawing almost 25 kWh from the grid (we use around 10 kWh on normal days),
+we also fed almost 30 kWh into the grid, for a surplus of almost five kWh.
+That is, despite the 2.5-fold higher power consumption than normal, we have provided a net power surplus to the grid.
+We also pulled power from the grid around noon, when solar power is usually available in abundance,
+and the hourly energy prices are lowest.
+
+# TL;DR
+
+Find a way to 
+[measure power and energy consumption](https://www.amazon.de/dp/B0054PSIDW)
+so that you know and do not have to guess.
+Collect and visualize that data using
+[Home Assistant](https://www.home-assistant.io/)
+or similar.
+
+Media power consumption is meaningless in the grander scheme of things.
+
+Household heat matters.
+- Get rid of gas, get a heat pump.
+- Cook electrically, not using gas.
+- Make sure your household devices working with heat are state of the art:
+  - Get a decent washing machine.
+  - Do not use a tumble dryer, dry on a clothes horse.
+  - Get a decent fridge/freezer combo. Make sure it is de-iced and efficient.
+- Watch out for always-on devices, but be sure to relate their energy use to the rest of the household
+
+Mobility matters even more than household heat: Driving uses way more energy than living in a place.
+- Work from home.
+- When moving, do not use a car, use a bike. Or public transport.
+- When using a car, use a small car. Weight matters.
+- When using a car, drive energy efficiently: Going 130 km/h instead of 100 km/h uses 50% more energy.
+- If you have to use a car, get rid of a combustion engine car, drive an electric car.
+  It uses 1/3 the energy of a combustion engine car.
+
+Make energy.
+Cover every surface in solar cells.
+
+Store energy.
+- Get a battery that can provide enough power for your household.
+  Power (Watt) is often a function of the cell count.
+  Cells also provide capacity, so larger batteries (more kWh) also provide more power (kW) up to a limit (11 kW).
+  When planning, check both numbers, kW and kWh.
+- To get a household to self-sufficiency, surprisingly small batteries are needed.
+  The minimum of either half the daily power consumption
+  and the production in a day in March or October should be enough. 
+  You may want more, but that is because of power, not energy content.
+- In any case, ~10 kWh LFP should be fine for most households.
+  Having more than you can fill on an early spring/late autumn day is useless, and you won't fill it Nov – Feb anyway.
+  Having giant capacities in summer is useless, because you won't empty the battery.

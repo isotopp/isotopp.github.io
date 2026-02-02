@@ -1,0 +1,249 @@
+---
+author: isotopp
+title: "UTF8MB4"
+date: 2022-01-10T16:28:00+01:00
+feature-img: assets/img/background/mysql.jpg
+tags:
+- lang_en
+- mysql
+- mysqldev
+aliases:
+  - /2022/01/12/utf8mb4.md.html
+---
+
+On Twitter, Jan Wildeboer [linked](https://twitter.com/jwildeboer/status/1481308177727729668) an [article by Adam Hooper](https://adamhooper.medium.com/in-mysql-never-use-utf8-use-utf8mb4-11761243e434) on MySQL and the weird `utf8mb4` character set.
+
+The recommendation is correct:
+
+In MySQL, use `utf8mb4` when you mean to work with `utf8` in your programming language.
+
+The background and reasoning for this (and why it is wrong) is way more complicated than outlined by Adam Hooper.
+So let's walk through this:
+
+# MySQL `utf8` means 3-byte Unicode, and access to only the BMP
+
+`utf8` in MySQL encodes the [Unicode BMP](https://en.wikipedia.org/wiki/Plane_(Unicode)#Basic_Multilingual_Plane).
+The Unicode Basic Multilingual Plane, or BMP, is the original 65536 character plane.
+It was the only character plane available in Unicode 1.0
+It was thought to be enough for all scripts in the world.
+It wasn't.
+
+Unicode was extended, as early as with the 2.0 release, to have more characters than that, in more code planes.
+Currently, there can be up to 17 Unicode planes, but most of them are unused.
+
+Unicode 1.0 is also different in other ways. Vladislav Vaintroub commented to me:
+> Unicode 1.0 had a [different range for Hangul](https://en.wikipedia.org/wiki/Hangul_(obsolete_Unicode_block)).
+> Unicode 2.0 fixed that, and remapped Hangul (which is a unique action, and they issued a policy to forbid remapping in the future).
+
+Making things immutable is important with character sets and sort orders, also for databases, as we will see.
+It is in fact the entire reason for `utf8mb4` to exist.
+
+## Encodings and the 65536 character barrier
+
+There are various ways to encode codepoints of Unicode.
+
+Originally, with only the BMP existing, people thought of extending the concept of "byte" = "character" to double bytes.
+This is how you get the `wchar` and a 16 bit character set, the obsolete ucs-2 encoding.
+
+When it became clear that 65536 characters are insufficient to represent all scripts and languages in the world, a larger 31-bit space was introduced and the naive encoding of that, ucs-4.
+This would require 4 bytes per character.
+
+Both are incredibly wasteful:
+
+Using ucs-2 with western scripts means that every other byte is a null byte, and with ucs-4 for every character there will be 3 null bytes.
+Even with non-western scripts there will be at least one, if not two null bytes per character.
+
+Extending Unicode beyond the BMP posed a bit of a problem:
+Windows NT had started to use Unicode as a character set, and ucs-2 as the standard encoding.
+
+The solution was the character range 0xD800 to 0xDFFF, which was unassigned to characters, so far: 
+2048 (11 bit) of unassigned positions.
+
+The resulting encoding takes characters beyond the BMP, with codes greater than 0xFFFF, and subtracts 0x10000.
+This leaves a 20 bit number, which is then split into a high 10 bit part and a low 10 bit part.
+
+- The high ten bits are added to 0xd800 (0xd800-0xdbff).
+- The low then bits are added to 0xdc00 (0xdc00-0xdfff).
+
+This was called utf-16 encoding, and became the character set of Windows starting with Windows 2000.
+
+utf-16 also, for now, limits the number of characters that can be represented in Unicode to 1112064, a number that can be represented in 21 bits.
+
+## Plan 9 and utf-8
+
+In the Unix world, the experimental Plan 9 operating system from A&T explored variable length encodings of Unicode:
+utf-8 could represent 31-bit Unicode with encodings between 1 and 6 bytes in length. 
+Single byte codes would be compatible with ASCII, so that valid ASCII is also valid utf-8.
+
+Because the utf-16 hack had restricted the number of possible Unicode characters effectively from 31 bit to 21 bit, actual utf-8 encodings can only be up to 4 bytes long.
+And because utf-8 is so much denser than other encodings, it is by far the dominant encoding of Unicode.
+Even Microsoft, heavily invested in ucs-2 and utf-16 with Windows, started to support utf-8, beginning with the development of Windows 11 in 2019.
+
+In an utf-8 multibyte sequence, the "number of 1-bits before the first 0-bit" in the first byte of a multibyte character determine the length of the encoding:
+
+- Single byte characters are in the range 0x00-0x7f (0 leading 1-bits, single byte), for ASCII compatibility.
+- Multibyte characters start with `110xxxxx` for a two byte sequence, `1110xxxx` for a three byte sequence and `11110xxx` for a four byte sequence.
+- The second, and possible third and fourth byte are all of the form `10xxxxxx`, which is otherwise unused, so that these bytes are always identifiable as continuation bytes in a multibyte encoding.
+
+This makes utf-8 restartable:
+If you end up at a byte of the form `10xxxxxx`, you know you are in the middle of a multibyte sequence of at most 4 bytes length.
+You can backtrack a few bytes, and check for the clearly recognizable start pattern of a multibyte encoding, or error out with an invalid encoding.
+
+We get 128 single byte characters that are identical to ASCII, 1920 two byte characters, and three bytes for the rest of the BMP. 
+Four bytes are needed for rare CJK characters, a bunch of math, some dead scripts and 
+[a ton of emoji that should not exist in the first place]({{< relref "2017-11-05-unicode-is-over-and-it-dies-over-emoji.md" >}}). 
+
+## MySQL, and three byte `utf8`
+
+MySQL did support the "full full" range of 31 bit Unicode in the beginning, with up to 6 bytes being used for a single character.
+That was changed [in a single byte change commit](https://github.com/mysql/mysql-server/commit/43a506c0ced0e6ea101d3ab8b4b423ce3fa327d0) in September 2002.
+[Back then](https://dri.es/the-history-of-mysql-ab) MySQL 3.23 was the active release and InnoDB was not yet enabled by default.
+
+Vladislav Vaintroub commented about this:
+> Anyway MySQL's utf8 was always meant to be castrated utf8, from its invention.
+> 
+> It was a little gamble, and hope that supplemental plane won't be used much, thus we could save a couple of bytes in filesort.
+> Although already by 2001 (Unicode 3.1) there were characters in supplemental range, they could be seen as "rarely used" (music notation, old Egyptian, Deseret and what not).
+> Thus only few people needed supplemental characters, until everyone's favorite U+1F4A9 PILE OF POO premiered in Unicode 6.0, in 2010, actually a couple of years after, until smartphone made emoji ubiquitous.
+>
+> So that gamble - that supplemental plane remains rarely used, did not work out, but who would know that by 2003.
+
+Vaintroub's comment about sorting refers to a limitation of MySQL that was only removed in MySQL 8.
+More about that below.
+
+## Character sets have collations
+
+Unicode not only defines character sets, they also define a comparison algorithm for characters.
+This is called UCA, Unicode Comparison Algorithm.
+Like Unicode itself, [it is versioned](https://unicode.org/Public/UCA/9.0.0/ReadMe.txt).
+
+Older versions of UCA had issues in various ways:
+[lefred's Blog article](https://lefred.be/content/mysql-character-sets-unicode-and-uca-compliant-collations/) and
+[Manyi Lu's article](https://dev.mysql.com/blog-archive/sushi-beer-an-introduction-of-utf8-support-in-mysql-8-0/) about the 
+[Sushi-Beer issue](https://bugs.mysql.com/bug.php?id=76553) explain this in depth.
+
+## Indexes are materialized collations
+
+Databases have indexes, and these extract values from a column, **sort them** and store back pointers to the full row with each extracted column value.
+This allows for fast searching.
+
+Thus, indexes are materialized collations, and when a collation (or a charset) is changed, all indexes that contain values of that charset are invalid and need to be recreated.
+
+In the deep dark past, MySQL made changes and bugfixes to existing collations, which made MySQL upgrades a pain:
+The moment you apply the upgrade, you are forced to drop and recreate the indexes.
+Depending on the amount of data and the size of the index, that requires an extraordinary amount of time and makes updates complicated.
+
+# `utf8mb4`, because `utf8` was taken.
+
+MySQL adopted a policy similar to the Unicode Consortium itself:
+
+MySQL never updates existing character sets and collations, not even for bugfixes.
+
+And because the name `utf8` was taken, a new name was needed:
+`utf8mb4` is the version of Unicode utf-8 in MySQL that extends past the BMP, and also uses UCA 9.0 for comparison.
+
+Compare to `utf8` which encodes only the BMP, and uses an older UCA for comparison.
+So `utf8` not only has a smaller character range, it also sorts differently.
+
+This makes upgrades mich simpler:
+
+- You install a new version.
+  Nothing changes, you are just running new code which hopefully sorts and orders as before.
+- You can create new columns using the new character set and collations, even in existing tables, because in MySQL a charset and collation is a column attribute.
+  Tables, databases and servers just provide defaults that are inherited at the time of subordinate object creation.
+- To complete the upgrade, check all columns, and note which ones need changing.
+- Actually change these columns, table by table, at your own leisure.
+  If necessary, use tooling such as Percona Online Table Change ("OSC"), making the change in the background without service interruption.
+
+## Side note: MySQL's sorting and file formats are portable
+
+MySQL does not use `libc` and the character set comparison functions in there for itself.
+It brings its own collations instead.
+
+That is also an important fact.
+It means that MySQL does not break when you upgrade the operating system `libc` on your machine.
+
+If MySQL used `libc` fort sorting and comparing, the database could break without any changes to the database whatsoever -- an innocent security update to the operating system `libc` (which for some reason also touched `libc` sorting and comparison) would break all character indexes in your database.
+
+MySQL does not do that.
+It lets you migrate these things in a way that is operationally convenient.
+
+It also means that MySQL versions sort the same between Linux, FreeBSD, Solaris and even Windows.
+
+Just like the on disk format is compatible across all platforms, so is character handling and time zone handling.
+MySQL is MySQL on any platform, and copying files and replication always work across these boundaries.
+
+# So why the 6-to-3-byte commit?
+
+Not that it matters much: Because Unicode and UCA changes between versions of Unicode, you'd still have to use different names for character sets and collations, and migrations to do.
+
+But why was it important that "we could save a couple of bytes in filesort" as Vaintroub puts it?
+Here we go:
+
+## Sorting is important, and hard to scale
+
+Not only can databases, tables and individual indexes be very large, they also need to be kept sorted, and sometimes data needs to be re-sorted.
+Databases usually have a large number of strategies for that.
+
+Small things are sorted in memory.
+That is, the database creates the full rows of the result table in memory, using all columns. 
+It then sorts these rows in memory by shuffling around the full rows.
+That uses up a lot of memory bandwidth, because we copy around full rows, which can be large.
+
+Sometimes we do not want to move around full rows, because these rows are large.
+So we only sort the columns specified in the `ORDER BY CLAUSE`, which is a tiny subset of the full columns set of each row of the result table, and attach a row pointer to each of these sort rows.
+
+In the end we have a tiny in-memory table in sort order, which only holds columns from the `ORDER BY`, and each row in it points to the unsorted full rows somewhere else - in memory or on disk.
+We can then output the full rows in sort order, but at the cost of a lot of seeks - possibly on disk.
+That is, because the full rows have not been sorted, so the row pointers from the sorted data to the full rows are a mess.
+
+Sometimes we have very many rows.
+So we do as before, but for a subset of all rows - as many as fit into our sort buffer.
+When the sort buffer is full, we write it out to disk.
+Then we continue with the next batch.
+Across all partial results we perform a merge sort.
+
+If the things sorted were full rows, we can emit full result rows rather quickly.
+If the things sorted were only `ORDER BY` columns or other partial result set rows with row pointers attached, we may have to perform one or multiple seeks in order to get the missing columns from all tables involved.
+
+The optimizer has to decide which strategy to use here, based on estimates of the row width, size of the result set (which has not yet been produced, so it's a guess) and the available amount of resources.
+
+## And then, implementation issues
+
+Older versions of MySQL have different storage engines: `MYISAM`, `INNODB`, `MEMORY` and others.
+Modern MySQL has only `INNODB`, but for temporary tables has a few tricks ready to make things faster:
+for example, temporary tables can be recreated and do not need to be crash safe, so no redo and undo logging is required.
+
+Other storage engines than `INNODB` had restrictions.
+
+For example, `MEMORY` tables could not have variable length columns, there was no `VARCHAR`, only `CHAR`.
+So when sorting with temporary tables in memory, MySQL created these temp tables as `MEMORY` tables, promoting every `varchar(255)` to `CHAR(255)`.
+A row with a varchar value of `hello` suddenly used 255 bytes instead of 6 bytes to represent the string `hello` (plus a lot of padding).
+
+Of course, with `utf8`, a `varchar(255) charset utf8` is promoted to a `char(255) charset utf8`, which instead allocates 765 bytes of memory, out of which the first five bytes contain the string `hello`, and the rest is wasteful padding.
+With 6 bytes, it would be twice that amount of memory.
+So reducing this from 6 to 3 bytes was quite worthwhile.
+
+`MEMORY` tables had a configurable size limit, and if your table exceeded that (which happened rather quickly, given the above restrictions), it was converted to an on-disk temporary table in `MYISAM` format: a spill.
+`MYISAM` of course had `varchar(255) charset utf8` as a native type, and your `hello` would again shrink to six bytes.
+Looking at the on disk temporary file, which was rather small, you might wonder what caused the spill.
+
+MySQL 8 introduces unlogged `INNODB` temporary tables (and a failed experiment involving mmap that you may want to disable).
+So this problem is gone, once and for all:
+`varchar` is `varchar` at all times, and representing Unicode variants in temporary tables is no longer a problem - if you use MySQL 8.
+
+This is in fact one of the major reasons to graduate from 5.7 for many people.
+
+## TLDR
+
+We learned:
+
+- Your programming languages `utf8` is called `utf8mb4` in MySQL.
+- `utf8` and `utf8mb4` sort differently due to changes in the Unicode Collation Algorithm (UCA).
+- Indexes are physically materialized sort orders of column sets. They can become pretty large. 
+- MySQL never changes character sets or collations, even if they are buggy. Instead a new collation with a new name is created.
+- That is, because changing a sort order may require dropping and recreating an index, which is expensive if the index is large.
+- Sorting things can be done in different ways, depending on data set size, column size and other considerations.
+- Implementation details can make sorting even more complicated.
+- MySQL 8 is a worthwhile upgrade.
+- Databases manage state so you don't have to. If you think databases are complicated, consider what you would have to do if the database and your DBA would not be there for you.

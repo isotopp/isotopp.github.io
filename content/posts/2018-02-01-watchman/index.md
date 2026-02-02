@@ -1,0 +1,25 @@
+---
+author: isotopp
+date: "2018-02-01T06:06:54Z"
+feature-img: assets/img/background/rijksmuseum.jpg
+status: publish
+tags:
+- apple
+- php
+- macos
+title: Watchman
+aliases:
+  - /2018/02/01/watchman.md.html
+---
+[![](2018/01/watchman-603x640.png)](https://facebook.github.io/watchman/)
+
+Today I was looking for a way to subscribe to file changes in a directory in
+MacOS, in order to trigger automatically running commands whenever files
+change. Turns out Homebrew has "fswatch", which tells you when things
+change, but little else.
+
+Turns out Homebrew has "watchman", which does all this, and on multiple
+trees, finds changes across restarts and automatically manages a set of
+commands for different file endings. 
+
+Also turns out that I know the author. Thanks, Wez!

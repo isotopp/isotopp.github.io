@@ -1,0 +1,48 @@
+---
+author: isotopp
+title: "Elite"
+date: "2023-09-20T01:02:03Z"
+feature-img: assets/img/background/rijksmuseum.jpg
+toc: false
+tags:
+- lang_de
+- gaming
+- elite-dangerous
+aliases:
+  - /2023/09/20/elite.md.html
+---
+
+[![](2023/09/elite.jpg)](https://www.youtube.com/watch?v=LhTTpV5qFrs)
+
+*[C64 Elite (1983) Longplay](https://www.youtube.com/watch?v=LhTTpV5qFrs)*
+
+Das ist Elite (1984). 
+Das Spiel wird heute 39 Jahre alt.
+
+Spiele zu jener Zeit waren nicht nur 2D, 
+sie waren auch Arcade. 
+Man spielt, und wenn man stirbt, ist das Spiel vorbei – die nächste Partie fängt man von vorne an.
+
+Elite ist das erste Spiel mit animierter 3D-Grafik, und es ist auch das erste Spiel mit Savegames und Progression.
+Als solches hat es die Spieleentwicklung sehr umfassend beeinflusst.
+Wing Commander, EVE und No Man's Sky haben ihre Quellen hier.
+
+Elite war eine Idee von David Braben und Ian Bell,
+beides Engländer und daher kam das Spiel zunächst für den BBC Micro raus.
+Es wurde später auf viele andere 8-Bit Systeme portiert, 
+darunter auch der C64.
+Es verkaufte sich rund 100.000 mal auf dem BBC Micro und weitere 600.000 mal für den C64.
+Insgesamt wurden rund 1 Million Exemplare umgesetzt.
+
+Insgesamt gab es von Elite selbst noch drei Nachfolgespiele, die aktuelle Version ist Elite: Dangerous.
+Da sieht das Gameplay dann so aus: 
+
+[![](2023/09/elite-dangerous.jpg)](https://www.youtube.com/watch?v=LPMVLk7dwfs)
+
+*[Elite Dangerous](https://www.youtube.com/watch?v=LPMVLk7dwfs) Gameplay.*
+
+Mein Elite T-Shirt hat das C64 Elite Wireframe Model der Cobra und den Text "Keep Calm And Jump Onwards".
+
+![](2023/09/elite-jump-retrowinder.png)
+
+*T-Shirt Design [mit schwarzem Hintergrund](2023/09/elite-jump-retrowinder.png) und [in transparent](2023/09/elite-jump-onwards-transparent.png).*

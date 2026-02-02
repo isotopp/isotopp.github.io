@@ -1,0 +1,262 @@
+---
+author: isotopp
+date: "2024-02-10T01:02:03Z"
+feature-img: assets/img/background/schloss.jpg
+title: "Snake Oil"
+toc: true
+tags:
+- erklaerbaer
+- computer
+- security
+- lang_en
+aliases:
+  - /2024/02/10/snake-oil.md.html
+---
+
+Dieser Text ist auch in 
+[deutscher Sprache]({{< relref "2024-02-09-schlangenoel.md" >}}) vorhanden.
+
+This week was "Broken Security Software Advertising Week."
+
+# Fortigate and Ivanti
+
+First off, **today** was Fortigate patch day:
+
+![](2024/02/schlangenoel-01.jpg)
+
+*CVE-2024-23113, CVSSV3 Score 9.8, Unauthorized Code Execution, "Format String Bug"*
+
+"A use of [externally-controlled format string](https://cwe.mitre.org/data/definitions/134.html) vulnerability
+in FortiOS `fgfmd` daemon may allow a remote unauthenticated attacker to execute arbitrary code or
+commands via specially crafted requests."
+
+This is a case where a C function accepts a format string like `"Blah %s Nonsense"`,
+to assemble a log message or a command for a `system()` call.
+However, the developer did not statically set the format parameter of the command to a format string 
+(`snprintf(buffer, length, "Blah %s Nonsense", user_input)`),
+but instead took the user input as the format 
+(`snprintf(buffer, length, user_input))`.
+The user input can thus be used to do all sorts of things.
+
+This is a mistake automatically detected by the usual source code scanners.
+If you try to commit or merge something like this in a modern development environment,
+the scanner will thoroughly humiliate you,
+the commit will be rejected, and you will be assigned a security training.
+
+This means this type of error does not occur in a contemporary development environment anymore.
+
+Also, **yesterday** was Fortigate patch day:
+
+![](2024/02/schlangenoel-02.jpg)
+
+*CVE-2024-21762, CVSSV3 Score 9.6, Unauthorized Code Execution, "Out of Bounds Write"*
+
+"A [out-of-bounds write](https://cwe.mitre.org/data/definitions/787.html) vulnerability
+in FortiOS may allow a remote unauthenticated attacker to execute arbitrary code or command via specially crafted HTTP requests."
+
+This is a mistake easily made in C or other languages without index checking when accessing arrays.
+In C, for example, one can access memory before the array using negative indices,
+and if an error code is -1, but the error code is not checked after a function call, then everything goes up in flames.
+
+This type of error is not always found by source code scanners with a static analyzer,
+but most cases should be flagged by the scanner as a code smell.
+
+Well, unfortunately, **the day before yesterday** was also a Fortigate patch day.
+[BleepingComputer reports](https://www.bleepingcomputer.com/news/security/fortinet-warns-of-new-fortisiem-rce-bugs-in-confusing-disclosure/):
+
+> In this instance, due to an issue with the API which we are currently investigating,
+> rather than an edit, this resulted in two new CVEs being created, duplicates of the original CVE-2023-34992,
+> FortiNet told BleepingComputer.
+>
+> However, it turns out that CVE-2024-23108 and CVE-2024-23109 are actually patch bypasses for the CVE-2023-34992
+> flaw discovered by Horizon3 vulnerability expert Zach Hanley.
+
+So, this was a patch for a patch because the mitigation didn't work,
+and Fortinet got confused with the CVE numbers due to the sheer volume of them currently open.
+
+Meanwhile, the US CISA (Cybersecurity and Infrastructure Security Agency) 
+is demanding all US institutions to shut down Ivanti VPN (formerly Juniper Pulse Secure):
+
+![](2024/02/schlangenoel-03.jpg)
+
+*"CISA is requiring all Federal agencies to disconnect Ivanti products by Friday at midnight
+(Ivanti Connect Secure & Ivanti Policy Secure).
+This is roughly 48-hours notice, to not patch, but rip it out!
+Ivanti is an American company.
+This is unprecedented."*
+
+While the 
+[original directive](https://www.cisa.gov/news-events/directives/supplemental-direction-v1-ed-24-01-mitigate-ivanti-connect-secure-and-ivanti-policy-secure)
+could initially be interpreted as an update, re-installation, and reconfiguration, this hope has now been dashed.
+
+The patches mentioned are not suitable for fixing the error. 
+[Brian Krebs has summarized this issue](https://infosec.exchange/@briankrebs/111863433959430768):
+
+Meanwhile, someone opened up the Ivanti image and took a look inside.
+
+![](2024/02/schlangenoel-04.jpg)
+
+*Versions of software that have been routinely outdated for more than a decade in the current image.*
+
+As curl developer Stefan Eissing phrases it, these are "corpse parts and zombie software."
+
+And, as expected, a few days after the CISA-mandated patch frenzy,
+[BleepingComputer headlines again](https://www.bleepingcomputer.com/news/security/ivanti-patch-new-connect-secure-auth-bypass-bug-immediately/):
+
+> **Ivanti: Patch new Connect Secure auth bypass bug immediately**
+>
+> The flaw (CVE-2024-22024) is due to an XXE
+> ([XML eXternal Entities](https://cwe.mitre.org/data/definitions/611.html)) weakness in the gateways' SAML component
+> that lets remote attackers gain access to restricted resources on unpatched appliances in low-complexity
+> attacks without requiring user interaction or authentication.
+
+SAML, Security Assertion Markup Language, is an XML notation for access rights in Single Sign-On systems.
+Because it's an XML notation, it can have these `&blablub;` things – Entities – that are replaced by other text.
+With External Entities, the replacement text is not locally fixed but is downloaded from the net.
+
+What does this mean in the context of SAML?
+It means that the access rights in the document are not necessarily fixed;
+an attacker can load Entity definitions from the net.
+Depending on where the Entity is used, it can partially or completely rewrite the SAML file and grant different rights.
+
+XML parsers are well understood, 
+and XXE is something that can be reliably scanned for automatically with a source code scanner.
+This type of error is easily avoidable in modern development environments.
+
+# Antivirus and Endpoint Security
+
+This is not an exception and is not limited to VPN gateways, 
+but rather manufacturers of security software happily rely on
+"security-relevant software with privileges, and programming methods from the 90s of the last millennium."
+
+Examples from this blog:
+
+- [ASLR]({{< relref "2017-10-20-aslr.md" >}}): macOS Trend Micro Binary without ASLR, every exploit (yes, there are some)
+  automatically stable across the entire fleet.
+- [Websense DLP gives instant root]({{< relref "2018-06-18-websense-dlp-gives-instant-root.md" >}}):
+  WebSense DLP ships outdated software versions and an exploitable kernel module, probably missing QA and defective shipping process.
+
+This is so widespread in endpoint security that, for example,
+[@joxean](https://mastodon.social/@joxean)
+has written an entire book about it: 
+[The Antivirus Hacker's Handbook](https://www.amazon.de/Antivirus-Hackers-Handbook-English-ebook/dp/B014MJ6AKS).
+It describes how to find vulnerabilities of this kind in every – literally every – AV software.
+
+This is systematic: It is due to the way this software is designed and developed, and it cannot be fixed with patches.
+
+I know this because I played this game for a few years with a company Mac:
+I used the so-called "security tools" that Corp installed on my Mac to gain privileges on my Mac.
+
+The whole process is reliably repeatable, and I never had to invest more than a slow Friday afternoon in any case.
+And I am not even a "security researcher," just an amateur with reverse engineering experience from the C64 era.
+
+It is this software, which is supposed to protect, ending up making the computer vulnerable. 
+When someone like Fefe talks about [snake oil](https://blog.fefe.de/?q=Schlangen), it is to be taken literally.
+
+![](2024/02/schlangenoel-05.jpg)
+
+*[Snake-Oil](https://en.wikipedia.org/wiki/Snake_oil) is a term used to describe deceptive marketing,
+health care fraud, or a scam.
+Similarly, snake oil salesman is a common label used to describe someone who sells, promotes,
+or is a general proponent of some valueless or fraudulent cure, remedy, or solution.*
+
+# A List of Problems and Outdated Processes
+
+We are talking about critically security-relevant software here,
+which is supposed to prevent the intrusion of malware and attackers on computers,
+or is supposed to detect such attacks, or has authentication or some other form of security-relevant function.
+
+It runs at critical points, often with privileges, and when it fails, it is not just one machine, 
+but often an entire company that is critically exposed.
+
+Such software should be developed with tools and methods that are state-of-the-art 
+and undergo critical inspection with regard to correctness, freedom from errors, and currency of dependencies.
+
+However, we see errors that suggest deficiencies in the development process at all points.
+
+- We are seeing critical errors that would not have to have major problematic impact 
+  if the software had been written with minimal rights from the outset.
+  But running parsers for complex, unknown data formats that may contain potentially malicious payloads with privileges?
+  And then turning off elementary security mechanisms such as ASLR?
+  That means setting up for maximum damage. 
+  It is not a winnable position.
+- Doing all this in 2024 in C, when Go or Rust could have been used? Not particularly smart either.
+- Packing your deliverables with software that, in the case of Ivanti, has been without patches for up to two decades?
+  Correct would be to have an automated release process that assembles a new release from the latest versions of everything 
+  and tests it automatically.
+  What Ivanti delivers is not just "not state-of-the-art," it is grossly negligent.
+- Delivering all this in an encrypted image, instead of with a "SBOM of Shame"
+  is soon to be a federal crime in the USA, and the EU is on the same path. Good.
+  (An SBOM is a Software Bill Of Materials, a list of the dependencies used and their versions.)
+- A "Format String Bug" or an "XML External Entities Vulnerability" are trivial errors that source code scanners can detect.
+  Such source scanners are being advertised by these security firms themselves or even developed in-house.
+  But these tools are not in use internally, because otherwise, such code could never have made it into a product.
+  This does not require AI; in part, these are better regular expressions, sometimes a bit of static analysis.
+
+As external observers, based on the demonstrated error patterns,
+we are witnessing a failure along the entire software development chain:
+
+
+- At the architecture level (not minimizing rights),
+- at the tool level (no scanners for trivial errors, outdated dependencies, no automation in build and release),
+- at the packaging level (the defective permissions in Websense, for example),
+- and at every other point where one can infer the process from the errors observed from the outside.
+    - For example, "no functioning code review and audit" 
+      ("statically compiled-in backdoor passwords," as are a persistent problem at Cisco, fall under this).
+
+These are thus management errors in the leadership of software companies that produce security-critical software.
+It is the responsibility of management to establish and control processes that ensure a minimum level of quality.
+
+The notion "software errors, nothing can be done about it" is incorrect – 
+there are entire classes of errors that can be definitively avoided through architecture,
+automatic scanning,
+education, 
+review,
+and testing. 
+It is the responsibility of management to establish and control such processes.
+
+All in all, one can only conclude that irresponsible hack shops without fundamental software development processes
+are masquerading as "security" companies.
+They are packaging radioactive toxic waste in glossy packages,
+thereby building a highway for nation-state actors into the heart of critical infrastructures.
+
+In some cases, the nature of the error borders on deliberate sabotage, or, 
+to put it another way, it could hardly be worse with deliberate sabotage.
+
+# 10/10, no notes
+
+On IRC, my friends joke:
+"Are you a 10/10 company?"
+
+Security vulnerabilities are not only assigned a unique number, the CVE number,
+but they also receive a severity grade, 
+the [CVSS-Score](https://en.wikipedia.org/wiki/Common_Vulnerability_Scoring_System).
+A 10/10 is the maximum grade, but basically, anything above 8 is considered 
+[a total loss and complete process failure](https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator).
+
+There is now a historical CVE database that can be 
+[sorted by CVSS score](https://www.cvedetails.com/vulnerability-list/cvssscoremin-9/cvssscoremax-10/vulnerabilities.html?page=1&cvssscoremin=9&cvssscoremax=10&order=3&trc=40515&sha=2721cbf47ba1e57d8b65ae1c3cf8883295fd04d7),
+and also narrowed down to companies like 
+[Fortinet](https://www.cvedetails.com/vulnerability-list/vendor_id-3080/Fortinet.html?page=1&cvssscoremin=9&order=3&trc=103&sha=0ba96ce0b5ea0195196988ef1d381bdd33622c49).
+
+
+We then see for Fortinet a series of 12 errors with a 10/10 rating, 
+specifically 2x in 2024, 1x in 2021, 1x in 2019, 3x in 2017, 4x in 2016, and once in 2005. 
+This can also be summarized as "no improvement is observable."
+
+"Security is a process," it is often said. 
+For Business Continuity Management, I once wrote down what that means:
+[This is not a Drill. This is just Tuesday]({{< relref "2023-02-18-this-is-not-a-drill.md" >}}).
+
+Similar considerations can be made for secure software development processes, 
+and there are even ready-made process blueprints available for this purpose. 
+Furthermore, as I have shown, the patterns of errors can reveal the weaknesses in the internal development process
+with regard to security best practices.
+The numbers of CVEs and CVSS scores can indicate whether a company has improved its posture.
+
+If it is apparent that this has not been the case over the years, how can a purchasing decision be made positively?
+Something to think about.
+
+![](2024/02/meerschweinchen-anne.jpg)
+
+*Some things can only be made bearable with cute guinea pig photos.*

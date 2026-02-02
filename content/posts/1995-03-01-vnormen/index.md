@@ -1,0 +1,218 @@
+---
+author: isotopp
+date: "1995-03-01T09:15:00Z"
+feature-img: assets/img/background/rijksmuseum.jpg
+tags:
+- lang_de
+- publication
+- internet
+title: "V-Normen"
+aliases:
+  - /1995/03/01/vnormen.md.html
+---
+
+# V-Normen
+
+V.1:
+: Binärwerte fuer 2-Status-Codes (auf gut deutsch LOW=0, HIGH=1 usw.). 
+
+V.2:
+: maximal zulässige Last von Endgeräten an Telefonleitungen. 
+
+V.4:
+: normiert Zeichensatz, Zeichencodierung (Parity, Start-/Stopbits). 
+
+V.5:
+: Signalraten f. sync. Übertragungen auf Wahlleitungen. 
+
+V.6:
+: Signalraten f. sync. Übertragungen auf Standleitungen 
+
+V.7:
+: einige Begriffsdefinitionen. 
+
+V.10:
+: asymmetrische Beschaltung von Schnittstellen. 
+
+V.11:
+: symmetrische Beschaltung von Schnittstellen. 
+
+V.13:
+: simulierte Trägerkontrolle (halbduplex/vollduplex). 
+
+V.14:
+: Übertragung von asynchronem Handshaking über synchrone 
+    Verbindungen (ist z.B. in V.42 enthalten).
+
+V.15:
+: elektrische/akustische Eigenschaften von Akustikkopplern. 
+
+V.16:
+: analoge Modems fuer medizinische Zwecke (EKG-Uebertragung). 
+
+V.17:
+: 2400 Baud, 7200-14400 bit/s Trellis-Code-Modulation, adaptive 
+    Equalisation, halbduplex im Wählnetz (FAX).
+
+V.19:
+: Frequenzanordnung fuer parallele Übertragungen. 
+
+V.20:
+: erweitert V.19. 
+
+V.21:
+: Datenübertragung bei 300bit/s vollduplex, im Wählnetz. Für jede 
+    der beiden Richtungen (Originate, Answer) wird eine eigene
+    Trägerfrequenz verwendet. Die binären Zustände jeder Richtung
+    werden durch Frequenzen (Frequenzmodulation) codiert:
+      Originate : 1080Hz (  0 =  980Hz, 1 = 1180Hz )
+      Answer    : 1750Hz (  1 = 1650Hz, 1 = 1850Hz )
+
+V.22:
+: Übertragungsnorm mit 1200bit/s, vollduplex. Als Modulation wird 
+    Phasenmodulation verwendet. Die Baudrate beträgt 600Baud - es
+    müssen also zwei Bits gleichzeitig (ein Dibit) übertragen werden.
+    Diese müssen in vier Zuständen (00, 01, 10, 11) codiert werden,
+    dafür sind also vier Phasensprünge (0, Pi/4, Pi/2, 3/4Pi)
+    notwendig. Die Trägerfrequenzen sind 1200Hz bei Originate bzw.
+    2400Hz bei Answer.
+
+V.22bis:
+: Übertragungsnorm fuer Geschwindigkeiten von 2400bit/s. Basiert 
+    auf V.22, nur dass statt zwei Bits vier gleichzeitig (Quadbits)
+    übertragen werden. Arbeitet mit QAM als Modulation bei denselben
+    Frequenzen wie V.22.
+
+V.23:
+: asymmetrische vollduplex-Datenübertragung. In der einen Richtung 
+    wird mit 1200bit/s übertragen, in der anderen mit 75 (Split-Speed).
+      Im Gegensatz zu symmetrischen vollduplex-1200bit/s-Normen wie z.B.
+    V.22 kann hier noch die einfachere Frequenzmodulation verwendet
+    werden. Bildschirmtext arbeitet mit V.23.
+
+V.24:
+: CCITT-Norm fuer serielle Datenübertragung. Legt die funktionalen 
+    Eigenschaften (z.B. Steckerbelegung) von seriellen Schnittstellen
+    fest. Meist wird nur ein kleiner Teil implementiert, da die gesamte
+    Norm sehr umfangreich ist.
+      Zusammen mit der V.28, die die elektrischen Eigenschaften festlegt,
+    entspricht die V.24 der amerikanischen Norm RS-232-C.
+
+V.25:
+: Befehlssatz zur Ansteuerung von Modems und zum Verbindungsaufbau. 
+    Nicht sehr gebräuchlich. Die meisten Modems benutzen stattdessen
+    den Hayes-Befehlssatz.
+
+V.25bis:
+: einige kryptische Modem-Steuerkommandos und -Antwortstrings. 
+
+V.26:
+: Verfahren aehnlich V.22 nur mit 2400 bzw. 75 bit/s. Für Vierdraht- 
+    Standleitungen.
+
+V.26bis:
+: Erweiterung von V.26 auf Wählleitungen. 
+
+V.27:
+: 4800bit/s auf Standleitungen, optional mit 75bit/s Rückkanal 
+    (Split-speed). Phasenmodulation.
+
+V.27bis:
+: Erweiterung von V.27 auf 4800bit/s, mit Fallback auch 2400bit/s 
+    auf Standleitungen.
+
+V.27ter:
+: Erweiterung von V.27bis fuer Wählleitungen. 
+
+V.28:
+: elektrische Eigenschaften einer seriellen Schnittstelle. Die 
+    funktionellen Eigenschaften sind in V.24 genormt. Beide zusammen
+    entsprechen der RS-232-C-Norm.
+
+V.29:
+: CCITT-Norm zur halbduplex-Datenübertragung mit 9600bit/s. Basiert 
+    auf V.22bis. Dort hat man eine Schrittgeschwindigkeit von 600 Baud.
+      Dabei werden mit Quadratur-Amplitudenmodulation (QAM) vier Bit
+    gleichzeitig (ein Quadbit) übertragen. Die Schrittgeschwindigkeit
+    wurde nun fuer V.29 auf 2400 Baud erhöht. Dafür wird dann eine
+    Trägerfrequenz von 1700 Hz verwendet, die genau in der Mitte des
+    Telefonbandes (300 bis 3400Hz) liegt. Fuer einen Rückkanal bleibt aber
+    damit kein Platz mehr, d.h. V.29 ist ein Halbduplexverfahren.
+      Deswegen wird es überwiegend fuer Faxgeräte eingesetzt. 
+      Auf Vierdraht-Standleitungen kann V.29 auch vollduplex übertragen.
+
+V.31:
+: Stromschleife fuer binäre Uebertragung mit <75bps (Telex). 
+
+V.32:
+: CCITT-Norm zur Datenübertragung mit 9600bit/s bidirektional 
+    (vollduplex). Basiert auf V.29. Ebenso wie dort werden fuer 9600 bps
+    Quadbits mit QAM uebertragen, allerdings bei einer Trägerfrequenz
+    von 1800 Hz. Auch hier ist kein Platz für einen Rückkanal. Daher
+    senden beide Modems gleichzeitig auf derselben Frequenz. Da aber
+    jedes Modem weiß, was es gerade gesendet hat, kann es aus dem
+    Frequenzgemisch seine Signale unterdrücken und so die Daten der
+    Gegenstelle herausfiltern (Echo-Cancelling).
+      Eine Variante von V.32 ist die Trellis-Modulation. Hier werden
+    statt der Quadbits Quintbits übertragen. Das zusätzliche Bit wird
+    allerdings nicht fuer Datenübertragung genutzt, sondern fuer die
+    Fehlerkorrektur (aehnlich ^Parität^ bei RS-232-C).  Dadurch ist die
+    Übertragung etwa doppelt so fehlersicher, wie ohne Trellis.
+
+V.32bis:
+: Erweiterung von V.32 auf 14400bit/s vollduplex. Neueste 
+    Übertragungsnorm. Arbeitet ebenfalls mit Echokorrektur. Es wird
+    eine feinere Abstufung der Phasen- und Amplitudenschritte in der
+    QAM-Matrix verwendet (stellt natuerlich höhere Anforderungen an die
+    Leitungsqualität). Dadurch steigt einerseits die Übertragungsrate
+    (14.4kbps bidirektional) und andererseits ist eine dynamische
+    Leitungsanpassung mit etwas besser abgestuftem Fallback.
+      Zusaetzlich gibt es ein Verfahren, mit dem sich die Modems in
+    Zehntelsekunden auf einen Geschwindigkeitswechsel einigen koennen,
+    anstatt wie bei V.32 die Verbindung neu auszumessen.
+
+V.33:
+: wie V.32bis auf Vierdraht-Standleitungen. 
+
+V.40:
+: Fehlerkorrektur durch Synchronisation und Über-/Unterlaufzählung 
+
+V.41:
+: Alte Fehlerkorrekturspezifikation fuer V.23. 
+
+
+V.42:
+: Übertragungsprotokoll. Syncron-asynchron-Wandlung nach V.14. 
+    Schliesst die MNP-Klassen 1-4 ein.
+
+V.42bis:
+: ein Kompressionsverfahren der CCITT, aufbauend auf dem V.42- 
+    Protokoll. V.42bis verwendet die BTLZ (British Telecom Lempel and
+    Ziv)-Codierung, wie sie ähnlich auch in den Dateikompressionsverfahren
+    (Zip, Arc, Lharc, Pak, Zoo etc.) eingesetzt wird. Im Gegensatz zu V.42
+    ist V.42bis nicht kompatibel zu dem entsprechenden MNP-Verfahren (hier
+    MNP 5). MNP 5 verwendet eine andere Codierung (Huffmann), wird jedoch von
+    den meisten Herstellern mit im selben Gerät angeboten.
+
+V.50:
+: Qualitätsanforderungen an Leitungen fuer V.21/V.23. 
+
+V.51:
+: Einrichtung postinterner Stellen zur Untersuchung von 
+    Übertragungsproblemen.
+
+V.52:
+: Testmuster fuer Leitungsqualität bei Datenübertragung. 
+
+V.53:
+: Teil von V.50, Qualitätsparameter. 
+
+V.54:
+: Testprotokolle (LAL, LDL, RDL) - ist in den meisten Modems drin. 
+
+V.100:
+: Verbindungsaufbau bei Mehrnormenmodems. Leider fehlerhaft: Nicht 
+    alle normgerechten Modems verstehen sich. Deshalb selten verwendet.
+
+
+<br>

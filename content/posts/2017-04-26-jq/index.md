@@ -1,0 +1,25 @@
+---
+author: isotopp
+date: "2017-04-26T11:52:14Z"
+feature-img: assets/img/background/rijksmuseum.jpg
+status: publish
+tags:
+- container
+- lang_en
+title: jq
+aliases:
+  - /2017/04/26/jq.md.html
+---
+When dealing with Kubernetes, you will inevitably have to deal with config
+and data that is in JSON format. [jq](https://github.com/stedolan/jq) is a
+cool tool to handle this, but while the man page is complete, it is also
+very dry. A 
+[nice tutorial](http://programminghistorian.org/lessons/json-and-jq) can be found
+at The Programming Historian, which uses some real world use cases. My
+personal use case is 
+[Converting JSON to CSV](http://stackoverflow.com/questions/32960857/how-to-convert-arbirtrary-simple-json-to-csv-using-jq),
+and the 
+[inverse of that](https://github.com/stedolan/jq/wiki/Cookbook#convert-a-csv-file-with-headers-to-json).
+There also is a mildly interesting
+[FAQ](https://github.com/stedolan/jq/wiki/FAQ). Learning jq takes about one
+quiet afternoon of time.

@@ -1,0 +1,47 @@
+---
+author: isotopp
+date: "2022-06-08T04:17:00Z"
+feature-img: assets/img/background/rijksmuseum.jpg
+title: "Carver S+"
+tags:
+- lang_en
+- mobility
+aliases:
+  - /2022/06/08/carver-s.md.html
+---
+
+After getting [a solar roof]({{< relref "2022-05-02-a-solar-roof.md" >}}) we have been looking at electric mobility solutions.
+But existing electrical cars seemed pretty much oversized.
+We do not really need a 4-seater with 650km range and two tons of total empty weight.
+Katja Diehl coined the german tongue-in-cheek term "Maximaleventualbedarfsauto" for it, the car that meets biggest use-case you could possibly reasonably have.
+
+Looking around, we test drove a [Carver.Earth](https://carver.earth/), which was the right size, but limited to 45 km/h (and bike pathes in some areas).
+Then Carver started to offer the "Carver S+".
+
+![](2022/06/carver1.jpg)
+![](2022/06/carver2.jpg)
+![](2022/06/carver3.jpg)
+
+The vehicle can be driven with an A-license or a B-license from before 2013.
+It has 2 seats placed one after the other, and the back seat is rather basic.
+It goes 80 km/h on a 7.1kWh LFP battery, which is good for circa 100 km, if you do not go 80 all of the time.
+It carves, which means that it leans into curves in a rather awesome way (less awesome if you set "comfort" mode, which I strongly recommend).
+It has no steering or brake assist, which means you get to work a bit.
+But at 330kg total system weight, empty, it is pretty manageable.
+
+![](2022/06/carver4.jpg)
+![](2022/06/carver5.jpg)
+
+The car charges with a regular household plug, but a type 2 adapter is available.
+It will still not fast charge.
+
+Completely filling it up to 7.1 kWh from 10% charge took 4h and the house consumed 7.1kWh during that time (but we have base load and made a coffee).
+
+![](2022/06/carver6.jpg)
+![](2022/06/carver7.png)
+
+So all in all a pretty good match, and exactly what we expected.
+Radically less car, so exactly the right amount of car.
+
+![](2022/06/carver8.jpg)
+![](2022/06/carver9.jpg)

@@ -1,0 +1,61 @@
+---
+author: isotopp
+title: "pysembr"
+date: "2025-12-20T05:06:07Z"
+feature-img: assets/img/background/rijksmuseum.jpg
+toc: true
+tags:
+- lang_en
+- computer
+- development
+- python
+aliases:
+  - /2025/12/20/pysembr.md.html
+---
+
+With the 2025.3 release, JetBrains retired the Gracie Pro Plugin, a tool that until recently provided,
+among other features, the option to apply structural wrapping to a file.
+For natural languages
+this feature automatically applied formatting rules similar to [SemBr](https://www.sembr.org).
+SemBr helps writers by inserting line breaks at semantic boundaries rather than simply at arbitrary character counts,
+which keeps prose easier to edit and track changes in version control systems.
+SemBr is especially useful for Markdown content such as blog posts
+where readable plain text and consistent formatting are both important.
+
+Losing the Gracie Pro Plugin’s functionality left a gap in my workflow.
+I needed a tool that can format the Markdown in blog articles in something that is roughly like SemBr.
+So I had to write my own: [pysembr]( https://github.com/isotopp/pysembr.git),
+a Python-based tool applies structural wrapping to natural language text.
+Using `uv` it is easy to install and use.
+
+# What pysembr Does
+
+`pysembr` reads your plain text or Markdown files and adds line breaks at the end of each sentence.
+Editing such a file later will produce clear diffs, because git looks at line structures.
+
+If a sentence is too long for a line, `pysembr` will try to break at ",".
+If that still isn't sufficient, it will look at language specific break words, and optionally at conjunctions.
+
+So we offer:
+- "Semantic" line wrapping for natural language text.
+- Markdown-aware processing that respects lists, headings, and other structural elements.
+- Command-line interface for easy integration into scripts and build pipelines.
+- Lightweight and Python-native, making it easy to adapt or extend for custom use.
+
+# How to Use It
+
+1. Have `uv` installed.
+2. Clone the repository: `git clone https://github.com/isotopp/pysembr.git`
+3. Load the dependencies: `uv sync`
+4. Run it with `uv`: `uv run pysembr --help` or install it as a tool: `uv tool install .`
+
+If you run it as a tool, add `uv tool dir --bin` to the PATH in your shell:
+
+For example: 
+
+```bash
+pysembr input.md -o output.md
+```
+
+This command reads `input.md`, applies semantic line wrapping, and writes the formatted output to `output.md`.
+More usage examples can be found in the `README.md`.
