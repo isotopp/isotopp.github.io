@@ -24,7 +24,7 @@
 <meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
 <meta property="og:url" content="https://blog.koehntopp.info/" />
 <meta property="og:type" content="article" />
-<meta name="article:published_time" content='2026-01-14T05:06:07Z' />
+<meta name="article:published_time" content='2026-02-03T05:06:07Z' />
 <meta name="fediverse:creator" content="">
 <meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg' />
 <meta name="twitter:card" content="summary_large_image" />
@@ -110,6 +110,65 @@
   </div>
 
   
+  <div class='row justify-content-center mb-4 py-4 border-bottom mx-0'>
+    <div class='col-lg-8'>
+        <h1 style='font-weight: 700'><a href="https://blog.koehntopp.info/2020/09/04/mysql-json-data-type/" class='text-decoration-none text-dark'>MySQL: Basic usage of the JSON data type</a></h1>
+        <div class='text-uppercase text-secondary' style='letter-spacing: 0.1rem;'>
+          <img src='/assets/img/avatars/isotopp.jpg' alt="Avatar of @isotopp@infosec.exchange" class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+          <a href="https://infosec.exchange/@isotopp" class='text-secondary text-decoration-none'>Kristian Köhntopp</a>
+          -
+          September 4, 2020
+        </div>
+
+        <div class='mt-3'><p>MySQL 8 provides solid support for the JSON data type. The manual has <a href="https://dev.mysql.com/doc/refman/8.0/en/json.html" target="_blank" rel="noopener">an overview of the data type</a>
+
+, a <a href="https://dev.mysql.com/doc/refman/8.0/en/json-functions.html" target="_blank" rel="noopener">JSON function reference</a>
+
+, an <a href="https://dev.mysql.com/doc/refman/8.0/en/create-table-secondary-indexes.html#json-column-indirect-index" target="_blank" rel="noopener">an overview on generated column indexes</a>
+
+, and <a href="https://dev.mysql.com/doc/refman/8.0/en/create-index.html#create-index-multi-valued" target="_blank" rel="noopener">explains multi-values indexes</a>
+
+.</p>
+<h2 id="creating-json-columns">
+    <a href="#creating-json-columns">
+	Creating JSON columns
+    </a>
+</h2>
+<p>Creating JSON columns is easy: Make the column of the JSON data type, fill in valid JSON data.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="n">auto_increment</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="n">json</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">11</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="k">values</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="o">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;null&#39;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;true&#39;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;false&#39;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;&#34;keks&#34;&#39;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;[&#34;eins&#34;, &#34;zwei&#34;]&#39;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;{&#34;eins&#34;: &#34;one&#34;, &#34;zwei&#34;: &#34;two&#34;}&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">json_type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="n">json_valid</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="k">valid</span><span class="p">,</span><span class="w"> </span><span class="k">isnull</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">sqlnull</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">t</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">---------+-------+---------+--------------------------------+----+
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="k">type</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="k">valid</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sqlnull</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">j</span><span class="w">                              </span><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">---------+-------+---------+--------------------------------+----+
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">    </span><span class="o">|</span><span class="w">  </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">                           </span><span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">    </span><span class="o">|</span><span class="w">     </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">null</span><span class="w">                           </span><span class="o">|</span><span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="nb">BOOLEAN</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">true</span><span class="w">                           </span><span class="o">|</span><span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="nb">BOOLEAN</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">false</span><span class="w">                          </span><span class="o">|</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="w">                              </span><span class="o">|</span><span class="w">  </span><span class="mi">5</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">STRING</span><span class="w">  </span><span class="o">|</span><span class="w">     </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&#34;keks&#34;</span><span class="w">                         </span><span class="o">|</span><span class="w">  </span><span class="mi">6</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="nb">ARRAY</span><span class="w">   </span><span class="o">|</span><span class="w">     </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;eins&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;zwei&#34;</span><span class="p">]</span><span class="w">               </span><span class="o">|</span><span class="w">  </span><span class="mi">7</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="k">OBJECT</span><span class="w">  </span><span class="o">|</span><span class="w">     </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="err">{</span><span class="s2">&#34;eins&#34;</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;one&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;zwei&#34;</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;two&#34;</span><span class="err">}</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">---------+-------+---------+--------------------------------+----+
+</span></span></span><span class="line"><span class="cl"><span class="mi">8</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;[&#34;incomplete&#34;, &#34;array&#34;, &#34;closing bracket&#34;&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ERROR</span><span class="w"> </span><span class="mi">3140</span><span class="w"> </span><span class="p">(</span><span class="mi">22032</span><span class="p">):</span><span class="w"> </span><span class="n">Invalid</span><span class="w"> </span><span class="n">JSON</span><span class="w"> </span><span class="nb">text</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;Missing a comma or &#39;]&#39; after an array element.&#34;</span><span class="w"> </span><span class="k">at</span><span class="w"> </span><span class="k">position</span><span class="w"> </span><span class="mi">41</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="s1">&#39;t.j&#39;</span><span class="p">.</span><span class="w">
+</span></span></span></code></pre></div><p>We learn several things from this experiment:</p></div>
+
+    </div>
+  </div>
   <div class='row justify-content-center mb-4 py-4 border-bottom mx-0'>
     <div class='col-lg-8'>
         <h1 style='font-weight: 700'><a href="https://blog.koehntopp.info/2020/09/02/macos-relocated-items/" class='text-decoration-none text-dark'>MacOS: Deleting Relocated Items</a></h1>
@@ -360,26 +419,6 @@ to amuse the customers.</p></div>
 </span></span></span><span class="line"><span class="cl"><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">40</span><span class="p">,</span><span class="mi">40</span><span class="p">);</span><span class="w">
 </span></span></span></code></pre></div><p>or the same definition for <code>b</code> without the constraint.</p></div>
-
-    </div>
-  </div>
-  <div class='row justify-content-center mb-4 py-4 border-bottom mx-0'>
-    <div class='col-lg-8'>
-        <h1 style='font-weight: 700'><a href="https://blog.koehntopp.info/2020/08/03/mysql-foreign-keys-and-foreign-key-constraints/" class='text-decoration-none text-dark'>MySQL Foreign Keys and Foreign Key Constraints</a></h1>
-        <div class='text-uppercase text-secondary' style='letter-spacing: 0.1rem;'>
-          <img src='/assets/img/avatars/isotopp.jpg' alt="Avatar of @isotopp@infosec.exchange" class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
-          <a href="https://infosec.exchange/@isotopp" class='text-secondary text-decoration-none'>Kristian Köhntopp</a>
-          -
-          August 3, 2020
-        </div>
-
-        <div class='mt-3'><p>Foreign Keys are what links tables together and turns a set of tables into a model. Foreign Key Constraints are conditions that must be true for the content of the tables to be an internally consistent model. Foreign Key Constraints can be defined and enforced in InnoDB, but this comes at a considerable price, and for some it may hurt more than it is worth.</p>
-<p><p class="md__image">
-  <img src="fk.png" alt="2020/08/fk.png"  />
-</p>
-
-</p>
-<p><em>A very simple shop as an ER-model. <code>order_id</code> is the primary key of the Orders table.  <code>customer_id</code> in the Orders table is a foreign key: The primary key of another (&ldquo;foreign&rdquo;) table in this table. Foreign keys can model relationships between tables (&ldquo;entities&rdquo;) in an entity-relationship diagram.</em></p></div>
 
     </div>
   </div>
