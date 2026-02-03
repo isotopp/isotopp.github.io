@@ -111,7 +111,7 @@ it's the secret solution, after all).
 
 ## Second guess
 
-Let's go with `--strategy most-likely`'s recommendation of `pkill` as a guess:
+Let's go with `--strategy most-likely`'s recommendation of `pidof` as a guess:
 
 ``` 
 kk:bofhle kris$ uv run bofhle --guess pidof --result gybbb
