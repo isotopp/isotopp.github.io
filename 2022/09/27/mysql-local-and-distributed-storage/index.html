@@ -180,9 +180,8 @@ Add “That’s going to be expensive”, if you work for SAP or Oracle.</p>
 <p>But it is true: Reads are really bad for databases.
 Here is what a database workload looks like when the database does not fit into memory:</p>
 <p><p class="md__image">
-  <img src="local-storage-01.jpg" alt="2022/09/local-storage-01.jpg"  />
+  <img src="/2022/09/27/mysql-local-and-distributed-storage/local-storage-01.jpg" alt="2022/09/local-storage-01.jpg" />
 </p>
-
 </p>
 <p><em>Graph based on data recorded with <code>blktrace</code>, analyzed by <a href="https://www.oakgatetech.com/applications/analytics" target="_blank" rel="noopener">Workload Intelligence</a>
 
@@ -209,9 +208,8 @@ Only the write load remains.</p>
 <p>Increasing the requirements introduces more latency, and brings down our maximum write rate due to increased wait time.</p>
 <p>But uncached reads are worse.</p>
 <p><p class="md__image">
-  <img src="local-storage-02.jpg" alt="2022/09/local-storage-02.jpg"  />
+  <img src="/2022/09/27/mysql-local-and-distributed-storage/local-storage-02.jpg" alt="2022/09/local-storage-02.jpg" />
 </p>
-
 </p>
 <p><em>Writes can build deep queues, but for reads that is hardly happening. This is a key observation.</em></p>
 <p>When we send writes to storage, we can do that asynchronously:
@@ -258,31 +256,27 @@ Work stalls until the previous reads are done – unless we provide sufficient m
 They are holding hotel room availability information.
 This database is running on bare metal, 16C/32T, 128 GB memory and two SSD on a controller with a battery backed cache unit (BBU).</p>
 <p><p class="md__image">
-  <img src="local-storage-03.jpg" alt="2022/09/local-storage-03.jpg"  />
+  <img src="/2022/09/27/mysql-local-and-distributed-storage/local-storage-03.jpg" alt="2022/09/local-storage-03.jpg" />
 </p>
-
 </p>
 <p><em>The box is serving mostly reads, 4746 in the last second, and as a replica sees writes only from upstream.</em></p>
 <p>The box is currently holding a few TB of data, serving around between 6000 and 12000 queries per second.</p>
 <p>The statement mix looks like Java: around 50% of the statements are <code>SELECT</code>, the large percentage of <code>SET</code> statements is indicative of the JDBC driver and the rest is DML and transaction management.</p>
 <p><p class="md__image">
-  <img src="local-storage-04.jpg" alt="2022/09/local-storage-04.jpg"  />
+  <img src="/2022/09/27/mysql-local-and-distributed-storage/local-storage-04.jpg" alt="2022/09/local-storage-04.jpg" />
 </p>
-
 </p>
 <p>The box is currently running at a load of 9, but it is early morning, and we have a load peak in the evening. At a load of 12, it has sufficient capacity to carry on, if we lose an AZ and have to fold the failing data centers load into the surviving machines.</p>
 <p>This kind of hardware with this kind of workload will become uncomfortably jittery at a load of 24.</p>
 <p><p class="md__image">
-  <img src="local-storage-05.jpg" alt="2022/09/local-storage-05.jpg"  />
+  <img src="/2022/09/27/mysql-local-and-distributed-storage/local-storage-05.jpg" alt="2022/09/local-storage-05.jpg" />
 </p>
-
 </p>
 <p>We also observe variable read load of around 1000-ish IOPS, spiking into the 4000&rsquo;s.</p>
 <p>This works well. How well?</p>
 <p><p class="md__image">
-  <img src="local-storage-06.jpg" alt="2022/09/local-storage-06.jpg"  />
+  <img src="/2022/09/27/mysql-local-and-distributed-storage/local-storage-06.jpg" alt="2022/09/local-storage-06.jpg" />
 </p>
-
 </p>
 <p>We observe read and write latencies on a µs scale, that is 10^-6, millionth seconds.i
 2000 µs are 2ms.</p>
@@ -314,16 +308,14 @@ That is, 1 TB of data in the database becomes 3 TB of data on disk, 1 TB on each
 Multiple copies and coordination add up, and the end result is a write time distribution with a maximum of 0.9 ms for the storage tested here.</p>
 <p>Read latencies have the same shape, but are somewhat lower – we need one copy of the data to read it, not all of them, so we come out at around 0.6ms.</p>
 <p><p class="md__image">
-  <img src="local-storage-07.jpg" alt="2022/09/local-storage-07.jpg"  />
+  <img src="/2022/09/27/mysql-local-and-distributed-storage/local-storage-07.jpg" alt="2022/09/local-storage-07.jpg" />
 </p>
-
 </p>
 <p><em>Latency diagrams for read and write latencies of our Ceph storage are r=0.6 ms, w=0.9 ms. This is amazingly low for Ceph – a Ceph cluster in 2015 would have been around 5.0 ms.</em></p>
 <p>Running a database with a comparable profile on top of this storage changes database behavior a lot:</p>
 <p><p class="md__image">
-  <img src="local-storage-08.jpg" alt="2022/09/local-storage-08.jpg"  />
+  <img src="/2022/09/27/mysql-local-and-distributed-storage/local-storage-08.jpg" alt="2022/09/local-storage-08.jpg" />
 </p>
-
 </p>
 <p><em>Read latencies compared: Above, the graph from the local machine, below a comparable workload on Ceph volumes.</em></p>
 <p>We have reads, and read latencies are approximately twice as high as on a local SSD.
@@ -341,9 +333,8 @@ And we should try the first thing:
 use instances with more memory to make the disk accesses go away.</p>
 <p>For the writes, the picture changed completely:</p>
 <p><p class="md__image">
-  <img src="local-storage-09.jpg" alt="2022/09/local-storage-09.jpg"  />
+  <img src="/2022/09/27/mysql-local-and-distributed-storage/local-storage-09.jpg" alt="2022/09/local-storage-09.jpg" />
 </p>
-
 </p>
 <p><em>Write latencies compared: Above, the graph from the local storage machine, below a comparable workload on Ceph volumes.</em></p>
 <p>Writes now take 0.9 ms instead of 0.04 ms.</p>
@@ -357,22 +348,19 @@ Each write takes 0.9-ish ms, but you can do many of them in flight at the same t
 
  is subject to a number of constraints regarding reordering, and also subject to limitations that result from implementation details.</p>
 <p><p class="md__image">
-  <img src="local-storage-10.jpg" alt="2022/09/local-storage-10.jpg"  />
+  <img src="/2022/09/27/mysql-local-and-distributed-storage/local-storage-10.jpg" alt="2022/09/local-storage-10.jpg" />
 </p>
-
 </p>
 <p><em>Replication delay over time: Despite parallel replication being active, the instance cannot keep up with the write load. Only careful write modulation keeps the replica from delaying even more.</em></p>
 <p>And that is not even a high write load: The statement mix shown here did not even touch the 1000 inserts/s barrier.</p>
 <p><p class="md__image">
-  <img src="local-storage-11.jpg" alt="2022/09/local-storage-11.jpg"  />
+  <img src="/2022/09/27/mysql-local-and-distributed-storage/local-storage-11.jpg" alt="2022/09/local-storage-11.jpg" />
 </p>
-
 </p>
 <p>Yet the storage statistics are absolutely devastating:</p>
 <p><p class="md__image">
-  <img src="local-storage-12.jpg" alt="2022/09/local-storage-12.jpg"  />
+  <img src="/2022/09/27/mysql-local-and-distributed-storage/local-storage-12.jpg" alt="2022/09/local-storage-12.jpg" />
 </p>
-
 </p>
 <p>We see somewhat over 1000 reads and 1000 writes per second on the volume, which are good considering the latencies we see above, but devoid of parallism.
 The I/O we see is good for an aggregate I/O of 22 MB/s, and results in complete saturation of the Disk I/O.</p>

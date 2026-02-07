@@ -162,9 +162,8 @@
 			</div>
 			<div class='col-lg-8'>
 				<p><p class="md__image">
-  <img src="mappedprocess3.png" alt=""  />
+  <img src="/2009/10/09/wieviel-speicher-brauchst-du-denn/mappedprocess3.png" alt="" />
 </p>
-
 </p>
 <p><em>Linux mapped die Speicherseiten zweiter Prozesse. Dabei wird speicher geteilt, oder Seiten sind noch ungeladen. Manche Seiten werden beim ersten Schreibzugriff kopiert (Copy-on-Write).</em></p>
 <p>Manchmal muß man viel erklären, um eine einfache Frage beantworten zu können: Wieviel Speicher belegt ein Programm in Linux? Diese Frage war bisher überraschend schwer zu beantworten. Da ist einmal die Ausgabe von <code>ps axuwww</code> oder <code>top</code>:</p>
@@ -229,26 +228,23 @@
 <p>Das heißt, die erste Zeile der maps-Datei zeigt uns wie der Code des Webservers ab Offset 0 der Datei in Adresse 0x80000000 in den Speicher eingeblendet wird. Die Einblendung ist schreibegeschützt. Danach kommt ab 0x8004f000 im Speicher (und ab 0x4f000 in der Datei) der Datenteil, der wiederum beschreibbar ist.</p>
 <p>Die Summe aller dieser Einblendungen ist die VSZ des Prozesses, also der Anteil seines 64-Bit oder 32-Bit Adreßraumes, auf den der Prozeß zugreifen kann ohne daß ihm das Betriebssystem an die Ohren haut.</p>
 <p><p class="md__image">
-  <img src="unmappedprocess.png" alt=""  />
+  <img src="/2009/10/09/wieviel-speicher-brauchst-du-denn/unmappedprocess.png" alt="" />
 </p>
-
 </p>
 <p><em>Bei einem Programmstart existieren zwar Mappings für die virtuellen Speicherseiten eines Prozesses (hier mit 1-7 bezeichnet), aber ihnen sind keine physikalischen Speicherseiten zugeordnet. Jeder Zugriff auf eine dieser Seiten wird vom Betriebssystem erkannt und abgefangen.</em></p>
 <p>Aber die Tatsache, daß ein Mapping für eine virtuelle Adresse existiert heißt noch lange nicht, daß das Betriebssystem auch physikalischen Speicher dafür belegt hat. Genau genommen ist am Anfang gar keine Speicherseite belegt - das Betriebssystem mapped das Programm in den Speicher, aber das Programm ist noch nicht geladen. Dann beginnt das Programm seine Ausführung und greift auf eine Speicheradresse zu, die nicht existiert.</p>
 <p>Das erste was also passiert ist eine Speicherschutzverletzung - aber eine legale. Das Betriebssystem wird aus seinem Pool leerer Speicherseiten eine auswählen, dort den auf Grund der Mappinginformationen benötigten Inhalt reinladen und die abgebrochene Instruktion nun neu starten.</p>
 <p>Im Beispiel wird beim Start des Programmes also auf Seite 1 zugegriffen, die jedoch nicht gemapped war. Das Betriebssystem unterbricht die Ausführung des Programmes, lädt die betreffende Seite von Disk in eine physikalische Speicherseite, hier B, stellt das Mapping her und restartet die Instruktion. Wird die Ausführung fortgesetzt entstehen weitere Seitenfehler (page faults) und das Programm wird sukzessive so weit in den Speicher geladen wie notwendig - aber es wird nie mehr Speicher verbraucht als unbedingt notwendig.</p>
 <p><p class="md__image">
-  <img src="mappedprocess1.png" alt=""  />
+  <img src="/2009/10/09/wieviel-speicher-brauchst-du-denn/mappedprocess1.png" alt="" />
 </p>
-
 </p>
 <p><em>Beim Zugriff auf Seite 1 kommt es zu einem (legalen) Seitenfehler. Das Betriebssystem unterbricht die Anweisung, die den Fehler ausgelöst hat, lädt die fehlende Speicherseite von der Platte in das physikalische RAM (hier: Seite B) und stellt ein Mapping der virtuellen Seite 2 auf die physikalische Seite B her. Danach wird die unterbrochene Anweisung neu gestartet - das ausgeführte Programm merkt nichts vom Getrickse des Betriebssystems.</em></p>
 <p>Die Optimierungen sind offensichtlich: Wenn beim Herstellen des Programms durch den Compiler und Linker oder durch Profiling von vorhergehenden Programmausführungen ermittelt werden kann, welche Teile des Programmes auf jeden Fall benötigt werden, dann kann man den Hagel der Seitenfehler beim Programmstart antizipieren und die gebrauchten Seiten gleich und linear in den Speicher laden. Das ist schneller und effektiver - moderne Betriebssysteme machen das auch so.</p>
 <p>In jedem Fall entsteht durch die Programmausführung ein Mapping von Seiten - dabei muß es keine lineare Entsprechung von virtuellen (Prozeß-) Adressen und physikalischen Speicheradressen geben.</p>
 <p><p class="md__image">
-  <img src="mappedprocess2.png" alt=""  />
+  <img src="/2009/10/09/wieviel-speicher-brauchst-du-denn/mappedprocess2.png" alt="" />
 </p>
-
 </p>
 <p><em>Nach einiger Zeit sind alle benutzten Seiten des Programmes irgendwie auf physikalischen Speicher abgebildet, das Programm und seine Daten befinden sich im RAM.</em></p>
 <p>In Linux wird die Situation nun durch mehrere Dinge noch komplizierter: Zum einen existieren Shared Libraries. Das ist Code, der von allen oder vielen Programmen gebraucht wird und der deswegen in einer Extradatei abgelegt ist - zum Beispiel libc.so.6, die Laufzeitbibliothek der Sprache C:</p>
@@ -285,9 +281,8 @@
 </span></span></span></code></pre></div><p>Dasselbe passiert auch mit Programmen, die sich per <code>fork()</code> vervielfältigen oder mehrfach geladen werden: Wenn zwei Benutzer vi verwenden, dann steht der Code für vi selbst nur einmal im Speicher - aber jeder vi-Prozeß hat eigene Datenseiten, die eigenen Text speichern und eine eigene Cursorposition und einen eigenen Cut und Paste-Buffer haben. Das ist ja recht wichtig, wenn man nicht gerade Google Docs ist und Documente haben möchte, die von mehreren Personen zur Zeit bearbeitet werden können sollen.</p>
 <p>Hier greift noch eine weitere Optimierung: Copy on Write (COW). Wenn im Beispiel also Prozeß 2 durch fork() aus Prozeß 1 erzeugt wird, wie es der Apache Webserver zum Beispiel laufend tut, dann sind zunächt <em>alle</em> Speicherseiten zwischen beiden Prozessen geshared - auch die, die beschrieben werden können.</p>
 <p><p class="md__image">
-  <img src="mappedprocess3.png" alt=""  />
+  <img src="/2009/10/09/wieviel-speicher-brauchst-du-denn/mappedprocess3.png" alt="" />
 </p>
-
 </p>
 <p><em>PID 2 versucht Seite 3 zu beschreiben, die auf die Seite F gemapped war. Da auch PID 1 diese Seite sehen kann, würde dieser Schreibzugriff von PID 2 Daten verändern, die PID 1 sieht - das geht nicht! Das Betriebssystem fängt den Zugriff ab, kopiert die Seite F nach G und mapped Seite 3 für PID 2 nach G. Jetzt haben PID 1 und PID 2 jeder eine private Kopie der veränderten Daten - der Rest wird aber noch geshared.</em></p>
 <p>Schreibt nun etwa Prozeß 2 in seine Speicherseite 3, dann löst dies wiederum eine Zugriffsverletzung aus, weil die Seite zwar prinzipiell beschreibbar ist, aber vom Betriebssystem heimlich als schreibgeschützt markiert worden ist. Das Betriebssystem kopiert nun die physikalische Speicherseite F nach G, ändert das Mapping von 3 für den Prozeß 2 so, daß die Seite 3 nun auf G statt F zeigt und restarted die unterbrochene Instruktion. Beide Prozesse haben nun ihre private Kopie von Seite 3 (PID 1 hat F, PID 2 hat G) und können bis auf weiteres unbehelligt schreiben.</p>

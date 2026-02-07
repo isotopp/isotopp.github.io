@@ -165,9 +165,8 @@
 
  asked a question:</p>
 <p><a href="https://twitter.com/CaptainEyesight/status/1221889419654787073" target="_blank" rel="noopener"><p class="md__image">
-  <img src="pk-question.png" alt="2020/01/pk-question.png"  />
+  <img src="/2020/01/28/some-rules-for-primary-keys/pk-question.png" alt="2020/01/pk-question.png" />
 </p>
-
 </a>
 
 </p>
@@ -182,9 +181,8 @@
 </h2>
 <p>In InnoDB, data is stored as a B+-Tree indexed by the primary key. A B+-Tree is a B-Tree in which the leaf pages contain the actual data records. That means that data is (within limits) stored physically, on disk, in primary key order. A record with a lower primary key value will be &ldquo;further left&rdquo; in the B+-Tree than a record with a higher primary key value, and within limits will also be on a disk block with a lower or equal number than blocks with higher primary key values.</p>
 <p><p class="md__image">
-  <img src="pk-innodb-order.png" alt="2020/01/pk-innodb-order.png"  />
+  <img src="/2020/01/28/some-rules-for-primary-keys/pk-innodb-order.png" alt="2020/01/pk-innodb-order.png" />
 </p>
-
 </p>
 <p>InnoDB structure as a tree index blocks pointing to other index blocks, and the leaf nodes containing the actual data.</p>
 <p>The limitation is here that InnoDB allocates data in chunks (of 64 pages of 16 KB by default, for segments of 1 MB), and filesystems of course do not really guarantee &ldquo;low to high disk space allocation&rdquo;. Another, weaker and slightly better way to describe the physical ordering would be that two primary key values with a small value difference are more likely to be phsically closer on the storage medium, but it is still a kind of best effort estimate.</p>
@@ -225,9 +223,8 @@ in 2009, where I have been discussing the way Nagios NDO Schema abuses the datab
 <p>In any case, there will likely be dead records on each page loaded into memory, poisoning your expensive caches with dead data. This is not a good use of your money or hardware budget. The recommendation is to keep only live data in transactional tables. Actually delete completed transactions from your transactional tables. Keep your transactional system small. A transactional system ideally never reads data, because it can keep the pages of the working set of your current transactions in memory. Only writes happen, to persist the actual transactions.</p>
 <p>You will need a log of changes, for compliance reasons, for business intelligence (BI) reasons and for reporting as well as many other use cases. You can implement an Extract-Transform-Load (ETL) process into a data warehouse, with the usual DW transaction from online transaction processing normalized schemas into data warehousey star and snowflake schemas. That is, in the DW you will not store ids, but actual data values, because you are not interested where customer_id 17 lives now in 2020, but that the item &ldquo;USB Memory Stick 128 GB&rdquo; was actually priced &ldquo;24.99 EUR&rdquo; when you delivered it to a customer in 24110, Germany in August 2013. So part of the ETL process is to join all the things, keep the values you want to archive and then archive them into a giant fact table (and maybe recompressing the values back to DW ids in sideways lookup tables for space reasons). Then you create daily aggregate along the dimensions of reporting, creating a star or snowflake from the fact table timeline.</p>
 <p><p class="md__image">
-  <img src="pk-innodb-order-2.png" alt="2020/01/pk-innodb-order-2.png"  />
+  <img src="/2020/01/28/some-rules-for-primary-keys/pk-innodb-order-2.png" alt="2020/01/pk-innodb-order-2.png" />
 </p>
-
 </p>
 <p>Deleting from a monster fact table where primary keys corrospond to temporal data is just as bad. Use partitions instead, and drop expired days.</p>
 <p>Ideally, the fact table is partitioned, so that you to not shuffle through the B+-Tree again for deletion. Instead, you <code>ALTER TABLE ... DROP PARTITION</code> instead, which is much, much, much faster.</p>

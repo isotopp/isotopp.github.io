@@ -164,9 +164,8 @@
 				<p>At work, replication chains have a single primary database node, to which you write, and then multiple replicas, in multiple AZs.</p>
 <p>Here is what the one sample chain looks like in Orchestrator:</p>
 <p><p class="md__image">
-  <img src="mysql-orchestrator.png" alt="2020/10/mysql-orchestrator.png"  />
+  <img src="/2020/10/07/an-unexpeced-pool-size-increase/mysql-orchestrator.png" alt="2020/10/mysql-orchestrator.png" />
 </p>
-
 </p>
 <p><em>instance-918d is the current primary, in the blue AZ. Replicas in orange and green are in other AZs. Blue badges indicate multiple replicas, eg (38) means 38 machines.</em></p>
 <p>When you talk to a database, you get two database handles:</p>
@@ -180,18 +179,16 @@
 <p>Other chains are shared between different applications, and in order to prevent crosstalk we have different pools, so that your &ldquo;application-xml&rdquo; queries do not mess with the regular “application-misc” queries. You are still using a “application-ro” handle, but it is non-overlapping between XML and normal application clients.</p>
 <p>In any case, we run automated capacity tests on each pool, and then adjust pool sizes as needed. We also report to ourselves on that. Sometimes that report is interesting:</p>
 <p><p class="md__image">
-  <img src="mysql-pool-size-change.png" alt="2020/10/mysql-pool-size-change.png"  />
+  <img src="/2020/10/07/an-unexpeced-pool-size-increase/mysql-pool-size-change.png" alt="2020/10/mysql-pool-size-change.png" />
 </p>
-
 </p>
 <p><em>The example-misc pool changed target size from 3 to 16 in the night of 05-Oct, which is a 433% increase.</em></p>
 <p>The minimum pool size is three, for redundancy reasons. The example chain is not busy, ever, and the pool size should <em>never</em> exceed three.</p>
 <p>DBA Operations talk to the customer: “I am reaching out to you because you are currently designated as owners of one or more of the database schemata in the example database chain. The schemata in question are &lt;list&gt;.</p>
 <p>Starting yesterday, the example chain (and, specifically, its example-misc pool) has seen a significant increase in load, mostly in the blue AZ, as shown here:”</p>
 <p><p class="md__image">
-  <img src="mysql-threads.png" alt="2020/10/mysql-threads.png"  />
+  <img src="/2020/10/07/an-unexpeced-pool-size-increase/mysql-threads.png" alt="2020/10/mysql-threads.png" />
 </p>
-
 </p>
 <p><em>MySQL &ldquo;Threads Running&rdquo; going through the roof, load testing reports diminished capacity, and we ready more instances. The world is safe again! Or, is it?</em></p>
 <p>So we detected an increased number of threads running, and that led to a general reduction in the capacity, and that requires <em>MOAR MACHINES!</em> Yay! So our bots threw more machinery to ride the load wave and that kept us afloat for the moment.</p>
@@ -210,9 +207,8 @@
 </span></span></span><span class="line"><span class="cl"><span class="go">e5724da64f134c34810f48211f5b777c-example-2014.dc1.prod.example.com
 </span></span></span></code></pre></div><p>So let’s have a look at example-8051:</p>
 <p><p class="md__image">
-  <img src="mysql-load.png" alt="2020/10/mysql-load.png"  />
+  <img src="/2020/10/07/an-unexpeced-pool-size-increase/mysql-load.png" alt="2020/10/mysql-load.png" />
 </p>
-
 </p>
 <p><em>This box is terribly idle. For 18 hours, it was slightly less idle.</em></p>
 <p>This box is terribly idle. It has 16 cores, 32 threads, it can do 32 things concurrently on a good day. Running MySQL, it usually becomes flaky at a <em>1m load average</em> of 24, because we have web loads that are having very many short term variations, so “1m average of 24” really means “anything between 12 and 40”, if you look at things in 0.1s intervals.</p>
@@ -225,16 +221,14 @@
 <p>During the incident it was higher, but not much. Yet, the capacity test returned a much diminished capacity and grew the chain by a factor of more than 4. Clearly, this is not load, but something else.</p>
 <p>Let’s look at a few metrics for the time between 04-Oct, noon and 05-Oct, 6am. We want to know if we can see more action than the CPU thing. Let’s check the network:</p>
 <p><p class="md__image">
-  <img src="mysql-network.png" alt="2020/10/mysql-network.png"  />
+  <img src="/2020/10/07/an-unexpeced-pool-size-increase/mysql-network.png" alt="2020/10/mysql-network.png" />
 </p>
-
 </p>
 <p><em>Nope. No action on the network.</em></p>
 <p>And the disk:</p>
 <p><p class="md__image">
-  <img src="mysql-disk.png" alt="2020/10/mysql-disk.png"  />
+  <img src="/2020/10/07/an-unexpeced-pool-size-increase/mysql-disk.png" alt="2020/10/mysql-disk.png" />
 </p>
-
 </p>
 <p><em>We see few writes, and almost no reads. This is a memory-saturated database.</em></p>
 <p>We see very few disk writes (a few hundred writes per minute), and almost no disk reads. This is a database with the working set residing in memory, and queries are resolved without disk reads.</p>
@@ -259,9 +253,8 @@
 </h2>
 <p>What else stands out?</p>
 <p><p class="md__image">
-  <img src="mysql-query-workload.png" alt="2020/10/mysql-query-workload.png"  />
+  <img src="/2020/10/07/an-unexpeced-pool-size-increase/mysql-query-workload.png" alt="2020/10/mysql-query-workload.png" />
 </p>
-
 </p>
 <p><em>Queries/s stable, Select/s looking normal. A slow query &ldquo;spike&rdquo; of very few slow queries.</em></p>
 <p>The query load did not change, the capacity did. This is getting more mysterious by the second, but I think I know the smell. See that slow query “non-spike”? We have had slow queries, but it could not have been many.</p>
@@ -283,9 +276,8 @@
 
  as well. Let’s check the undo-log size:</p>
 <p><p class="md__image">
-  <img src="mysql-undo-log.png" alt="2020/10/mysql-undo-log.png"  />
+  <img src="/2020/10/07/an-unexpeced-pool-size-increase/mysql-undo-log.png" alt="2020/10/mysql-undo-log.png" />
 </p>
-
 </p>
 <p><em>Undo-Log shark fin perfectly coinciding with the incident.</em></p>
 <p>We observe a shark fin in the Undo-Log size that perfectly matches the time span of the incident and the increased CPU time.</p>
