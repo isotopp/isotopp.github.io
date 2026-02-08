@@ -1,21 +1,10 @@
 // lunr.js search code
 //vanilla js version of https://gist.github.com/sebz/efddfc8fdcb6b480f567
 
-    /*
-        We have JS! Adjust our search inputs to use Lunr...
-        Basically, change placeholder text, remove 'name' attr,
-        and remove the hidden input sites input field entirely
-    */
-    var setSearchForm = document.getElementById('searchForm');
-    var setInputPlaceholder = document.getElementById('search');
-    setInputPlaceholder.placeholder = "Enter search terms";
-    setInputPlaceholder.removeAttribute("name");
-    setSearchForm.removeChild( document.getElementById('searchsite') );
-    setSearchForm.action = "#";
-    setSearchForm.removeAttribute("action");
-
 	 var lunrIndex,
 	     $results,
+         $search,
+         $searchForm,
 	     pagesIndex;
 
 	 // Initialize lunrjs using our generated index file
@@ -81,8 +70,27 @@
 	     $results = document.getElementById("results");
 	     $search = document.getElementById("search");
        $searchForm = document.getElementById("searchForm");
+       if (!$results || !$search || !$searchForm) {
+         return false;
+       }
+
+       /*
+          We have JS! Adjust our search inputs to use Lunr...
+          Basically, change placeholder text, remove 'name' attr,
+          and remove the hidden input sites input field entirely
+       */
+       $search.placeholder = "Enter search terms";
+       $search.removeAttribute("name");
+       var searchSite = document.getElementById("searchsite");
+       if (searchSite && searchSite.parentNode === $searchForm) {
+         $searchForm.removeChild(searchSite);
+       }
+       $searchForm.action = "#";
+       $searchForm.removeAttribute("action");
+
        $search.onkeyup =  doSearch;
        $searchForm.onsubmit = doSearch;
+       return true;
 	 }
 
 	 /**
@@ -117,7 +125,7 @@
 
 	     // Only show the ten first results
        var matchLength = document.getElementById('matches');
-       matches.innerText = "Found "+ results.length +" matches:";
+       matchLength.innerText = "Found "+ results.length +" matches:";
 
 	     //results.slice(0, 10).forEach(function (result) {
 	     results.forEach(function (result) {
@@ -143,9 +151,6 @@
          $results.appendChild(li);
        });
 	 }
-
-	 // Let's get started
-	 initLunr();
 
      function renderMermaidDiagrams() {
        if (typeof mermaid === "undefined") {
@@ -175,6 +180,8 @@
      }
 
 	 document.addEventListener("DOMContentLoaded", function () {
-	     initUI();
+	     if (initUI()) {
+         initLunr();
+       }
          renderMermaidDiagrams();
 	 })
