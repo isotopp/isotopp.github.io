@@ -1,14 +1,12 @@
 ---
 author: isotopp
-date: "2026-02-08T18:15:00Z"
+date: "2026-02-08T04:05:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
   - test
   - mermaid
   - lang_en
 title: Mermaid Test
-aliases:
-  - /2026/02/08/mermaid-test.html
 ---
 This is a Mermaid rendering test post.
 

@@ -1,6 +1,6 @@
 ---
 author: isotopp
-date: "2026-02-08T19:00:00Z"
+date: "2026-02-08T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
   - test
@@ -8,8 +8,6 @@ tags:
   - math
   - lang_en
 title: KaTeX Test
-aliases:
-  - /2026/02/08/katex-test.html
 ---
 This is a KaTeX rendering test post.
 
