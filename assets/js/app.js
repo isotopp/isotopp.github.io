@@ -147,6 +147,34 @@
 	 // Let's get started
 	 initLunr();
 
+     function renderMermaidDiagrams() {
+       if (typeof mermaid === "undefined") {
+         return;
+       }
+
+       var mermaidBlocks = document.querySelectorAll("pre > code.language-mermaid, pre > code.lang-mermaid");
+       if (!mermaidBlocks.length) {
+         return;
+       }
+
+       mermaid.initialize({ startOnLoad: false });
+
+       mermaidBlocks.forEach(function (codeBlock) {
+         var pre = codeBlock.parentElement;
+         if (!pre) {
+           return;
+         }
+
+         var container = document.createElement("div");
+         container.className = "mermaid";
+         container.textContent = codeBlock.textContent;
+         pre.replaceWith(container);
+       });
+
+       mermaid.run({ querySelector: ".mermaid" });
+     }
+
 	 document.addEventListener("DOMContentLoaded", function () {
 	     initUI();
+         renderMermaidDiagrams();
 	 })

@@ -9,7 +9,7 @@
 
 ## Layout & Templates
 - Site-specific layout overrides live under `layouts/`. Key templates: `_default/baseof.html` wires partials, `single.html`/`taxonomy.html`/`rss.xml`, and `_default/search.html` for the Lunr UI.
-- Partial overrides in `layouts/partials/` customize CSS compilation, metadata (`head-meta.html` adds RSS feeds + social tags), footer, and navbar. The `javascript.html` partial still comes from the theme, so look there when changing script loading.
+- Partial overrides in `layouts/partials/` customize CSS compilation, metadata (`head-meta.html` adds RSS feeds + social tags), footer, navbar, and JavaScript loading (`javascript.html`).
 - Markdown rendering tweaks rely on the theme’s `_default/_markup/render-heading.html|render-link.html|render-image.html`.
 - Only shortcode currently defined is `layouts/shortcodes/reveal.html` (a `<details>`/`<summary>` accordion fed via `question=` and inner Markdown).
 
@@ -19,13 +19,13 @@
 - Keep Sass ASCII-only unless fonts require otherwise; additional partials belong in `assets/sass/` so Hugo picks them up automatically.
 
 ## JavaScript & Search
-- Browser JS entrypoint is `assets/js/app.js`. Hugo treats it as a template (see `themes/hugo-bootstrap-bare/layouts/partials/javascript.html`), so it can use Go template expressions like `{{ "index.json" | absURL }}` when needed.
+- Browser JS entrypoint is `assets/js/app.js`. Hugo treats it as a template (see `layouts/partials/javascript.html`), so it can use Go template expressions like `{{ "index.json" | absURL }}` when needed.
 - Search is entirely client-side using Lunr: the JS fetches `/index.json`, debounces input, fuzzifies the query, and renders results into `#results`. Form markup is in `layouts/_default/search.html`.
 - Search index source is `themes/hugo-bootstrap-bare/layouts/_default/index.json`, which iterates `Site.RegularPages` and emits title/tags/categories/content/href/date.
-- Vendor scripts are pulled straight from the vendored `node_modules` directory via Hugo’s asset pipeline: Bootstrap (`/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js`) and Lunr (`/node_modules/lunr/lunr.js`) are concatenated/fingerprinted before being served.
+- Vendor scripts are pulled straight from the vendored `node_modules` directory via Hugo’s asset pipeline: Bootstrap (`/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js`), Lunr (`/node_modules/lunr/lunr.js`), and Mermaid (`/node_modules/mermaid/dist/mermaid.min.js`) are concatenated/fingerprinted before being served.
 
 ## JavaScript/Sass Dependencies
-- Theme-level `themes/hugo-bootstrap-bare/assets/package.json` lists the only npm deps: `bootstrap@5.3.3` and `lunr@2.3.9`; the repo already commits the corresponding `node_modules` and `yarn.lock`, so no package install step runs during build.
+- Theme-level `themes/hugo-bootstrap-bare/assets/package.json` lists the npm deps: `bootstrap`, `lunr`, and `mermaid`; the repo already commits the corresponding `node_modules` and `yarn.lock`, so no package install step runs during build.
 - When bumping dependencies you must manually run `yarn install` **inside** `themes/hugo-bootstrap-bare/assets` and commit the refreshed `node_modules` tree so Hugo’s `resources.Get` calls continue to work offline on CI.
 
 ## Static Assets
@@ -39,7 +39,7 @@
 
 # JavaScript Dependency Status & Refresh Plan
 
-(as of 2025-Nov-28, remind the user to run a check at least once a month, and then perform it when authorized)
+(as of 2026-Feb-08, remind the user to run a check at least once a month, and then perform it when authorized)
 
 Checked from `themes/hugo-bootstrap-bare/assets` with `npm outdated` (no network errors) and found no outdated packages.
 
@@ -47,6 +47,7 @@ Checked from `themes/hugo-bootstrap-bare/assets` with `npm outdated` (no network
 |-----------|---------|--------|---------------|
 | bootstrap | 5.3.3   | 5.3.3  | No            |
 | lunr      | 2.3.9   | 2.3.9  | No            |
+| mermaid   | 11.12.2 | 11.12.2| No            |
 
 Because everything is current, no refresh is required right now. Should a new release appear, follow the plan below for each dependency that becomes outdated:
 
@@ -54,7 +55,7 @@ Because everything is current, no refresh is required right now. Should a new re
 2. **Install dependencies** within `themes/hugo-bootstrap-bare/assets` using `yarn install --check-files` (preferred to keep `yarn.lock` in sync) or `npm install`.
 3. **Verify vendored output**: ensure `themes/hugo-bootstrap-bare/assets/node_modules/...` reflects the new version (e.g. check `package.json` inside each module).
 4. **Rebuild the Hugo asset pipeline** locally via `hugo serve -D -E -F` and watch the console for SASS/JS warnings caused by upstream changes.
-5. **Smoke test search + bootstrap components** in the running site (Lunr index fetch, navbar, modals, etc.).
+5. **Smoke test search + bootstrap + mermaid components** in the running site (Lunr index fetch, navbar, modals, Mermaid diagrams, etc.).
 6. **Commit** the updated `package.json`, `yarn.lock`, and the vendored `node_modules` subtree so GitHub Pages (which does not run npm install) continues to have the bundles available.
 
 Document any breaking changes from upstream in `AGENTS.md` for the next maintainer.
