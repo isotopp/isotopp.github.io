@@ -1,4 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+#
+# /// script
+# requires-python = ">=3.13"
+# dependencies = []
+# ///
+
 """Report per-commit tree size deltas with optional SQLite caching."""
 
 from __future__ import annotations
@@ -37,7 +43,8 @@ def humanize(n: int, signed: bool = False) -> str:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Report per-commit total tree size and deltas."
+        description="Report per-commit total tree size and deltas.",
+        add_help=False,
     )
     parser.add_argument(
         "revspec",
@@ -51,9 +58,16 @@ def parse_args() -> argparse.Namespace:
         help="Walk full history (default is first-parent only).",
     )
     parser.add_argument(
+        "-h",
         "--human",
         action="store_true",
         help="Show human-readable sizes instead of raw bytes.",
+    )
+    parser.add_argument(
+        "-r",
+        "--relative-size",
+        action="store_true",
+        help="Show per-commit size relative to previous commit instead of total size.",
     )
     parser.add_argument(
         "--db",
@@ -69,6 +83,11 @@ def parse_args() -> argparse.Namespace:
         "--no-cache",
         action="store_true",
         help="Do not read/write cache.",
+    )
+    parser.add_argument(
+        "--help",
+        action="help",
+        help="Show this help message and exit.",
     )
     return parser.parse_args()
 
@@ -194,20 +213,32 @@ def main() -> int:
         conn.commit()
         conn.close()
 
-    if args.human:
-        print(f"{'DATE':10} {'DELTA':14} {'TOTAL':14} {'COMMIT':12} SUBJECT")
+    if args.relative_size:
+        if args.human:
+            print(f"{'DATE':10} {'RELATIVE':14} {'COMMIT':12} SUBJECT")
+        else:
+            print(f"{'DATE':10} {'RELATIVE(B)':>12} {'COMMIT':12} SUBJECT")
     else:
-        print(f"{'DATE':10} {'DELTA(B)':>12} {'TOTAL(B)':>12} {'COMMIT':12} SUBJECT")
+        if args.human:
+            print(f"{'DATE':10} {'DELTA':14} {'TOTAL':14} {'COMMIT':12} SUBJECT")
+        else:
+            print(f"{'DATE':10} {'DELTA(B)':>12} {'TOTAL(B)':>12} {'COMMIT':12} SUBJECT")
 
     prev = 0
     for date, subject, total, commit in results:
         delta = total - prev
         prev = total
         short = commit[:12]
-        if args.human:
-            print(f"{date:10} {humanize(delta, signed=True):14} {humanize(total):14} {short:12} {subject}")
+        if args.relative_size:
+            if args.human:
+                print(f"{date:10} {humanize(delta, signed=True):14} {short:12} {subject}")
+            else:
+                print(f"{date:10} {delta:+12d} {short:12} {subject}")
         else:
-            print(f"{date:10} {delta:+12d} {total:12d} {short:12} {subject}")
+            if args.human:
+                print(f"{date:10} {humanize(delta, signed=True):14} {humanize(total):14} {short:12} {subject}")
+            else:
+                print(f"{date:10} {delta:+12d} {total:12d} {short:12} {subject}")
     return 0
 
 
