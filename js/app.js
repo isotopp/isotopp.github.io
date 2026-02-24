@@ -5,7 +5,9 @@
 	     $results,
          $search,
          $searchForm,
-	     pagesIndex;
+	     pagesIndex,
+       currentSort = "relevance",
+       sortDirections = { relevance: "desc", date: "desc" };
 
 	 // Initialize lunrjs using our generated index file
 	 function initLunr() {
@@ -61,6 +63,7 @@
        }
 
        var results = search(query);
+       results = sortResults(results);
        renderResults(results);
        return false;
     }
@@ -70,6 +73,8 @@
 	     $results = document.getElementById("results");
 	     $search = document.getElementById("search");
        $searchForm = document.getElementById("searchForm");
+       var sortRelevance = document.getElementById("sortRelevance");
+       var sortDate = document.getElementById("sortDate");
        if (!$results || !$search || !$searchForm) {
          return false;
        }
@@ -90,6 +95,15 @@
 
        $search.onkeyup =  doSearch;
        $searchForm.onsubmit = doSearch;
+       if (sortRelevance && sortDate) {
+         sortRelevance.addEventListener("click", function () {
+           toggleSort("relevance");
+         });
+         sortDate.addEventListener("click", function () {
+           toggleSort("date");
+         });
+         updateSortLabels();
+       }
        return true;
 	 }
 
@@ -106,11 +120,76 @@
 	     // Our result:
 	     //  {title:"Page1", href:"/section/page1", ...}
 	     return lunrIndex.search(query).map(function (result) {
-		 return pagesIndex.filter(function (page) {
-		     return page.href === result.ref;
-		 })[0];
+         var page = pagesIndex.filter(function (page) {
+             return page.href === result.ref;
+         })[0];
+         if (!page) {
+           return null;
+         }
+         var enriched = Object.assign({}, page);
+         enriched.score = result.score;
+         return enriched;
+       }).filter(function (result) {
+         return result !== null;
 	     });
 	 }
+
+    function sortResults(results) {
+      if (!results || !results.length) {
+        return results;
+      }
+      if (currentSort === "date") {
+        results.sort(function (a, b) {
+          var aDate = Date.parse(a.date) || 0;
+          var bDate = Date.parse(b.date) || 0;
+          var diff = aDate - bDate;
+          return sortDirections.date === "asc" ? diff : -diff;
+        });
+      } else {
+        results.sort(function (a, b) {
+          var aScore = a.score || 0;
+          var bScore = b.score || 0;
+          var diff = aScore - bScore;
+          return sortDirections.relevance === "asc" ? diff : -diff;
+        });
+      }
+      return results;
+    }
+
+    function toggleSort(sortKey) {
+      if (currentSort === sortKey) {
+        sortDirections[sortKey] = sortDirections[sortKey] === "asc" ? "desc" : "asc";
+      } else {
+        currentSort = sortKey;
+      }
+      updateSortLabels();
+      doSearch();
+    }
+
+    function updateSortLabels() {
+      var sortRelevance = document.getElementById("sortRelevance");
+      var sortDate = document.getElementById("sortDate");
+      var sortRelevanceDir = document.getElementById("sortRelevanceDir");
+      var sortDateDir = document.getElementById("sortDateDir");
+      if (!sortRelevanceDir || !sortDateDir || !sortRelevance || !sortDate) {
+        return;
+      }
+      var rel = sortDirections.relevance === "asc" ? "▲" : "▼";
+      var date = sortDirections.date === "asc" ? "▲" : "▼";
+      sortRelevanceDir.innerText = rel;
+      sortDateDir.innerText = date;
+      if (currentSort === "relevance") {
+        sortRelevance.classList.add("is-active");
+        sortDate.classList.remove("is-active");
+        sortRelevance.setAttribute("aria-pressed", "true");
+        sortDate.setAttribute("aria-pressed", "false");
+      } else {
+        sortDate.classList.add("is-active");
+        sortRelevance.classList.remove("is-active");
+        sortDate.setAttribute("aria-pressed", "true");
+        sortRelevance.setAttribute("aria-pressed", "false");
+      }
+    }
 
 	 /**
 	  * Display the 10 first results
@@ -140,8 +219,10 @@
          // This adds the date after the post title
          var adate = document.createElement('small');
          adate.classList.add('text-secondary');
-         var postDate = new Date( result.date );
-         adate.innerText = " ("+ postDate.getFullYear()+"-"+ ('0'+postDate.getMonth()).slice(-2) +"-"+ ('0'+postDate.getDay()).slice(-2) +")";
+         var postDate = new Date(result.date);
+         var month = ('0' + (postDate.getUTCMonth() + 1)).slice(-2);
+         var day = ('0' + postDate.getUTCDate()).slice(-2);
+         adate.innerText = " (" + postDate.getUTCFullYear() + "-" + month + "-" + day + ")";
 
          li.append(ahref);
 
