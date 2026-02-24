@@ -86,7 +86,7 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external "katex"
 var external_katex_ = __webpack_require__(757);
 var external_katex_default = /*#__PURE__*/__webpack_require__.n(external_katex_);
-;// CONCATENATED MODULE: ./contrib/auto-render/splitAtDelimiters.js
+;// ./contrib/auto-render/splitAtDelimiters.js
 /* eslint no-constant-condition:0 */
 const findEndOfMath = function (delimiter, text, startIndex) {
   // Adapted from
@@ -170,7 +170,7 @@ const splitAtDelimiters = function (text, delimiters) {
 };
 
 /* harmony default export */ var auto_render_splitAtDelimiters = (splitAtDelimiters);
-;// CONCATENATED MODULE: ./contrib/auto-render/auto-render.js
+;// ./contrib/auto-render/auto-render.js
 /* eslint no-console:0 */
 
 
@@ -260,7 +260,7 @@ const renderElem = function (elem, optionsCopy) {
     } else if (childNode.nodeType === 1) {
       // Element node
       const className = ' ' + childNode.className + ' ';
-      const shouldRender = optionsCopy.ignoredTags.indexOf(childNode.nodeName.toLowerCase()) === -1 && optionsCopy.ignoredClasses.every(x => className.indexOf(' ' + x + ' ') === -1);
+      const shouldRender = !optionsCopy.ignoredTags.has(childNode.nodeName.toLowerCase()) && optionsCopy.ignoredClasses.every(x => !className.includes(' ' + x + ' '));
 
       if (shouldRender) {
         renderElem(childNode, optionsCopy);
@@ -321,7 +321,7 @@ const renderMathInElement = function (elem, options) {
     right: "\\]",
     display: true
   }];
-  optionsCopy.ignoredTags = optionsCopy.ignoredTags || ["script", "noscript", "style", "textarea", "pre", "code", "option"];
+  optionsCopy.ignoredTags = new Set(optionsCopy.ignoredTags || ["script", "noscript", "style", "textarea", "pre", "code", "option"]);
   optionsCopy.ignoredClasses = optionsCopy.ignoredClasses || [];
   optionsCopy.errorCallback = optionsCopy.errorCallback || console.error; // Enable sharing of global macros defined via `\gdef` between different
   // math elements within a single call to `renderMathInElement`.

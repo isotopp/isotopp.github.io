@@ -39,7 +39,7 @@ __webpack_require__.d(__webpack_exports__, {
   "default": function() { return /* binding */ katex_webpack; }
 });
 
-;// CONCATENATED MODULE: ./src/ParseError.js
+;// ./src/ParseError.js
 
 
 /**
@@ -124,27 +124,14 @@ class ParseError {
 
 ParseError.prototype.__proto__ = Error.prototype;
 /* harmony default export */ var src_ParseError = (ParseError);
-;// CONCATENATED MODULE: ./src/utils.js
+;// ./src/utils.js
 /**
  * This file contains a list of utility functions which are useful in other
  * files.
  */
-
-/**
- * Provide a default value if a setting is undefined
- * NOTE: Couldn't use `T` as the output type due to facebook/flow#5022.
- */
-const deflt = function (setting, defaultIfUndefined) {
-  return setting === undefined ? defaultIfUndefined : setting;
-}; // hyphenate and escape adapted from Facebook's React under Apache 2 license
-
-
+// hyphenate and escape adapted from Facebook's React under Apache 2 license
 const uppercase = /([A-Z])/g;
-
-const hyphenate = function (str) {
-  return str.replace(uppercase, "-$1").toLowerCase();
-};
-
+const hyphenate = str => str.replace(uppercase, "-$1").toLowerCase();
 const ESCAPE_LOOKUP = {
   "&": "&amp;",
   ">": "&gt;",
@@ -157,17 +144,14 @@ const ESCAPE_REGEX = /[&><"']/g;
  * Escapes text to prevent scripting attacks.
  */
 
-function utils_escape(text) {
-  return String(text).replace(ESCAPE_REGEX, match => ESCAPE_LOOKUP[match]);
-}
+const utils_escape = text => String(text).replace(ESCAPE_REGEX, match => ESCAPE_LOOKUP[match]);
 /**
  * Sometimes we want to pull out the innermost element of a group. In most
  * cases, this will just be the group itself, but when ordgroups and colors have
  * a single element, we want to pull that out.
  */
 
-
-const getBaseElem = function (group) {
+const getBaseElem = group => {
   if (group.type === "ordgroup") {
     if (group.body.length === 1) {
       return getBaseElem(group.body[0]);
@@ -186,33 +170,21 @@ const getBaseElem = function (group) {
     return group;
   }
 };
+const characterNodesTypes = new Set(["mathord", "textord", "atom"]);
 /**
  * TeXbook algorithms often reference "character boxes", which are simply groups
  * with a single character in them. To decide if something is a character box,
  * we find its innermost group, and see if it is a single character.
  */
 
-
-const isCharacterBox = function (group) {
-  const baseElem = getBaseElem(group); // These are all they types of groups which hold single characters
-
-  return baseElem.type === "mathord" || baseElem.type === "textord" || baseElem.type === "atom";
-};
-
-const assert = function (value) {
-  if (!value) {
-    throw new Error('Expected non-null, but got ' + String(value));
-  }
-
-  return value;
-};
+const isCharacterBox = group => characterNodesTypes.has(getBaseElem(group).type);
 /**
  * Return the protocol of a URL, or "_relative" if the URL does not specify a
  * protocol (and thus is relative), or `null` if URL has invalid protocol
  * (so should be outright rejected).
  */
 
-const protocolFromUrl = function (url) {
+const protocolFromUrl = url => {
   // Check for possible leading protocol.
   // https://url.spec.whatwg.org/#url-parsing strips leading whitespace
   // (U+20) or C0 control (U+00-U+1F) characters.
@@ -237,15 +209,7 @@ const protocolFromUrl = function (url) {
 
   return protocol[1].toLowerCase();
 };
-/* harmony default export */ var utils = ({
-  deflt,
-  escape: utils_escape,
-  hyphenate,
-  getBaseElem,
-  isCharacterBox,
-  protocolFromUrl
-});
-;// CONCATENATED MODULE: ./src/Settings.js
+;// ./src/Settings.js
 /* eslint no-console:0 */
 
 /**
@@ -492,7 +456,7 @@ class Settings {
 
   isTrusted(context) {
     if (context.url && !context.protocol) {
-      const protocol = utils.protocolFromUrl(context.url);
+      const protocol = protocolFromUrl(context.url);
 
       if (protocol == null) {
         return false;
@@ -506,7 +470,7 @@ class Settings {
   }
 
 }
-;// CONCATENATED MODULE: ./src/Style.js
+;// ./src/Style.js
 /**
  * This file contains information and classes for the various kinds of styles
  * used in TeX. It provides a generic `Style` class, which holds information
@@ -617,7 +581,7 @@ const Style_text = [D, Dc, T, Tc, T, Tc, T, Tc]; // We only export some of the s
   SCRIPT: styles[S],
   SCRIPTSCRIPT: styles[SS]
 });
-;// CONCATENATED MODULE: ./src/unicodeScripts.js
+;// ./src/unicodeScripts.js
 /*
  * This file defines the Unicode scripts and script families that we
  * support. To add new scripts or families, just add a new entry to the
@@ -732,7 +696,7 @@ function supportedCodepoint(codepoint) {
 
   return false;
 }
-;// CONCATENATED MODULE: ./src/svgGeometry.js
+;// ./src/svgGeometry.js
 /**
  * This file provides support to domTree.js and delimiter.js.
  * It's a storehouse of path geometry for SVG images.
@@ -979,7 +943,7 @@ const tallDelim = function (label, midHeight) {
       throw new Error("Unknown stretchy delimiter.");
   }
 };
-;// CONCATENATED MODULE: ./src/fontMetricsData.js
+;// ./src/fontMetricsData.js
 // This file is GENERATED by buildMetrics.sh. DO NOT MODIFY.
 /* harmony default export */ var fontMetricsData = ({
   "AMS-Regular": {
@@ -3057,7 +3021,7 @@ const tallDelim = function (label, midHeight) {
     "9251": [0.11111, 0.21944, 0, 0, 0.525]
   }
 });
-;// CONCATENATED MODULE: ./src/fontMetrics.js
+;// ./src/fontMetrics.js
 
 
 /**
@@ -3340,7 +3304,7 @@ function getGlobalMetrics(size) {
 
   return fontMetricsBySizeIndex[sizeIndex];
 }
-;// CONCATENATED MODULE: ./src/Options.js
+;// ./src/Options.js
 /**
  * This file contains information about the options that the Parser carries
  * around with it while parsing. Data is held in an `Options` object, and when
@@ -3656,7 +3620,7 @@ class Options {
 
 Options.BASESIZE = 6;
 /* harmony default export */ var src_Options = (Options);
-;// CONCATENATED MODULE: ./src/units.js
+;// ./src/units.js
 /**
  * This file does conversion between units.  In particular, it provides
  * calculateSize to convert other units into ems.
@@ -3773,7 +3737,7 @@ const calculateSize = function (sizeValue, options) {
 const makeEm = function (n) {
   return +n.toFixed(4) + "em";
 };
-;// CONCATENATED MODULE: ./src/domTree.js
+;// ./src/domTree.js
 /**
  * These objects store the data about the DOM nodes we create, as well as some
  * extra data. They can then be transformed into real DOM nodes with the
@@ -3871,19 +3835,19 @@ const toMarkup = function (tagName) {
   let markup = "<" + tagName; // Add the class
 
   if (this.classes.length) {
-    markup += " class=\"" + utils.escape(createClass(this.classes)) + "\"";
+    markup += " class=\"" + utils_escape(createClass(this.classes)) + "\"";
   }
 
   let styles = ""; // Add the styles, after hyphenation
 
   for (const style in this.style) {
     if (this.style.hasOwnProperty(style)) {
-      styles += utils.hyphenate(style) + ":" + this.style[style] + ";";
+      styles += hyphenate(style) + ":" + this.style[style] + ";";
     }
   }
 
   if (styles) {
-    markup += " style=\"" + utils.escape(styles) + "\"";
+    markup += " style=\"" + utils_escape(styles) + "\"";
   } // Add the attributes
 
 
@@ -3893,7 +3857,7 @@ const toMarkup = function (tagName) {
         throw new src_ParseError("Invalid attribute name '" + attr + "'");
       }
 
-      markup += " " + attr + "=\"" + utils.escape(this.attributes[attr]) + "\"";
+      markup += " " + attr + "=\"" + utils_escape(this.attributes[attr]) + "\"";
     }
   }
 
@@ -4036,18 +4000,18 @@ class Img {
   }
 
   toMarkup() {
-    let markup = "<img src=\"" + utils.escape(this.src) + "\"" + (" alt=\"" + utils.escape(this.alt) + "\""); // Add the styles, after hyphenation
+    let markup = "<img src=\"" + utils_escape(this.src) + "\"" + (" alt=\"" + utils_escape(this.alt) + "\""); // Add the styles, after hyphenation
 
     let styles = "";
 
     for (const style in this.style) {
       if (this.style.hasOwnProperty(style)) {
-        styles += utils.hyphenate(style) + ":" + this.style[style] + ";";
+        styles += hyphenate(style) + ":" + this.style[style] + ";";
       }
     }
 
     if (styles) {
-      markup += " style=\"" + utils.escape(styles) + "\"";
+      markup += " style=\"" + utils_escape(styles) + "\"";
     }
 
     markup += "'/>";
@@ -4159,7 +4123,7 @@ class SymbolNode {
     if (this.classes.length) {
       needsSpan = true;
       markup += " class=\"";
-      markup += utils.escape(createClass(this.classes));
+      markup += utils_escape(createClass(this.classes));
       markup += "\"";
     }
 
@@ -4171,16 +4135,16 @@ class SymbolNode {
 
     for (const style in this.style) {
       if (this.style.hasOwnProperty(style)) {
-        styles += utils.hyphenate(style) + ":" + this.style[style] + ";";
+        styles += hyphenate(style) + ":" + this.style[style] + ";";
       }
     }
 
     if (styles) {
       needsSpan = true;
-      markup += " style=\"" + utils.escape(styles) + "\"";
+      markup += " style=\"" + utils_escape(styles) + "\"";
     }
 
-    const escaped = utils.escape(this.text);
+    const escaped = utils_escape(this.text);
 
     if (needsSpan) {
       markup += ">";
@@ -4227,7 +4191,7 @@ class SvgNode {
 
     for (const attr in this.attributes) {
       if (Object.prototype.hasOwnProperty.call(this.attributes, attr)) {
-        markup += " " + attr + "=\"" + utils.escape(this.attributes[attr]) + "\"";
+        markup += " " + attr + "=\"" + utils_escape(this.attributes[attr]) + "\"";
       }
     }
 
@@ -4265,9 +4229,9 @@ class PathNode {
 
   toMarkup() {
     if (this.alternate) {
-      return "<path d=\"" + utils.escape(this.alternate) + "\"/>";
+      return "<path d=\"" + utils_escape(this.alternate) + "\"/>";
     } else {
-      return "<path d=\"" + utils.escape(path[this.pathName]) + "\"/>";
+      return "<path d=\"" + utils_escape(path[this.pathName]) + "\"/>";
     }
   }
 
@@ -4296,7 +4260,7 @@ class LineNode {
 
     for (const attr in this.attributes) {
       if (Object.prototype.hasOwnProperty.call(this.attributes, attr)) {
-        markup += " " + attr + "=\"" + utils.escape(this.attributes[attr]) + "\"";
+        markup += " " + attr + "=\"" + utils_escape(this.attributes[attr]) + "\"";
       }
     }
 
@@ -4319,7 +4283,7 @@ function assertSpan(group) {
     throw new Error("Expected span<HtmlDomNode> but got " + String(group) + ".");
   }
 }
-;// CONCATENATED MODULE: ./src/symbols.js
+;// ./src/symbols.js
 /**
  * This file holds a list of all no-argument functions and single-character
  * symbols (like 'a' or ';').
@@ -5197,7 +5161,7 @@ for (let i = 0; i < extraLatin.length; i++) {
   defineSymbol(math, main, mathord, ch, ch);
   defineSymbol(symbols_text, main, textord, ch, ch);
 }
-;// CONCATENATED MODULE: ./src/wide-character.js
+;// ./src/wide-character.js
 /**
  * This file provides support for Unicode range U+1D400 to U+1D7FF,
  * Mathematical Alphanumeric Symbols.
@@ -5281,7 +5245,7 @@ const wideCharacterFont = function (wideChar, mode) {
     throw new src_ParseError("Unsupported character: " + wideChar);
   }
 };
-;// CONCATENATED MODULE: ./src/tree.js
+;// ./src/tree.js
 // To ensure that all nodes have compatible signatures for these methods.
 
 /**
@@ -5349,7 +5313,7 @@ class DocumentFragment {
   }
 
 }
-;// CONCATENATED MODULE: ./src/buildCommon.js
+;// ./src/buildCommon.js
 /* eslint no-console:0 */
 
 /**
@@ -5432,7 +5396,6 @@ const makeSymbol = function (value, fontName, mode, options, classes) {
  * Used for rel, bin, open, close, inner, and punct.
  */
 
-
 const mathsym = function (value, mode, options, classes) {
   if (classes === void 0) {
     classes = [];
@@ -5459,7 +5422,6 @@ const mathsym = function (value, mode, options, classes) {
  * depending on the symbol.  Use this function instead of fontMap for font
  * "boldsymbol".
  */
-
 
 const boldsymbol = function (value, mode, options, classes, type) {
   if (type !== "textord" && lookupSymbol(value, "Math-BoldItalic", mode).metrics) {
@@ -5552,12 +5514,12 @@ const makeOrd = function (group, options, type) {
 };
 /**
  * Returns true if subsequent symbolNodes have the same classes, skew, maxFont,
- * and styles.
+ * and styles. For mathnormal text, the left node must also have zero italic
+ * correction so we don't lose spacing between combined glyphs.
  */
 
-
 const canCombine = (prev, next) => {
-  if (createClass(prev.classes) !== createClass(next.classes) || prev.skew !== next.skew || prev.maxFontSize !== next.maxFontSize) {
+  if (createClass(prev.classes) !== createClass(next.classes) || prev.skew !== next.skew || prev.maxFontSize !== next.maxFontSize || prev.italic !== 0 && prev.hasClass("mathnormal")) {
     return false;
   } // If prev and next both are just "mbin"s or "mord"s we don't combine them
   // so that the proper spacing can be preserved.
@@ -5616,7 +5578,6 @@ const tryCombineChars = chars => {
  * children.
  */
 
-
 const sizeElementFromChildren = function (elem) {
   let height = 0;
   let depth = 0;
@@ -5659,9 +5620,7 @@ const makeSpan = function (classes, children, options, style) {
 }; // SVG one is simpler -- doesn't require height, depth, max-font setting.
 // This is also a separate method for typesafety.
 
-
 const makeSvgSpan = (classes, children, options, style) => new Span(classes, children, options, style);
-
 const makeLineSpan = function (className, options, thickness) {
   const line = makeSpan([className], [], options);
   line.height = Math.max(thickness || options.fontMetrics().defaultRuleThickness, options.minRuleThickness);
@@ -5674,7 +5633,6 @@ const makeLineSpan = function (className, options, thickness) {
  * and options.
  */
 
-
 const makeAnchor = function (href, classes, children, options) {
   const anchor = new Anchor(href, classes, children, options);
   sizeElementFromChildren(anchor);
@@ -5683,7 +5641,6 @@ const makeAnchor = function (href, classes, children, options) {
 /**
  * Makes a document fragment with the given list of children.
  */
-
 
 const makeFragment = function (children) {
   const fragment = new DocumentFragment(children);
@@ -5695,7 +5652,6 @@ const makeFragment = function (children) {
  * and styles
  */
 
-
 const wrapFragment = function (group, options) {
   if (group instanceof DocumentFragment) {
     return makeSpan([], [group], options);
@@ -5703,7 +5659,6 @@ const wrapFragment = function (group, options) {
 
   return group;
 }; // These are exact object types to catch typos in the names of the optional fields.
-
 
 // Computes the updated `children` list and the overall depth.
 //
@@ -5877,7 +5832,6 @@ const makeVList = function (params, options) {
 // either a vertical or horizontal list. In KaTeX, at least for now, it's
 // static space between elements in a horizontal layout.
 
-
 const makeGlue = (measurement, options) => {
   // Make an empty span for the space
   const rule = makeSpan(["mspace"], [], options);
@@ -5885,7 +5839,6 @@ const makeGlue = (measurement, options) => {
   rule.style.marginRight = makeEm(size);
   return rule;
 }; // Takes font options, and returns the appropriate fontLookup name
-
 
 const retrieveTextFontName = function (fontFamily, fontWeight, fontShape) {
   let baseFontName = "";
@@ -5999,7 +5952,6 @@ const svgData = {
   oiiintSize1: ["oiiintSize1", 1.304, 0.499],
   oiiintSize2: ["oiiintSize2", 1.98, 0.659]
 };
-
 const staticSvg = function (value, options) {
   // Create a span with inline SVG for the element.
   const [pathName, width, height] = svgData[value];
@@ -6018,25 +5970,7 @@ const staticSvg = function (value, options) {
   span.style.width = makeEm(width);
   return span;
 };
-
-/* harmony default export */ var buildCommon = ({
-  fontMap,
-  makeSymbol,
-  mathsym,
-  makeSpan,
-  makeSvgSpan,
-  makeLineSpan,
-  makeAnchor,
-  makeFragment,
-  wrapFragment,
-  makeVList,
-  makeOrd,
-  makeGlue,
-  staticSvg,
-  svgData,
-  tryCombineChars
-});
-;// CONCATENATED MODULE: ./src/spacingData.js
+;// ./src/spacingData.js
 /**
  * Describes spaces between different classes of atoms.
  */
@@ -6129,7 +6063,7 @@ const tightSpacings = {
     mop: thinspace
   }
 };
-;// CONCATENATED MODULE: ./src/defineFunction.js
+;// ./src/defineFunction.js
 /** Context provided to function handlers for error messages. */
 // Note: reverse the order of the return type union will cause a flow error.
 // See https://github.com/facebook/flow/issues/3663.
@@ -6235,7 +6169,7 @@ const normalizeArgument = function (arg) {
 const ordargument = function (arg) {
   return arg.type === "ordgroup" ? arg.body : [arg];
 };
-;// CONCATENATED MODULE: ./src/buildHTML.js
+;// ./src/buildHTML.js
 /**
  * This file does the main work of building a domTree structure from a parse
  * tree. The entry point is the `buildHTML` function, which takes a parse tree.
@@ -6250,12 +6184,11 @@ const ordargument = function (arg) {
 
 
 
-const buildHTML_makeSpan = buildCommon.makeSpan; // Binary atoms (first class `mbin`) change into ordinary atoms (`mord`)
+// Binary atoms (first class `mbin`) change into ordinary atoms (`mord`)
 // depending on their surroundings. See TeXbook pg. 442-446, Rules 5 and 6,
 // and the text before Rule 19.
-
-const binLeftCanceller = ["leftmost", "mbin", "mopen", "mrel", "mop", "mpunct"];
-const binRightCanceller = ["rightmost", "mrel", "mclose", "mpunct"];
+const binLeftCanceller = new Set(["leftmost", "mbin", "mopen", "mrel", "mop", "mpunct"]);
+const binRightCanceller = new Set(["rightmost", "mrel", "mclose", "mpunct"]);
 const styleMap = {
   "display": src_Style.DISPLAY,
   "text": src_Style.TEXT,
@@ -6301,7 +6234,7 @@ const buildExpression = function (expression, options, isRealGroup, surrounding)
   } // Combine consecutive domTree.symbolNodes into a single symbolNode.
 
 
-  buildCommon.tryCombineChars(groups); // If `expression` is a partial group, let the parent handle spacings
+  tryCombineChars(groups); // If `expression` is a partial group, let the parent handle spacings
   // to avoid processing groups multiple times.
 
   if (!isRealGroup) {
@@ -6323,8 +6256,8 @@ const buildExpression = function (expression, options, isRealGroup, surrounding)
   // or "rightmost", respectively, is used to indicate it.
 
 
-  const dummyPrev = buildHTML_makeSpan([surrounding[0] || "leftmost"], [], options);
-  const dummyNext = buildHTML_makeSpan([surrounding[1] || "rightmost"], [], options); // TODO: These code assumes that a node's math class is the first element
+  const dummyPrev = makeSpan([surrounding[0] || "leftmost"], [], options);
+  const dummyNext = makeSpan([surrounding[1] || "rightmost"], [], options); // TODO: These code assumes that a node's math class is the first element
   // of its `classes` array. A later cleanup should ensure this, for
   // instance by changing the signature of `makeSpan`.
   // Before determining what spaces to insert, perform bin cancellation.
@@ -6335,9 +6268,9 @@ const buildExpression = function (expression, options, isRealGroup, surrounding)
     const prevType = prev.classes[0];
     const type = node.classes[0];
 
-    if (prevType === "mbin" && binRightCanceller.includes(type)) {
+    if (prevType === "mbin" && binRightCanceller.has(type)) {
       prev.classes[0] = "mord";
-    } else if (type === "mbin" && binLeftCanceller.includes(prevType)) {
+    } else if (type === "mbin" && binLeftCanceller.has(prevType)) {
       node.classes[0] = "mord";
     }
   }, {
@@ -6351,7 +6284,7 @@ const buildExpression = function (expression, options, isRealGroup, surrounding)
 
     if (space) {
       // Insert glue (spacing) after the `prev`.
-      return buildCommon.makeGlue(space, glueOptions);
+      return makeGlue(space, glueOptions);
     }
   }, {
     node: dummyPrev
@@ -6403,7 +6336,7 @@ const traverseNonSpaceNodes = function (nodes, callback, prev, next, isRoot) {
     if (nonspace) {
       prev.node = node;
     } else if (isRoot && node.hasClass("newline")) {
-      prev.node = buildHTML_makeSpan(["leftmost"]); // treat like beginning of line
+      prev.node = makeSpan(["leftmost"]); // treat like beginning of line
     }
 
     prev.insertAfter = (index => n => {
@@ -6462,7 +6395,7 @@ const getTypeOfDomTree = function (node, side) {
 };
 const makeNullDelimiter = function (options, classes) {
   const moreClasses = ["nulldelimiter"].concat(options.baseSizingClasses());
-  return buildHTML_makeSpan(classes.concat(moreClasses));
+  return makeSpan(classes.concat(moreClasses));
 };
 /**
  * buildGroup is the function that takes a group and calls the correct groupType
@@ -6472,7 +6405,7 @@ const makeNullDelimiter = function (options, classes) {
 
 const buildGroup = function (group, options, baseOptions) {
   if (!group) {
-    return buildHTML_makeSpan();
+    return makeSpan();
   }
 
   if (_htmlGroupBuilders[group.type]) {
@@ -6482,7 +6415,7 @@ const buildGroup = function (group, options, baseOptions) {
     // for that size difference.
 
     if (baseOptions && options.size !== baseOptions.size) {
-      groupNode = buildHTML_makeSpan(options.sizingClasses(baseOptions), [groupNode], options);
+      groupNode = makeSpan(options.sizingClasses(baseOptions), [groupNode], options);
       const multiplier = options.sizeMultiplier / baseOptions.sizeMultiplier;
       groupNode.height *= multiplier;
       groupNode.depth *= multiplier;
@@ -6502,11 +6435,11 @@ const buildGroup = function (group, options, baseOptions) {
 
 function buildHTMLUnbreakable(children, options) {
   // Compute height and depth of this chunk.
-  const body = buildHTML_makeSpan(["base"], children, options); // Add strut, which ensures that the top of the HTML element falls at
+  const body = makeSpan(["base"], children, options); // Add strut, which ensures that the top of the HTML element falls at
   // the height of the expression, and the bottom of the HTML element
   // falls at the depth of the expression.
 
-  const strut = buildHTML_makeSpan(["strut"]);
+  const strut = makeSpan(["strut"]);
   strut.style.height = makeEm(body.height + body.depth);
 
   if (body.depth) {
@@ -6600,7 +6533,7 @@ function buildHTML(tree, options) {
     children.push(eqnNum);
   }
 
-  const htmlNode = buildHTML_makeSpan(["katex-html"], children);
+  const htmlNode = makeSpan(["katex-html"], children);
   htmlNode.setAttribute("aria-hidden", "true"); // Adjust the strut of the tag to be the maximum height of all children
   // (the height of the enclosing htmlNode) for proper vertical alignment.
 
@@ -6615,7 +6548,7 @@ function buildHTML(tree, options) {
 
   return htmlNode;
 }
-;// CONCATENATED MODULE: ./src/mathMLTree.js
+;// ./src/mathMLTree.js
 /**
  * These objects store data about MathML nodes. This is the MathML equivalent
  * of the types in domTree.js. Since MathML handles its own rendering, and
@@ -6713,13 +6646,13 @@ class MathNode {
     for (const attr in this.attributes) {
       if (Object.prototype.hasOwnProperty.call(this.attributes, attr)) {
         markup += " " + attr + "=\"";
-        markup += utils.escape(this.attributes[attr]);
+        markup += utils_escape(this.attributes[attr]);
         markup += "\"";
       }
     }
 
     if (this.classes.length > 0) {
-      markup += " class =\"" + utils.escape(createClass(this.classes)) + "\"";
+      markup += " class =\"" + utils_escape(createClass(this.classes)) + "\"";
     }
 
     markup += ">";
@@ -6765,7 +6698,7 @@ class TextNode {
 
 
   toMarkup() {
-    return utils.escape(this.toText());
+    return utils_escape(this.toText());
   }
   /**
    * Converts the text node into a string
@@ -6855,14 +6788,7 @@ class SpaceNode {
   }
 
 }
-
-/* harmony default export */ var mathMLTree = ({
-  MathNode,
-  TextNode,
-  SpaceNode,
-  newDocumentFragment
-});
-;// CONCATENATED MODULE: ./src/buildMathML.js
+;// ./src/buildMathML.js
 /**
  * This file converts a parse tree into a corresponding MathML tree. The main
  * entry point is the `buildMathML` function, which takes a parse tree from the
@@ -6874,18 +6800,19 @@ class SpaceNode {
 
 
 
-
-
+const noVariantSymbols = new Set(["\\imath", "\\jmath"]);
+const rowLikeTypes = new Set(["mrow", "mtable"]);
 /**
  * Takes a symbol and converts it into a MathML text node after performing
  * optional replacement from symbols.js.
  */
+
 const makeText = function (text, mode, options) {
   if (src_symbols[mode][text] && src_symbols[mode][text].replace && text.charCodeAt(0) !== 0xD835 && !(ligatures.hasOwnProperty(text) && options && (options.fontFamily && options.fontFamily.slice(4, 6) === "tt" || options.font && options.font.slice(4, 6) === "tt"))) {
     text = src_symbols[mode][text].replace;
   }
 
-  return new mathMLTree.TextNode(text);
+  return new TextNode(text);
 };
 /**
  * Wrap the given array of nodes in an <mrow> node if needed, i.e.,
@@ -6896,7 +6823,7 @@ const makeRow = function (body) {
   if (body.length === 1) {
     return body[0];
   } else {
-    return new mathMLTree.MathNode("mrow", body);
+    return new MathNode("mrow", body);
   }
 };
 /**
@@ -6958,7 +6885,7 @@ const getVariant = function (group, options) {
 
   let text = group.text;
 
-  if (["\\imath", "\\jmath"].includes(text)) {
+  if (noVariantSymbols.has(text)) {
     return null;
   }
 
@@ -6966,10 +6893,10 @@ const getVariant = function (group, options) {
     text = src_symbols[mode][text].replace;
   }
 
-  const fontName = buildCommon.fontMap[font].fontName;
+  const fontName = fontMap[font].fontName;
 
   if (getCharacterMetrics(text, fontName, mode)) {
-    return buildCommon.fontMap[font].variant;
+    return fontMap[font].variant;
   }
 
   return null;
@@ -7081,7 +7008,7 @@ const buildExpressionRow = function (expression, options, isOrdgroup) {
 
 const buildMathML_buildGroup = function (group, options) {
   if (!group) {
-    return new mathMLTree.MathNode("mrow");
+    return new MathNode("mrow");
   }
 
   if (_mathmlGroupBuilders[group.type]) {
@@ -7113,17 +7040,17 @@ function buildMathML(tree, texExpression, options, isDisplayMode, forMathmlOnly)
 
   let wrapper;
 
-  if (expression.length === 1 && expression[0] instanceof MathNode && ["mrow", "mtable"].includes(expression[0].type)) {
+  if (expression.length === 1 && expression[0] instanceof MathNode && rowLikeTypes.has(expression[0].type)) {
     wrapper = expression[0];
   } else {
-    wrapper = new mathMLTree.MathNode("mrow", expression);
+    wrapper = new MathNode("mrow", expression);
   } // Build a TeX annotation of the source
 
 
-  const annotation = new mathMLTree.MathNode("annotation", [new mathMLTree.TextNode(texExpression)]);
+  const annotation = new MathNode("annotation", [new TextNode(texExpression)]);
   annotation.setAttribute("encoding", "application/x-tex");
-  const semantics = new mathMLTree.MathNode("semantics", [wrapper, annotation]);
-  const math = new mathMLTree.MathNode("math", [semantics]);
+  const semantics = new MathNode("semantics", [wrapper, annotation]);
+  const math = new MathNode("math", [semantics]);
   math.setAttribute("xmlns", "http://www.w3.org/1998/Math/MathML");
 
   if (isDisplayMode) {
@@ -7136,9 +7063,9 @@ function buildMathML(tree, texExpression, options, isDisplayMode, forMathmlOnly)
 
   const wrapperClass = forMathmlOnly ? "katex" : "katex-mathml"; // $FlowFixMe
 
-  return buildCommon.makeSpan([wrapperClass], [math]);
+  return makeSpan([wrapperClass], [math]);
 }
-;// CONCATENATED MODULE: ./src/buildTree.js
+;// ./src/buildTree.js
 
 
 
@@ -7166,7 +7093,7 @@ const displayWrap = function (node, settings) {
       classes.push("fleqn");
     }
 
-    node = buildCommon.makeSpan(classes, [node]);
+    node = makeSpan(classes, [node]);
   }
 
   return node;
@@ -7180,11 +7107,11 @@ const buildTree = function (tree, expression, settings) {
     return buildMathML(tree, expression, options, settings.displayMode, true);
   } else if (settings.output === "html") {
     const htmlNode = buildHTML(tree, options);
-    katexNode = buildCommon.makeSpan(["katex"], [htmlNode]);
+    katexNode = makeSpan(["katex"], [htmlNode]);
   } else {
     const mathMLNode = buildMathML(tree, expression, options, settings.displayMode, false);
     const htmlNode = buildHTML(tree, options);
-    katexNode = buildCommon.makeSpan(["katex"], [mathMLNode, htmlNode]);
+    katexNode = makeSpan(["katex"], [mathMLNode, htmlNode]);
   }
 
   return displayWrap(katexNode, settings);
@@ -7192,11 +7119,11 @@ const buildTree = function (tree, expression, settings) {
 const buildHTMLTree = function (tree, expression, settings) {
   const options = optionsFromSettings(settings);
   const htmlNode = buildHTML(tree, options);
-  const katexNode = buildCommon.makeSpan(["katex"], [htmlNode]);
+  const katexNode = makeSpan(["katex"], [htmlNode]);
   return displayWrap(katexNode, settings);
 };
 /* harmony default export */ var src_buildTree = ((/* unused pure expression or super */ null && (buildTree)));
-;// CONCATENATED MODULE: ./src/stretchy.js
+;// ./src/stretchy.js
 /**
  * This file provides support to buildMathML.js and buildHTML.js
  * for stretchy wide elements rendered from SVG files
@@ -7252,9 +7179,8 @@ const stretchyCodePoint = {
   "\\cdleftarrow": "\u2190",
   "\\cdlongequal": "="
 };
-
-const mathMLnode = function (label) {
-  const node = new mathMLTree.MathNode("mo", [new mathMLTree.TextNode(stretchyCodePoint[label.replace(/^\\/, '')])]);
+const stretchyMathML = function (label) {
+  const node = new MathNode("mo", [new TextNode(stretchyCodePoint[label.replace(/^\\/, '')])]);
   node.setAttribute("stretchy", "true");
   return node;
 }; // Many of the KaTeX SVG images have been adapted from glyphs in KaTeX fonts.
@@ -7293,7 +7219,6 @@ const mathMLnode = function (label) {
 // from the KaTeX Main font. The scaling factor is 1000.
 // That is, inside the font, that arrowhead is 522 units tall, which
 // corresponds to 0.522 em inside the document.
-
 
 const katexImagesData = {
   //   path(s), minWidth, height, align
@@ -7343,30 +7268,22 @@ const katexImagesData = {
   xrightequilibrium: [["baraboveshortleftharpoon", "rightharpoonaboveshortbar"], 1.75, 716],
   xleftequilibrium: [["shortbaraboveleftharpoon", "shortrightharpoonabovebar"], 1.75, 716]
 };
-
-const groupLength = function (arg) {
-  if (arg.type === "ordgroup") {
-    return arg.body.length;
-  } else {
-    return 1;
-  }
-};
-
-const svgSpan = function (group, options) {
+const wideAccentLabels = new Set(["widehat", "widecheck", "widetilde", "utilde"]);
+const stretchySvg = function (group, options) {
   // Create a span with inline SVG for the element.
   function buildSvgSpan_() {
     let viewBoxWidth = 400000; // default
 
     const label = group.label.slice(1);
 
-    if (["widehat", "widecheck", "widetilde", "utilde"].includes(label)) {
+    if (wideAccentLabels.has(label)) {
       // Each type in the `if` statement corresponds to one of the ParseNode
       // types below. This narrowing is required to access `grp.base`.
       // $FlowFixMe
       const grp = group; // There are four SVG images available for each function.
       // Choose a taller image when there are more characters.
 
-      const numChars = groupLength(grp.base);
+      const numChars = grp.base.type === "ordgroup" ? grp.base.body.length : 1;
       let viewBoxHeight;
       let pathName;
       let height;
@@ -7407,7 +7324,7 @@ const svgSpan = function (group, options) {
         "preserveAspectRatio": "none"
       });
       return {
-        span: buildCommon.makeSvgSpan([], [svgNode], options),
+        span: makeSvgSpan([], [svgNode], options),
         minWidth: 0,
         height
       };
@@ -7443,7 +7360,7 @@ const svgSpan = function (group, options) {
           "viewBox": "0 0 " + viewBoxWidth + " " + viewBoxHeight,
           "preserveAspectRatio": aligns[i] + " slice"
         });
-        const span = buildCommon.makeSvgSpan([widthClasses[i]], [svgNode], options);
+        const span = makeSvgSpan([widthClasses[i]], [svgNode], options);
 
         if (numSvgChildren === 1) {
           return {
@@ -7458,7 +7375,7 @@ const svgSpan = function (group, options) {
       }
 
       return {
-        span: buildCommon.makeSpan(["stretchy"], spans, options),
+        span: makeSpan(["stretchy"], spans, options),
         minWidth,
         height
       };
@@ -7482,14 +7399,13 @@ const svgSpan = function (group, options) {
 
   return span;
 };
-
-const encloseSpan = function (inner, label, topPad, bottomPad, options) {
+const stretchyEnclose = function (inner, label, topPad, bottomPad, options) {
   // Return an image span for \cancel, \bcancel, \xcancel, \fbox, or \angl
   let img;
   const totalHeight = inner.height + inner.depth + topPad + bottomPad;
 
   if (/fbox|color|angl/.test(label)) {
-    img = buildCommon.makeSpan(["stretchy", label], [], options);
+    img = makeSpan(["stretchy", label], [], options);
 
     if (label === "fbox") {
       const color = options.color && options.getColor();
@@ -7528,20 +7444,14 @@ const encloseSpan = function (inner, label, topPad, bottomPad, options) {
       "width": "100%",
       "height": makeEm(totalHeight)
     });
-    img = buildCommon.makeSvgSpan([], [svgNode], options);
+    img = makeSvgSpan([], [svgNode], options);
   }
 
   img.height = totalHeight;
   img.style.height = makeEm(totalHeight);
   return img;
 };
-
-/* harmony default export */ var stretchy = ({
-  encloseSpan,
-  mathMLnode,
-  svgSpan
-});
-;// CONCATENATED MODULE: ./src/parseNode.js
+;// ./src/parseNode.js
 
 
 /**
@@ -7583,7 +7493,7 @@ function checkSymbolNodeType(node) {
 
   return null;
 }
-;// CONCATENATED MODULE: ./src/functions/accent.js
+;// ./src/functions/accent.js
 
 
 
@@ -7629,7 +7539,7 @@ const htmlBuilder = (grp, options) => {
 
   const body = buildGroup(base, options.havingCrampedStyle()); // Does the accent need to shift for the skew of a character?
 
-  const mustShift = group.isShifty && utils.isCharacterBox(base); // Calculate the skew of the accent. This is based on the line "If the
+  const mustShift = group.isShifty && isCharacterBox(base); // Calculate the skew of the accent. This is based on the line "If the
   // nucleus is not a single character, let s = 0; otherwise set s to the
   // kern amount for the nucleus followed by the \skewchar of its font."
   // Note that our skew metrics are just the kern between each character
@@ -7640,7 +7550,7 @@ const htmlBuilder = (grp, options) => {
   if (mustShift) {
     // If the base is a character box, then we want the skew of the
     // innermost character. To do that, we find the innermost character:
-    const baseChar = utils.getBaseElem(base); // Then, we render its group to get the symbol inside it
+    const baseChar = getBaseElem(base); // Then, we render its group to get the symbol inside it
 
     const baseGroup = buildGroup(baseChar, options.havingCrampedStyle()); // Finally, we pull the skew off of the symbol.
 
@@ -7666,10 +7576,10 @@ const htmlBuilder = (grp, options) => {
       // render combining characters when not preceded by a character.
       // So now we use an SVG.
       // If Safari reforms, we should consider reverting to the glyph.
-      accent = buildCommon.staticSvg("vec", options);
-      width = buildCommon.svgData.vec[1];
+      accent = staticSvg("vec", options);
+      width = svgData.vec[1];
     } else {
-      accent = buildCommon.makeOrd({
+      accent = makeOrd({
         mode: group.mode,
         text: group.label
       }, options, "textord");
@@ -7684,7 +7594,7 @@ const htmlBuilder = (grp, options) => {
       }
     }
 
-    accentBody = buildCommon.makeSpan(["accent-body"], [accent]); // "Full" accents expand the width of the resulting symbol to be
+    accentBody = makeSpan(["accent-body"], [accent]); // "Full" accents expand the width of the resulting symbol to be
     // at least the width of the accent, and overlap directly onto the
     // character without any vertical offset.
 
@@ -7712,7 +7622,7 @@ const htmlBuilder = (grp, options) => {
       accentBody.style.top = ".2em";
     }
 
-    accentBody = buildCommon.makeVList({
+    accentBody = makeVList({
       positionType: "firstBaseline",
       children: [{
         type: "elem",
@@ -7726,8 +7636,8 @@ const htmlBuilder = (grp, options) => {
       }]
     }, options);
   } else {
-    accentBody = stretchy.svgSpan(group, options);
-    accentBody = buildCommon.makeVList({
+    accentBody = stretchySvg(group, options);
+    accentBody = makeVList({
       positionType: "firstBaseline",
       children: [{
         type: "elem",
@@ -7744,7 +7654,7 @@ const htmlBuilder = (grp, options) => {
     }, options);
   }
 
-  const accentWrap = buildCommon.makeSpan(["mord", "accent"], [accentBody], options);
+  const accentWrap = makeSpan(["mord", "accent"], [accentBody], options);
 
   if (supSubGroup) {
     // Here, we replace the "base" child of the supsub with our newly
@@ -7762,8 +7672,8 @@ const htmlBuilder = (grp, options) => {
 };
 
 const mathmlBuilder = (group, options) => {
-  const accentNode = group.isStretchy ? stretchy.mathMLnode(group.label) : new mathMLTree.MathNode("mo", [makeText(group.label, group.mode)]);
-  const node = new mathMLTree.MathNode("mover", [buildMathML_buildGroup(group.base, options), accentNode]);
+  const accentNode = group.isStretchy ? stretchyMathML(group.label) : new MathNode("mo", [makeText(group.label, group.mode)]);
+  const node = new MathNode("mover", [buildMathML_buildGroup(group.base, options), accentNode]);
   node.setAttribute("accent", "true");
   return node;
 };
@@ -7824,7 +7734,7 @@ defineFunction({
   htmlBuilder,
   mathmlBuilder
 });
-;// CONCATENATED MODULE: ./src/functions/accentunder.js
+;// ./src/functions/accentunder.js
 // Horizontal overlap functions
 
 
@@ -7854,10 +7764,10 @@ defineFunction({
   htmlBuilder: (group, options) => {
     // Treat under accents much like underlines.
     const innerGroup = buildGroup(group.base, options);
-    const accentBody = stretchy.svgSpan(group, options);
+    const accentBody = stretchySvg(group, options);
     const kern = group.label === "\\utilde" ? 0.12 : 0; // Generate the vlist, with the appropriate kerns
 
-    const vlist = buildCommon.makeVList({
+    const vlist = makeVList({
       positionType: "top",
       positionData: innerGroup.height,
       children: [{
@@ -7872,16 +7782,16 @@ defineFunction({
         elem: innerGroup
       }]
     }, options);
-    return buildCommon.makeSpan(["mord", "accentunder"], [vlist], options);
+    return makeSpan(["mord", "accentunder"], [vlist], options);
   },
   mathmlBuilder: (group, options) => {
-    const accentNode = stretchy.mathMLnode(group.label);
-    const node = new mathMLTree.MathNode("munder", [buildMathML_buildGroup(group.base, options), accentNode]);
+    const accentNode = stretchyMathML(group.label);
+    const node = new MathNode("munder", [buildMathML_buildGroup(group.base, options), accentNode]);
     node.setAttribute("accentunder", "true");
     return node;
   }
 });
-;// CONCATENATED MODULE: ./src/functions/arrow.js
+;// ./src/functions/arrow.js
 
 
 
@@ -7891,7 +7801,7 @@ defineFunction({
 
 // Helper function
 const paddedNode = group => {
-  const node = new mathMLTree.MathNode("mpadded", group ? [group] : []);
+  const node = new MathNode("mpadded", group ? [group] : []);
   node.setAttribute("width", "+0.6em");
   node.setAttribute("lspace", "0.3em");
   return node;
@@ -7932,7 +7842,7 @@ defineFunction({
     // them in a span.
 
     let newOptions = options.havingStyle(style.sup());
-    const upperGroup = buildCommon.wrapFragment(buildGroup(group.body, newOptions, options), options);
+    const upperGroup = wrapFragment(buildGroup(group.body, newOptions, options), options);
     const arrowPrefix = group.label.slice(0, 2) === "\\x" ? "x" : "cd";
     upperGroup.classes.push(arrowPrefix + "-arrow-pad");
     let lowerGroup;
@@ -7940,11 +7850,11 @@ defineFunction({
     if (group.below) {
       // Build the lower group
       newOptions = options.havingStyle(style.sub());
-      lowerGroup = buildCommon.wrapFragment(buildGroup(group.below, newOptions, options), options);
+      lowerGroup = wrapFragment(buildGroup(group.below, newOptions, options), options);
       lowerGroup.classes.push(arrowPrefix + "-arrow-pad");
     }
 
-    const arrowBody = stretchy.svgSpan(group, options); // Re shift: Note that stretchy.svgSpan returned arrowBody.depth = 0.
+    const arrowBody = stretchySvg(group, options); // Re shift: Note that stretchySvg returned arrowBody.depth = 0.
     // The point we want on the math axis is at 0.5 * arrowBody.height.
 
     const arrowShift = -options.fontMetrics().axisHeight + 0.5 * arrowBody.height; // 2 mu kern. Ref: amsmath.dtx: #7\if0#2\else\mkern#2mu\fi
@@ -7960,7 +7870,7 @@ defineFunction({
 
     if (lowerGroup) {
       const lowerShift = -options.fontMetrics().axisHeight + lowerGroup.height + 0.5 * arrowBody.height + 0.111;
-      vlist = buildCommon.makeVList({
+      vlist = makeVList({
         positionType: "individualShift",
         children: [{
           type: "elem",
@@ -7977,7 +7887,7 @@ defineFunction({
         }]
       }, options);
     } else {
-      vlist = buildCommon.makeVList({
+      vlist = makeVList({
         positionType: "individualShift",
         children: [{
           type: "elem",
@@ -7993,11 +7903,11 @@ defineFunction({
 
 
     vlist.children[0].children[0].children[1].classes.push("svg-align");
-    return buildCommon.makeSpan(["mrel", "x-arrow"], [vlist], options);
+    return makeSpan(["mrel", "x-arrow"], [vlist], options);
   },
 
   mathmlBuilder(group, options) {
-    const arrowNode = stretchy.mathMLnode(group.label);
+    const arrowNode = stretchyMathML(group.label);
     arrowNode.setAttribute("minsize", group.label.charAt(0) === "x" ? "1.75em" : "3.0em");
     let node;
 
@@ -8006,36 +7916,35 @@ defineFunction({
 
       if (group.below) {
         const lowerNode = paddedNode(buildMathML_buildGroup(group.below, options));
-        node = new mathMLTree.MathNode("munderover", [arrowNode, lowerNode, upperNode]);
+        node = new MathNode("munderover", [arrowNode, lowerNode, upperNode]);
       } else {
-        node = new mathMLTree.MathNode("mover", [arrowNode, upperNode]);
+        node = new MathNode("mover", [arrowNode, upperNode]);
       }
     } else if (group.below) {
       const lowerNode = paddedNode(buildMathML_buildGroup(group.below, options));
-      node = new mathMLTree.MathNode("munder", [arrowNode, lowerNode]);
+      node = new MathNode("munder", [arrowNode, lowerNode]);
     } else {
       // This should never happen.
       // Parser.js throws an error if there is no argument.
       node = paddedNode();
-      node = new mathMLTree.MathNode("mover", [arrowNode, node]);
+      node = new MathNode("mover", [arrowNode, node]);
     }
 
     return node;
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/mclass.js
+;// ./src/functions/mclass.js
 
 
 
 
 
 
-const mclass_makeSpan = buildCommon.makeSpan;
 
 function mclass_htmlBuilder(group, options) {
   const elements = buildExpression(group.body, options, true);
-  return mclass_makeSpan([group.mclass], elements, options);
+  return makeSpan([group.mclass], elements, options);
 }
 
 function mclass_mathmlBuilder(group, options) {
@@ -8043,20 +7952,20 @@ function mclass_mathmlBuilder(group, options) {
   const inner = buildMathML_buildExpression(group.body, options);
 
   if (group.mclass === "minner") {
-    node = new mathMLTree.MathNode("mpadded", inner);
+    node = new MathNode("mpadded", inner);
   } else if (group.mclass === "mord") {
     if (group.isCharacterBox) {
       node = inner[0];
       node.type = "mi";
     } else {
-      node = new mathMLTree.MathNode("mi", inner);
+      node = new MathNode("mi", inner);
     }
   } else {
     if (group.isCharacterBox) {
       node = inner[0];
       node.type = "mo";
     } else {
-      node = new mathMLTree.MathNode("mo", inner);
+      node = new MathNode("mo", inner);
     } // Set spacing based on what is the most likely adjacent atom type.
     // See TeXbook p170.
 
@@ -8104,7 +8013,7 @@ defineFunction({
       mclass: "m" + funcName.slice(5),
       // TODO(kevinb): don't prefix with 'm'
       body: ordargument(body),
-      isCharacterBox: utils.isCharacterBox(body)
+      isCharacterBox: isCharacterBox(body)
     };
   },
 
@@ -8142,7 +8051,7 @@ defineFunction({
       mode: parser.mode,
       mclass: binrelClass(args[0]),
       body: ordargument(args[1]),
-      isCharacterBox: utils.isCharacterBox(args[1])
+      isCharacterBox: isCharacterBox(args[1])
     };
   }
 
@@ -8193,14 +8102,14 @@ defineFunction({
       mode: parser.mode,
       mclass,
       body: [supsub],
-      isCharacterBox: utils.isCharacterBox(supsub)
+      isCharacterBox: isCharacterBox(supsub)
     };
   },
 
   htmlBuilder: mclass_htmlBuilder,
   mathmlBuilder: mclass_mathmlBuilder
 });
-;// CONCATENATED MODULE: ./src/functions/pmb.js
+;// ./src/functions/pmb.js
 
 
 
@@ -8233,7 +8142,7 @@ defineFunction({
 
   htmlBuilder(group, options) {
     const elements = buildExpression(group.body, options, true);
-    const node = buildCommon.makeSpan([group.mclass], elements, options);
+    const node = makeSpan([group.mclass], elements, options);
     node.style.textShadow = "0.02em 0.01em 0.04px";
     return node;
   },
@@ -8241,13 +8150,13 @@ defineFunction({
   mathmlBuilder(group, style) {
     const inner = buildMathML_buildExpression(group.body, style); // Wrap with an <mstyle> element.
 
-    const node = new mathMLTree.MathNode("mstyle", inner);
+    const node = new MathNode("mstyle", inner);
     node.setAttribute("style", "text-shadow: 0.02em 0.01em 0.04px");
     return node;
   }
 
 });
-;// CONCATENATED MODULE: ./src/environments/cd.js
+;// ./src/environments/cd.js
 
 
 
@@ -8402,9 +8311,9 @@ function parseCD(parser) {
           body: []
         }; // Process the arrow.
 
-        if ("=|.".indexOf(arrowChar) > -1) {// Three "arrows", ``@=`, `@|`, and `@.`, do not take labels.
+        if ("=|.".includes(arrowChar)) {// Three "arrows", ``@=`, `@|`, and `@.`, do not take labels.
           // Do nothing here.
-        } else if ("<>AV".indexOf(arrowChar) > -1) {
+        } else if ("<>AV".includes(arrowChar)) {
           // Four arrows, `@>>>`, `@<<<`, `@AAA`, and `@VVV`, each take
           // two optional labels. E.g. the right-point arrow syntax is
           // really:  @>{optional label}>{optional label}>
@@ -8520,7 +8429,7 @@ defineFunction({
 
   htmlBuilder(group, options) {
     const newOptions = options.havingStyle(options.style.sup());
-    const label = buildCommon.wrapFragment(buildGroup(group.label, newOptions, options), options);
+    const label = wrapFragment(buildGroup(group.label, newOptions, options), options);
     label.classes.push("cd-label-" + group.side);
     label.style.bottom = makeEm(0.8 - label.depth); // Zero out label height & depth, so vertical align of arrow is set
     // by the arrow height, not by the label.
@@ -8531,8 +8440,8 @@ defineFunction({
   },
 
   mathmlBuilder(group, options) {
-    let label = new mathMLTree.MathNode("mrow", [buildMathML_buildGroup(group.label, options)]);
-    label = new mathMLTree.MathNode("mpadded", [label]);
+    let label = new MathNode("mrow", [buildMathML_buildGroup(group.label, options)]);
+    label = new MathNode("mpadded", [label]);
     label.setAttribute("width", "0");
 
     if (group.side === "left") {
@@ -8542,7 +8451,7 @@ defineFunction({
 
 
     label.setAttribute("voffset", "0.7em");
-    label = new mathMLTree.MathNode("mstyle", [label]);
+    label = new MathNode("mstyle", [label]);
     label.setAttribute("displaystyle", "false");
     label.setAttribute("scriptlevel", "1");
     return label;
@@ -8571,17 +8480,17 @@ defineFunction({
     // Wrap the vertical arrow and its labels.
     // The parent gets position: relative. The child gets position: absolute.
     // So CSS can locate the label correctly.
-    const parent = buildCommon.wrapFragment(buildGroup(group.fragment, options), options);
+    const parent = wrapFragment(buildGroup(group.fragment, options), options);
     parent.classes.push("cd-vert-arrow");
     return parent;
   },
 
   mathmlBuilder(group, options) {
-    return new mathMLTree.MathNode("mrow", [buildMathML_buildGroup(group.fragment, options)]);
+    return new MathNode("mrow", [buildMathML_buildGroup(group.fragment, options)]);
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/char.js
+;// ./src/functions/char.js
 
 
  // \@char is an internal function that takes a grouped decimal argument like
@@ -8633,7 +8542,7 @@ defineFunction({
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/color.js
+;// ./src/functions/color.js
 
 
 
@@ -8647,12 +8556,12 @@ const color_htmlBuilder = (group, options) => {
   // elements will be able to directly interact with their neighbors. For
   // example, `\color{red}{2 +} 3` has the same spacing as `2 + 3`
 
-  return buildCommon.makeFragment(elements);
+  return makeFragment(elements);
 };
 
 const color_mathmlBuilder = (group, options) => {
   const inner = buildMathML_buildExpression(group.body, options.withColor(group.color));
-  const node = new mathMLTree.MathNode("mstyle", inner);
+  const node = new MathNode("mstyle", inner);
   node.setAttribute("mathcolor", group.color);
   return node;
 };
@@ -8716,7 +8625,7 @@ defineFunction({
   htmlBuilder: color_htmlBuilder,
   mathmlBuilder: color_mathmlBuilder
 });
-;// CONCATENATED MODULE: ./src/functions/cr.js
+;// ./src/functions/cr.js
 // Row breaks within tabular environments, and line breaks at top level
 
 
@@ -8750,7 +8659,7 @@ defineFunction({
   // The following builders are called only at the top level,
   // not within tabular/array environments.
   htmlBuilder(group, options) {
-    const span = buildCommon.makeSpan(["mspace"], [], options);
+    const span = makeSpan(["mspace"], [], options);
 
     if (group.newLine) {
       span.classes.push("newline");
@@ -8764,7 +8673,7 @@ defineFunction({
   },
 
   mathmlBuilder(group, options) {
-    const node = new mathMLTree.MathNode("mspace");
+    const node = new MathNode("mspace");
 
     if (group.newLine) {
       node.setAttribute("linebreak", "newline");
@@ -8778,7 +8687,7 @@ defineFunction({
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/def.js
+;// ./src/functions/def.js
 
 
 
@@ -9022,7 +8931,7 @@ defineFunction({
   }
 
 });
-;// CONCATENATED MODULE: ./src/delimiter.js
+;// ./src/delimiter.js
 /**
  * This file deals with creating delimiters of various sizes. The TeXbook
  * discusses these routines on page 441-442, in the "Another subroutine sets box
@@ -9076,7 +8985,7 @@ const getMetrics = function (symbol, font, mode) {
 
 const styleWrap = function (delim, toStyle, options, classes) {
   const newOptions = options.havingBaseStyle(toStyle);
-  const span = buildCommon.makeSpan(classes.concat(newOptions.sizingClasses(options)), [delim], options);
+  const span = makeSpan(classes.concat(newOptions.sizingClasses(options)), [delim], options);
   const delimSizeMultiplier = newOptions.sizeMultiplier / options.sizeMultiplier;
   span.height *= delimSizeMultiplier;
   span.depth *= delimSizeMultiplier;
@@ -9100,7 +9009,7 @@ const centerSpan = function (span, options, style) {
 
 
 const makeSmallDelim = function (delim, style, center, options, mode, classes) {
-  const text = buildCommon.makeSymbol(delim, "Main-Regular", mode, options);
+  const text = makeSymbol(delim, "Main-Regular", mode, options);
   const span = styleWrap(text, style, options, classes);
 
   if (center) {
@@ -9115,7 +9024,7 @@ const makeSmallDelim = function (delim, style, center, options, mode, classes) {
 
 
 const mathrmSize = function (value, size, mode, options) {
-  return buildCommon.makeSymbol(value, "Size" + size + "-Regular", mode, options);
+  return makeSymbol(value, "Size" + size + "-Regular", mode, options);
 };
 /**
  * Makes a large delimiter. This is a delimiter that comes in the Size1, Size2,
@@ -9125,7 +9034,7 @@ const mathrmSize = function (value, size, mode, options) {
 
 const makeLargeDelim = function (delim, size, center, options, mode, classes) {
   const inner = mathrmSize(delim, size, mode, options);
-  const span = styleWrap(buildCommon.makeSpan(["delimsizing", "size" + size], [inner], options), src_Style.TEXT, options, classes);
+  const span = styleWrap(makeSpan(["delimsizing", "size" + size], [inner], options), src_Style.TEXT, options, classes);
 
   if (center) {
     centerSpan(span, options, src_Style.TEXT);
@@ -9150,7 +9059,7 @@ const makeGlyphSpan = function (symbol, font, mode) {
       sizeClass = "delim-size4";
     }
 
-  const corner = buildCommon.makeSpan(["delimsizinginner", sizeClass], [buildCommon.makeSpan([], [buildCommon.makeSymbol(symbol, font, mode)])]); // Since this will be passed into `makeVList` in the end, wrap the element
+  const corner = makeSpan(["delimsizinginner", sizeClass], [makeSpan([], [makeSymbol(symbol, font, mode)])]); // Since this will be passed into `makeVList` in the end, wrap the element
   // in the appropriate tag that VList uses.
 
   return {
@@ -9171,7 +9080,7 @@ const makeInner = function (ch, height, options) {
     "viewBox": "0 0 " + 1000 * width + " " + Math.round(1000 * height),
     "preserveAspectRatio": "xMinYMin"
   });
-  const span = buildCommon.makeSvgSpan([], [svgNode], options);
+  const span = makeSvgSpan([], [svgNode], options);
   span.height = height;
   span.style.height = makeEm(height);
   span.style.width = makeEm(width);
@@ -9187,8 +9096,8 @@ const lap = {
   type: "kern",
   size: -1 * lapInEms
 };
-const verts = ["|", "\\lvert", "\\rvert", "\\vert"];
-const doubleVerts = ["\\|", "\\lVert", "\\rVert", "\\Vert"];
+const verts = new Set(["|", "\\lvert", "\\rvert", "\\vert"]);
+const doubleVerts = new Set(["\\|", "\\lVert", "\\rVert", "\\Vert"]);
 /**
  * Make a stacked delimiter out of a given delimiter, with the total height at
  * least `heightTotal`. This routine is mentioned on page 442 of the TeXbook.
@@ -9226,11 +9135,11 @@ const makeStackedDelim = function (delim, heightTotal, center, options, mode, cl
     top = "\\Uparrow";
     repeat = "\u2016";
     bottom = "\\Downarrow";
-  } else if (verts.includes(delim)) {
+  } else if (verts.has(delim)) {
     repeat = "\u2223";
     svgLabel = "vert";
     viewBoxWidth = 333;
-  } else if (doubleVerts.includes(delim)) {
+  } else if (doubleVerts.has(delim)) {
     repeat = "\u2225";
     svgLabel = "doublevert";
     viewBoxWidth = 556;
@@ -9373,7 +9282,7 @@ const makeStackedDelim = function (delim, heightTotal, center, options, mode, cl
       "height": height,
       "viewBox": "0 0 " + viewBoxWidth + " " + viewBoxHeight
     });
-    const wrapper = buildCommon.makeSvgSpan([], [svg], options);
+    const wrapper = makeSvgSpan([], [svg], options);
     wrapper.height = viewBoxHeight / 1000;
     wrapper.style.width = width;
     wrapper.style.height = height;
@@ -9411,12 +9320,12 @@ const makeStackedDelim = function (delim, heightTotal, center, options, mode, cl
 
 
   const newOptions = options.havingBaseStyle(src_Style.TEXT);
-  const inner = buildCommon.makeVList({
+  const inner = makeVList({
     positionType: "bottom",
     positionData: depth,
     children: stack
   }, newOptions);
-  return styleWrap(buildCommon.makeSpan(["delimsizing", "mult"], [inner], newOptions), src_Style.TEXT, options, classes);
+  return styleWrap(makeSpan(["delimsizing", "mult"], [inner], newOptions), src_Style.TEXT, options, classes);
 }; // All surds have 0.08em padding above the vinculum inside the SVG.
 // That keeps browser span height rounding error from pinching the line.
 
@@ -9435,7 +9344,7 @@ const sqrtSvg = function (sqrtName, height, viewBoxHeight, extraVinculum, option
     "viewBox": "0 0 400000 " + viewBoxHeight,
     "preserveAspectRatio": "xMinYMin slice"
   });
-  return buildCommon.makeSvgSpan(["hide-tail"], [svg], options);
+  return makeSvgSpan(["hide-tail"], [svg], options);
 };
 /**
  * Make a sqrt image of the given height,
@@ -9513,12 +9422,11 @@ const makeSqrtImage = function (height, options) {
 }; // There are three kinds of delimiters, delimiters that stack when they become
 // too large
 
+const stackLargeDelimiters = new Set(["(", "\\lparen", ")", "\\rparen", "[", "\\lbrack", "]", "\\rbrack", "\\{", "\\lbrace", "\\}", "\\rbrace", "\\lfloor", "\\rfloor", "\u230a", "\u230b", "\\lceil", "\\rceil", "\u2308", "\u2309", "\\surd"]); // delimiters that always stack
 
-const stackLargeDelimiters = ["(", "\\lparen", ")", "\\rparen", "[", "\\lbrack", "]", "\\rbrack", "\\{", "\\lbrace", "\\}", "\\rbrace", "\\lfloor", "\\rfloor", "\u230a", "\u230b", "\\lceil", "\\rceil", "\u2308", "\u2309", "\\surd"]; // delimiters that always stack
+const stackAlwaysDelimiters = new Set(["\\uparrow", "\\downarrow", "\\updownarrow", "\\Uparrow", "\\Downarrow", "\\Updownarrow", "|", "\\|", "\\vert", "\\Vert", "\\lvert", "\\rvert", "\\lVert", "\\rVert", "\\lgroup", "\\rgroup", "\u27ee", "\u27ef", "\\lmoustache", "\\rmoustache", "\u23b0", "\u23b1"]); // and delimiters that never stack
 
-const stackAlwaysDelimiters = ["\\uparrow", "\\downarrow", "\\updownarrow", "\\Uparrow", "\\Downarrow", "\\Updownarrow", "|", "\\|", "\\vert", "\\Vert", "\\lvert", "\\rvert", "\\lVert", "\\rVert", "\\lgroup", "\\rgroup", "\u27ee", "\u27ef", "\\lmoustache", "\\rmoustache", "\u23b0", "\u23b1"]; // and delimiters that never stack
-
-const stackNeverDelimiters = ["<", ">", "\\langle", "\\rangle", "/", "\\backslash", "\\lt", "\\gt"]; // Metrics of the different sizes. Found by looking at TeX's output of
+const stackNeverDelimiters = new Set(["<", ">", "\\langle", "\\rangle", "/", "\\backslash", "\\lt", "\\gt"]); // Metrics of the different sizes. Found by looking at TeX's output of
 // $\bigl| // \Bigl| \biggl| \Biggl| \showlists$
 // Used to create stacked delimiters of appropriate sizes in makeSizedDelim.
 
@@ -9536,9 +9444,9 @@ const makeSizedDelim = function (delim, size, options, mode, classes) {
   } // Sized delimiters are never centered.
 
 
-  if (stackLargeDelimiters.includes(delim) || stackNeverDelimiters.includes(delim)) {
+  if (stackLargeDelimiters.has(delim) || stackNeverDelimiters.has(delim)) {
     return makeLargeDelim(delim, size, false, options, mode, classes);
-  } else if (stackAlwaysDelimiters.includes(delim)) {
+  } else if (stackAlwaysDelimiters.has(delim)) {
     return makeStackedDelim(delim, sizeToMaxHeight[size], false, options, mode, classes);
   } else {
     throw new src_ParseError("Illegal delimiter: '" + delim + "'");
@@ -9555,7 +9463,6 @@ const makeSizedDelim = function (delim, size, options, mode, classes) {
  * are possible for the delimiters that TeX defines, it is easier to just encode
  * them explicitly here.
  */
-
 
 // Delimiters that never stack try small delimiters and large delimiters only
 const stackNeverDelimiterSequence = [{
@@ -9688,9 +9595,9 @@ const makeCustomSizedDelim = function (delim, height, center, options, mode, cla
 
   let sequence;
 
-  if (stackNeverDelimiters.includes(delim)) {
+  if (stackNeverDelimiters.has(delim)) {
     sequence = stackNeverDelimiterSequence;
-  } else if (stackLargeDelimiters.includes(delim)) {
+  } else if (stackLargeDelimiters.has(delim)) {
     sequence = stackLargeDelimiterSequence;
   } else {
     sequence = stackAlwaysDelimiterSequence;
@@ -9716,7 +9623,6 @@ const makeCustomSizedDelim = function (delim, height, center, options, mode, cla
  * of an expression that the delimiters surround.
  */
 
-
 const makeLeftRightDelim = function (delim, height, depth, options, mode, classes) {
   // We always center \left/\right delimiters, so the axis is always shifted
   const axisHeight = options.fontMetrics().axisHeight * options.sizeMultiplier; // Taken from TeX source, tex.web, function make_left_right
@@ -9738,15 +9644,7 @@ const makeLeftRightDelim = function (delim, height, depth, options, mode, classe
 
   return makeCustomSizedDelim(delim, totalHeight, true, options, mode, classes);
 };
-
-/* harmony default export */ var delimiter = ({
-  sqrtImage: makeSqrtImage,
-  sizedDelim: makeSizedDelim,
-  sizeToMaxHeight: sizeToMaxHeight,
-  customSizedDelim: makeCustomSizedDelim,
-  leftRightDelim: makeLeftRightDelim
-});
-;// CONCATENATED MODULE: ./src/functions/delimsizing.js
+;// ./src/functions/delimsizing.js
 
 
 
@@ -9823,13 +9721,13 @@ const delimiterSizes = {
     size: 4
   }
 };
-const delimiters = ["(", "\\lparen", ")", "\\rparen", "[", "\\lbrack", "]", "\\rbrack", "\\{", "\\lbrace", "\\}", "\\rbrace", "\\lfloor", "\\rfloor", "\u230a", "\u230b", "\\lceil", "\\rceil", "\u2308", "\u2309", "<", ">", "\\langle", "\u27e8", "\\rangle", "\u27e9", "\\lt", "\\gt", "\\lvert", "\\rvert", "\\lVert", "\\rVert", "\\lgroup", "\\rgroup", "\u27ee", "\u27ef", "\\lmoustache", "\\rmoustache", "\u23b0", "\u23b1", "/", "\\backslash", "|", "\\vert", "\\|", "\\Vert", "\\uparrow", "\\Uparrow", "\\downarrow", "\\Downarrow", "\\updownarrow", "\\Updownarrow", "."];
+const delimiters = new Set(["(", "\\lparen", ")", "\\rparen", "[", "\\lbrack", "]", "\\rbrack", "\\{", "\\lbrace", "\\}", "\\rbrace", "\\lfloor", "\\rfloor", "\u230a", "\u230b", "\\lceil", "\\rceil", "\u2308", "\u2309", "<", ">", "\\langle", "\u27e8", "\\rangle", "\u27e9", "\\lt", "\\gt", "\\lvert", "\\rvert", "\\lVert", "\\rVert", "\\lgroup", "\\rgroup", "\u27ee", "\u27ef", "\\lmoustache", "\\rmoustache", "\u23b0", "\u23b1", "/", "\\backslash", "|", "\\vert", "\\|", "\\Vert", "\\uparrow", "\\Uparrow", "\\downarrow", "\\Downarrow", "\\updownarrow", "\\Updownarrow", "."]);
 
 // Delimiter functions
 function checkDelimiter(delim, context) {
   const symDelim = checkSymbolNodeType(delim);
 
-  if (symDelim && delimiters.includes(symDelim.text)) {
+  if (symDelim && delimiters.has(symDelim.text)) {
     return symDelim;
   } else if (symDelim) {
     throw new src_ParseError("Invalid delimiter '" + symDelim.text + "' after '" + context.funcName + "'", delim);
@@ -9859,11 +9757,10 @@ defineFunction({
     if (group.delim === ".") {
       // Empty delimiters still count as elements, even though they don't
       // show anything.
-      return buildCommon.makeSpan([group.mclass]);
-    } // Use delimiter.sizedDelim to generate the delimiter.
+      return makeSpan([group.mclass]);
+    }
 
-
-    return delimiter.sizedDelim(group.delim, group.size, options, group.mode, [group.mclass]);
+    return makeSizedDelim(group.delim, group.size, options, group.mode, [group.mclass]);
   },
   mathmlBuilder: group => {
     const children = [];
@@ -9872,7 +9769,7 @@ defineFunction({
       children.push(makeText(group.delim, group.mode));
     }
 
-    const node = new mathMLTree.MathNode("mo", children);
+    const node = new MathNode("mo", children);
 
     if (group.mclass === "mopen" || group.mclass === "mclose") {
       // Only some of the delimsizing functions act as fences, and they
@@ -9885,7 +9782,7 @@ defineFunction({
     }
 
     node.setAttribute("stretchy", "true");
-    const size = makeEm(delimiter.sizeToMaxHeight[group.size]);
+    const size = makeEm(sizeToMaxHeight[group.size]);
     node.setAttribute("minsize", size);
     node.setAttribute("maxsize", size);
     return node;
@@ -9984,7 +9881,7 @@ defineFunction({
     } else {
       // Otherwise, use leftRightDelim to generate the correct sized
       // delimiter.
-      leftDelim = delimiter.leftRightDelim(group.left, innerHeight, innerDepth, options, group.mode, ["mopen"]);
+      leftDelim = makeLeftRightDelim(group.left, innerHeight, innerDepth, options, group.mode, ["mopen"]);
     } // Add it to the beginning of the expression
 
 
@@ -10000,7 +9897,7 @@ defineFunction({
 
         if (isMiddle) {
           // Apply the options that were active when \middle was called
-          inner[i] = delimiter.leftRightDelim(isMiddle.delim, innerHeight, innerDepth, isMiddle.options, group.mode, []);
+          inner[i] = makeLeftRightDelim(isMiddle.delim, innerHeight, innerDepth, isMiddle.options, group.mode, []);
         }
       }
     }
@@ -10011,25 +9908,25 @@ defineFunction({
       rightDelim = makeNullDelimiter(options, ["mclose"]);
     } else {
       const colorOptions = group.rightColor ? options.withColor(group.rightColor) : options;
-      rightDelim = delimiter.leftRightDelim(group.right, innerHeight, innerDepth, colorOptions, group.mode, ["mclose"]);
+      rightDelim = makeLeftRightDelim(group.right, innerHeight, innerDepth, colorOptions, group.mode, ["mclose"]);
     } // Add it to the end of the expression.
 
 
     inner.push(rightDelim);
-    return buildCommon.makeSpan(["minner"], inner, options);
+    return makeSpan(["minner"], inner, options);
   },
   mathmlBuilder: (group, options) => {
     assertParsed(group);
     const inner = buildMathML_buildExpression(group.body, options);
 
     if (group.left !== ".") {
-      const leftNode = new mathMLTree.MathNode("mo", [makeText(group.left, group.mode)]);
+      const leftNode = new MathNode("mo", [makeText(group.left, group.mode)]);
       leftNode.setAttribute("fence", "true");
       inner.unshift(leftNode);
     }
 
     if (group.right !== ".") {
-      const rightNode = new mathMLTree.MathNode("mo", [makeText(group.right, group.mode)]);
+      const rightNode = new MathNode("mo", [makeText(group.right, group.mode)]);
       rightNode.setAttribute("fence", "true");
 
       if (group.rightColor) {
@@ -10068,7 +9965,7 @@ defineFunction({
     if (group.delim === ".") {
       middleDelim = makeNullDelimiter(options, []);
     } else {
-      middleDelim = delimiter.sizedDelim(group.delim, 1, options, group.mode, []);
+      middleDelim = makeSizedDelim(group.delim, 1, options, group.mode, []);
       const isMiddle = {
         delim: group.delim,
         options
@@ -10089,7 +9986,7 @@ defineFunction({
     // https://www.w3.org/TR/MathML3/appendixc.html.
     // So we need to avoid U+2223 and use plain "|" instead.
     const textNode = group.delim === "\\vert" || group.delim === "|" ? makeText("|", "text") : makeText(group.delim, group.mode);
-    const middleNode = new mathMLTree.MathNode("mo", [textNode]);
+    const middleNode = new MathNode("mo", [textNode]);
     middleNode.setAttribute("fence", "true"); // MathML gives 5/18em spacing to each <mo> element.
     // \middle should get delimiter spacing instead.
 
@@ -10098,7 +9995,7 @@ defineFunction({
     return middleNode;
   }
 });
-;// CONCATENATED MODULE: ./src/functions/enclose.js
+;// ./src/functions/enclose.js
 
 
 
@@ -10115,7 +10012,7 @@ const enclose_htmlBuilder = (group, options) => {
   // \cancel, \bcancel, \xcancel, \sout, \fbox, \colorbox, \fcolorbox, \phase
   // Some groups can return document fragments.  Handle those by wrapping
   // them in a span.
-  const inner = buildCommon.wrapFragment(buildGroup(group.body, options), options);
+  const inner = wrapFragment(buildGroup(group.body, options), options);
   const label = group.label.slice(1);
   let scale = options.sizeMultiplier;
   let img;
@@ -10125,10 +10022,10 @@ const enclose_htmlBuilder = (group, options) => {
   // the subject is a single character. This captures most of the
   // subjects that should get the "tall" treatment.
 
-  const isSingleChar = utils.isCharacterBox(group.body);
+  const isSingleChar = isCharacterBox(group.body);
 
   if (label === "sout") {
-    img = buildCommon.makeSpan(["stretchy", "sout"]);
+    img = makeSpan(["stretchy", "sout"]);
     img.height = options.fontMetrics().defaultRuleThickness / scale;
     imgShift = -0.5 * options.fontMetrics().xHeight;
   } else if (label === "phase") {
@@ -10157,7 +10054,7 @@ const enclose_htmlBuilder = (group, options) => {
       "preserveAspectRatio": "xMinYMin slice"
     }); // Wrap it in a span with overflow: hidden.
 
-    img = buildCommon.makeSvgSpan(["hide-tail"], [svgNode], options);
+    img = makeSvgSpan(["hide-tail"], [svgNode], options);
     img.style.height = makeEm(angleHeight);
     imgShift = inner.depth + lineWeight + clearance;
   } else {
@@ -10193,7 +10090,7 @@ const enclose_htmlBuilder = (group, options) => {
       bottomPad = topPad;
     }
 
-    img = stretchy.encloseSpan(inner, label, topPad, bottomPad, options);
+    img = stretchyEnclose(inner, label, topPad, bottomPad, options);
 
     if (/fbox|boxed|fcolorbox/.test(label)) {
       img.style.borderStyle = "solid";
@@ -10217,7 +10114,7 @@ const enclose_htmlBuilder = (group, options) => {
   let vlist;
 
   if (group.backgroundColor) {
-    vlist = buildCommon.makeVList({
+    vlist = makeVList({
       positionType: "individualShift",
       children: [// Put the color background behind inner;
       {
@@ -10232,7 +10129,7 @@ const enclose_htmlBuilder = (group, options) => {
     }, options);
   } else {
     const classes = /cancel|phase/.test(label) ? ["svg-align"] : [];
-    vlist = buildCommon.makeVList({
+    vlist = makeVList({
       positionType: "individualShift",
       children: [// Write the \cancel stroke on top of inner.
       {
@@ -10257,15 +10154,15 @@ const enclose_htmlBuilder = (group, options) => {
 
   if (/cancel/.test(label) && !isSingleChar) {
     // cancel does not create horiz space for its line extension.
-    return buildCommon.makeSpan(["mord", "cancel-lap"], [vlist], options);
+    return makeSpan(["mord", "cancel-lap"], [vlist], options);
   } else {
-    return buildCommon.makeSpan(["mord"], [vlist], options);
+    return makeSpan(["mord"], [vlist], options);
   }
 };
 
 const enclose_mathmlBuilder = (group, options) => {
   let fboxsep = 0;
-  const node = new mathMLTree.MathNode(group.label.indexOf("colorbox") > -1 ? "mpadded" : "menclose", [buildMathML_buildGroup(group.body, options)]);
+  const node = new MathNode(group.label.includes("colorbox") ? "mpadded" : "menclose", [buildMathML_buildGroup(group.body, options)]);
 
   switch (group.label) {
     case "\\cancel":
@@ -10450,7 +10347,7 @@ defineFunction({
   }
 
 });
-;// CONCATENATED MODULE: ./src/defineEnvironment.js
+;// ./src/defineEnvironment.js
 
 
 /**
@@ -10492,7 +10389,7 @@ function defineEnvironment(_ref) {
     _mathmlGroupBuilders[type] = mathmlBuilder;
   }
 }
-;// CONCATENATED MODULE: ./src/defineMacro.js
+;// ./src/defineMacro.js
 
 
 /**
@@ -10505,7 +10402,7 @@ const _macros = {}; // This function might one day accept an additional argument
 function defineMacro(name, body) {
   _macros[name] = body;
 }
-;// CONCATENATED MODULE: ./src/SourceLocation.js
+;// ./src/SourceLocation.js
 /**
  * Lexing or parsing positional information for error reporting.
  * This object is immutable.
@@ -10544,7 +10441,7 @@ class SourceLocation {
   }
 
 }
-;// CONCATENATED MODULE: ./src/Token.js
+;// ./src/Token.js
 
 /**
  * Interface required to break circular dependency between Token, Lexer, and
@@ -10589,8 +10486,7 @@ class Token {
   }
 
 }
-;// CONCATENATED MODULE: ./src/environments/array.js
-
+;// ./src/environments/array.js
 
 
 
@@ -10637,16 +10533,17 @@ const validateAmsEnvironmentContext = context => {
   if (!settings.displayMode) {
     throw new src_ParseError("{" + context.envName + "} can be used only in" + " display mode.");
   }
-}; // autoTag (an argument to parseArray) can be one of three values:
+};
+
+const gatherEnvironments = new Set(["gather", "gather*"]); // autoTag (an argument to parseArray) can be one of three values:
 // * undefined: Regular (not-top-level) array; no tags on each row
 // * true: Automatic equation numbering, overridable by \tag
 // * false: Tags allowed on each row, but no automatic numbering
 // This function *doesn't* work with the "split" environment name.
 
-
 function getAutoTag(name) {
-  if (name.indexOf("ed") === -1) {
-    return name.indexOf("*") === -1;
+  if (!name.includes("ed")) {
+    return !name.includes("*");
   } // return undefined;
 
 }
@@ -10967,13 +10864,13 @@ const array_htmlBuilder = function (group, options) {
 
       if (tag === true) {
         // automatic numbering
-        tagSpan = buildCommon.makeSpan(["eqn-num"], [], options);
+        tagSpan = makeSpan(["eqn-num"], [], options);
       } else if (tag === false) {
         // \nonumber/\notag or starred environment
-        tagSpan = buildCommon.makeSpan([], [], options);
+        tagSpan = makeSpan([], [], options);
       } else {
         // manual \tag
-        tagSpan = buildCommon.makeSpan([], buildExpression(tag, options, true), options);
+        tagSpan = makeSpan([], buildExpression(tag, options, true), options);
       }
 
       tagSpan.depth = rw.depth;
@@ -10996,14 +10893,14 @@ const array_htmlBuilder = function (group, options) {
       // If there is more than one separator in a row, add a space
       // between them.
       if (!firstSeparator) {
-        colSep = buildCommon.makeSpan(["arraycolsep"], []);
+        colSep = makeSpan(["arraycolsep"], []);
         colSep.style.width = makeEm(options.fontMetrics().doubleRuleSep);
         cols.push(colSep);
       }
 
       if (colDescr.separator === "|" || colDescr.separator === ":") {
         const lineType = colDescr.separator === "|" ? "solid" : "dashed";
-        const separator = buildCommon.makeSpan(["vertical-separator"], [], options);
+        const separator = makeSpan(["vertical-separator"], [], options);
         separator.style.height = makeEm(totalHeight);
         separator.style.borderRightWidth = makeEm(ruleThickness);
         separator.style.borderRightStyle = lineType;
@@ -11031,10 +10928,12 @@ const array_htmlBuilder = function (group, options) {
     let sepwidth;
 
     if (c > 0 || group.hskipBeforeAndAfter) {
-      sepwidth = utils.deflt(colDescr.pregap, arraycolsep);
+      var _colDescr$pregap;
+
+      sepwidth = (_colDescr$pregap = colDescr.pregap) != null ? _colDescr$pregap : arraycolsep;
 
       if (sepwidth !== 0) {
-        colSep = buildCommon.makeSpan(["arraycolsep"], []);
+        colSep = makeSpan(["arraycolsep"], []);
         colSep.style.width = makeEm(sepwidth);
         cols.push(colSep);
       }
@@ -11060,29 +10959,31 @@ const array_htmlBuilder = function (group, options) {
       });
     }
 
-    col = buildCommon.makeVList({
+    col = makeVList({
       positionType: "individualShift",
       children: col
     }, options);
-    col = buildCommon.makeSpan(["col-align-" + (colDescr.align || "c")], [col]);
+    col = makeSpan(["col-align-" + (colDescr.align || "c")], [col]);
     cols.push(col);
 
     if (c < nc - 1 || group.hskipBeforeAndAfter) {
-      sepwidth = utils.deflt(colDescr.postgap, arraycolsep);
+      var _colDescr$postgap;
+
+      sepwidth = (_colDescr$postgap = colDescr.postgap) != null ? _colDescr$postgap : arraycolsep;
 
       if (sepwidth !== 0) {
-        colSep = buildCommon.makeSpan(["arraycolsep"], []);
+        colSep = makeSpan(["arraycolsep"], []);
         colSep.style.width = makeEm(sepwidth);
         cols.push(colSep);
       }
     }
   }
 
-  body = buildCommon.makeSpan(["mtable"], cols); // Add \hline(s), if any.
+  body = makeSpan(["mtable"], cols); // Add \hline(s), if any.
 
   if (hlines.length > 0) {
-    const line = buildCommon.makeLineSpan("hline", options, ruleThickness);
-    const dashes = buildCommon.makeLineSpan("hdashline", options, ruleThickness);
+    const line = makeLineSpan("hline", options, ruleThickness);
+    const dashes = makeLineSpan("hdashline", options, ruleThickness);
     const vListElems = [{
       type: "elem",
       elem: body,
@@ -11108,21 +11009,21 @@ const array_htmlBuilder = function (group, options) {
       }
     }
 
-    body = buildCommon.makeVList({
+    body = makeVList({
       positionType: "individualShift",
       children: vListElems
     }, options);
   }
 
   if (tagSpans.length === 0) {
-    return buildCommon.makeSpan(["mord"], [body], options);
+    return makeSpan(["mord"], [body], options);
   } else {
-    let eqnNumCol = buildCommon.makeVList({
+    let eqnNumCol = makeVList({
       positionType: "individualShift",
       children: tagSpans
     }, options);
-    eqnNumCol = buildCommon.makeSpan(["tag"], [eqnNumCol], options);
-    return buildCommon.makeFragment([body, eqnNumCol]);
+    eqnNumCol = makeSpan(["tag"], [eqnNumCol], options);
+    return makeFragment([body, eqnNumCol]);
   }
 };
 
@@ -11134,15 +11035,15 @@ const alignMap = {
 
 const array_mathmlBuilder = function (group, options) {
   const tbl = [];
-  const glue = new mathMLTree.MathNode("mtd", [], ["mtr-glue"]);
-  const tag = new mathMLTree.MathNode("mtd", [], ["mml-eqn-num"]);
+  const glue = new MathNode("mtd", [], ["mtr-glue"]);
+  const tag = new MathNode("mtd", [], ["mml-eqn-num"]);
 
   for (let i = 0; i < group.body.length; i++) {
     const rw = group.body[i];
     const row = [];
 
     for (let j = 0; j < rw.length; j++) {
-      row.push(new mathMLTree.MathNode("mtd", [buildMathML_buildGroup(rw[j], options)]));
+      row.push(new MathNode("mtd", [buildMathML_buildGroup(rw[j], options)]));
     }
 
     if (group.tags && group.tags[i]) {
@@ -11156,10 +11057,10 @@ const array_mathmlBuilder = function (group, options) {
       }
     }
 
-    tbl.push(new mathMLTree.MathNode("mtr", row));
+    tbl.push(new MathNode("mtr", row));
   }
 
-  let table = new mathMLTree.MathNode("mtable", tbl); // Set column alignment, row spacing, column spacing, and
+  let table = new MathNode("mtable", tbl); // Set column alignment, row spacing, column spacing, and
   // array lines by setting attributes on the table element.
   // Set the row spacing. In MathML, we specify a gap distance.
   // We do not use rowGap[] because MathML automatically increases
@@ -11258,13 +11159,13 @@ const array_mathmlBuilder = function (group, options) {
   }
 
   if (menclose !== "") {
-    table = new mathMLTree.MathNode("menclose", [table]);
+    table = new MathNode("menclose", [table]);
     table.setAttribute("notation", menclose.trim());
   }
 
   if (group.arraystretch && group.arraystretch < 1) {
     // A small array. Wrap in scriptstyle so row gap is not too large.
-    table = new mathMLTree.MathNode("mstyle", [table]);
+    table = new MathNode("mstyle", [table]);
     table.setAttribute("scriptlevel", "1");
   }
 
@@ -11273,12 +11174,12 @@ const array_mathmlBuilder = function (group, options) {
 
 
 const alignedHandler = function (context, args) {
-  if (context.envName.indexOf("ed") === -1) {
+  if (!context.envName.includes("ed")) {
     validateAmsEnvironmentContext(context);
   }
 
   const cols = [];
-  const separationType = context.envName.indexOf("at") > -1 ? "alignat" : "align";
+  const separationType = context.envName.includes("at") ? "alignat" : "align";
   const isSplit = context.envName === "split";
   const res = parseArray(context.parser, {
     cols,
@@ -11387,7 +11288,7 @@ defineEnvironment({
       const node = assertSymbolNodeType(nde);
       const ca = node.text;
 
-      if ("lcr".indexOf(ca) !== -1) {
+      if ("lcr".includes(ca)) {
         return {
           type: "align",
           align: ca
@@ -11459,7 +11360,7 @@ defineEnvironment({
         parser.consumeSpaces();
         colAlign = parser.fetch().text;
 
-        if ("lcr".indexOf(colAlign) === -1) {
+        if (!"lcr".includes(colAlign)) {
           throw new src_ParseError("Expected l or c or r", parser.nextToken);
         }
 
@@ -11529,7 +11430,7 @@ defineEnvironment({
       const node = assertSymbolNodeType(nde);
       const ca = node.text; // {subarray} only recognizes "l" & "c"
 
-      if ("lc".indexOf(ca) !== -1) {
+      if ("lc".includes(ca)) {
         return {
           type: "align",
           align: ca
@@ -11599,8 +11500,8 @@ defineEnvironment({
       type: "leftright",
       mode: context.mode,
       body: [res],
-      left: context.envName.indexOf("r") > -1 ? "." : "\\{",
-      right: context.envName.indexOf("r") > -1 ? "\\}" : ".",
+      left: context.envName.includes("r") ? "." : "\\{",
+      right: context.envName.includes("r") ? "\\}" : ".",
       rightColor: undefined
     };
   },
@@ -11635,7 +11536,7 @@ defineEnvironment({
   },
 
   handler(context) {
-    if (["gather", "gather*"].includes(context.envName)) {
+    if (gatherEnvironments.has(context.envName)) {
       validateAmsEnvironmentContext(context);
     }
 
@@ -11724,13 +11625,13 @@ defineFunction({
   }
 
 });
-;// CONCATENATED MODULE: ./src/environments.js
+;// ./src/environments.js
 
 const environments = _environments;
 /* harmony default export */ var src_environments = (environments); // All environment definitions should be imported below
 
 
-;// CONCATENATED MODULE: ./src/functions/environment.js
+;// ./src/functions/environment.js
 
 
 
@@ -11802,7 +11703,7 @@ defineFunction({
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/font.js
+;// ./src/functions/font.js
 // TODO(kevinb): implement \\sl and \\sc
 
 
@@ -11870,8 +11771,7 @@ defineFunction({
     let {
       parser
     } = _ref2;
-    const body = args[0];
-    const isCharacterBox = utils.isCharacterBox(body); // amsbsy.sty's \boldsymbol uses \binrel spacing to inherit the
+    const body = args[0]; // amsbsy.sty's \boldsymbol uses \binrel spacing to inherit the
     // argument's bin|rel|ord status
 
     return {
@@ -11884,7 +11784,7 @@ defineFunction({
         font: "boldsymbol",
         body
       }],
-      isCharacterBox: isCharacterBox
+      isCharacterBox: isCharacterBox(body)
     };
   }
 }); // Old font changing functions
@@ -11921,7 +11821,7 @@ defineFunction({
   htmlBuilder: font_htmlBuilder,
   mathmlBuilder: font_mathmlBuilder
 });
-;// CONCATENATED MODULE: ./src/functions/genfrac.js
+;// ./src/functions/genfrac.js
 
 
 
@@ -11931,32 +11831,10 @@ defineFunction({
 
 
 
-
-
-const adjustStyle = (size, originalStyle) => {
-  // Figure out what style this fraction should be in based on the
-  // function used
-  let style = originalStyle;
-
-  if (size === "display") {
-    // Get display style as a default.
-    // If incoming style is sub/sup, use style.text() to get correct size.
-    style = style.id >= src_Style.SCRIPT.id ? style.text() : src_Style.DISPLAY;
-  } else if (size === "text" && style.size === src_Style.DISPLAY.size) {
-    // We're in a \tfrac but incoming style is displaystyle, so:
-    style = src_Style.TEXT;
-  } else if (size === "script") {
-    style = src_Style.SCRIPT;
-  } else if (size === "scriptscript") {
-    style = src_Style.SCRIPTSCRIPT;
-  }
-
-  return style;
-};
 
 const genfrac_htmlBuilder = (group, options) => {
   // Fractions are handled in the TeXbook on pages 444-445, rules 15(a-e).
-  const style = adjustStyle(group.size, options.style);
+  const style = options.style;
   const nstyle = style.fracNum();
   const dstyle = style.fracDen();
   let newOptions;
@@ -11981,9 +11859,9 @@ const genfrac_htmlBuilder = (group, options) => {
   if (group.hasBarLine) {
     if (group.barSize) {
       ruleWidth = calculateSize(group.barSize, options);
-      rule = buildCommon.makeLineSpan("frac-line", options, ruleWidth);
+      rule = makeLineSpan("frac-line", options, ruleWidth);
     } else {
-      rule = buildCommon.makeLineSpan("frac-line", options);
+      rule = makeLineSpan("frac-line", options);
     }
 
     ruleWidth = rule.height;
@@ -11999,7 +11877,7 @@ const genfrac_htmlBuilder = (group, options) => {
   let clearance;
   let denomShift;
 
-  if (style.size === src_Style.DISPLAY.size || group.size === "display") {
+  if (style.size === src_Style.DISPLAY.size) {
     numShift = options.fontMetrics().num1;
 
     if (ruleWidth > 0) {
@@ -12032,7 +11910,7 @@ const genfrac_htmlBuilder = (group, options) => {
       denomShift += 0.5 * (clearance - candidateClearance);
     }
 
-    frac = buildCommon.makeVList({
+    frac = makeVList({
       positionType: "individualShift",
       children: [{
         type: "elem",
@@ -12057,7 +11935,7 @@ const genfrac_htmlBuilder = (group, options) => {
     }
 
     const midShift = -(axisHeight - 0.5 * ruleWidth);
-    frac = buildCommon.makeVList({
+    frac = makeVList({
       positionType: "individualShift",
       children: [{
         type: "elem",
@@ -12097,22 +11975,22 @@ const genfrac_htmlBuilder = (group, options) => {
   if (group.leftDelim == null) {
     leftDelim = makeNullDelimiter(options, ["mopen"]);
   } else {
-    leftDelim = delimiter.customSizedDelim(group.leftDelim, delimSize, true, options.havingStyle(style), group.mode, ["mopen"]);
+    leftDelim = makeCustomSizedDelim(group.leftDelim, delimSize, true, options.havingStyle(style), group.mode, ["mopen"]);
   }
 
   if (group.continued) {
-    rightDelim = buildCommon.makeSpan([]); // zero width for \cfrac
+    rightDelim = makeSpan([]); // zero width for \cfrac
   } else if (group.rightDelim == null) {
     rightDelim = makeNullDelimiter(options, ["mclose"]);
   } else {
-    rightDelim = delimiter.customSizedDelim(group.rightDelim, delimSize, true, options.havingStyle(style), group.mode, ["mclose"]);
+    rightDelim = makeCustomSizedDelim(group.rightDelim, delimSize, true, options.havingStyle(style), group.mode, ["mclose"]);
   }
 
-  return buildCommon.makeSpan(["mord"].concat(newOptions.sizingClasses(options)), [leftDelim, buildCommon.makeSpan(["mfrac"], [frac]), rightDelim], options);
+  return makeSpan(["mord"].concat(newOptions.sizingClasses(options)), [leftDelim, makeSpan(["mfrac"], [frac]), rightDelim], options);
 };
 
 const genfrac_mathmlBuilder = (group, options) => {
-  let node = new mathMLTree.MathNode("mfrac", [buildMathML_buildGroup(group.numer, options), buildMathML_buildGroup(group.denom, options)]);
+  const node = new MathNode("mfrac", [buildMathML_buildGroup(group.numer, options), buildMathML_buildGroup(group.denom, options)]);
 
   if (!group.hasBarLine) {
     node.setAttribute("linethickness", "0px");
@@ -12121,20 +11999,11 @@ const genfrac_mathmlBuilder = (group, options) => {
     node.setAttribute("linethickness", makeEm(ruleWidth));
   }
 
-  const style = adjustStyle(group.size, options.style);
-
-  if (style.size !== options.style.size) {
-    node = new mathMLTree.MathNode("mstyle", [node]);
-    const isDisplay = style.size === src_Style.DISPLAY.size ? "true" : "false";
-    node.setAttribute("displaystyle", isDisplay);
-    node.setAttribute("scriptlevel", "0");
-  }
-
   if (group.leftDelim != null || group.rightDelim != null) {
     const withDelims = [];
 
     if (group.leftDelim != null) {
-      const leftOp = new mathMLTree.MathNode("mo", [new mathMLTree.TextNode(group.leftDelim.replace("\\", ""))]);
+      const leftOp = new MathNode("mo", [new TextNode(group.leftDelim.replace("\\", ""))]);
       leftOp.setAttribute("fence", "true");
       withDelims.push(leftOp);
     }
@@ -12142,7 +12011,7 @@ const genfrac_mathmlBuilder = (group, options) => {
     withDelims.push(node);
 
     if (group.rightDelim != null) {
-      const rightOp = new mathMLTree.MathNode("mo", [new mathMLTree.TextNode(group.rightDelim.replace("\\", ""))]);
+      const rightOp = new MathNode("mo", [new TextNode(group.rightDelim.replace("\\", ""))]);
       rightOp.setAttribute("fence", "true");
       withDelims.push(rightOp);
     }
@@ -12153,9 +12022,24 @@ const genfrac_mathmlBuilder = (group, options) => {
   return node;
 };
 
+const wrapWithStyle = (frac, style) => {
+  if (!style) {
+    return frac;
+  }
+
+  const wrapper = {
+    type: "styling",
+    mode: frac.mode,
+    style,
+    body: [frac]
+  }; // $FlowFixMe: defineFunction handler needs to return ParseNode<"genfrac">
+
+  return wrapper;
+};
+
 defineFunction({
   type: "genfrac",
-  names: ["\\dfrac", "\\frac", "\\tfrac", "\\dbinom", "\\binom", "\\tbinom", "\\\\atopfrac", // can’t be entered directly
+  names: ["\\cfrac", "\\dfrac", "\\frac", "\\tfrac", "\\dbinom", "\\binom", "\\tbinom", "\\\\atopfrac", // can’t be entered directly
   "\\\\bracefrac", "\\\\brackfrac" // ditto
   ],
   props: {
@@ -12172,9 +12056,9 @@ defineFunction({
     let hasBarLine;
     let leftDelim = null;
     let rightDelim = null;
-    let size = "auto";
 
     switch (funcName) {
+      case "\\cfrac":
       case "\\dfrac":
       case "\\frac":
       case "\\tfrac":
@@ -12209,60 +12093,29 @@ defineFunction({
         throw new Error("Unrecognized genfrac command");
     }
 
-    switch (funcName) {
-      case "\\dfrac":
-      case "\\dbinom":
-        size = "display";
-        break;
+    const continued = funcName === "\\cfrac";
+    let style = null;
 
-      case "\\tfrac":
-      case "\\tbinom":
-        size = "text";
-        break;
+    if (continued || funcName.startsWith("\\d")) {
+      style = "display";
+    } else if (funcName.startsWith("\\t")) {
+      style = "text";
     }
 
-    return {
+    return wrapWithStyle({
       type: "genfrac",
       mode: parser.mode,
-      continued: false,
       numer,
       denom,
+      continued,
       hasBarLine,
       leftDelim,
       rightDelim,
-      size,
       barSize: null
-    };
+    }, style);
   },
   htmlBuilder: genfrac_htmlBuilder,
   mathmlBuilder: genfrac_mathmlBuilder
-});
-defineFunction({
-  type: "genfrac",
-  names: ["\\cfrac"],
-  props: {
-    numArgs: 2
-  },
-  handler: (_ref2, args) => {
-    let {
-      parser,
-      funcName
-    } = _ref2;
-    const numer = args[0];
-    const denom = args[1];
-    return {
-      type: "genfrac",
-      mode: parser.mode,
-      continued: true,
-      numer,
-      denom,
-      hasBarLine: true,
-      leftDelim: null,
-      rightDelim: null,
-      size: "display",
-      barSize: null
-    };
-  }
 }); // Infix generalized fractions -- these are not rendered directly, but replaced
 // immediately by one of the variants above.
 
@@ -12274,12 +12127,12 @@ defineFunction({
     infix: true
   },
 
-  handler(_ref3) {
+  handler(_ref2) {
     let {
       parser,
       funcName,
       token
-    } = _ref3;
+    } = _ref2;
     let replaceWith;
 
     switch (funcName) {
@@ -12338,10 +12191,10 @@ defineFunction({
     argTypes: ["math", "math", "size", "text", "math", "math"]
   },
 
-  handler(_ref4, args) {
+  handler(_ref3, args) {
     let {
       parser
-    } = _ref4;
+    } = _ref3;
     const numer = args[4];
     const denom = args[5]; // Look into the parse nodes to get the desired delimiters.
 
@@ -12364,7 +12217,7 @@ defineFunction({
     } // Find out if we want displaystyle, textstyle, etc.
 
 
-    let size = "auto";
+    let size = null;
     let styl = args[3];
 
     if (styl.type === "ordgroup") {
@@ -12377,7 +12230,7 @@ defineFunction({
       size = stylArray[Number(styl.text)];
     }
 
-    return {
+    return wrapWithStyle({
       type: "genfrac",
       mode: parser.mode,
       numer,
@@ -12386,13 +12239,10 @@ defineFunction({
       hasBarLine,
       barSize,
       leftDelim,
-      rightDelim,
-      size
-    };
-  },
+      rightDelim
+    }, size);
+  }
 
-  htmlBuilder: genfrac_htmlBuilder,
-  mathmlBuilder: genfrac_mathmlBuilder
 }); // \above is an infix fraction that also defines a fraction bar size.
 
 defineFunction({
@@ -12404,12 +12254,12 @@ defineFunction({
     infix: true
   },
 
-  handler(_ref5, args) {
+  handler(_ref4, args) {
     let {
       parser,
       funcName,
       token
-    } = _ref5;
+    } = _ref4;
     return {
       type: "infix",
       mode: parser.mode,
@@ -12427,13 +12277,18 @@ defineFunction({
     numArgs: 3,
     argTypes: ["math", "size", "math"]
   },
-  handler: (_ref6, args) => {
+  handler: (_ref5, args) => {
     let {
       parser,
       funcName
-    } = _ref6;
+    } = _ref5;
     const numer = args[0];
-    const barSize = assert(assertNodeType(args[1], "infix").size);
+    const barSize = assertNodeType(args[1], "infix").size;
+
+    if (!barSize) {
+      throw new Error("\\\\abovefrac expected size, but got " + String(barSize));
+    }
+
     const denom = args[2];
     const hasBarLine = barSize.number > 0;
     return {
@@ -12445,14 +12300,11 @@ defineFunction({
       hasBarLine,
       barSize,
       leftDelim: null,
-      rightDelim: null,
-      size: "auto"
+      rightDelim: null
     };
-  },
-  htmlBuilder: genfrac_htmlBuilder,
-  mathmlBuilder: genfrac_mathmlBuilder
+  }
 });
-;// CONCATENATED MODULE: ./src/functions/horizBrace.js
+;// ./src/functions/horizBrace.js
 
 
 
@@ -12482,13 +12334,13 @@ const horizBrace_htmlBuilder = (grp, options) => {
 
   const body = buildGroup(group.base, options.havingBaseStyle(src_Style.DISPLAY)); // Create the stretchy element
 
-  const braceBody = stretchy.svgSpan(group, options); // Generate the vlist, with the appropriate kerns        ┏━━━━━━━━┓
+  const braceBody = stretchySvg(group, options); // Generate the vlist, with the appropriate kerns        ┏━━━━━━━━┓
   // This first vlist contains the content and the brace:   equation
 
   let vlist;
 
   if (group.isOver) {
-    vlist = buildCommon.makeVList({
+    vlist = makeVList({
       positionType: "firstBaseline",
       children: [{
         type: "elem",
@@ -12504,7 +12356,7 @@ const horizBrace_htmlBuilder = (grp, options) => {
 
     vlist.children[0].children[0].children[1].classes.push("svg-align");
   } else {
-    vlist = buildCommon.makeVList({
+    vlist = makeVList({
       positionType: "bottom",
       positionData: body.depth + 0.1 + braceBody.height,
       children: [{
@@ -12530,10 +12382,10 @@ const horizBrace_htmlBuilder = (grp, options) => {
     //      note          long note           long note
     //   ┏━━━━━━━━┓   or    ┏━━━┓     not    ┏━━━━━━━━━┓
     //    equation           eqn                 eqn
-    const vSpan = buildCommon.makeSpan(["mord", group.isOver ? "mover" : "munder"], [vlist], options);
+    const vSpan = makeSpan(["mord", group.isOver ? "mover" : "munder"], [vlist], options);
 
     if (group.isOver) {
-      vlist = buildCommon.makeVList({
+      vlist = makeVList({
         positionType: "firstBaseline",
         children: [{
           type: "elem",
@@ -12547,7 +12399,7 @@ const horizBrace_htmlBuilder = (grp, options) => {
         }]
       }, options);
     } else {
-      vlist = buildCommon.makeVList({
+      vlist = makeVList({
         positionType: "bottom",
         positionData: vSpan.depth + 0.2 + supSubGroup.height + supSubGroup.depth,
         children: [{
@@ -12564,12 +12416,12 @@ const horizBrace_htmlBuilder = (grp, options) => {
     }
   }
 
-  return buildCommon.makeSpan(["mord", group.isOver ? "mover" : "munder"], [vlist], options);
+  return makeSpan(["mord", group.isOver ? "mover" : "munder"], [vlist], options);
 };
 
 const horizBrace_mathmlBuilder = (group, options) => {
-  const accentNode = stretchy.mathMLnode(group.label);
-  return new mathMLTree.MathNode(group.isOver ? "mover" : "munder", [buildMathML_buildGroup(group.base, options), accentNode]);
+  const accentNode = stretchyMathML(group.label);
+  return new MathNode(group.isOver ? "mover" : "munder", [buildMathML_buildGroup(group.base, options), accentNode]);
 }; // Horizontal stretchy braces
 
 
@@ -12597,7 +12449,7 @@ defineFunction({
   htmlBuilder: horizBrace_htmlBuilder,
   mathmlBuilder: horizBrace_mathmlBuilder
 });
-;// CONCATENATED MODULE: ./src/functions/href.js
+;// ./src/functions/href.js
 
 
 
@@ -12635,7 +12487,7 @@ defineFunction({
   },
   htmlBuilder: (group, options) => {
     const elements = buildExpression(group.body, options, false);
-    return buildCommon.makeAnchor(group.href, [], elements, options);
+    return makeAnchor(group.href, [], elements, options);
   },
   mathmlBuilder: (group, options) => {
     let math = buildExpressionRow(group.body, options);
@@ -12699,7 +12551,7 @@ defineFunction({
     };
   }
 });
-;// CONCATENATED MODULE: ./src/functions/hbox.js
+;// ./src/functions/hbox.js
 
 
 
@@ -12732,15 +12584,15 @@ defineFunction({
 
   htmlBuilder(group, options) {
     const elements = buildExpression(group.body, options, false);
-    return buildCommon.makeFragment(elements);
+    return makeFragment(elements);
   },
 
   mathmlBuilder(group, options) {
-    return new mathMLTree.MathNode("mrow", buildMathML_buildExpression(group.body, options));
+    return new MathNode("mrow", buildMathML_buildExpression(group.body, options));
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/html.js
+;// ./src/functions/html.js
 
 
 
@@ -12843,7 +12695,7 @@ defineFunction({
       classes.push(...group.attributes.class.trim().split(/\s+/));
     }
 
-    const span = buildCommon.makeSpan(classes, elements, options);
+    const span = makeSpan(classes, elements, options);
 
     for (const attr in group.attributes) {
       if (attr !== "class" && group.attributes.hasOwnProperty(attr)) {
@@ -12857,7 +12709,7 @@ defineFunction({
     return buildExpressionRow(group.body, options);
   }
 });
-;// CONCATENATED MODULE: ./src/functions/htmlmathml.js
+;// ./src/functions/htmlmathml.js
 
 
 
@@ -12867,6 +12719,7 @@ defineFunction({
   names: ["\\html@mathml"],
   props: {
     numArgs: 2,
+    allowedInArgument: true,
     allowedInText: true
   },
   handler: (_ref, args) => {
@@ -12882,13 +12735,13 @@ defineFunction({
   },
   htmlBuilder: (group, options) => {
     const elements = buildExpression(group.html, options, false);
-    return buildCommon.makeFragment(elements);
+    return makeFragment(elements);
   },
   mathmlBuilder: (group, options) => {
     return buildExpressionRow(group.mathml, options);
   }
 });
-;// CONCATENATED MODULE: ./src/functions/includegraphics.js
+;// ./src/functions/includegraphics.js
 
 
 
@@ -13046,7 +12899,7 @@ defineFunction({
     return node;
   },
   mathmlBuilder: (group, options) => {
-    const node = new mathMLTree.MathNode("mglyph", []);
+    const node = new MathNode("mglyph", []);
     node.setAttribute("alt", group.alt);
     const height = calculateSize(group.height, options);
     let depth = 0;
@@ -13067,7 +12920,7 @@ defineFunction({
     return node;
   }
 });
-;// CONCATENATED MODULE: ./src/functions/kern.js
+;// ./src/functions/kern.js
 // Horizontal spacing commands
 
 
@@ -13121,16 +12974,16 @@ defineFunction({
   },
 
   htmlBuilder(group, options) {
-    return buildCommon.makeGlue(group.dimension, options);
+    return makeGlue(group.dimension, options);
   },
 
   mathmlBuilder(group, options) {
     const dimension = calculateSize(group.dimension, options);
-    return new mathMLTree.SpaceNode(dimension);
+    return new SpaceNode(dimension);
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/lap.js
+;// ./src/functions/lap.js
 // Horizontal overlap functions
 
 
@@ -13164,21 +13017,21 @@ defineFunction({
 
     if (group.alignment === "clap") {
       // ref: https://www.math.lsu.edu/~aperlis/publications/mathclap/
-      inner = buildCommon.makeSpan([], [buildGroup(group.body, options)]); // wrap, since CSS will center a .clap > .inner > span
+      inner = makeSpan([], [buildGroup(group.body, options)]); // wrap, since CSS will center a .clap > .inner > span
 
-      inner = buildCommon.makeSpan(["inner"], [inner], options);
+      inner = makeSpan(["inner"], [inner], options);
     } else {
-      inner = buildCommon.makeSpan(["inner"], [buildGroup(group.body, options)]);
+      inner = makeSpan(["inner"], [buildGroup(group.body, options)]);
     }
 
-    const fix = buildCommon.makeSpan(["fix"], []);
-    let node = buildCommon.makeSpan([group.alignment], [inner, fix], options); // At this point, we have correctly set horizontal alignment of the
+    const fix = makeSpan(["fix"], []);
+    let node = makeSpan([group.alignment], [inner, fix], options); // At this point, we have correctly set horizontal alignment of the
     // two items involved in the lap.
     // Next, use a strut to set the height of the HTML bounding box.
     // Otherwise, a tall argument may be misplaced.
     // This code resolved issue #1153
 
-    const strut = buildCommon.makeSpan(["strut"]);
+    const strut = makeSpan(["strut"]);
     strut.style.height = makeEm(node.height + node.depth);
 
     if (node.depth) {
@@ -13188,12 +13041,12 @@ defineFunction({
     node.children.unshift(strut); // Next, prevent vertical misplacement when next to something tall.
     // This code resolves issue #1234
 
-    node = buildCommon.makeSpan(["thinbox"], [node], options);
-    return buildCommon.makeSpan(["mord", "vbox"], [node], options);
+    node = makeSpan(["thinbox"], [node], options);
+    return makeSpan(["mord", "vbox"], [node], options);
   },
   mathmlBuilder: (group, options) => {
     // mathllap, mathrlap, mathclap
-    const node = new mathMLTree.MathNode("mpadded", [buildMathML_buildGroup(group.body, options)]);
+    const node = new MathNode("mpadded", [buildMathML_buildGroup(group.body, options)]);
 
     if (group.alignment !== "rlap") {
       const offset = group.alignment === "llap" ? "-1" : "-0.5";
@@ -13204,7 +13057,7 @@ defineFunction({
     return node;
   }
 });
-;// CONCATENATED MODULE: ./src/functions/math.js
+;// ./src/functions/math.js
 
  // Switching from text mode back to math mode
 
@@ -13253,7 +13106,7 @@ defineFunction({
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/mathchoice.js
+;// ./src/functions/mathchoice.js
 
 
 
@@ -13302,22 +13155,22 @@ defineFunction({
   htmlBuilder: (group, options) => {
     const body = chooseMathStyle(group, options);
     const elements = buildExpression(body, options, false);
-    return buildCommon.makeFragment(elements);
+    return makeFragment(elements);
   },
   mathmlBuilder: (group, options) => {
     const body = chooseMathStyle(group, options);
     return buildExpressionRow(body, options);
   }
 });
-;// CONCATENATED MODULE: ./src/functions/utils/assembleSupSub.js
+;// ./src/functions/utils/assembleSupSub.js
 
 
 
  // For an operator with limits, assemble the base, sup, and sub into a span.
 
 const assembleSupSub = (base, supGroup, subGroup, options, style, slant, baseShift) => {
-  base = buildCommon.makeSpan([], [base]);
-  const subIsSingleCharacter = subGroup && utils.isCharacterBox(subGroup);
+  base = makeSpan([], [base]);
+  const subIsSingleCharacter = subGroup && isCharacterBox(subGroup);
   let sub;
   let sup; // We manually have to handle the superscripts and subscripts. This,
   // aside from the kern calculations, is copied from supsub.
@@ -13344,7 +13197,7 @@ const assembleSupSub = (base, supGroup, subGroup, options, style, slant, baseShi
 
   if (sup && sub) {
     const bottom = options.fontMetrics().bigOpSpacing5 + sub.elem.height + sub.elem.depth + sub.kern + base.depth + baseShift;
-    finalGroup = buildCommon.makeVList({
+    finalGroup = makeVList({
       positionType: "bottom",
       positionData: bottom,
       children: [{
@@ -13378,7 +13231,7 @@ const assembleSupSub = (base, supGroup, subGroup, options, style, slant, baseShi
     // but since we are centering the limits adding a full slant of
     // margin will shift by 1/2 that.
 
-    finalGroup = buildCommon.makeVList({
+    finalGroup = makeVList({
       positionType: "top",
       positionData: top,
       children: [{
@@ -13398,7 +13251,7 @@ const assembleSupSub = (base, supGroup, subGroup, options, style, slant, baseShi
     }, options);
   } else if (sup) {
     const bottom = base.depth + baseShift;
-    finalGroup = buildCommon.makeVList({
+    finalGroup = makeVList({
       positionType: "bottom",
       positionData: bottom,
       children: [{
@@ -13428,14 +13281,14 @@ const assembleSupSub = (base, supGroup, subGroup, options, style, slant, baseShi
   if (sub && slant !== 0 && !subIsSingleCharacter) {
     // A negative margin-left was applied to the lower limit.
     // Avoid an overlap by placing a spacer on the left on the group.
-    const spacer = buildCommon.makeSpan(["mspace"], [], options);
+    const spacer = makeSpan(["mspace"], [], options);
     spacer.style.marginRight = makeEm(slant);
     parts.unshift(spacer);
   }
 
-  return buildCommon.makeSpan(["mop", "op-limits"], parts, options);
+  return makeSpan(["mop", "op-limits"], parts, options);
 };
-;// CONCATENATED MODULE: ./src/functions/op.js
+;// ./src/functions/op.js
 // Limits, symbols
 
 
@@ -13448,7 +13301,7 @@ const assembleSupSub = (base, supGroup, subGroup, options, style, slant, baseShi
 
 
 // Most operators have a large successor symbol, but these don't.
-const noSuccessor = ["\\smallint"]; // NOTE: Unlike most `htmlBuilder`s, this one handles not only "op", but also
+const noSuccessor = new Set(["\\smallint"]); // NOTE: Unlike most `htmlBuilder`s, this one handles not only "op", but also
 // "supsub" since some of them (like \int) can affect super/subscripting.
 
 const op_htmlBuilder = (grp, options) => {
@@ -13473,7 +13326,7 @@ const op_htmlBuilder = (grp, options) => {
   const style = options.style;
   let large = false;
 
-  if (style.size === src_Style.DISPLAY.size && group.symbol && !noSuccessor.includes(group.name)) {
+  if (style.size === src_Style.DISPLAY.size && group.symbol && !noSuccessor.has(group.name)) {
     // Most symbol operators get larger in displaystyle (rule 13)
     large = true;
   }
@@ -13492,14 +13345,14 @@ const op_htmlBuilder = (grp, options) => {
       group.name = stash === "oiint" ? "\\iint" : "\\iiint";
     }
 
-    base = buildCommon.makeSymbol(group.name, fontName, "math", options, ["mop", "op-symbol", large ? "large-op" : "small-op"]);
+    base = makeSymbol(group.name, fontName, "math", options, ["mop", "op-symbol", large ? "large-op" : "small-op"]);
 
     if (stash.length > 0) {
       // We're in \oiint or \oiiint. Overlay the oval.
       // TODO: When font glyphs are available, delete this code.
       const italic = base.italic;
-      const oval = buildCommon.staticSvg(stash + "Size" + (large ? "2" : "1"), options);
-      base = buildCommon.makeVList({
+      const oval = staticSvg(stash + "Size" + (large ? "2" : "1"), options);
+      base = makeVList({
         positionType: "individualShift",
         children: [{
           type: "elem",
@@ -13524,7 +13377,7 @@ const op_htmlBuilder = (grp, options) => {
       base = inner[0];
       base.classes[0] = "mop"; // replace old mclass
     } else {
-      base = buildCommon.makeSpan(["mop"], inner, options);
+      base = makeSpan(["mop"], inner, options);
     }
   } else {
     // Otherwise, this is a text operator. Build the text from the
@@ -13532,10 +13385,10 @@ const op_htmlBuilder = (grp, options) => {
     const output = [];
 
     for (let i = 1; i < group.name.length; i++) {
-      output.push(buildCommon.mathsym(group.name[i], group.mode, options));
+      output.push(mathsym(group.name[i], group.mode, options));
     }
 
-    base = buildCommon.makeSpan(["mop"], output, options);
+    base = makeSpan(["mop"], output, options);
   } // If content of op is a single symbol, shift it vertically.
 
 
@@ -13574,14 +13427,14 @@ const op_mathmlBuilder = (group, options) => {
     // This is a symbol. Just add the symbol.
     node = new MathNode("mo", [makeText(group.name, group.mode)]);
 
-    if (noSuccessor.includes(group.name)) {
+    if (noSuccessor.has(group.name)) {
       node.setAttribute("largeop", "false");
     }
   } else if (group.body) {
     // This is an operator with children. Add them.
     node = new MathNode("mo", buildMathML_buildExpression(group.body, options));
   } else {
-    // This is a text operator. Add all of the characters from the
+    // This is a text operator. Add all the characters from the
     // operator's name.
     node = new MathNode("mi", [new TextNode(group.name.slice(1))]); // Append an <mo>&ApplyFunction;</mo>.
     // ref: https://www.w3.org/TR/REC-MathML/chap3_2.html#sec3.2.4
@@ -13763,7 +13616,7 @@ defineFunction({
   htmlBuilder: op_htmlBuilder,
   mathmlBuilder: op_mathmlBuilder
 });
-;// CONCATENATED MODULE: ./src/functions/operatorname.js
+;// ./src/functions/operatorname.js
 
 
 
@@ -13825,9 +13678,9 @@ const operatorname_htmlBuilder = (grp, options) => {
       }
     }
 
-    base = buildCommon.makeSpan(["mop"], expression, options);
+    base = makeSpan(["mop"], expression, options);
   } else {
-    base = buildCommon.makeSpan(["mop"], [], options);
+    base = makeSpan(["mop"], [], options);
   }
 
   if (hasLimits) {
@@ -13846,8 +13699,8 @@ const operatorname_mathmlBuilder = (group, options) => {
   for (let i = 0; i < expression.length; i++) {
     const node = expression[i];
 
-    if (node instanceof mathMLTree.SpaceNode) {// Do nothing
-    } else if (node instanceof mathMLTree.MathNode) {
+    if (node instanceof SpaceNode) {// Do nothing
+    } else if (node instanceof MathNode) {
       switch (node.type) {
         case "mi":
         case "mn":
@@ -13861,7 +13714,7 @@ const operatorname_mathmlBuilder = (group, options) => {
           {
             const child = node.children[0];
 
-            if (node.children.length === 1 && child instanceof mathMLTree.TextNode) {
+            if (node.children.length === 1 && child instanceof TextNode) {
               child.text = child.text.replace(/\u2212/, "-").replace(/\u2217/, "*");
             } else {
               isAllString = false;
@@ -13881,19 +13734,19 @@ const operatorname_mathmlBuilder = (group, options) => {
   if (isAllString) {
     // Write a single TextNode instead of multiple nested tags.
     const word = expression.map(node => node.toText()).join("");
-    expression = [new mathMLTree.TextNode(word)];
+    expression = [new TextNode(word)];
   }
 
-  const identifier = new mathMLTree.MathNode("mi", expression);
+  const identifier = new MathNode("mi", expression);
   identifier.setAttribute("mathvariant", "normal"); // \u2061 is the same as &ApplyFunction;
   // ref: https://www.w3schools.com/charsets/ref_html_entities_a.asp
 
-  const operator = new mathMLTree.MathNode("mo", [makeText("\u2061", "text")]);
+  const operator = new MathNode("mo", [makeText("\u2061", "text")]);
 
   if (group.parentIsSupSub) {
-    return new mathMLTree.MathNode("mrow", [identifier, operator]);
+    return new MathNode("mrow", [identifier, operator]);
   } else {
-    return mathMLTree.newDocumentFragment([identifier, operator]);
+    return newDocumentFragment([identifier, operator]);
   }
 }; // \operatorname
 // amsopn.dtx: \mathop{#1\kern\z@\operator@font#3}\newmcodes@
@@ -13924,7 +13777,7 @@ defineFunction({
   mathmlBuilder: operatorname_mathmlBuilder
 });
 defineMacro("\\operatorname", "\\@ifstar\\operatornamewithlimits\\operatorname@");
-;// CONCATENATED MODULE: ./src/functions/ordgroup.js
+;// ./src/functions/ordgroup.js
 
 
 
@@ -13934,10 +13787,10 @@ defineFunctionBuilders({
 
   htmlBuilder(group, options) {
     if (group.semisimple) {
-      return buildCommon.makeFragment(buildExpression(group.body, options, false));
+      return makeFragment(buildExpression(group.body, options, false));
     }
 
-    return buildCommon.makeSpan(["mord"], buildExpression(group.body, options, true), options);
+    return makeSpan(["mord"], buildExpression(group.body, options, true), options);
   },
 
   mathmlBuilder(group, options) {
@@ -13945,7 +13798,7 @@ defineFunctionBuilders({
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/overline.js
+;// ./src/functions/overline.js
 
 
 
@@ -13975,10 +13828,10 @@ defineFunction({
     // Build the inner group in the cramped style.
     const innerGroup = buildGroup(group.body, options.havingCrampedStyle()); // Create the line above the body
 
-    const line = buildCommon.makeLineSpan("overline-line", options); // Generate the vlist, with the appropriate kerns
+    const line = makeLineSpan("overline-line", options); // Generate the vlist, with the appropriate kerns
 
     const defaultRuleThickness = options.fontMetrics().defaultRuleThickness;
-    const vlist = buildCommon.makeVList({
+    const vlist = makeVList({
       positionType: "firstBaseline",
       children: [{
         type: "elem",
@@ -13994,19 +13847,19 @@ defineFunction({
         size: defaultRuleThickness
       }]
     }, options);
-    return buildCommon.makeSpan(["mord", "overline"], [vlist], options);
+    return makeSpan(["mord", "overline"], [vlist], options);
   },
 
   mathmlBuilder(group, options) {
-    const operator = new mathMLTree.MathNode("mo", [new mathMLTree.TextNode("\u203e")]);
+    const operator = new MathNode("mo", [new TextNode("\u203e")]);
     operator.setAttribute("stretchy", "true");
-    const node = new mathMLTree.MathNode("mover", [buildMathML_buildGroup(group.body, options), operator]);
+    const node = new MathNode("mover", [buildMathML_buildGroup(group.body, options), operator]);
     node.setAttribute("accent", "true");
     return node;
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/phantom.js
+;// ./src/functions/phantom.js
 
 
 
@@ -14034,11 +13887,11 @@ defineFunction({
     const elements = buildExpression(group.body, options.withPhantom(), false); // \phantom isn't supposed to affect the elements it contains.
     // See "color" for more details.
 
-    return buildCommon.makeFragment(elements);
+    return makeFragment(elements);
   },
   mathmlBuilder: (group, options) => {
     const inner = buildMathML_buildExpression(group.body, options);
-    return new mathMLTree.MathNode("mphantom", inner);
+    return new MathNode("mphantom", inner);
   }
 });
 defineFunction({
@@ -14060,7 +13913,7 @@ defineFunction({
     };
   },
   htmlBuilder: (group, options) => {
-    let node = buildCommon.makeSpan([], [buildGroup(group.body, options.withPhantom())]);
+    let node = makeSpan([], [buildGroup(group.body, options.withPhantom())]);
     node.height = 0;
     node.depth = 0;
 
@@ -14072,7 +13925,7 @@ defineFunction({
     } // See smash for comment re: use of makeVList
 
 
-    node = buildCommon.makeVList({
+    node = makeVList({
       positionType: "firstBaseline",
       children: [{
         type: "elem",
@@ -14080,12 +13933,12 @@ defineFunction({
       }]
     }, options); // For spacing, TeX treats \smash as a math group (same spacing as ord).
 
-    return buildCommon.makeSpan(["mord"], [node], options);
+    return makeSpan(["mord"], [node], options);
   },
   mathmlBuilder: (group, options) => {
     const inner = buildMathML_buildExpression(ordargument(group.body), options);
-    const phantom = new mathMLTree.MathNode("mphantom", inner);
-    const node = new mathMLTree.MathNode("mpadded", [phantom]);
+    const phantom = new MathNode("mphantom", inner);
+    const node = new MathNode("mpadded", [phantom]);
     node.setAttribute("height", "0px");
     node.setAttribute("depth", "0px");
     return node;
@@ -14110,19 +13963,19 @@ defineFunction({
     };
   },
   htmlBuilder: (group, options) => {
-    const inner = buildCommon.makeSpan(["inner"], [buildGroup(group.body, options.withPhantom())]);
-    const fix = buildCommon.makeSpan(["fix"], []);
-    return buildCommon.makeSpan(["mord", "rlap"], [inner, fix], options);
+    const inner = makeSpan(["inner"], [buildGroup(group.body, options.withPhantom())]);
+    const fix = makeSpan(["fix"], []);
+    return makeSpan(["mord", "rlap"], [inner, fix], options);
   },
   mathmlBuilder: (group, options) => {
     const inner = buildMathML_buildExpression(ordargument(group.body), options);
-    const phantom = new mathMLTree.MathNode("mphantom", inner);
-    const node = new mathMLTree.MathNode("mpadded", [phantom]);
+    const phantom = new MathNode("mphantom", inner);
+    const node = new MathNode("mpadded", [phantom]);
     node.setAttribute("width", "0px");
     return node;
   }
 });
-;// CONCATENATED MODULE: ./src/functions/raisebox.js
+;// ./src/functions/raisebox.js
 
 
 
@@ -14157,7 +14010,7 @@ defineFunction({
   htmlBuilder(group, options) {
     const body = buildGroup(group.body, options);
     const dy = calculateSize(group.dy, options);
-    return buildCommon.makeVList({
+    return makeVList({
       positionType: "shift",
       positionData: -dy,
       children: [{
@@ -14168,14 +14021,14 @@ defineFunction({
   },
 
   mathmlBuilder(group, options) {
-    const node = new mathMLTree.MathNode("mpadded", [buildMathML_buildGroup(group.body, options)]);
+    const node = new MathNode("mpadded", [buildMathML_buildGroup(group.body, options)]);
     const dy = group.dy.number + group.dy.unit;
     node.setAttribute("voffset", dy);
     return node;
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/relax.js
+;// ./src/functions/relax.js
 
 defineFunction({
   type: "internal",
@@ -14197,7 +14050,7 @@ defineFunction({
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/rule.js
+;// ./src/functions/rule.js
 
 
 
@@ -14232,7 +14085,7 @@ defineFunction({
 
   htmlBuilder(group, options) {
     // Make an empty span for the rule
-    const rule = buildCommon.makeSpan(["mord", "rule"], [], options); // Calculate the shift, width, and height of the rule, and account for units
+    const rule = makeSpan(["mord", "rule"], [], options); // Calculate the shift, width, and height of the rule, and account for units
 
     const width = calculateSize(group.width, options);
     const height = calculateSize(group.height, options);
@@ -14257,11 +14110,11 @@ defineFunction({
     const height = calculateSize(group.height, options);
     const shift = group.shift ? calculateSize(group.shift, options) : 0;
     const color = options.color && options.getColor() || "black";
-    const rule = new mathMLTree.MathNode("mspace");
+    const rule = new MathNode("mspace");
     rule.setAttribute("mathbackground", color);
     rule.setAttribute("width", makeEm(width));
     rule.setAttribute("height", makeEm(height));
-    const wrapper = new mathMLTree.MathNode("mpadded", [rule]);
+    const wrapper = new MathNode("mpadded", [rule]);
 
     if (shift >= 0) {
       wrapper.setAttribute("height", makeEm(shift));
@@ -14275,7 +14128,7 @@ defineFunction({
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/sizing.js
+;// ./src/functions/sizing.js
 
 
 
@@ -14303,7 +14156,7 @@ function sizingGroup(value, options, baseOptions) {
     inner[i].depth *= multiplier;
   }
 
-  return buildCommon.makeFragment(inner);
+  return makeFragment(inner);
 }
 const sizeFuncs = ["\\tiny", "\\sixptsize", "\\scriptsize", "\\footnotesize", "\\small", "\\normalsize", "\\large", "\\Large", "\\LARGE", "\\huge", "\\Huge"];
 const sizing_htmlBuilder = (group, options) => {
@@ -14339,7 +14192,7 @@ defineFunction({
   mathmlBuilder: (group, options) => {
     const newOptions = options.havingSize(group.size);
     const inner = buildMathML_buildExpression(group.body, newOptions);
-    const node = new mathMLTree.MathNode("mstyle", inner); // TODO(emily): This doesn't produce the correct size for nested size
+    const node = new MathNode("mstyle", inner); // TODO(emily): This doesn't produce the correct size for nested size
     // changes, because we don't keep state of what style we're currently
     // in, so we can't reset the size to normal before changing it.  Now
     // that we're passing an options parameter we should be able to fix
@@ -14349,7 +14202,7 @@ defineFunction({
     return node;
   }
 });
-;// CONCATENATED MODULE: ./src/functions/smash.js
+;// ./src/functions/smash.js
 // smash, with optional [tb], as in AMS
 
 
@@ -14409,7 +14262,7 @@ defineFunction({
     };
   },
   htmlBuilder: (group, options) => {
-    const node = buildCommon.makeSpan([], [buildGroup(group.body, options)]);
+    const node = makeSpan([], [buildGroup(group.body, options)]);
 
     if (!group.smashHeight && !group.smashDepth) {
       return node;
@@ -14439,7 +14292,7 @@ defineFunction({
     // from acting on that line height. So we'll call makeVList now.
 
 
-    const smashedNode = buildCommon.makeVList({
+    const smashedNode = makeVList({
       positionType: "firstBaseline",
       children: [{
         type: "elem",
@@ -14447,10 +14300,10 @@ defineFunction({
       }]
     }, options); // For spacing, TeX treats \hphantom as a math group (same spacing as ord).
 
-    return buildCommon.makeSpan(["mord"], [smashedNode], options);
+    return makeSpan(["mord"], [smashedNode], options);
   },
   mathmlBuilder: (group, options) => {
-    const node = new mathMLTree.MathNode("mpadded", [buildMathML_buildGroup(group.body, options)]);
+    const node = new MathNode("mpadded", [buildMathML_buildGroup(group.body, options)]);
 
     if (group.smashHeight) {
       node.setAttribute("height", "0px");
@@ -14463,7 +14316,7 @@ defineFunction({
     return node;
   }
 });
-;// CONCATENATED MODULE: ./src/functions/sqrt.js
+;// ./src/functions/sqrt.js
 
 
 
@@ -14507,7 +14360,7 @@ defineFunction({
     // them in a span.
 
 
-    inner = buildCommon.wrapFragment(inner, options); // Calculate the minimum size for the \surd delimiter
+    inner = wrapFragment(inner, options); // Calculate the minimum size for the \surd delimiter
 
     const metrics = options.fontMetrics();
     const theta = metrics.defaultRuleThickness;
@@ -14525,7 +14378,7 @@ defineFunction({
       span: img,
       ruleWidth,
       advanceWidth
-    } = delimiter.sqrtImage(minDelimiterHeight, options);
+    } = makeSqrtImage(minDelimiterHeight, options);
     const delimDepth = img.height - ruleWidth; // Adjust the clearance based on the delimiter size
 
     if (delimDepth > inner.height + inner.depth + lineClearance) {
@@ -14536,7 +14389,7 @@ defineFunction({
     const imgShift = img.height - inner.height - lineClearance - ruleWidth;
     inner.style.paddingLeft = makeEm(advanceWidth); // Overlay the image and the argument.
 
-    const body = buildCommon.makeVList({
+    const body = makeVList({
       positionType: "firstBaseline",
       children: [{
         type: "elem",
@@ -14555,7 +14408,7 @@ defineFunction({
     }, options);
 
     if (!group.index) {
-      return buildCommon.makeSpan(["mord", "sqrt"], [body], options);
+      return makeSpan(["mord", "sqrt"], [body], options);
     } else {
       // Handle the optional root index
       // The index is always in scriptscript style
@@ -14565,7 +14418,7 @@ defineFunction({
 
       const toShift = 0.6 * (body.height - body.depth); // Build a VList with the superscript shifted up correctly
 
-      const rootVList = buildCommon.makeVList({
+      const rootVList = makeVList({
         positionType: "shift",
         positionData: -toShift,
         children: [{
@@ -14575,8 +14428,8 @@ defineFunction({
       }, options); // Add a class surrounding it so we can add on the appropriate
       // kerning
 
-      const rootVListWrap = buildCommon.makeSpan(["root"], [rootVList]);
-      return buildCommon.makeSpan(["mord", "sqrt"], [rootVListWrap, body], options);
+      const rootVListWrap = makeSpan(["root"], [rootVList]);
+      return makeSpan(["mord", "sqrt"], [rootVListWrap, body], options);
     }
   },
 
@@ -14585,11 +14438,11 @@ defineFunction({
       body,
       index
     } = group;
-    return index ? new mathMLTree.MathNode("mroot", [buildMathML_buildGroup(body, options), buildMathML_buildGroup(index, options)]) : new mathMLTree.MathNode("msqrt", [buildMathML_buildGroup(body, options)]);
+    return index ? new MathNode("mroot", [buildMathML_buildGroup(body, options), buildMathML_buildGroup(index, options)]) : new MathNode("msqrt", [buildMathML_buildGroup(body, options)]);
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/styling.js
+;// ./src/functions/styling.js
 
 
 
@@ -14644,7 +14497,7 @@ defineFunction({
     const newStyle = styling_styleMap[group.style];
     const newOptions = options.havingStyle(newStyle);
     const inner = buildMathML_buildExpression(group.body, newOptions);
-    const node = new mathMLTree.MathNode("mstyle", inner);
+    const node = new MathNode("mstyle", inner);
     const styleAttributes = {
       "display": ["0", "true"],
       "text": ["0", "false"],
@@ -14658,7 +14511,7 @@ defineFunction({
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/supsub.js
+;// ./src/functions/supsub.js
 
 
 
@@ -14694,7 +14547,7 @@ const htmlBuilderDelegate = function (group, options) {
     const delegate = base.alwaysHandleSupSub && (options.style.size === src_Style.DISPLAY.size || base.limits);
     return delegate ? operatorname_htmlBuilder : null;
   } else if (base.type === "accent") {
-    return utils.isCharacterBox(base.base) ? htmlBuilder : null;
+    return isCharacterBox(base.base) ? htmlBuilder : null;
   } else if (base.type === "horizBrace") {
     const isSup = !group.sub;
     return isSup === base.isOver ? horizBrace_htmlBuilder : null;
@@ -14731,13 +14584,13 @@ defineFunctionBuilders({
 
     let supShift = 0;
     let subShift = 0;
-    const isCharacterBox = valueBase && utils.isCharacterBox(valueBase);
+    const isCharBox = valueBase && isCharacterBox(valueBase);
 
     if (valueSup) {
       const newOptions = options.havingStyle(options.style.sup());
       supm = buildGroup(valueSup, newOptions, options);
 
-      if (!isCharacterBox) {
+      if (!isCharBox) {
         supShift = base.height - newOptions.fontMetrics().supDrop * newOptions.sizeMultiplier / options.sizeMultiplier;
       }
     }
@@ -14746,7 +14599,7 @@ defineFunctionBuilders({
       const newOptions = options.havingStyle(options.style.sub());
       subm = buildGroup(valueSub, newOptions, options);
 
-      if (!isCharacterBox) {
+      if (!isCharBox) {
         subShift = base.depth + newOptions.fontMetrics().subDrop * newOptions.sizeMultiplier / options.sizeMultiplier;
       }
     } // Rule 18c
@@ -14811,7 +14664,7 @@ defineFunctionBuilders({
         shift: -supShift,
         marginRight
       }];
-      supsub = buildCommon.makeVList({
+      supsub = makeVList({
         positionType: "individualShift",
         children: vlistElem
       }, options);
@@ -14824,7 +14677,7 @@ defineFunctionBuilders({
         marginLeft,
         marginRight
       }];
-      supsub = buildCommon.makeVList({
+      supsub = makeVList({
         positionType: "shift",
         positionData: subShift,
         children: vlistElem
@@ -14832,7 +14685,7 @@ defineFunctionBuilders({
     } else if (supm) {
       // Rule 18c, d
       supShift = Math.max(supShift, minSupShift, supm.depth + 0.25 * metrics.xHeight);
-      supsub = buildCommon.makeVList({
+      supsub = makeVList({
         positionType: "shift",
         positionData: -supShift,
         children: [{
@@ -14847,7 +14700,7 @@ defineFunctionBuilders({
 
 
     const mclass = getTypeOfDomTree(base, "right") || "mord";
-    return buildCommon.makeSpan([mclass], [base, buildCommon.makeSpan(["msupsub"], [supsub])], options);
+    return makeSpan([mclass], [base, makeSpan(["msupsub"], [supsub])], options);
   },
 
   mathmlBuilder(group, options) {
@@ -14915,11 +14768,11 @@ defineFunctionBuilders({
       }
     }
 
-    return new mathMLTree.MathNode(nodeType, children);
+    return new MathNode(nodeType, children);
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/symbolsOp.js
+;// ./src/functions/symbolsOp.js
 
 
 
@@ -14929,11 +14782,11 @@ defineFunctionBuilders({
   type: "atom",
 
   htmlBuilder(group, options) {
-    return buildCommon.mathsym(group.text, group.mode, options, ["m" + group.family]);
+    return mathsym(group.text, group.mode, options, ["m" + group.family]);
   },
 
   mathmlBuilder(group, options) {
-    const node = new mathMLTree.MathNode("mo", [makeText(group.text, group.mode)]);
+    const node = new MathNode("mo", [makeText(group.text, group.mode)]);
 
     if (group.family === "bin") {
       const variant = getVariant(group, options);
@@ -14953,7 +14806,7 @@ defineFunctionBuilders({
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/symbolsOrd.js
+;// ./src/functions/symbolsOrd.js
 
 
 
@@ -14969,11 +14822,11 @@ defineFunctionBuilders({
   type: "mathord",
 
   htmlBuilder(group, options) {
-    return buildCommon.makeOrd(group, options, "mathord");
+    return makeOrd(group, options, "mathord");
   },
 
   mathmlBuilder(group, options) {
-    const node = new mathMLTree.MathNode("mi", [makeText(group.text, group.mode, options)]);
+    const node = new MathNode("mi", [makeText(group.text, group.mode, options)]);
     const variant = getVariant(group, options) || "italic";
 
     if (variant !== defaultVariant[node.type]) {
@@ -14988,7 +14841,7 @@ defineFunctionBuilders({
   type: "textord",
 
   htmlBuilder(group, options) {
-    return buildCommon.makeOrd(group, options, "textord");
+    return makeOrd(group, options, "textord");
   },
 
   mathmlBuilder(group, options) {
@@ -14997,13 +14850,13 @@ defineFunctionBuilders({
     let node;
 
     if (group.mode === 'text') {
-      node = new mathMLTree.MathNode("mtext", [text]);
+      node = new MathNode("mtext", [text]);
     } else if (/[0-9]/.test(group.text)) {
-      node = new mathMLTree.MathNode("mn", [text]);
+      node = new MathNode("mn", [text]);
     } else if (group.text === "\\prime") {
-      node = new mathMLTree.MathNode("mo", [text]);
+      node = new MathNode("mo", [text]);
     } else {
-      node = new mathMLTree.MathNode("mi", [text]);
+      node = new MathNode("mi", [text]);
     }
 
     if (variant !== defaultVariant[node.type]) {
@@ -15014,7 +14867,7 @@ defineFunctionBuilders({
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/symbolsSpacing.js
+;// ./src/functions/symbolsSpacing.js
 
 
 
@@ -15052,15 +14905,15 @@ defineFunctionBuilders({
       // into appropriate outputs.
 
       if (group.mode === "text") {
-        const ord = buildCommon.makeOrd(group, options, "textord");
+        const ord = makeOrd(group, options, "textord");
         ord.classes.push(className);
         return ord;
       } else {
-        return buildCommon.makeSpan(["mspace", className], [buildCommon.mathsym(group.text, group.mode, options)], options);
+        return makeSpan(["mspace", className], [mathsym(group.text, group.mode, options)], options);
       }
     } else if (cssSpace.hasOwnProperty(group.text)) {
       // Spaces based on just a CSS class.
-      return buildCommon.makeSpan(["mspace", cssSpace[group.text]], [], options);
+      return makeSpan(["mspace", cssSpace[group.text]], [], options);
     } else {
       throw new src_ParseError("Unknown type of space \"" + group.text + "\"");
     }
@@ -15070,10 +14923,10 @@ defineFunctionBuilders({
     let node;
 
     if (regularSpace.hasOwnProperty(group.text)) {
-      node = new mathMLTree.MathNode("mtext", [new mathMLTree.TextNode("\u00a0")]);
+      node = new MathNode("mtext", [new TextNode("\u00a0")]);
     } else if (cssSpace.hasOwnProperty(group.text)) {
       // CSS-based MathML spaces (\nobreak, \allowbreak) are ignored
-      return new mathMLTree.MathNode("mspace");
+      return new MathNode("mspace");
     } else {
       throw new src_ParseError("Unknown type of space \"" + group.text + "\"");
     }
@@ -15082,13 +14935,13 @@ defineFunctionBuilders({
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/tag.js
+;// ./src/functions/tag.js
 
 
 
 
 const pad = () => {
-  const padNode = new mathMLTree.MathNode("mtd", []);
+  const padNode = new MathNode("mtd", []);
   padNode.setAttribute("width", "50%");
   return padNode;
 };
@@ -15097,7 +14950,7 @@ defineFunctionBuilders({
   type: "tag",
 
   mathmlBuilder(group, options) {
-    const table = new mathMLTree.MathNode("mtable", [new mathMLTree.MathNode("mtr", [pad(), new mathMLTree.MathNode("mtd", [buildExpressionRow(group.body, options)]), pad(), new mathMLTree.MathNode("mtd", [buildExpressionRow(group.tag, options)])])]);
+    const table = new MathNode("mtable", [new MathNode("mtr", [pad(), new MathNode("mtd", [buildExpressionRow(group.body, options)]), pad(), new MathNode("mtd", [buildExpressionRow(group.tag, options)])])]);
     table.setAttribute("width", "100%");
     return table; // TODO: Left-aligned tags.
     // Currently, the group and options passed here do not contain
@@ -15109,7 +14962,7 @@ defineFunctionBuilders({
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/text.js
+;// ./src/functions/text.js
 
 
 
@@ -15177,7 +15030,7 @@ defineFunction({
   htmlBuilder(group, options) {
     const newOptions = optionsWithFont(group, options);
     const inner = buildExpression(group.body, newOptions, true);
-    return buildCommon.makeSpan(["mord", "text"], inner, newOptions);
+    return makeSpan(["mord", "text"], inner, newOptions);
   },
 
   mathmlBuilder(group, options) {
@@ -15186,7 +15039,7 @@ defineFunction({
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/underline.js
+;// ./src/functions/underline.js
 
 
 
@@ -15216,10 +15069,10 @@ defineFunction({
     // Build the inner group.
     const innerGroup = buildGroup(group.body, options); // Create the line to go below the body
 
-    const line = buildCommon.makeLineSpan("underline-line", options); // Generate the vlist, with the appropriate kerns
+    const line = makeLineSpan("underline-line", options); // Generate the vlist, with the appropriate kerns
 
     const defaultRuleThickness = options.fontMetrics().defaultRuleThickness;
-    const vlist = buildCommon.makeVList({
+    const vlist = makeVList({
       positionType: "top",
       positionData: innerGroup.height,
       children: [{
@@ -15236,19 +15089,19 @@ defineFunction({
         elem: innerGroup
       }]
     }, options);
-    return buildCommon.makeSpan(["mord", "underline"], [vlist], options);
+    return makeSpan(["mord", "underline"], [vlist], options);
   },
 
   mathmlBuilder(group, options) {
-    const operator = new mathMLTree.MathNode("mo", [new mathMLTree.TextNode("\u203e")]);
+    const operator = new MathNode("mo", [new TextNode("\u203e")]);
     operator.setAttribute("stretchy", "true");
-    const node = new mathMLTree.MathNode("munder", [buildMathML_buildGroup(group.body, options), operator]);
+    const node = new MathNode("munder", [buildMathML_buildGroup(group.body, options), operator]);
     node.setAttribute("accentunder", "true");
     return node;
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/vcenter.js
+;// ./src/functions/vcenter.js
 
 
 
@@ -15280,7 +15133,7 @@ defineFunction({
     const body = buildGroup(group.body, options);
     const axisHeight = options.fontMetrics().axisHeight;
     const dy = 0.5 * (body.height - axisHeight - (body.depth + axisHeight));
-    return buildCommon.makeVList({
+    return makeVList({
       positionType: "shift",
       positionData: dy,
       children: [{
@@ -15294,11 +15147,11 @@ defineFunction({
     // There is no way to do this in MathML.
     // Write a class as a breadcrumb in case some post-processor wants
     // to perform a vcenter adjustment.
-    return new mathMLTree.MathNode("mpadded", [buildMathML_buildGroup(group.body, options)], ["vcenter"]);
+    return new MathNode("mpadded", [buildMathML_buildGroup(group.body, options)], ["vcenter"]);
   }
 
 });
-;// CONCATENATED MODULE: ./src/functions/verb.js
+;// ./src/functions/verb.js
 
 
 
@@ -15332,15 +15185,15 @@ defineFunction({
         c = '\\textasciitilde';
       }
 
-      body.push(buildCommon.makeSymbol(c, "Typewriter-Regular", group.mode, newOptions, ["mord", "texttt"]));
+      body.push(makeSymbol(c, "Typewriter-Regular", group.mode, newOptions, ["mord", "texttt"]));
     }
 
-    return buildCommon.makeSpan(["mord", "text"].concat(newOptions.sizingClasses(options)), buildCommon.tryCombineChars(body), newOptions);
+    return makeSpan(["mord", "text"].concat(newOptions.sizingClasses(options)), tryCombineChars(body), newOptions);
   },
 
   mathmlBuilder(group, options) {
-    const text = new mathMLTree.TextNode(makeVerb(group));
-    const node = new mathMLTree.MathNode("mtext", [text]);
+    const text = new TextNode(makeVerb(group));
+    const node = new MathNode("mtext", [text]);
     node.setAttribute("mathvariant", "monospace");
     return node;
   }
@@ -15354,7 +15207,7 @@ defineFunction({
  */
 
 const makeVerb = group => group.body.replace(/ /g, group.star ? '\u2423' : '\xA0');
-;// CONCATENATED MODULE: ./src/functions.js
+;// ./src/functions.js
 /** Include this to ensure that all functions are defined. */
 
 const functions = _functions;
@@ -15407,7 +15260,7 @@ const functions = _functions;
 
 
 
-;// CONCATENATED MODULE: ./src/Lexer.js
+;// ./src/Lexer.js
 /**
  * The Lexer class handles tokenizing the input in various ways. Since our
  * parser expects us to be able to backtrack, the lexer allows lexing from any
@@ -15530,7 +15383,7 @@ class Lexer {
   }
 
 }
-;// CONCATENATED MODULE: ./src/Namespace.js
+;// ./src/Namespace.js
 /**
  * A `Namespace` refers to a space of nameable things like macros or lengths,
  * which can be `set` either globally or local to a nested group, using an
@@ -15674,7 +15527,7 @@ class Namespace {
   }
 
 }
-;// CONCATENATED MODULE: ./src/macros.js
+;// ./src/macros.js
 /**
  * Predefined macros for KaTeX.
  * This can be used to define some commands in terms of others.
@@ -15993,7 +15846,7 @@ defineMacro("\\underbar", "\\underline{\\text{#1}}"); // \not is defined by base
 // width but extends to the right.  We use \rlap to get that spacing.
 // For MathML we write U+0338 here. buildMathML.js will then do the overlay.
 
-defineMacro("\\not", '\\html@mathml{\\mathrel{\\mathrlap\\@not}}{\\char"338}'); // Negated symbols from base/fontmath.ltx:
+defineMacro("\\not", "\\html@mathml{\\mathrel{\\mathrlap\\@not}\\nobreak}" + "{\\char\"338}"); // Negated symbols from base/fontmath.ltx:
 // \def\neq{\not=} \let\ne=\neq
 // \DeclareRobustCommand
 //   \notin{\mathrel{\m@th\mathpalette\c@ncel\in}}
@@ -16127,6 +15980,7 @@ const dotsByToken = {
   // Symbols whose definition starts with \DOTSX:
   '\\DOTSX': '\\dotsx'
 };
+const dotsbGroups = new Set(['bin', 'rel']);
 defineMacro("\\dots", function (context) {
   // TODO: If used in text mode, should expand to \textellipsis.
   // However, in KaTeX, \textellipsis and \ldots behave the same
@@ -16141,7 +15995,7 @@ defineMacro("\\dots", function (context) {
   } else if (next.slice(0, 4) === '\\not') {
     thedots = '\\dotsb';
   } else if (next in src_symbols.math) {
-    if (['bin', 'rel'].includes(src_symbols.math[next].group)) {
+    if (dotsbGroups.has(src_symbols.math[next].group)) {
       thedots = '\\dotsb';
     }
   }
@@ -16636,7 +16490,7 @@ defineMacro("\\grayH", "\\textcolor{##3b3e40}{#1}");
 defineMacro("\\grayI", "\\textcolor{##21242c}{#1}");
 defineMacro("\\kaBlue", "\\textcolor{##314453}{#1}");
 defineMacro("\\kaGreen", "\\textcolor{##71B307}{#1}");
-;// CONCATENATED MODULE: ./src/MacroExpander.js
+;// ./src/MacroExpander.js
 /**
  * This file contains the “gullet” where macros are expanded
  * until only non-macro tokens remain.
@@ -17123,10 +16977,10 @@ class MacroExpander {
     if (typeof expansion === "string") {
       let numArgs = 0;
 
-      if (expansion.indexOf("#") !== -1) {
+      if (expansion.includes("#")) {
         const stripped = expansion.replace(/##/g, "");
 
-        while (stripped.indexOf("#" + (numArgs + 1)) !== -1) {
+        while (stripped.includes("#" + (numArgs + 1))) {
           ++numArgs;
         }
       }
@@ -17173,7 +17027,7 @@ class MacroExpander {
   }
 
 }
-;// CONCATENATED MODULE: ./src/unicodeSupOrSub.js
+;// ./src/unicodeSupOrSub.js
 // Helpers for Parser.js handling of Unicode (sub|super)script characters.
 const unicodeSubRegEx = /^[₊₋₌₍₎₀₁₂₃₄₅₆₇₈₉ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓᵦᵧᵨᵩᵪ]/;
 const uSubsAndSups = Object.freeze({
@@ -17280,7 +17134,7 @@ const uSubsAndSups = Object.freeze({
   '\u1D61': 'χ',
   '\u1DBF': 'θ'
 });
-;// CONCATENATED MODULE: ./src/Parser.js
+;// ./src/Parser.js
 /* eslint no-constant-condition:0 */
 
 
@@ -17862,7 +17716,7 @@ class Parser {
 
       const lex = this.fetch();
 
-      if (Parser.endOfExpression.indexOf(lex.text) !== -1) {
+      if (Parser.endOfExpression.has(lex.text)) {
         break;
       }
 
@@ -18714,7 +18568,7 @@ class Parser {
     let symbol;
 
     if (src_symbols[this.mode][text]) {
-      if (this.settings.strict && this.mode === 'math' && extraLatin.indexOf(text) >= 0) {
+      if (this.settings.strict && this.mode === 'math' && extraLatin.includes(text)) {
         this.settings.reportNonstrict("unicodeTextInMathMode", "Latin-1/Unicode text character \"" + text[0] + "\" used in " + "math mode", nucleus);
       }
 
@@ -18805,8 +18659,8 @@ class Parser {
   }
 
 }
-Parser.endOfExpression = ["}", "\\endgroup", "\\end", "\\right", "&"];
-;// CONCATENATED MODULE: ./src/parseTree.js
+Parser.endOfExpression = new Set(["}", "\\endgroup", "\\end", "\\right", "&"]);
+;// ./src/parseTree.js
 /**
  * Provides a single function for parsing an expression using a Parser
  * TODO(emily): Remove this
@@ -18849,7 +18703,7 @@ const parseTree = function (toParse, settings) {
 };
 
 /* harmony default export */ var src_parseTree = (parseTree);
-;// CONCATENATED MODULE: ./katex.js
+;// ./katex.js
 /* eslint no-console:0 */
 
 /**
@@ -18921,7 +18775,7 @@ const renderError = function (error, expression, options) {
     throw error;
   }
 
-  const node = buildCommon.makeSpan(["katex-error"], [new SymbolNode(expression)]);
+  const node = makeSpan(["katex-error"], [new SymbolNode(expression)]);
   node.setAttribute("title", error.toString());
   node.setAttribute("style", "color:" + options.errorColor);
   return node;
@@ -18959,7 +18813,7 @@ const renderToHTMLTree = function (expression, options) {
   }
 };
 
-const version = "0.16.28";
+const version = "0.16.33";
 const __domTree = {
   Span: Span,
   Anchor: Anchor,
@@ -19061,7 +18915,7 @@ const __domTree = {
    */
   __domTree
 });
-;// CONCATENATED MODULE: ./katex.webpack.js
+;// ./katex.webpack.js
 /**
  * This is the webpack entry point for KaTeX. As ECMAScript, flow[1] and jest[2]
  * doesn't support CSS modules natively, a separate entry point is used and

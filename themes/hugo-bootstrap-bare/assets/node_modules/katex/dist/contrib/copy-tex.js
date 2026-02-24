@@ -12,7 +12,7 @@ return /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 var __webpack_exports__ = {};
 
-;// CONCATENATED MODULE: ./contrib/copy-tex/katex2tex.js
+;// ./contrib/copy-tex/katex2tex.js
 // Set these to how you want inline and display math to be delimited.
 const defaultCopyDelimiters = {
   inline: ['$', '$'],
@@ -72,7 +72,7 @@ function katexReplaceWithTex(fragment, copyDelimiters) {
   return fragment;
 }
 /* harmony default export */ var katex2tex = (katexReplaceWithTex);
-;// CONCATENATED MODULE: ./contrib/copy-tex/copy-tex.js
+;// ./contrib/copy-tex/copy-tex.js
  // Return <div class="katex"> element containing node, or null if not found.
 
 function closestKatex(node) {

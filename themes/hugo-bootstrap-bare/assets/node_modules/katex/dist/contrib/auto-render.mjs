@@ -170,7 +170,7 @@ var renderElem = function renderElem(elem, optionsCopy) {
       (function () {
         // Element node
         var className = ' ' + childNode.className + ' ';
-        var shouldRender = optionsCopy.ignoredTags.indexOf(childNode.nodeName.toLowerCase()) === -1 && optionsCopy.ignoredClasses.every(x => className.indexOf(' ' + x + ' ') === -1);
+        var shouldRender = !optionsCopy.ignoredTags.has(childNode.nodeName.toLowerCase()) && optionsCopy.ignoredClasses.every(x => !className.includes(' ' + x + ' '));
 
         if (shouldRender) {
           renderElem(childNode, optionsCopy);
@@ -232,7 +232,7 @@ var renderMathInElement = function renderMathInElement(elem, options) {
     right: "\\]",
     display: true
   }];
-  optionsCopy.ignoredTags = optionsCopy.ignoredTags || ["script", "noscript", "style", "textarea", "pre", "code", "option"];
+  optionsCopy.ignoredTags = new Set(optionsCopy.ignoredTags || ["script", "noscript", "style", "textarea", "pre", "code", "option"]);
   optionsCopy.ignoredClasses = optionsCopy.ignoredClasses || [];
   optionsCopy.errorCallback = optionsCopy.errorCallback || console.error; // Enable sharing of global macros defined via `\gdef` between different
   // math elements within a single call to `renderMathInElement`.
