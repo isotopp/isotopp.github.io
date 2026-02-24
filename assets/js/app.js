@@ -140,8 +140,10 @@
          // This adds the date after the post title
          var adate = document.createElement('small');
          adate.classList.add('text-secondary');
-         var postDate = new Date( result.date );
-         adate.innerText = " ("+ postDate.getFullYear()+"-"+ ('0'+postDate.getMonth()).slice(-2) +"-"+ ('0'+postDate.getDay()).slice(-2) +")";
+         var postDate = new Date(result.date);
+         var month = ('0' + (postDate.getUTCMonth() + 1)).slice(-2);
+         var day = ('0' + postDate.getUTCDate()).slice(-2);
+         adate.innerText = " (" + postDate.getUTCFullYear() + "-" + month + "-" + day + ")";
 
          li.append(ahref);
 

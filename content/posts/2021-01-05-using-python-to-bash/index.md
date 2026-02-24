@@ -94,7 +94,8 @@ and that needs parsing to be useful for anything. You'd not do that at all in Py
 from pathlib import Path
 s = Path("/dev/null").stat()
 print(s)
-
+```
+```console
 os.stat_result(st_mode=8630, st_ino=6, st_dev=6, st_nlink=1, st_uid=0, st_gid=0, st_size=0, st_atime=1607339753, st_mtime=1607339753, st_ctime=1607339753)
 ```
 
@@ -119,7 +120,8 @@ lvs_output = json.loads(lvs.stdout)
 
 for k in lvs_output['report'][0]['lv']:
   print(k['lv_name'], k['lv_size'])
-
+```
+```console
 blogbackup 20.00g
 dedibackup 100.00g
 disk_images 40.00g
@@ -185,9 +187,6 @@ args = parser.parse_args()
 
 print(args.size, type(args.size))
 ```
-
-and
-
 ```console
 $ ./keks.py --help
 usage: keks.py [-h] [--size SIZE]
@@ -221,9 +220,6 @@ def size(size):
 if __name__ == '__main__':
     size()
 ```
-
-and
-
 ```console
 $ ./probe.py  --help
 Usage: probe.py [OPTIONS]
@@ -282,4 +278,3 @@ And of course, we already mentioned [`subprocess.run()`](https://docs.python.org
 
 - [Various System Shells](https://www.in-ulm.de/~mascheck/various/shells/): Shell inconsistencies
 - [What exactly was the point of `[ "x$var" = "xval" ]`?](https://www.vidarholen.net/contents/blog/?p=1035): How a simple `test` can fail.
-
