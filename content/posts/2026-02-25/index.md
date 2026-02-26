@@ -171,7 +171,7 @@ for their space hardened compute.
 The same amount of transistors for a H100 would be a 0.2 m^2 slab,
 which also means that energy goes up and clock goes down, down, down.
 
-Some compute ins pace runs on 28 nm structures, so a 50x times area increase compared to a H100.
+Some compute in space runs on 28 nm structures, so a 50x times area increase compared to a H100.
 That's 40.000 mm^2 for the same amount of transistors.
 
 Or, in other words, a GPU does not work in space.
