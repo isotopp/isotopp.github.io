@@ -21,7 +21,7 @@ This is how to do it in Hugo:
 This goes into `layouts/partial/debug-context.html`:
 
 ```html
-{{- if not hugo.IsDevelopment -}}
+{{- if not hugo.IsServer -}}
 {{- return -}}
 {{- end -}}
 
@@ -90,6 +90,10 @@ And we can then put this into any of our pages:
 {{</* debug-context */>}}
 ```
 
-The result renders only to anything at all if `hugo.IsDevelopment` is true.
+The result renders only to anything at all if `hugo.IsServer` is true.
 
+Here is the Shortcode, it should not render in the blog.
+
+Start of Shortcode:
 {{< debug-context >}}
+End of Shortcode
