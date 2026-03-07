@@ -89,11 +89,3 @@ And we can then put this into any of our pages:
 ```markdown
 {{</* debug-context */>}}
 ```
-
-The result renders only to anything at all if `hugo.IsServer` is true.
-
-Here is the Shortcode, it should not render in the blog.
-
-Start of Shortcode:
-{{< debug-context >}}
-End of Shortcode
