@@ -78,7 +78,7 @@ RelPermalink: {{ printf "%[1]v (%[1]T)" $ctx.RelPermalink }}
 </div>
 ```
 
-We also define a shortcode that calls the partial in `layouts/shortcodes/debug-context.html:
+We also define a shortcode that calls the partial in `layouts/shortcodes/debug-context.html`:
 
 ```html
 {{- partial "debug-context.html" .Page -}}
