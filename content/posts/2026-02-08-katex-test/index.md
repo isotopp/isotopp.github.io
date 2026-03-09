@@ -8,6 +8,7 @@ tags:
   - math
   - lang_en
 title: KaTeX Test
+katex: true
 ---
 This is a KaTeX rendering test post.
 

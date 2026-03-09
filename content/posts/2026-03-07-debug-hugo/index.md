@@ -21,9 +21,7 @@ This is how to do it in Hugo:
 This goes into `layouts/partial/debug-context.html`:
 
 ```html
-{{- if not hugo.IsServer -}}
-{{- return -}}
-{{- end -}}
+{{- if hugo.IsServer -}}
 
 <!-- partial "debug-context.html" . -->
 {{- $ctx := . -}}
@@ -76,6 +74,7 @@ Permalink: {{ printf "%[1]v (%[1]T)" $ctx.Permalink }}
 RelPermalink: {{ printf "%[1]v (%[1]T)" $ctx.RelPermalink }}
   </pre>
 </div>
+{{- end -}}
 ```
 
 We also define a shortcode that calls the partial in `layouts/shortcodes/debug-context.html`:
