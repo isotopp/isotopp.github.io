@@ -39,16 +39,19 @@
 
 # JavaScript Dependency Status & Refresh Plan
 
-(as of 2026-Feb-24, remind the user to run a check at least once a month, and then perform it when authorized)
+(as of 2026-Mar-09, remind the user to run a check at least once a month, and then perform it when authorized)
 
-Checked from `themes/hugo-bootstrap-bare/assets` with `npm outdated` (no network errors) and found no outdated packages.
+Checked from `themes/hugo-bootstrap-bare/assets` with:
+- `npm outdated` to identify direct dependency updates;
+- `yarn upgrade` to refresh locked transitive versions within existing semver ranges.
 
 | Package   | Current | Latest | Needs Update? |
 |-----------|---------|--------|---------------|
 | bootstrap | 5.3.8   | 5.3.8  | No            |
 | lunr      | 2.3.9   | 2.3.9  | No            |
 | mermaid   | 11.12.3 | 11.12.3| No            |
-| katex     | 0.16.33 | 0.16.33| No            |
+| katex     | 0.16.38 | 0.16.38| No            |
+
 
 Because everything is current, no refresh is required right now. Should a new release appear, follow the plan below for each dependency that becomes outdated:
 
