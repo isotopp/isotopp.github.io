@@ -265,13 +265,21 @@
          return;
        }
 
+       var enableSingleDollar = document.body &&
+         document.body.dataset &&
+         document.body.dataset.katexSingleDollar === "true";
+       var delimiters = [
+         { left: "$$", right: "$$", display: true },
+         { left: "\\[", right: "\\]", display: true },
+         { left: "\\(", right: "\\)", display: false }
+       ];
+       if (enableSingleDollar) {
+         // Keep single-$ opt-in per page to avoid false positives on currency text.
+         delimiters.splice(2, 0, { left: "$", right: "$", display: false });
+       }
+
        renderMathInElement(document.body, {
-         delimiters: [
-           { left: "$$", right: "$$", display: true },
-           { left: "\\[", right: "\\]", display: true },
-           { left: "$", right: "$", display: false },
-           { left: "\\(", right: "\\)", display: false }
-         ],
+         delimiters: delimiters,
          throwOnError: false,
          strict: "warn"
        });
