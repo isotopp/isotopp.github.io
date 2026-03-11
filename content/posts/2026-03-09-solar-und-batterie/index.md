@@ -144,14 +144,12 @@ aber das belastet eine Wirtschaftlichtkeits-Rechnung zur Zeit sehr.
 
 Viele Pflanzen machen das ganz ähnlich.
 
-[Wikipedia Photosynthetic Efficiency](https://
-en.wikipedia.org/wiki/Photosynthetic_efficiency)
+[Wikipedia Photosynthetic Efficiency](https://en.wikipedia.org/wiki/Photosynthetic_efficiency)
 
 >  For actual sunlight, where only 45% of the light is in the photosynthetically active spectrum,
 > the theoretical maximum efficiency of solar energy conversion is approximately 11%.
 
-Das theoretische Maximum ist ca. 30% [Shockley-Queisser Limit](https://
-en.wikipedia.org/wiki/Shockley%E2%80%93Queisser_limit).
+Das theoretische Maximum ist ca. 30% [Shockley-Queisser Limit](https://en.wikipedia.org/wiki/Shockley%E2%80%93Queisser_limit).
 
 Und viele Pflanzen sind sehr effizient bei niedriger Einstrahlung (unter 100W/qm):
 
