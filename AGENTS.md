@@ -70,3 +70,29 @@ Document any breaking changes from upstream in `AGENTS.md` for the next maintain
 3. Adjust styling in `assets/sass/` (not the theme’s copy) and JS in `assets/js/`; Hugo automatically takes care of bundling via the overridden partials.
 4. Template changes belong under `layouts/` so they override the theme cleanly; if you don’t find a partial there, check the theme directory before adding duplicates.
 5. Keep Git submodules (the theme) intact; if you update them, ensure `themes/hugo-bootstrap-bare` stays in sync and that GitHub Pages builds still run with submodules enabled.
+
+## Writing Style (Observed in 2025-2026 Posts)
+
+Use this as a style target when drafting or editing post copy.
+
+### German (`lang_de`)
+- Voice: direct, opinionated, practical; prefer clear claims over hedged language.
+- Structure: start with context/problem, then reasoning, then conclusion or recommendation.
+- Evidence: use concrete numbers, units, and real observations (`kWh`, `EUR/kWh`, temperatures, time windows).
+- Paragraphing: short to medium paragraphs; one main idea per paragraph.
+- Headings: explicit, informative section titles; use `#` / `##` to separate argument steps.
+- Lists: use bullet lists for tradeoffs, setup facts, and actionable steps.
+- Links and references: include source links inline when stating external facts.
+- Tone details: plain-spoken technical German is preferred; occasional sharp phrasing is acceptable if content remains factual.
+- Language mix: German body text can keep established technical English terms (for example `Capex`, `E/P Ratio`, `Home Assistant`).
+
+### English (`lang_en`)
+- Voice: explanatory and assertive, with a conversational first-person perspective.
+- Structure: open with a concrete statement/question, then step through mechanics, then summarize implications.
+- Evidence: anchor claims in measurements, code output, reproducible commands, or cited sources.
+- Paragraphing: sentence-wrapped prose is common; keep paragraphs compact and readable in raw Markdown.
+- Headings: use clear topical headings for each conceptual block (`#`, `##`).
+- Code and commands: include runnable snippets and short interpretation text after each snippet.
+- Lists: use bullets for constraints, pros/cons, and conclusions.
+- Tone details: be pragmatic and specific; avoid marketing language and vague abstractions.
+- Technical style: prefer precise terminology and concrete examples over generic best-practice phrasing.
