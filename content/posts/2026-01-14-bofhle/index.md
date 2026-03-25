@@ -114,7 +114,7 @@ Starting with `paste` we get "⬜⬜⬜⬜🟨".
 I am using this to exclude things:
 
 ```
-# grep e wordle-cmds | grep -Ev [past] | ./count.py
+# grep e bofhle.txt | grep -Ev [past] | ./count.py
 [(58, 'gcore'),
  (56, 'xmore'),
  (56, 'zmore'),
@@ -133,7 +133,7 @@ I get "🟩⬜⬜⬜🟨".
 We can additionally eliminate `cor`, and we know `^g`.
 
 ```
-# grep e wordle-cmds | grep -Ev [pastcor] | grep "^g" | ./count.py
+# grep e bofhle.txt | grep -Ev [pastcor] | grep "^g" | ./count.py
 [(13, 'gznew'), (11, 'gneqn'), (10, 'gzexe')]
 ```
 
