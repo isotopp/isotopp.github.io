@@ -197,7 +197,7 @@ Wir lernen:
 
 - Ein Python-Paket kann beim Start von Python aktiv werden, ohne dass die Anwendung das Paket explizit importiert.
 - Eine `.pth`-Datei kann Code laden und ausführen.
-- Es gibt keinen "Imterpreter ready"-Callback (`__start__()`), aber `sitecustomize` und `usercustomize` sind brauchbare Signale.
+- Es gibt keinen "Interpreter ready"-Callback (`__start__()`), aber `sitecustomize` und `usercustomize` sind brauchbare Signale.
 - Wer ein kompromittiertes Paket installiert hat, muss davon ausgehen, dass schon ein banales `python`, `uv run python3` oder ein CI-Schritt gereicht haben kann.
 
 Wer defensiv prüfen will, schaut zuerst in `site-packages` nach `.pth`-Dateien und liest jede `import`-Zeile so, wie sie gelesen werden muss: als ausführbaren Code.
