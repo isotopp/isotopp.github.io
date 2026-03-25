@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Modernizing the blog publishing workflow"
-date: "2026-03-25T16:45:00+01:00"
+date: "2026-03-25T03:04:05Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
@@ -70,20 +70,20 @@ Changing checkout from `fetch-depth: 0` to `fetch-depth: 1` removed that waste i
 
 These are the three relevant workflow runs from today:
 
-| Workflow state | Commit | Total runtime |
-| --- | --- | --- |
-| Legacy `peaceiris` workflow | `Fix links` | `3m20s` |
-| Official Pages workflow, full history checkout | `modernize github pages workflow` | `3m29s` |
-| Official Pages workflow, shallow checkout | `speed up pages checkout` | `1m29s` |
+| Workflow state                                 | Commit                            | Total runtime |
+|------------------------------------------------|-----------------------------------|---------------|
+| Legacy `peaceiris` workflow                    | `Fix links`                       | `3m20s`       |
+| Official Pages workflow, full history checkout | `modernize github pages workflow` | `3m29s`       |
+| Official Pages workflow, shallow checkout      | `speed up pages checkout`         | `1m29s`       |
 
 And this is where the time went:
 
-| Step | Legacy workflow | New workflow, `fetch-depth: 0` | New workflow, `fetch-depth: 1` |
-| --- | ---: | ---: | ---: |
-| Checkout | `2m38s` | `2m19s` | `11s` |
-| Build site | `11s` | `12s` | `12s` |
-| Publish/deploy work | `18s` | `36s` | `37s` |
-| End-to-end runtime | `3m20s` | `3m29s` | `1m29s` |
+| Step                | Legacy workflow | New workflow, `fetch-depth: 0` | New workflow, `fetch-depth: 1` |
+|---------------------|----------------:|-------------------------------:|-------------------------------:|
+| Checkout            |         `2m38s` |                        `2m19s` |                          `11s` |
+| Build site          |           `11s` |                          `12s` |                          `12s` |
+| Publish/deploy work |           `18s` |                          `36s` |                          `37s` |
+| End-to-end runtime  |         `3m20s` |                        `3m29s` |                        `1m29s` |
 
 So the conclusion is very simple:
 
