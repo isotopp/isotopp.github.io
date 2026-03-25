@@ -2,6 +2,7 @@ import type { FilledMindMapNode } from './mindmapTypes.js';
 import type { D3Element } from '../../types.js';
 import type { MermaidConfig } from '../../config.type.js';
 import type { MindmapDB } from './mindmapDb.js';
+export declare const MAX_SECTIONS = 12;
 /**
  * @param db - The database
  * @param elem - The D3 dom element in which the node is to be added

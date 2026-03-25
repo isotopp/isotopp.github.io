@@ -31,13 +31,14 @@ export interface Message {
     type?: number;
     activate?: boolean;
     placement?: string;
+    centralConnection?: number;
 }
 export interface AddMessageParams {
     from: string;
     to: string;
     msg: string;
     signalType: number;
-    type: 'addMessage' | 'sequenceIndex' | 'addParticipant' | 'createParticipant' | 'destroyParticipant' | 'activeStart' | 'activeEnd' | 'addNote' | 'addLinks' | 'addALink' | 'addProperties' | 'addDetails' | 'boxStart' | 'boxEnd' | 'loopStart' | 'loopEnd' | 'rectStart' | 'rectEnd' | 'optStart' | 'optEnd' | 'altStart' | 'else' | 'altEnd' | 'setAccTitle' | 'parStart' | 'parAnd' | 'parEnd' | 'and' | 'criticalStart' | 'criticalOption' | 'option' | 'criticalEnd' | 'breakStart' | 'breakEnd' | 'parOverStart' | 'parOverEnd' | 'parOverAnd';
+    type: 'addMessage' | 'sequenceIndex' | 'addParticipant' | 'createParticipant' | 'destroyParticipant' | 'activeStart' | 'activeEnd' | 'centralConnection' | 'centralConnectionReverse' | 'addNote' | 'addLinks' | 'addALink' | 'addProperties' | 'addDetails' | 'boxStart' | 'boxEnd' | 'loopStart' | 'loopEnd' | 'rectStart' | 'rectEnd' | 'optStart' | 'optEnd' | 'altStart' | 'else' | 'altEnd' | 'setAccTitle' | 'parStart' | 'parAnd' | 'parEnd' | 'and' | 'criticalStart' | 'criticalOption' | 'option' | 'criticalEnd' | 'breakStart' | 'breakEnd' | 'parOverStart' | 'parOverEnd' | 'parOverAnd';
     activate: boolean;
 }
 export interface Note {

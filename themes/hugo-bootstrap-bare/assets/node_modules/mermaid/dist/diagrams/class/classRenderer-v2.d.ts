@@ -1,5 +1,5 @@
 import * as graphlib from 'dagre-d3-es/src/graphlib/index.js';
-import type { ClassRelation, ClassNote, ClassMap, NamespaceMap } from './classTypes.js';
+import type { ClassRelation, ClassMap, ClassNoteMap, NamespaceMap } from './classTypes.js';
 /**
  * Function that adds the vertices found during parsing to the graph to be rendered.
  *
@@ -27,7 +27,7 @@ export declare const addClasses: (classes: ClassMap, g: graphlib.Graph, _id: str
  * @param startEdgeId - starting index for note edge
  * @param classes - Classes
  */
-export declare const addNotes: (notes: ClassNote[], g: graphlib.Graph, startEdgeId: number, classes: ClassMap) => void;
+export declare const addNotes: (notes: ClassNoteMap, g: graphlib.Graph, startEdgeId: number, classes: ClassMap, parent?: string) => void;
 /**
  * Add edges to graph based on parsed graph definition
  *

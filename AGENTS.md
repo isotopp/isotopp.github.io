@@ -39,7 +39,7 @@
 
 # JavaScript Dependency Status & Refresh Plan
 
-(as of 2026-Mar-09, remind the user to run a check at least once a month, and then perform it when authorized)
+(as of 2026-Mar-25, remind the user to run a check at least once a month, and then perform it when authorized)
 
 Checked from `themes/hugo-bootstrap-bare/assets` with:
 - `npm outdated` to identify direct dependency updates;
@@ -49,8 +49,8 @@ Checked from `themes/hugo-bootstrap-bare/assets` with:
 |-----------|---------|--------|---------------|
 | bootstrap | 5.3.8   | 5.3.8  | No            |
 | lunr      | 2.3.9   | 2.3.9  | No            |
-| mermaid   | 11.12.3 | 11.12.3| No            |
-| katex     | 0.16.38 | 0.16.38| No            |
+| mermaid   | 11.13.0 | 11.13.0| No            |
+| katex     | 0.16.42 | 0.16.42| No            |
 
 
 Because everything is current, no refresh is required right now. Should a new release appear, follow the plan below for each dependency that becomes outdated:
@@ -75,15 +75,22 @@ Document any breaking changes from upstream in `AGENTS.md` for the next maintain
 
 Use this as a style target when drafting or editing post copy.
 
+### General
+- Use proper language orthography. For German posts, write normal German with umlauts and `ß` where appropriate; do not transliterate to ASCII.
+- Prefer direct, compact prose. Cut throat-clearing, filler, repetition, and meta-commentary.
+- Headings should be short, explicit, and functional. Prefer concise section labels over chatty or playful phrasing unless the post itself clearly calls for it.
+- If code blocks use line numbers, always use inline line numbers (`linenos=inline`), never table-style line numbers.
+- Mark code fences with the actual language whenever possible. Even short snippets should use `python`, `bash`, `text`, etc. accurately.
+
 ### German (`lang_de`)
-- Voice: direct, opinionated, practical; prefer clear claims over hedged language.
+- Voice: very direct, opinionated, practical; prefer clear claims over hedged language and remove unnecessary setup sentences.
 - Structure: start with context/problem, then reasoning, then conclusion or recommendation.
 - Evidence: use concrete numbers, units, and real observations (`kWh`, `EUR/kWh`, temperatures, time windows).
 - Paragraphing: short to medium paragraphs; one main idea per paragraph.
-- Headings: explicit, informative section titles; use `#` / `##` to separate argument steps.
+- Headings: explicit, informative, and usually terse section titles; use `#` / `##` to separate argument steps.
 - Lists: use bullet lists for tradeoffs, setup facts, and actionable steps.
 - Links and references: include source links inline when stating external facts.
-- Tone details: plain-spoken technical German is preferred; occasional sharp phrasing is acceptable if content remains factual.
+- Tone details: plain-spoken technical German is preferred; occasional sharp phrasing is acceptable if content remains factual. Keep the text tighter rather than more conversational.
 - Language mix: German body text can keep established technical English terms (for example `Capex`, `E/P Ratio`, `Home Assistant`).
 
 ### English (`lang_en`)

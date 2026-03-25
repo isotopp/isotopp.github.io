@@ -13,3 +13,4 @@ export declare const drawImage: (elem: SVG | SVGGroup, x: number, y: number, lin
 export declare const drawEmbeddedImage: (element: SVG | SVGGroup, x: number, y: number, link: string) => void;
 export declare const getNoteRect: () => RectData;
 export declare const getTextObj: () => TextObject;
+export declare const createTooltip: () => import("d3-selection").Selection<HTMLDivElement, unknown, HTMLElement, any>;

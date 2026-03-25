@@ -2,6 +2,7 @@
  * Web page integration module for the mermaid framework. It uses the mermaidAPI for mermaid
  * functionality and to render the diagrams to svg code!
  */
+import type { AsyncIconLoader, IconLoader, SyncIconLoader } from './rendering-util/icons.js';
 import { registerIconPacks } from './rendering-util/icons.js';
 import type { MermaidConfig } from './config.type.js';
 import { detectType } from './diagram-api/detectType.js';
@@ -15,7 +16,7 @@ import { registerLayoutLoaders } from './rendering-util/render.js';
 import type { LayoutData } from './rendering-util/types.js';
 import type { ParseOptions, ParseResult, RenderResult } from './types.js';
 import type { DetailedError } from './utils.js';
-export type { DetailedError, ExternalDiagramDefinition, InternalHelpers, LayoutData, LayoutLoaderDefinition, MermaidConfig, ParseErrorFunction, ParseOptions, ParseResult, RenderOptions, RenderResult, SVG, SVGGroup, UnknownDiagramError, };
+export type { AsyncIconLoader, DetailedError, ExternalDiagramDefinition, IconLoader, InternalHelpers, LayoutData, LayoutLoaderDefinition, MermaidConfig, ParseErrorFunction, ParseOptions, ParseResult, RenderOptions, RenderResult, SVG, SVGGroup, SyncIconLoader, UnknownDiagramError, };
 export interface RunOptions {
     /**
      * The query selector to use when finding elements to render. Default: `".mermaid"`.

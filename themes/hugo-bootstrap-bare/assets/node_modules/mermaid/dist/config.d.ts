@@ -1,5 +1,12 @@
 import type { MermaidConfig } from './config.type.js';
 export declare const defaultConfig: MermaidConfig;
+/**
+ * Converts a string/boolean into a boolean
+ *
+ * @param val - String or boolean to convert
+ * @returns The result from the input
+ */
+export declare const evaluate: (val?: string | boolean | null) => boolean;
 export declare const updateCurrentConfig: (siteCfg: MermaidConfig, _directives: MermaidConfig[]) => MermaidConfig;
 /**
  * ## setSiteConfig
@@ -97,3 +104,9 @@ export declare const addDirective: (directive: MermaidConfig) => void;
  */
 export declare const reset: (config?: MermaidConfig) => void;
 export declare const getUserDefinedConfig: () => MermaidConfig;
+/**
+ * Helper function to handle deprecated flowchart.htmlLabels
+ * @param config - The configuration object (merged config with defaults)
+ * @returns The effective htmlLabels value based on precedence: root flowchart  default
+ */
+export declare const getEffectiveHtmlLabels: (config: MermaidConfig) => boolean;

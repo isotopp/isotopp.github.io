@@ -11,9 +11,11 @@ export interface NodeMetaData {
     priority: 'Very High' | 'High' | 'Medium' | 'Low' | 'Very Low';
     assigned?: string;
     ticket?: string;
+    labelType?: string;
 }
 export interface ParticipantMetaData {
     type?: 'actor' | 'participant' | 'boundary' | 'control' | 'entity' | 'database' | 'collections' | 'queue';
+    alias?: string;
 }
 export interface EdgeMetaData {
     animation?: 'fast' | 'slow';

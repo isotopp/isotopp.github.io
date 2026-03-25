@@ -10,5 +10,5 @@ export declare function buildHierarchy(items: {
     type: string;
     value?: number;
     classSelector?: string;
-    cssCompiledStyles?: string;
+    cssCompiledStyles?: string[];
 }[]): TreemapNode[];

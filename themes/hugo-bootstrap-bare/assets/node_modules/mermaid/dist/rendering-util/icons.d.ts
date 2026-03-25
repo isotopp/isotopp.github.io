@@ -1,10 +1,10 @@
 import type { IconifyIcon, IconifyJSON } from '@iconify/types';
 import type { IconifyIconCustomisations } from '@iconify/utils';
-interface AsyncIconLoader {
+export interface AsyncIconLoader {
     name: string;
     loader: () => Promise<IconifyJSON>;
 }
-interface SyncIconLoader {
+export interface SyncIconLoader {
     name: string;
     icons: IconifyJSON;
 }
@@ -15,4 +15,3 @@ export declare const isIconAvailable: (iconName: string) => Promise<boolean>;
 export declare const getIconSVG: (iconName: string, customisations?: IconifyIconCustomisations & {
     fallbackPrefix?: string;
 }, extraAttributes?: Record<string, string>) => Promise<string>;
-export {};

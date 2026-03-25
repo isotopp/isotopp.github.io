@@ -33,6 +33,25 @@ declare const LINETYPE: {
     readonly PAR_OVER_START: 32;
     readonly BIDIRECTIONAL_SOLID: 33;
     readonly BIDIRECTIONAL_DOTTED: 34;
+    readonly SOLID_TOP: 41;
+    readonly SOLID_BOTTOM: 42;
+    readonly STICK_TOP: 43;
+    readonly STICK_BOTTOM: 44;
+    readonly SOLID_ARROW_TOP_REVERSE: 45;
+    readonly SOLID_ARROW_BOTTOM_REVERSE: 46;
+    readonly STICK_ARROW_TOP_REVERSE: 47;
+    readonly STICK_ARROW_BOTTOM_REVERSE: 48;
+    readonly SOLID_TOP_DOTTED: 51;
+    readonly SOLID_BOTTOM_DOTTED: 52;
+    readonly STICK_TOP_DOTTED: 53;
+    readonly STICK_BOTTOM_DOTTED: 54;
+    readonly SOLID_ARROW_TOP_REVERSE_DOTTED: 55;
+    readonly SOLID_ARROW_BOTTOM_REVERSE_DOTTED: 56;
+    readonly STICK_ARROW_TOP_REVERSE_DOTTED: 57;
+    readonly STICK_ARROW_BOTTOM_REVERSE_DOTTED: 58;
+    readonly CENTRAL_CONNECTION: 59;
+    readonly CENTRAL_CONNECTION_REVERSE: 60;
+    readonly CENTRAL_CONNECTION_DUAL: 61;
 };
 declare const ARROWTYPE: {
     readonly FILLED: 0;
@@ -74,7 +93,7 @@ export declare class SequenceDB implements DiagramDB {
     addSignal(idFrom?: Message['from'], idTo?: Message['to'], message?: {
         text: string;
         wrap: boolean;
-    }, messageType?: number, activate?: boolean): boolean;
+    }, messageType?: number, activate?: boolean, centralConnection?: number): boolean;
     hasAtLeastOneBox(): boolean;
     hasAtLeastOneBoxWithTitle(): boolean;
     getMessages(): Message[];

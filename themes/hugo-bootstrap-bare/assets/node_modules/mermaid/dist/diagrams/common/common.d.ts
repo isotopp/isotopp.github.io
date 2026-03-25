@@ -1,3 +1,4 @@
+import { evaluate } from '../../config.js';
 import type { MermaidConfig } from '../../config.type.js';
 export declare const lineBreakRegex: RegExp;
 /**
@@ -37,13 +38,7 @@ export declare const splitBreaks: (text: string) => string[];
  * @returns The current URL
  */
 export declare const getUrl: (useAbsolute: boolean) => string;
-/**
- * Converts a string/boolean into a boolean
- *
- * @param val - String or boolean to convert
- * @returns The result from the input
- */
-export declare const evaluate: (val?: string | boolean) => boolean;
+export { evaluate };
 /**
  * Wrapper around Math.max which removes non-numeric values
  * Returns the larger of a set of supplied numeric expressions.
@@ -110,7 +105,7 @@ declare const _default: {
     lineBreakRegex: RegExp;
     removeScript: (txt: string) => string;
     getUrl: (useAbsolute: boolean) => string;
-    evaluate: (val?: string | boolean) => boolean;
+    evaluate: (val?: string | boolean | null) => boolean;
     getMax: (...values: number[]) => number;
     getMin: (...values: number[]) => number;
 };
