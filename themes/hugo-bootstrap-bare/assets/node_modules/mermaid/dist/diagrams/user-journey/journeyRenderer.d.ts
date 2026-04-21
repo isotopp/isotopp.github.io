@@ -22,7 +22,7 @@ export declare const bounds: {
         stopy: undefined;
     };
 };
-export declare const drawTasks: (diagram: any, tasks: any, verticalPos: any) => void;
+export declare const drawTasks: (diagram: any, tasks: any, verticalPos: any, diagramId: any) => void;
 declare const _default: {
     setConf: (cnf: any) => void;
     draw: (text: any, id: any, version: any, diagObj: any) => void;

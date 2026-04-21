@@ -7,6 +7,16 @@ declare const getStyles: (type: string, userStyles: string, options: {
     errorBkgColor: string;
     errorTextColor: string;
     lineColor: string;
-} & FlowChartStyleOptions) => string;
+    useGradient?: boolean;
+    dropShadow?: string;
+    primaryBorderColor?: string;
+    compositeTitleBackground?: string;
+    THEME_COLOR_LIMIT?: number;
+    nodeBorder?: string;
+    mainBkg?: string;
+    strokeWidth?: number;
+    theme?: string;
+    look?: string;
+} & FlowChartStyleOptions, svgId: string) => string;
 export declare const addStylesForDiagram: (type: string, diagramTheme?: DiagramStylesProvider) => void;
 export default getStyles;

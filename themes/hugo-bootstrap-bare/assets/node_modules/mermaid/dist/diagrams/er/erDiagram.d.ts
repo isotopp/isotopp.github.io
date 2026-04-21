@@ -4,5 +4,5 @@ export declare const diagram: {
     parser: any;
     readonly db: ErDB;
     renderer: typeof renderer;
-    styles: (options: import("../flowchart/styles.js").FlowChartStyleOptions) => string;
+    styles: import("../../diagram-api/types.js").DiagramStylesProvider;
 };

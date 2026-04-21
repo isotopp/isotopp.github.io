@@ -1,15 +1,14 @@
 export function drawRect(elem: any, rectData: any): import("../common/commonTypes.js").D3RectElement;
 export function drawImage(elem: any, width: any, height: any, x: any, y: any, link: any): void;
-export function drawRels(elem: any, rels: any, conf: any): void;
+export function drawRels(elem: any, rels: any, conf: any, diagramId: any): void;
 export function drawC4Shape(elem: any, c4Shape: any, conf: any): any;
-export function insertDatabaseIcon(elem: any): void;
-export function insertComputerIcon(elem: any): void;
-export function insertClockIcon(elem: any): void;
-export function insertArrowHead(elem: any): void;
-export function insertArrowEnd(elem: any): void;
-export function insertArrowFilledHead(elem: any): void;
-export function insertDynamicNumber(elem: any): void;
-export function insertArrowCrossHead(elem: any): void;
+export function insertDatabaseIcon(elem: any, id: any): void;
+export function insertComputerIcon(elem: any, id: any): void;
+export function insertClockIcon(elem: any, id: any): void;
+export function insertArrowHead(elem: any, id: any): void;
+export function insertArrowEnd(elem: any, id: any): void;
+export function insertArrowFilledHead(elem: any, id: any): void;
+export function insertArrowCrossHead(elem: any, id: any): void;
 declare namespace _default {
     export { drawRect };
     export { drawBoundary };
@@ -19,7 +18,6 @@ declare namespace _default {
     export { insertArrowHead };
     export { insertArrowEnd };
     export { insertArrowFilledHead };
-    export { insertDynamicNumber };
     export { insertArrowCrossHead };
     export { insertDatabaseIcon };
     export { insertComputerIcon };

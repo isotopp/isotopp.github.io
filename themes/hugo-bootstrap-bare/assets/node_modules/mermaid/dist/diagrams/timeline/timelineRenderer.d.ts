@@ -10,8 +10,8 @@ interface TimelineTask {
     events: string[];
 }
 export declare const draw: (text: string, id: string, version: string, diagObj: Diagram) => void;
-export declare const drawTasks: (diagram: Selection<SVGElement, unknown, null, undefined>, tasks: TimelineTask[], sectionColor: number, masterX: number, masterY: number, maxTaskHeight: number, conf: MermaidConfig, maxEventCount: number, maxEventLineLength: number, maxSectionHeight: number, isWithoutSections: boolean) => void;
-export declare const drawEvents: (diagram: Selection<SVGElement, unknown, null, undefined>, events: string[], sectionColor: number, masterX: number, masterY: number, conf: MermaidConfig) => number;
+export declare const drawTasks: (diagram: Selection<SVGElement, unknown, null, undefined>, tasks: TimelineTask[], sectionColor: number, masterX: number, masterY: number, maxTaskHeight: number, conf: MermaidConfig, maxEventCount: number, maxEventLineLength: number, maxSectionHeight: number, isWithoutSections: boolean, diagramId: string) => void;
+export declare const drawEvents: (diagram: Selection<SVGElement, unknown, null, undefined>, events: string[], sectionColor: number, masterX: number, masterY: number, conf: MermaidConfig, diagramId: string) => number;
 declare const _default: {
     setConf: () => void;
     draw: (text: string, id: string, version: string, diagObj: Diagram) => void;

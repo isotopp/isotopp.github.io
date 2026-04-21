@@ -278,6 +278,7 @@ export default _default;
  */
 export declare const encodeEntities: (text: string) => string;
 /**
+ * Partially reverts encoding done via {@link encodeEntities}
  *
  * @param  text - text to be decoded
  * @returns

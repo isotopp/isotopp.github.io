@@ -32,6 +32,7 @@ export interface DiagramDB {
     getDirection?: () => string | undefined;
     setDirection?: (dir: DiagramOrientation) => void;
     setDisplayMode?: (title: string) => void;
+    setDiagramId?: (svgElementId: string) => void;
     bindFunctions?: (element: Element) => void;
 }
 /**
@@ -88,4 +89,4 @@ export interface ParserDefinition {
 export type HTML = d3.Selection<HTMLIFrameElement, unknown, Element | null, unknown>;
 export type SVG = d3.Selection<SVGSVGElement, unknown, Element | null, unknown>;
 export type SVGGroup = d3.Selection<SVGGElement, unknown, Element | null, unknown>;
-export type DiagramStylesProvider = (options?: any) => string;
+export type DiagramStylesProvider = (options?: any, svgId?: string) => string;

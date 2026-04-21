@@ -1,3 +1,5 @@
+import baseAssignValue from './_baseAssignValue.js';
+
 /**
  * The inverse of `_.toPairs`; this method returns an object composed
  * from key-value `pairs`.
@@ -20,7 +22,7 @@ function fromPairs(pairs) {
 
   while (++index < length) {
     var pair = pairs[index];
-    result[pair[0]] = pair[1];
+    baseAssignValue(result, pair[0], pair[1]);
   }
   return result;
 }

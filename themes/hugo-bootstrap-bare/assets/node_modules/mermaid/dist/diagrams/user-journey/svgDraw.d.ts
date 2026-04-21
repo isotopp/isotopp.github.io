@@ -4,7 +4,7 @@ export function drawCircle(element: any, circleData: any): any;
 export function drawText(elem: any, textData: any): import("../common/commonTypes.js").D3TextElement;
 export function drawLabel(elem: any, txtObject: any): void;
 export function drawSection(elem: any, section: any, conf: any): void;
-export function drawTask(elem: any, task: any, conf: any): void;
+export function drawTask(elem: any, task: any, conf: any, diagramId: string): void;
 export function drawBackgroundRect(elem: any, bounds: any): void;
 declare namespace _default {
     export { drawRect };
@@ -17,4 +17,4 @@ declare namespace _default {
     export { initGraphics };
 }
 export default _default;
-declare function initGraphics(graphics: any): void;
+declare function initGraphics(graphics: any, id: any): void;

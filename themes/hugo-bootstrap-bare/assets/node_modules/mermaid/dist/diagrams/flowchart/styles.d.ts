@@ -13,6 +13,7 @@ export interface FlowChartStyleOptions {
     tertiaryColor: string;
     textColor: string;
     titleColor: string;
+    strokeWidth: string;
 }
 declare const getStyles: (options: FlowChartStyleOptions) => string;
 export default getStyles;

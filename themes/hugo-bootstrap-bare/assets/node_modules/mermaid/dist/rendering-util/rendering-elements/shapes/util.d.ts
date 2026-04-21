@@ -2,7 +2,7 @@ import type { Node } from '../../types.js';
 import type { D3Selection, Point } from '../../../types.js';
 export declare const labelHelper: <T extends SVGGraphicsElement>(parent: D3Selection<T>, node: Node, _classes?: string) => Promise<{
     shapeSvg: import("d3-selection").Selection<SVGGElement, unknown, Element | null, unknown>;
-    bbox: any;
+    bbox: DOMRect;
     halfPadding: number;
     label: import("d3-selection").Selection<SVGGElement, unknown, Element | null, unknown>;
 }>;
@@ -17,7 +17,7 @@ export declare const insertLabel: <T extends SVGGraphicsElement>(parent: D3Selec
     addSvgBackground?: boolean | undefined;
 }) => Promise<{
     shapeSvg: D3Selection<T>;
-    bbox: any;
+    bbox: DOMRect;
     halfPadding: number;
     label: import("d3-selection").Selection<SVGGElement, unknown, Element | null, unknown>;
 }>;
@@ -47,3 +47,4 @@ export declare function generateCirclePoints(centerX: number, centerY: number, r
     x: number;
     y: number;
 }[];
+export declare function mergePaths(roughElement: SVGElement): SVGGElement;

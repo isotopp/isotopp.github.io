@@ -6,9 +6,11 @@ export declare const markerOffsets: {
     readonly dependency: 6;
     readonly lollipop: 13.5;
     readonly arrow_point: 4;
+    readonly arrow_barb: 0;
+    readonly arrow_barb_neo: 5.5;
 };
 export declare const markerOffsets2: {
-    readonly arrow_point: 9;
+    readonly arrow_point: 4;
     readonly arrow_cross: 12.5;
     readonly arrow_circle: 12.5;
 };

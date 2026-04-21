@@ -13,15 +13,15 @@ declare namespace shapes {
 }
 declare function rect(parent: any, node: any): Promise<{
     cluster: any;
-    labelBBox: any;
+    labelBBox: DOMRect;
 }>;
 declare function squareRect(parent: any, node: any): Promise<{
     cluster: any;
-    labelBBox: any;
+    labelBBox: DOMRect;
 }>;
 declare function roundedWithTitle(parent: any, node: any): Promise<{
     cluster: any;
-    labelBBox: any;
+    labelBBox: DOMRect;
 }>;
 /**
  * Non visible cluster where the note is group with its
@@ -37,6 +37,6 @@ declare function divider(parent: any, node: any): {
 };
 declare function kanbanSection(parent: any, node: any): Promise<{
     cluster: any;
-    labelBBox: any;
+    labelBBox: DOMRect;
 }>;
 export {};

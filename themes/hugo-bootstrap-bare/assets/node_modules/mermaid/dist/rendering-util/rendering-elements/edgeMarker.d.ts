@@ -9,4 +9,4 @@ import type { EdgeData } from '../../types.js';
  * @param id - The ID prefix for the SVG marker definitions.
  * @param diagramType - The type of diagram being rendered.
  */
-export declare const addEdgeMarkers: (svgPath: SVG, edge: Pick<EdgeData, "arrowTypeStart" | "arrowTypeEnd">, url: string, id: string, diagramType: string, strokeColor?: string) => void;
+export declare const addEdgeMarkers: (svgPath: SVG, edge: Pick<EdgeData, "arrowTypeStart" | "arrowTypeEnd">, url: string, id: string, diagramType: string, useMargin?: boolean, strokeColor?: string) => void;

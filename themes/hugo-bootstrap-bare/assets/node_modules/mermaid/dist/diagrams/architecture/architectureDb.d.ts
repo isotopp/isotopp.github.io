@@ -9,7 +9,10 @@ export declare class ArchitectureDB implements DiagramDB {
     private registeredIds;
     private dataStructures?;
     private elements;
+    private diagramId;
     constructor();
+    setDiagramId(id: string): void;
+    getDiagramId(): string;
     clear(): void;
     addService({ id, icon, in: parent, title, iconText, }: Omit<ArchitectureService, 'edges'>): void;
     getServices(): ArchitectureService[];

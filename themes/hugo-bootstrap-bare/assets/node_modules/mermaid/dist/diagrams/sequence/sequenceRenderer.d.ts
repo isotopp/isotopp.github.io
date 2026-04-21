@@ -87,7 +87,7 @@ export declare const bounds: {
         };
     };
 };
-export declare const drawActors: (diagram: any, actors: any, actorKeys: any, isFooter: any) => Promise<void>;
+export declare const drawActors: (diagram: any, actors: any, actorKeys: any, isFooter: any, diagramId: any, diagObj: any, actorIndexMap: any) => Promise<void>;
 export declare const drawActorsPopup: (diagram: any, actors: any, actorKeys: any, doc: any) => {
     maxHeight: number;
     maxWidth: number;
@@ -102,6 +102,7 @@ export declare const setConf: (cnf: any) => void;
  * @param diagObj - A standard diagram containing the db and the text and type etc of the diagram
  */
 export declare const draw: (_text: string, id: string, _version: string, diagObj: Diagram) => Promise<void>;
+export declare const adjustValueByDirection: (msg: any, actors: any, value: any) => any;
 declare const _default: {
     bounds: {
         data: {
@@ -191,7 +192,7 @@ declare const _default: {
             };
         };
     };
-    drawActors: (diagram: any, actors: any, actorKeys: any, isFooter: any) => Promise<void>;
+    drawActors: (diagram: any, actors: any, actorKeys: any, isFooter: any, diagramId: any, diagObj: any, actorIndexMap: any) => Promise<void>;
     drawActorsPopup: (diagram: any, actors: any, actorKeys: any, doc: any) => {
         maxHeight: number;
         maxWidth: number;

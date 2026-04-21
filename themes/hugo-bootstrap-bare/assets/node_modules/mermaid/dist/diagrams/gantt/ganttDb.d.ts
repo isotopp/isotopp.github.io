@@ -1,4 +1,5 @@
 export function clear(): void;
+export function setDiagramId(id: any): void;
 export function setAxisFormat(txt: any): void;
 export function getAxisFormat(): string;
 export function setTickInterval(txt: any): void;
@@ -51,6 +52,7 @@ declare namespace _default {
     export { getAccTitle };
     export { setDiagramTitle };
     export { getDiagramTitle };
+    export { setDiagramId };
     export { setDisplayMode };
     export { getDisplayMode };
     export { setAccDescription };

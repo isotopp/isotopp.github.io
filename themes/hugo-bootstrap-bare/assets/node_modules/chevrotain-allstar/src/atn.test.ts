@@ -6,6 +6,7 @@
 
 import { createToken, EmbeddedActionsParser, EOF, IToken, TokenType } from "chevrotain"
 import { LLStarLookaheadStrategy } from "./all-star-lookahead"
+import { describe, expect, it } from "vitest"
 
 describe("ATN Simulator", () => {
     describe("LL(*) lookahead", () => {

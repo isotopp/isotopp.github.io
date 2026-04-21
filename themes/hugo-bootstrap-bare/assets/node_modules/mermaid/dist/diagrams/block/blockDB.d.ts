@@ -25,7 +25,7 @@ export declare const addStyle2Node: (id: string, styles?: string) => void;
  * @param cssClassName - CSS class name
  */
 export declare const setCssClass: (itemIds: string, cssClassName: string) => void;
-export declare function typeStr2Type(typeStr: string): "circle" | "stadium" | "subroutine" | "cylinder" | "diamond" | "hexagon" | "lean_right" | "lean_left" | "trapezoid" | "inv_trapezoid" | "doublecircle" | "rect_left_inv_arrow" | "square" | "round" | "na" | "block_arrow";
+export declare function typeStr2Type(typeStr: string): "stadium" | "subroutine" | "cylinder" | "circle" | "diamond" | "hexagon" | "lean_right" | "lean_left" | "trapezoid" | "inv_trapezoid" | "doublecircle" | "rect_left_inv_arrow" | "square" | "round" | "na" | "block_arrow";
 export declare function edgeTypeStr2Type(typeStr: string): string;
 export declare function edgeStrToEdgeData(typeStr: string): string;
 export declare const generateId: () => string;
@@ -52,6 +52,8 @@ declare const db: {
     readonly getClasses: () => Map<string, ClassDef>;
     readonly clear: () => void;
     readonly generateId: () => string;
+    readonly setDiagramId: (id: string) => void;
+    readonly getDiagramId: () => string;
 };
 export type BlockDB = typeof db & DiagramDB;
 export default db;

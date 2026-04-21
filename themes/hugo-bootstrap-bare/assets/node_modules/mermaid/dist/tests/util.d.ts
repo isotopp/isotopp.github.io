@@ -31,4 +31,10 @@ export declare function jsdomIt(message: string, run: (input: JsdomItInput) => v
  * then checks that it exists before returning it.
  */
 export declare function ensureNodeFromSelector(selector: string, parent?: ParentNode): Element;
+/**
+ * Asserts that no element `id` attribute appears more than once within the given DOM subtree.
+ * Useful for verifying that multiple mermaid diagrams rendered into the same document
+ * do not produce colliding SVG element IDs.
+ */
+export declare function assertNoDuplicateIds(root: ParentNode): void;
 export {};

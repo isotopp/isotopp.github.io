@@ -63,6 +63,7 @@ interface BaseNode {
     radius?: number;
     taper?: number;
     stroke?: string;
+    colorIndex?: number;
 }
 /**
  * Group/cluster nodes, e.g. nodes that contain other nodes.
@@ -132,6 +133,7 @@ export interface LayoutData {
     nodes: Node[];
     edges: Edge[];
     config: MermaidConfig;
+    diagramId?: string;
     [key: string]: any;
 }
 export interface RenderData {
