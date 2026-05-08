@@ -8,8 +8,6 @@ tags:
   - lang_de
   - python
   - security
-aliases:
-  - /2026/03/25/warte-python-macht-was.html
 ---
 
 In der [Heise-Meldung zur Supply-Chain-Attacke auf LiteLLM](https://www.heise.de/news/Supply-Chain-Attacke-auf-LiteLLM-Betroffene-sollen-Credentials-sofort-aendern-11223618.html) ist die Rede von einem Credential-Stealer in LiteLLM. Der wird bei jedem Start von Python aktiviert, wenn LiteLLM installiert ist, auch dann, wenn das Paket nicht importiert wird oder benutzt wird. Es reicht, wenn es ist den Site Packages enthalten ist. Das ist der interessante Teil an dem Angriff, weil er eine Eigenschaft von Python ausnutzt, die mir bisher nicht geläufig war.
