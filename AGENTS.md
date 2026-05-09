@@ -39,7 +39,7 @@
 
 # JavaScript Dependency Status & Refresh Plan
 
-(as of 2026-Apr-21, remind the user to run a check again by 2026-May-21 at the latest, and then perform it when authorized)
+(as of 2026-May-09, remind the user to run a check again by 2026-Jun-09 at the latest, and then perform it when authorized)
 
 Checked from `themes/hugo-bootstrap-bare/assets` with:
 - `npm outdated` to identify direct dependency updates;
@@ -52,6 +52,7 @@ Checked from `themes/hugo-bootstrap-bare/assets` with:
 | mermaid   | 11.14.0 | 11.14.0| No            |
 | katex     | 0.16.45 | 0.16.45| No            |
 
+`yarn upgrade` refreshed locked transitive dependencies within the existing semver ranges; notable resulting versions include `dompurify@3.4.2`, `marked@16.4.2`, `@iconify/utils@3.1.3`, `cytoscape@3.33.3`, `langium@4.2.3`, `tinyexec@1.1.2`, and `uuid@11.1.1`. No breaking changes were observed in the Hugo build.
 
 Because everything is current, no refresh is required right now. Should a new release appear, follow the plan below for each dependency that becomes outdated:
 
@@ -77,6 +78,7 @@ Use this as a style target when drafting or editing post copy.
 
 ### General
 - Use proper language orthography. For German posts, write normal German with umlauts and `ß` where appropriate; do not transliterate to ASCII.
+- When generating new posts, set the front matter `date` to early morning UTC on the intended publication day so Hugo does not treat the post as future content during same-day deploys. Use `01:02:03` for the first post of that day, `02:03:04` for the next one, and continue that pattern for additional same-day posts.
 - Prefer direct, compact prose. Cut throat-clearing, filler, repetition, and meta-commentary.
 - Headings should be short, explicit, and functional. Prefer concise section labels over chatty or playful phrasing unless the post itself clearly calls for it.
 - If code blocks use line numbers, always use inline line numbers (`linenos=inline`), never table-style line numbers.
