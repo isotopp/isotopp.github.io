@@ -1,4 +1,4 @@
-import { type Selection } from 'd3';
+import type { D3HtmlSelection, D3Selection } from '../types.js';
 export declare const convert: (template: TemplateStringsArray, ...params: unknown[]) => {
     [k: string]: unknown;
 }[];
@@ -9,8 +9,8 @@ export declare const MOCKED_BBOX: {
     height: number;
 };
 interface JsdomItInput {
-    body: Selection<HTMLBodyElement, never, HTMLElement, any>;
-    svg: Selection<SVGSVGElement, never, HTMLElement, any>;
+    body: D3HtmlSelection<HTMLElement>;
+    svg: D3Selection<SVGSVGElement>;
 }
 /**
  * Test method borrowed from d3 : https://github.com/d3/d3-selection/blob/v3.0.0/test/jsdom.js

@@ -39,22 +39,22 @@
 
 # JavaScript Dependency Status & Refresh Plan
 
-(as of 2026-May-09, remind the user to run a check again by 2026-Jun-09 at the latest, and then perform it when authorized)
+(as of 2026-Jun-03, remind the user to run a check again by 2026-Jul-03 at the latest, and then perform it when authorized)
 
 Checked from `themes/hugo-bootstrap-bare/assets` with:
 - `npm outdated` to identify direct dependency updates;
-- `yarn upgrade` to refresh locked transitive versions within existing semver ranges.
+- `yarn install --check-files` to refresh `yarn.lock` and the committed `node_modules` tree after direct dependency spec bumps.
 
 | Package   | Current | Latest | Needs Update? |
 |-----------|---------|--------|---------------|
 | bootstrap | 5.3.8   | 5.3.8  | No            |
 | lunr      | 2.3.9   | 2.3.9  | No            |
-| mermaid   | 11.14.0 | 11.14.0| No            |
-| katex     | 0.16.45 | 0.16.45| No            |
+| mermaid   | 11.15.0 | 11.15.0| No            |
+| katex     | 0.16.47 | 0.17.0 | Major update deferred |
 
-`yarn upgrade` refreshed locked transitive dependencies within the existing semver ranges; notable resulting versions include `dompurify@3.4.2`, `marked@16.4.2`, `@iconify/utils@3.1.3`, `cytoscape@3.33.3`, `langium@4.2.3`, `tinyexec@1.1.2`, and `uuid@11.1.1`. No breaking changes were observed in the Hugo build.
+`yarn install --check-files` refreshed the vendored dependencies after bumping `katex` to `^0.16.47` and `mermaid` to `^11.15.0`; notable resulting versions include `dompurify@3.4.2`, `marked@16.4.2`, `@iconify/utils@3.1.3`, `cytoscape@3.33.3`, `langium@4.2.3`, `tinyexec@1.1.2`, and `uuid@13.0.0`. No breaking changes were observed in the Hugo build.
 
-Because everything is current, no refresh is required right now. Should a new release appear, follow the plan below for each dependency that becomes outdated:
+KaTeX `0.17.0` is available but is a major update and was intentionally not included in the 2026-Jun-03 maintenance pass. Review KaTeX release notes and smoke-test math rendering before taking it. Should a new release appear, follow the plan below for each dependency that becomes outdated:
 
 1. **Update version spec** in `themes/hugo-bootstrap-bare/assets/package.json` (e.g. bump `bootstrap` from 5.3.3 → 5.3.x or whatever the new tag is).
 2. **Install dependencies** within `themes/hugo-bootstrap-bare/assets` using `yarn install --check-files` (preferred to keep `yarn.lock` in sync) or `npm install`.
@@ -64,6 +64,10 @@ Because everything is current, no refresh is required right now. Should a new re
 6. **Commit** the updated `package.json`, `yarn.lock`, and the vendored `node_modules` subtree so GitHub Pages (which does not run npm install) continues to have the bundles available.
 
 Document any breaking changes from upstream in `AGENTS.md` for the next maintainer.
+
+## Known CI Warnings
+- GitHub Actions run `26892040576` for commit `c8b018e60bb81cacb530230f84566d23408ea84d` succeeded. The visible deprecation warning was emitted by `actions/deploy-pages@v5` under Node (`DEP0040`, deprecated `punycode` module), not by Hugo or site code. Recheck after future `actions/deploy-pages` releases.
+- Running Yarn v1 locally under Node 24 may print `DEP0169` about `url.parse()`. This is from Yarn v1 itself and does not affect the static Hugo build, which does not run Yarn in CI.
 
 ## Quick Start for Future Agents
 1. Run `hugo serve -D -E -F` at the repo root for live previews; rebuild with `hugo` before pushing if you want to sanity-check the static output locally.

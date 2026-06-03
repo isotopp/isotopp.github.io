@@ -87,6 +87,15 @@ export declare const bounds: {
         };
     };
 };
+/**
+ * Draws a message. Note that the bounds have previously been updated by boundMessage.
+ *
+ * @param diagram - The parent of the message element
+ * @param msgModel - The model containing fields describing a message
+ * @param lineStartY - The Y coordinate at which the message line starts
+ * @param diagObj - The diagram object.
+ */
+export declare const drawMessage: (diagram: any, msgModel: any, lineStartY: number, diagObj: Diagram, msg: any, diagramId: string) => Promise<void>;
 export declare const drawActors: (diagram: any, actors: any, actorKeys: any, isFooter: any, diagramId: any, diagObj: any, actorIndexMap: any) => Promise<void>;
 export declare const drawActorsPopup: (diagram: any, actors: any, actorKeys: any, doc: any) => {
     maxHeight: number;

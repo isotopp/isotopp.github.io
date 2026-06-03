@@ -1,5 +1,6 @@
 import type { FlowChartStyleOptions } from './diagrams/flowchart/styles.js';
 import type { DiagramStylesProvider } from './diagram-api/types.js';
+export declare function cssStyleSheetToString(cssStyleSheet: CSSStyleSheet): string;
 declare const getStyles: (type: string, userStyles: string, options: {
     fontFamily: string;
     fontSize: string;
@@ -17,6 +18,6 @@ declare const getStyles: (type: string, userStyles: string, options: {
     strokeWidth?: number;
     theme?: string;
     look?: string;
-} & FlowChartStyleOptions, svgId: string) => string;
+} & FlowChartStyleOptions, svgId: `${string}`) => string;
 export declare const addStylesForDiagram: (type: string, diagramTheme?: DiagramStylesProvider) => void;
 export default getStyles;

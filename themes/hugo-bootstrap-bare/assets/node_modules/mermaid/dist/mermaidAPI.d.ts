@@ -1,7 +1,7 @@
 import type { MermaidConfig } from './config.type.js';
 import type { DiagramMetadata, DiagramStyleClassDef } from './diagram-api/types.js';
 import { Diagram } from './Diagram.js';
-import type { D3Element, ParseOptions, ParseResult, RenderResult } from './types.js';
+import type { D3HtmlSelection, ParseOptions, ParseResult, RenderResult } from './types.js';
 /**
  * Parse the text and validate the syntax.
  * @param text - The mermaid diagram definition.
@@ -30,7 +30,7 @@ export declare const cssImportantStyles: (cssClass: string, element: string, css
  * @returns  the string with all the user styles
  */
 export declare const createCssStyles: (config: MermaidConfig, classDefs?: Map<string, DiagramStyleClassDef> | null | undefined) => string;
-export declare const createUserStyles: (config: MermaidConfig, graphType: string, classDefs: Map<string, DiagramStyleClassDef> | undefined, svgId: string) => string;
+export declare const createUserStyles: (config: MermaidConfig, graphType: string, classDefs: Map<string, DiagramStyleClassDef> | undefined, svgId: `#${string}`) => string;
 /**
  * Clean up svgCode. Do replacements needed
  *
@@ -47,7 +47,7 @@ export declare const cleanUpSvgCode: (svgCode: string | undefined, inSandboxMode
  * @param svgElement - the d3 node that has the current svgElement so we can get the height from it
  * @returns  - the code with the iFrame that now contains the svgCode
  */
-export declare const putIntoIFrame: (svgCode?: string, svgElement?: D3Element) => string;
+export declare const putIntoIFrame: (svgCode?: string, svgElement?: SVGSVGElement) => string;
 /**
  * Append an enclosing div, then svg, then g (group) to the d3 parentRoot. Set attributes.
  * Only set the style attribute on the enclosing div if divStyle is given.
@@ -61,7 +61,7 @@ export declare const putIntoIFrame: (svgCode?: string, svgElement?: D3Element) =
  * @param svgXlink - if given, the link to set the new svg element to
  * @returns - returns the parentRoot that had nodes appended
  */
-export declare const appendDivSvgG: (parentRoot: D3Element, id: string, enclosingDivId: string, divStyle?: string, svgXlink?: string) => D3Element;
+export declare const appendDivSvgG: (parentRoot: D3HtmlSelection<HTMLElement> | D3HtmlSelection<Element>, id: string, enclosingDivId: string, divStyle?: string, svgXlink?: string) => D3HtmlSelection<HTMLElement> | D3HtmlSelection<Element>;
 /**
  * Remove any existing elements from the given document
  *

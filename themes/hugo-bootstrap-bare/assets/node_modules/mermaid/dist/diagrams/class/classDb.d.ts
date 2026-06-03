@@ -9,6 +9,7 @@ export declare class ClassDB implements DiagramDB {
     private interfaces;
     private namespaces;
     private namespaceCounter;
+    private namespaceStack;
     private diagramId;
     private functions;
     constructor();
@@ -114,13 +115,12 @@ export declare class ClassDB implements DiagramDB {
     private direction;
     getDirection(): string;
     setDirection(dir: string): void;
-    /**
-     * Function called by parser when a namespace definition has been found.
-     *
-     * @param id - ID of the namespace to add
-     * @public
-     */
-    addNamespace(id: string): void;
+    private static resolveQualifiedId;
+    private static getAncestorIds;
+    private createNamespaceNode;
+    private linkParentChild;
+    addNamespace(id: string, label?: string): string;
+    popNamespace(): void;
     getNamespace(name: string): NamespaceNode;
     getNamespaces(): NamespaceMap;
     /**
@@ -140,6 +140,12 @@ export declare class ClassDB implements DiagramDB {
      * @returns The arrow marker
      */
     private getArrowMarker;
+    /**
+     * Walks up the namespace tree from the given id and returns the nearest ancestor
+     * (or the id itself) that is marked as explicit. Used by compact rendering mode
+     * to reassign children to the nearest user-declared namespace.
+     */
+    private resolveExplicitAncestor;
     getData(): {
         nodes: Node[];
         edges: Edge[];

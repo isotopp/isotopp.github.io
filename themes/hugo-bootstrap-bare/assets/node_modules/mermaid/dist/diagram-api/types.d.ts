@@ -43,7 +43,14 @@ export type DiagramDBBase<T extends BaseDiagramConfig> = {
 } & SetRequired<DiagramDB, 'clear' | 'getAccTitle' | 'getDiagramTitle' | 'getAccDescription' | 'setAccDescription' | 'setAccTitle' | 'setDiagramTitle'>;
 export interface DiagramStyleClassDef {
     id: string;
+    /**
+     * The styles to apply to the class for HTML rendering.
+     * These are expected to be CSS property declarations without a trailing semicolon, e.g. `color: red`.
+     */
     styles?: string[];
+    /**
+     * The styles to apply to `<tspan>` elements with the given class.
+     */
     textStyles?: string[];
 }
 export interface DiagramRenderer {

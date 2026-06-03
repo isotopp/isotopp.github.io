@@ -16,6 +16,7 @@ declare function startPipeline(nodeId: string): void;
 declare function addPipelineComponent(pipelineNodeId: string, componentId: string): void;
 declare function updateAxes(partial: WardleyAxesConfig): void;
 declare function getNode(id: string): import("./wardleyBuilder.js").WardleyNode | undefined;
+declare function resolveNodeId(name: string): string;
 declare function getWardleyData(): import("./wardleyBuilder.js").WardleyBuildResult;
 declare function clear(): void;
 declare const _default: {
@@ -33,6 +34,7 @@ declare const _default: {
     addPipelineComponent: typeof addPipelineComponent;
     updateAxes: typeof updateAxes;
     getNode: typeof getNode;
+    resolveNodeId: typeof resolveNodeId;
     getWardleyData: typeof getWardleyData;
     clear: typeof clear;
     setAccTitle: (txt: string) => void;

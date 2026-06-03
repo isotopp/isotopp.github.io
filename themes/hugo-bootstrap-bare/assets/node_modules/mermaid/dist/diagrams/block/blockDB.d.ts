@@ -28,6 +28,9 @@ export declare const setCssClass: (itemIds: string, cssClassName: string) => voi
 export declare function typeStr2Type(typeStr: string): "stadium" | "subroutine" | "cylinder" | "circle" | "diamond" | "hexagon" | "lean_right" | "lean_left" | "trapezoid" | "inv_trapezoid" | "doublecircle" | "rect_left_inv_arrow" | "square" | "round" | "na" | "block_arrow";
 export declare function edgeTypeStr2Type(typeStr: string): string;
 export declare function edgeStrToEdgeData(typeStr: string): string;
+export declare function edgeStrToEdgeStartData(typeStr: string): string;
+export declare function edgeStrToThickness(typeStr: string): string;
+export declare function edgeStrToPattern(typeStr: string): string;
 export declare const generateId: () => string;
 /**
  * Return all of the style classes
@@ -38,6 +41,9 @@ declare const db: {
     readonly typeStr2Type: typeof typeStr2Type;
     readonly edgeTypeStr2Type: typeof edgeTypeStr2Type;
     readonly edgeStrToEdgeData: typeof edgeStrToEdgeData;
+    readonly edgeStrToEdgeStartData: typeof edgeStrToEdgeStartData;
+    readonly edgeStrToThickness: typeof edgeStrToThickness;
+    readonly edgeStrToPattern: typeof edgeStrToPattern;
     readonly getLogger: () => Record<import("../../logger.js").LogLevel, {
         (...data: any[]): void;
         (message?: any, ...optionalParams: any[]): void;

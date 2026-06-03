@@ -100,6 +100,12 @@ export declare class WardleyBuilder {
     setAxes(partial: WardleyAxesConfig): void;
     setSize(width: number, height: number): void;
     getNode(id: string): WardleyNode | undefined;
+    /**
+     * Resolve a name to a node ID. Tries exact ID match first,
+     * then falls back to finding a node whose label matches the name
+     * (handles pipeline components which have synthetic IDs like "Parent_Child").
+     */
+    resolveNodeId(name: string): string;
     build(): WardleyBuildResult;
     clear(): void;
 }
