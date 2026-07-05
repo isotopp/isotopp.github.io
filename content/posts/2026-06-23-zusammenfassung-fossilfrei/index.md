@@ -136,8 +136,20 @@ Eine solche Nacht hatten wir im Januar: zusammen 45 kWh für die Heizung und 88 
 Wer in einer Gegend mit längeren tiefen Minusgraden lebt, ist mit einer Luft-Wasser-Wärmepumpe, Pufferspeicher und Heizstab vermutlich besser bedient.
 Die kann dann aber nicht trivial kühlen, weil Kondensat behandelt werden muß.
 
-Eine Luft-Luft-Wärmepumpe kann nicht mit einem Heizstab unterstützt werden.
-Wenn die untere Temperaturgrenze der Anlage nicht reicht, braucht man eine andere Zusatzheizung.
+---
+
+**EDIT:** Weil es im Fedi immer wieder diskutiert wird.
+
+Man kann *theoretisch* mit einer Wärmepumpe und einer Fußbodenheizung oder Radiatoren kühlen. Jedenfalls kann eine Luft-Wasser-Wärmepumpe auch invers laufen und kaltes Wasser produzieren, das man dann in den Heizkreislauf pumpt.
+
+Dabei kommt es aber zur Bildung von Konsensat, falls die kältesten Stellen des Heizkreislaufes (also gleich hinter der Wärmepumpe) kälter als der aktuelle Taupunkt (plus 3ºC Marge) werden. Meist heißt das, dass man zum Beispiel bei 17ºC Taupunkt kaltes Wasser von 20ºC erzeugen kann, welches dann mit sagen wir 22ºC in den Radiatoren oder den Fußbodenheizungs-Schleifen ankommt. Man wird einen Ventilator brauchen, um die Schichtung zu durchbrechen und der Wärmetransport hält sich in Grenzen. Es ist besser als gar keine Kühlung, aber es ist nicht sehr leistungsfähig im Vergleich zu einer Luft-Luft-Wärmepumpe (aka Split-Airco).
+
+Es ist außerdem wirkungslos bei Wärme mit hohem Taupunkt, also bei schwülem Wetter, wo eine Split-Airco im Trockungsbetrieb aggressiv das Wasser aus der Luft zieht ohne die Temperatur viel zu senken.
+
+---
+
+Eine Split-Airco ist dagegen anders beschränkt: Sie kann im Winter nicht mit einem Heizstab unterstützt werden. Wenn die untere Temperaturgrenze der Anlage nicht reicht, braucht man eine andere Zusatzheizung.
+
 Alle Wärmepumpen werden am unteren Ende ihres Spezifikationsbereichs ineffizienter.
 Bei Luft-Wasser-Anlagen legt man deshalb auf einen großzügigen Durchschnitt aus und läßt sehr kalte Tage selten vom Heizstab abfangen.
 Der Heizstab ist dann zwar nur 100% effizient, läuft aber kaum, und die auf den Durchschnitt statt den Extremwert skalierte Anlage macht das an den nicht so kalten Tagen durch höhere Effizienz wieder wett.
