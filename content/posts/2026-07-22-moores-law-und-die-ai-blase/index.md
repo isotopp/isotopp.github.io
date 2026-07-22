@@ -157,6 +157,8 @@ Neben der CPU sitzen nur noch wenige tief integrierte Bausteine.
 
 ![iPhone-Innenleben mit markiertem Nicht-Batterie-Bereich](iphone-soc.png)
 
+*Aktuelles iPhone. Nur der rot umrandete Bereich ist das Telefon, der Rest ist Batterie. Und im rot umrandeten Bereich sitzen im Grunde nur 2 Chips: Der SoC von Apple, ein A19 und ein SoC von Qualcomm für den ganzen Funk- und Analogmodem-Kram. Den will Apple gerne weg haben und durch was eigenes ersetzen, einmal weil sie Qualcomm nicht gerne Geld geben, und zum anderen weil sie den Kram nur dann mit dem A19 integrieren können.*
+
 Wenn ihr also glaubt,
 dass ihr euren 2015er Laptop in 2026 noch benutzen könnt,
 dann liegt das nicht daran, dass ihr besonders genügsam seid.
