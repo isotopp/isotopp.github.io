@@ -16,6 +16,9 @@
 
 	     //request.onload = function () {
 	     request.onreadystatechange = function () {
+         if (request.readyState !== XMLHttpRequest.DONE) {
+           return;
+         }
          if (request.status >= 200 && request.status < 400) {
            pagesIndex = JSON.parse(request.responseText);
            // console.log("index:", pagesIndex.length);

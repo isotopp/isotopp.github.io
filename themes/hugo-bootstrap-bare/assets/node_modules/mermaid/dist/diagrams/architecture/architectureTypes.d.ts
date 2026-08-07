@@ -42,7 +42,7 @@ export declare const isArchitecturePairXY: (pair: ArchitectureDirectionPair) => 
  * @returns true if the pair is not LL, RR, TT, or BB
  */
 export declare const isValidArchitectureDirectionPair: (x: InvalidArchitectureDirectionPair) => x is ArchitectureDirectionPair;
-export type ArchitectureDirectionPairMap = Partial<Record<ArchitectureDirectionPair, string>>;
+export type ArchitectureDirectionPairMap = Map<ArchitectureDirectionPair, string>;
 /**
  * Creates a pair of the directions of each side of an edge. This function should be used instead of manually creating it to ensure that the source is always the first character.
  *
@@ -58,7 +58,7 @@ export declare const getArchitectureDirectionPair: (sourceDir: ArchitectureDirec
  * @param pair - architecture direction pair
  * @returns a new [x, y] coordinate pair
  */
-export declare const shiftPositionByArchitectureDirectionPair: ([x, y]: number[], pair: ArchitectureDirectionPair) => number[];
+export declare const shiftPositionByArchitectureDirectionPair: ([x, y]: [number, number], pair: ArchitectureDirectionPair) => [number, number];
 /**
  * Given the directional pair of an XY edge, get the scale factors necessary to shift the coordinates inwards towards the edge
  * @param pair - XY pair of an edge
@@ -101,6 +101,11 @@ export interface ArchitectureGroup {
     title?: string;
     in?: string;
 }
+export type ArchitectureAlignmentDirection = 'row' | 'column';
+export interface ArchitectureLayoutHint {
+    direction: ArchitectureAlignmentDirection;
+    members: string[];
+}
 export interface ArchitectureEdge<DT = ArchitectureDirection> {
     lhsId: string;
     lhsDir: DT;
@@ -124,37 +129,35 @@ export interface ArchitectureDB extends DiagramDBBase<ArchitectureDiagramConfig>
     getGroups: () => ArchitectureGroup[];
     addEdge: (edge: ArchitectureEdge) => void;
     getEdges: () => ArchitectureEdge[];
+    addLayoutHint: (hint: ArchitectureLayoutHint) => void;
+    getLayoutHints: () => ArchitectureLayoutHint[];
     setElementForId: (id: string, element: D3Element) => void;
     getElementById: (id: string) => D3Element;
     getDataStructures: () => ArchitectureDataStructures;
 }
-export type ArchitectureAdjacencyList = Record<string, ArchitectureDirectionPairMap>;
-export type ArchitectureSpatialMap = Record<string, number[]>;
+export type ArchitectureAdjacencyList = Map<string, ArchitectureDirectionPairMap>;
+export type ArchitectureSpatialMap = Map<string, [number, number]>;
 /**
  * Maps the direction that groups connect from.
  *
- * **Outer key**: ID of group A
- *
- * **Inner key**: ID of group B
- *
- * **Value**: 'vertical' or 'horizontal'
- *
- * Note: tmp[groupA][groupB] == tmp[groupB][groupA]
+ * **Key**: `groupA-groupB`, where groupA and groupB are the JSON string ids of the two groups in alphabetical order.
  */
-export type ArchitectureGroupAlignments = Record<string, Record<string, Exclude<ArchitectureAlignment, 'bend'>>>;
+export type ArchitectureGroupAlignments = Map<`${string}-${string}`, Exclude<ArchitectureAlignment, 'bend'>>;
+export declare const architectureGroupAlignmentKey: (groupA: string, groupB: string) => `${string}-${string}`;
 export interface ArchitectureDataStructures {
     adjList: ArchitectureAdjacencyList;
     spatialMaps: ArchitectureSpatialMap[];
     groupAlignments: ArchitectureGroupAlignments;
 }
 export interface ArchitectureState extends Record<string, unknown> {
-    nodes: Record<string, ArchitectureNode>;
-    groups: Record<string, ArchitectureGroup>;
+    nodes: Map<string, ArchitectureNode>;
+    groups: Map<string, ArchitectureGroup>;
     edges: ArchitectureEdge[];
-    registeredIds: Record<string, 'node' | 'group'>;
+    registeredIds: Map<string, 'node' | 'group'>;
     dataStructures?: ArchitectureDataStructures;
-    elements: Record<string, D3Element>;
+    elements: Map<string, D3Element>;
     config: ArchitectureDiagramConfig;
+    layoutHints: ArchitectureLayoutHint[];
 }
 export interface EdgeSingularData {
     id: string;

@@ -1,11 +1,12 @@
 import type { ArchitectureDiagramConfig } from '../../config.type.js';
 import type { DiagramDB } from '../../diagram-api/types.js';
 import type { D3Element } from '../../types.js';
-import type { ArchitectureEdge, ArchitectureGroup, ArchitectureJunction, ArchitectureNode, ArchitectureService } from './architectureTypes.js';
+import type { ArchitectureEdge, ArchitectureGroup, ArchitectureJunction, ArchitectureLayoutHint, ArchitectureNode, ArchitectureService } from './architectureTypes.js';
 export declare class ArchitectureDB implements DiagramDB {
     private nodes;
     private groups;
     private edges;
+    private layoutHints;
     private registeredIds;
     private dataStructures?;
     private elements;
@@ -24,6 +25,8 @@ export declare class ArchitectureDB implements DiagramDB {
     getGroups(): ArchitectureGroup[];
     addEdge({ lhsId, rhsId, lhsDir, rhsDir, lhsInto, rhsInto, lhsGroup, rhsGroup, title, }: ArchitectureEdge): void;
     getEdges(): ArchitectureEdge[];
+    addLayoutHint(hint: ArchitectureLayoutHint): void;
+    getLayoutHints(): ArchitectureLayoutHint[];
     /**
      * Returns the current diagram's adjacency list, spatial map, & group alignments.
      * If they have not been created, run the algorithms to generate them.

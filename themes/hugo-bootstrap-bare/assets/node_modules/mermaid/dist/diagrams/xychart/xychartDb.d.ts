@@ -11,8 +11,12 @@ declare function setXAxisRangeData(min: number, max: number): void;
 declare function setXAxisBand(categories: NormalTextType[]): void;
 declare function setYAxisTitle(title: NormalTextType): void;
 declare function setYAxisRangeData(min: number, max: number): void;
-declare function setLineData(title: NormalTextType, data: number[]): void;
-declare function setBarData(title: NormalTextType, data: number[]): void;
+interface ParsedDataPoint {
+    value: number;
+    label: string;
+}
+declare function setLineData(title: NormalTextType, data: ParsedDataPoint[]): void;
+declare function setBarData(title: NormalTextType, data: ParsedDataPoint[]): void;
 declare function getDrawableElem(): DrawableElem[];
 declare function getChartThemeConfig(): XYChartThemeConfig;
 declare function getChartConfig(): XYChartConfig;

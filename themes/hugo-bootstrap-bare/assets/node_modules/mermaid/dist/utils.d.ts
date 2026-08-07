@@ -239,9 +239,8 @@ export declare const insertTitle: (parent: D3Element, cssClass: string, titleTop
 export declare const parseFontSize: (fontSize: string | number | undefined) => [number?, string?];
 export declare function cleanAndMerge<T>(defaultData: T, data?: Partial<T>): T;
 declare const _default: {
-    assignWithDepth: (dst: any, src: any, { depth, clobber }?: {
+    assignWithDepth: (dst: unknown, src: unknown, { depth }?: {
         depth?: number;
-        clobber?: boolean;
     }) => any;
     wrapLabel: (label: string, maxWidth: number, config: WrapLabelConfig) => string;
     calculateTextHeight: typeof calculateTextHeight;

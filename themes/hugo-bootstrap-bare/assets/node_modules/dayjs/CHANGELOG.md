@@ -1,3 +1,10 @@
+## [1.11.21](https://github.com/iamkun/dayjs/compare/v1.11.20...v1.11.21) (2026-05-26)
+
+
+### Bug Fixes
+
+* preserve unsupported year tokens in format ([#3015](https://github.com/iamkun/dayjs/issues/3015)) ([#3016](https://github.com/iamkun/dayjs/issues/3016)) ([8fda602](https://github.com/iamkun/dayjs/commit/8fda602beac5abbc64230ddc49085aa532320f26))
+
 ## [1.11.20](https://github.com/iamkun/dayjs/compare/v1.11.19...v1.11.20) (2026-03-12)
 
 

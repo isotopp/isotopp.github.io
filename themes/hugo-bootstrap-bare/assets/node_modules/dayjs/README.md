@@ -73,7 +73,7 @@ dayjs().isBefore(dayjs()) // query
 
 Day.js has great support for internationalization.
 
-But none of them will be included in your build unless you use it.
+But none of them will be included in your build unless you use them.
 
 ```javascript
 import 'dayjs/locale/es' // load on demand
@@ -99,16 +99,15 @@ dayjs().format('Q Do k kk X x') // more available formats
 
 📚[Plugin List](https://day.js.org/docs/en/plugin/plugin)
 
+## Downloads
+![Day.js Chart](./docs/assets/download.png)
+
 ## Sponsors
 
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website.
 
 [[Become a sponsor via Github](https://github.com/sponsors/iamkun/)] [[Become a sponsor via OpenCollective](https://opencollective.com/dayjs#sponsor)]
 
-<a href="https://toyokumo.co.jp" target="_blank">
-  <img width="70" src="https://user-images.githubusercontent.com/17680888/197092231-2367b5eb-1e43-467e-a311-23f7cd97b086.png">
-</a>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://github.com/ken-swyfft" target="_blank">
   <img width="70" src="https://avatars.githubusercontent.com/u/65305317?v=4">
 </a>
@@ -129,8 +128,16 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
   <img width="70" src="https://avatars.githubusercontent.com/u/188567998?v=4">
 </a>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://www.netrouting.com" target="_blank" alt="Netrouting Dedicated Servers">
+  <img width="70" src="https://netrouting.com/wp-content/uploads/2026/04/Logo-netrouting.png">
+</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://anonstories.com" target="_blank">
   <img alt="Instagram Story Viewer" width="70" src="https://avatars.githubusercontent.com/u/240702364?v=4">
+</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://www.sayfone.com/call-rates " target="_blank">
+  <img alt="Sayfone Cheap international calls" width="70" src="https://github.com/user-attachments/assets/68f91139-b190-421b-bcd7-43a8e3d84fe7">
 </a>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://automatio.ai" target="_blank" alt="Automatio AI">
@@ -170,11 +177,6 @@ Please give us a 💖 star 💖 to support us. Thank you.
 
 And thank you to all our backers! 🙏
 
-<a href="https://opencollective.com/dayjs/backer/0/website?requireActive=false" target="_blank"><img width="35" src="https://opencollective.com/dayjs/backer/0/avatar.svg?requireActive=false"></a>
-<a href="https://opencollective.com/dayjs/backer/1/website?requireActive=false" target="_blank"><img width="35" src="https://opencollective.com/dayjs/backer/1/avatar.svg?requireActive=false"></a>
-<a href="https://opencollective.com/dayjs/backer/2/website?requireActive=false" target="_blank"><img width="35" src="https://opencollective.com/dayjs/backer/2/avatar.svg?requireActive=false"></a>
-<a href="https://opencollective.com/dayjs/backer/3/website?requireActive=false" target="_blank"><img width="35" src="https://opencollective.com/dayjs/backer/3/avatar.svg?requireActive=false"></a>
-<br />
 <a href="https://opencollective.com/dayjs#backers" target="_blank"><img src="https://opencollective.com/dayjs/contributors.svg?width=890" /></a>
 
 ## License

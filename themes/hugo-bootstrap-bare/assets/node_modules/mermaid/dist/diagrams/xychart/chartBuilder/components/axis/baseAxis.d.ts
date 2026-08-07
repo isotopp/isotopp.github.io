@@ -16,6 +16,7 @@ export declare abstract class BaseAxis implements Axis {
     protected outerPadding: number;
     protected titleTextHeight: number;
     protected labelTextHeight: number;
+    protected normalizedLabelRotationInRad: number;
     constructor(axisConfig: XYChartAxisConfig, title: string, textDimensionCalculator: TextDimensionCalculator, axisThemeConfig: XYChartAxisThemeConfig);
     setRange(range: [number, number]): void;
     getRange(): [number, number];
@@ -31,6 +32,7 @@ export declare abstract class BaseAxis implements Axis {
     private calculateSpaceIfDrawnVertical;
     calculateSpace(availableSpace: Dimension): Dimension;
     setBoundingBoxXY(point: Point): void;
+    private calculateOffsetByRotation;
     private getDrawableElementsForLeftAxis;
     private getDrawableElementsForBottomAxis;
     private getDrawableElementsForTopAxis;

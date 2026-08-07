@@ -1,9 +1,8 @@
 import { seal } from './utils.js';
 
-// eslint-disable-next-line unicorn/better-regex
-export const MUSTACHE_EXPR = seal(/\{\{[\w\W]*|[\w\W]*\}\}/gm); // Specify template detection regex for SAFE_FOR_TEMPLATES mode
-export const ERB_EXPR = seal(/<%[\w\W]*|[\w\W]*%>/gm);
-export const TMPLIT_EXPR = seal(/\$\{[\w\W]*/gm); // eslint-disable-line unicorn/better-regex
+export const MUSTACHE_EXPR = seal(/{{[\w\W]*|^[\w\W]*}}/g);
+export const ERB_EXPR = seal(/<%[\w\W]*|^[\w\W]*%>/g);
+export const TMPLIT_EXPR = seal(/\${[\w\W]*/g);
 export const DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]+$/); // eslint-disable-line no-useless-escape
 export const ARIA_ATTR = seal(/^aria-[\-\w]+$/); // eslint-disable-line no-useless-escape
 export const IS_ALLOWED_URI = seal(
@@ -15,3 +14,11 @@ export const ATTR_WHITESPACE = seal(
 );
 export const DOCTYPE_NAME = seal(/^html$/i);
 export const CUSTOM_ELEMENT = seal(/^[a-z][.\w]*(-[.\w]+)+$/i);
+
+// Markup-significant character probes used by _sanitizeElements.
+// Shared module-level instances are safe despite the sticky /g flags:
+// unapply() resets lastIndex for RegExp receivers before every call.
+export const ELEMENT_MARKUP_PROBE = seal(/<[/\w!]/g);
+export const COMMENT_MARKUP_PROBE = seal(/<[/\w]/g);
+export const FALLBACK_TAG_CLOSE = seal(/<\/no(script|embed|frames)/i);
+export const SELF_CLOSING_TAG = seal(/\/>/i);

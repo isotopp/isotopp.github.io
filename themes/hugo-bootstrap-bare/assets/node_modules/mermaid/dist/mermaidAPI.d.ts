@@ -84,6 +84,10 @@ export declare const mermaidAPI: Readonly<{
     getDiagramFromText: (text: string, metadata?: Pick<DiagramMetadata, "title">) => Promise<Diagram>;
     initialize: typeof initialize;
     getConfig: () => MermaidConfig;
+    /**
+     * @deprecated This function does nothing. It will be overwritten by the next
+     *             call to {@link render} or {@link parse}.
+     */
     setConfig: (conf: MermaidConfig) => MermaidConfig;
     getSiteConfig: () => MermaidConfig;
     updateSiteConfig: (conf: MermaidConfig) => MermaidConfig;
