@@ -44,7 +44,7 @@ Possible topics or annotations from a candidate:
 - What are the advantages or disadvantages of this?
   - L2. Huh. Don't do that.
   - DNS updates are slow and complicated. It can be made to work, but you will always have very little control over what is balanced why and how. DNS is better used for a global load balancing of http requests, and not as a database load balancer.
-  - Zookeeper could be used to do this with modified clients, but we would have to discuss how exactly that works. That's an interesting sub-question of its own.
+  - Zookeeper could be used to do this with modified clients. [Service Discovery mit Zookeeper]({{< relref "2026-08-19-service-discovery-mit-zookeeper.md" >}}) (German) describes the pattern in detail.
   - MySQL Router or ProxySQL are made for that, but have a lot of interesting sub-questions of their own. See below.
 - What else may be different when load balancing database connections instead of http? 
     - web-proxies are not good database proxies. The database protocol is not http, and it is a [stateful protocol]({{< relref "2020-07-28-mysql-connection-scoped-state.md" >}}). This requires extra care when load balancing.

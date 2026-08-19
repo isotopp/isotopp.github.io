@@ -32,6 +32,8 @@ Leaf replicas (and the Primary) register themselves with a Zookeeper when they a
 
 Clients subscribe to pool changes in the Zookeeper. On change, they get notified and [atomically]({{< relref "2018-11-29-but-is-it-atomic.md" >}}) dump the pool to a file on disk. That way, when Zookeeper is unavailable due to Zk internal voting or realignment, the clients still have a roster of endpoints to choose from. Also, they do not have to ask the Zk on each connect, only on each change.
 
+The general design, including ephemeral membership, watches, eventual convergence, and local materialization, is described in [Service Discovery mit Zookeeper]({{< relref "2026-08-19-service-discovery-mit-zookeeper.md" >}}) (German).
+
 Some replication hierarchies see use from multiple applications: They are not single tenant, but multiple applications from different teams use the database as a shared data source, and as a way to communicate. That is, because historically there was only a single application, and a single schema, and then we grew and split things off.
 
 In order to separate possibly interfering workloads from each other, such hierarchies have multiple pools for leaf replicas - one for each application. So there may be an 'xml-misc' hierarchy (which would be the default pool), but also an 'xml-mobile', or an 'xml-slow'. The latter would contain a number of sacrificial hosts to run queries on that cannot be optimized - that way they would interfere with each other, but not with the rest of the workload.

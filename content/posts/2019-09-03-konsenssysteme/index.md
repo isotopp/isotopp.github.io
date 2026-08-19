@@ -107,6 +107,10 @@ ist, oder das Ensemble selbst split ist.
 Im ephemeral Znode selbst kann die Endpunktadresse des Hosts stehen:
 Adieu DNS!
 
+Eine konkrete Anwendung dieses Prinzips mit Watches, Eventual Convergence und
+lokal materialisierten Endpoint-Dateien beschreibt
+[Service Discovery mit Zookeeper]({{< relref "2026-08-19-service-discovery-mit-zookeeper.md" >}}).
+
 Zookeeper hat atomare Operationen, sodaß man Znodes automatisch
 verschieben oder sonstwie übernehmen kann. Daraus kann man
 globale Locks, exactly-once Work Queues und andere Dinge bauen,
