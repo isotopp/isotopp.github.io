@@ -1,7 +1,7 @@
 ---
 author: isotopp
 date: "2026-08-22T02:03:04Z"
-feature-img: assets/img/background/startbahn.jpg
+feature-img: assets/img/background/schloss.jpg
 title: "Installing the ephemeral SSH key demonstrator"
 toc: true
 tags:
