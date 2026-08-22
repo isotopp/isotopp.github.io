@@ -53,7 +53,9 @@ The checkout on the Mac is `~/PycharmProjects/ski` and its dependencies are
 locked through `uv`:
 
 ```console
-~ $ cd PycharmProjects/ski/
+~ $ cd PycharmProjects
+PycharmProjects $ git clone https://github.com/isotopp/server-key-injection/ ski
+PycharmProjects $ cd ski/
 ski $ ls
 AGENTS.md                README.md                
 developer                docs
