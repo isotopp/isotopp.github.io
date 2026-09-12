@@ -14,6 +14,8 @@ interface BaseNode {
     id: string;
     label?: string;
     description?: string[];
+    /** Stereotype line rendered between label and description in multi-section labels, e.g. `[Container: Node.js]`. */
+    stereotype?: string;
     parentId?: string;
     position?: string;
     cssStyles?: string[];
@@ -23,7 +25,6 @@ interface BaseNode {
     labelType?: string;
     domId?: string;
     dir?: string;
-    explicitDir?: boolean;
     haveCallback?: boolean;
     link?: string;
     linkTarget?: string;
@@ -32,6 +33,11 @@ interface BaseNode {
     isGroup?: boolean;
     width?: number;
     height?: number;
+    wrappingWidth?: number;
+    labelBBox?: {
+        width: number;
+        height: number;
+    };
     /** Optional rendered title/header region for group-like containers. */
     groupTitleRect?: GroupTitleRect;
     intersect?: (point: any) => any;
@@ -129,6 +135,10 @@ export interface Edge {
     look?: string;
     isUserDefinedId?: boolean;
     showPoints?: boolean;
+    width?: number;
+    height?: number;
+    x?: number;
+    y?: number;
     points?: Point[];
     parentId?: string;
     dir?: string;

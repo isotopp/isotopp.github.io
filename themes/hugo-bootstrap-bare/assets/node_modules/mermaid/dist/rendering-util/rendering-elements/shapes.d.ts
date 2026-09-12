@@ -2,20 +2,28 @@ import type { D3Selection, MaybePromise } from '../../types.js';
 import type { Node, ShapeRenderOptions } from '../types.js';
 import { anchor } from './shapes/anchor.js';
 import { bowTieRect } from './shapes/bowTieRect.js';
+import { bucket } from './shapes/bucket.js';
+import { collapsedGroup } from './shapes/collapsedGroup.js';
+import { block_arrow } from './shapes/blockArrow.js';
+import { browser } from './shapes/browser.js';
 import { card } from './shapes/card.js';
 import { choice } from './shapes/choice.js';
 import { circle } from './shapes/circle.js';
+import { composite } from './shapes/composite.js';
+import { consoleWindow } from './shapes/console.js';
 import { crossedCircle } from './shapes/crossedCircle.js';
 import { curlyBraceLeft } from './shapes/curlyBraceLeft.js';
 import { curlyBraceRight } from './shapes/curlyBraceRight.js';
 import { curlyBraces } from './shapes/curlyBraces.js';
 import { curvedTrapezoid } from './shapes/curvedTrapezoid.js';
+import { person } from './shapes/person.js';
 import { cylinder } from './shapes/cylinder.js';
 import { datastore } from './shapes/datastore.js';
 import { dividedRectangle } from './shapes/dividedRect.js';
 import { doublecircle } from './shapes/doubleCircle.js';
 import { filledCircle } from './shapes/filledCircle.js';
 import { flippedTriangle } from './shapes/flippedTriangle.js';
+import { folder } from './shapes/folder.js';
 import { forkJoin } from './shapes/forkJoin.js';
 import { halfRoundedRectangle } from './shapes/halfRoundedRectangle.js';
 import { hexagon } from './shapes/hexagon.js';
@@ -125,6 +133,37 @@ export declare const shapesDefs: [{
     readonly description: "Data flow diagram data store";
     readonly aliases: ["data-store"];
     readonly handler: typeof datastore;
+}, {
+    readonly semanticName: "Folder";
+    readonly name: "Folder";
+    readonly shortName: "folder";
+    readonly description: "Folder or directory";
+    readonly aliases: ["directory"];
+    readonly handler: typeof folder;
+}, {
+    readonly semanticName: "Bucket";
+    readonly name: "Bucket";
+    readonly shortName: "bucket";
+    readonly description: "Object storage bucket";
+    readonly handler: typeof bucket;
+}, {
+    readonly semanticName: "Console";
+    readonly name: "Console (terminal window)";
+    readonly shortName: "console";
+    readonly description: "Terminal or console window";
+    readonly handler: typeof consoleWindow;
+}, {
+    readonly semanticName: "Browser";
+    readonly name: "Browser";
+    readonly shortName: "browser";
+    readonly description: "Browser window";
+    readonly handler: typeof browser;
+}, {
+    readonly semanticName: "Person";
+    readonly name: "Person";
+    readonly shortName: "person";
+    readonly description: "Person (circular head above a rounded body)";
+    readonly handler: typeof person;
 }, {
     readonly semanticName: "Start";
     readonly name: "Circle";
@@ -424,7 +463,7 @@ export declare const shapesDefs: [{
     readonly aliases: ["lined-document"];
     readonly handler: typeof linedWaveEdgedRect;
 }];
-export declare const shapes: Record<"join" | "rounded" | "state" | "anchor" | "db" | "summary" | "database" | "start" | "document" | "event" | "stop" | "process" | "text" | "circle" | "rect" | "display" | "squareRect" | "choice" | "note" | "rectWithTitle" | "labelRect" | "iconSquare" | "iconCircle" | "icon" | "iconRounded" | "imageSquare" | "kanbanItem" | "mindmapCircle" | "defaultMindmapNode" | "classBox" | "erBox" | "requirementBox" | "proc" | "rectangle" | "roundedRect" | "stadium" | "terminal" | "pill" | "fr-rect" | "subprocess" | "subproc" | "framed-rectangle" | "subroutine" | "cyl" | "cylinder" | "datastore" | "data-store" | "circ" | "bang" | "cloud" | "diam" | "decision" | "diamond" | "question" | "hex" | "hexagon" | "prepare" | "lean-r" | "lean-right" | "in-out" | "lean_right" | "lean-l" | "lean-left" | "out-in" | "lean_left" | "trap-b" | "priority" | "trapezoid-bottom" | "trapezoid" | "trap-t" | "manual" | "trapezoid-top" | "inv-trapezoid" | "inv_trapezoid" | "dbl-circ" | "double-circle" | "doublecircle" | "notch-rect" | "card" | "notched-rectangle" | "lin-rect" | "lined-rectangle" | "lined-process" | "lin-proc" | "shaded-process" | "sm-circ" | "small-circle" | "stateStart" | "fr-circ" | "framed-circle" | "stateEnd" | "fork" | "forkJoin" | "hourglass" | "collate" | "brace" | "comment" | "brace-l" | "brace-r" | "braces" | "bolt" | "com-link" | "lightning-bolt" | "doc" | "delay" | "half-rounded-rectangle" | "h-cyl" | "das" | "horizontal-cylinder" | "lin-cyl" | "disk" | "lined-cylinder" | "curv-trap" | "curved-trapezoid" | "div-rect" | "div-proc" | "divided-rectangle" | "divided-process" | "tri" | "extract" | "triangle" | "win-pane" | "internal-storage" | "window-pane" | "f-circ" | "junction" | "filled-circle" | "notch-pent" | "loop-limit" | "notched-pentagon" | "flip-tri" | "manual-file" | "flipped-triangle" | "sl-rect" | "manual-input" | "sloped-rectangle" | "docs" | "documents" | "st-doc" | "stacked-document" | "st-rect" | "procs" | "processes" | "stacked-rectangle" | "bow-rect" | "stored-data" | "bow-tie-rectangle" | "cross-circ" | "crossed-circle" | "tag-doc" | "tagged-document" | "tag-rect" | "tagged-rectangle" | "tag-proc" | "tagged-process" | "flag" | "paper-tape" | "odd" | "rect_left_inv_arrow" | "lin-doc" | "lined-document", typeof state | typeof choice | typeof note | typeof rectWithTitle | typeof labelRect | typeof iconSquare | typeof iconCircle | typeof icon | typeof iconRounded | typeof imageSquare | typeof anchor | typeof kanbanItem | typeof mindmapCircle | typeof defaultMindmapNode | typeof classBox | typeof erBox | typeof requirementBox | typeof squareRect | typeof roundedRect | typeof stadium | typeof subroutine | typeof cylinder | typeof datastore | typeof circle | typeof bang | typeof cloud | typeof question | typeof hexagon | typeof lean_right | typeof lean_left | typeof trapezoid | typeof inv_trapezoid | typeof doublecircle | typeof text | typeof card | typeof shadedProcess | typeof stateStart | typeof stateEnd | typeof forkJoin | typeof hourglass | typeof curlyBraceLeft | typeof curlyBraceRight | typeof curlyBraces | typeof lightningBolt | typeof waveEdgedRectangle | typeof halfRoundedRectangle | typeof tiltedCylinder | typeof linedCylinder | typeof curvedTrapezoid | typeof dividedRectangle | typeof triangle | typeof windowPane | typeof filledCircle | typeof trapezoidalPentagon | typeof flippedTriangle | typeof slopedRect | typeof multiWaveEdgedRectangle | typeof multiRect | typeof bowTieRect | typeof crossedCircle | typeof taggedWaveEdgedRectangle | typeof taggedRect | typeof waveRectangle | typeof rect_left_inv_arrow | typeof linedWaveEdgedRect>;
+export declare const shapes: Record<"join" | "rounded" | "state" | "anchor" | "db" | "summary" | "database" | "start" | "document" | "event" | "stop" | "console" | "process" | "text" | "circle" | "rect" | "display" | "prepare" | "squareRect" | "choice" | "note" | "composite" | "rectWithTitle" | "labelRect" | "block_arrow" | "collapsedGroup" | "iconSquare" | "iconCircle" | "icon" | "iconRounded" | "imageSquare" | "kanbanItem" | "mindmapCircle" | "defaultMindmapNode" | "classBox" | "erBox" | "requirementBox" | "proc" | "rectangle" | "roundedRect" | "stadium" | "terminal" | "pill" | "fr-rect" | "subprocess" | "subproc" | "framed-rectangle" | "subroutine" | "cyl" | "cylinder" | "datastore" | "data-store" | "folder" | "directory" | "bucket" | "browser" | "person" | "circ" | "bang" | "cloud" | "diam" | "decision" | "diamond" | "question" | "hex" | "hexagon" | "lean-r" | "lean-right" | "in-out" | "lean_right" | "lean-l" | "lean-left" | "out-in" | "lean_left" | "trap-b" | "priority" | "trapezoid-bottom" | "trapezoid" | "trap-t" | "manual" | "trapezoid-top" | "inv-trapezoid" | "inv_trapezoid" | "dbl-circ" | "double-circle" | "doublecircle" | "notch-rect" | "card" | "notched-rectangle" | "lin-rect" | "lined-rectangle" | "lined-process" | "lin-proc" | "shaded-process" | "sm-circ" | "small-circle" | "stateStart" | "fr-circ" | "framed-circle" | "stateEnd" | "fork" | "forkJoin" | "hourglass" | "collate" | "brace" | "comment" | "brace-l" | "brace-r" | "braces" | "bolt" | "com-link" | "lightning-bolt" | "doc" | "delay" | "half-rounded-rectangle" | "h-cyl" | "das" | "horizontal-cylinder" | "lin-cyl" | "disk" | "lined-cylinder" | "curv-trap" | "curved-trapezoid" | "div-rect" | "div-proc" | "divided-rectangle" | "divided-process" | "tri" | "extract" | "triangle" | "win-pane" | "internal-storage" | "window-pane" | "f-circ" | "junction" | "filled-circle" | "notch-pent" | "loop-limit" | "notched-pentagon" | "flip-tri" | "manual-file" | "flipped-triangle" | "sl-rect" | "manual-input" | "sloped-rectangle" | "docs" | "documents" | "st-doc" | "stacked-document" | "st-rect" | "procs" | "processes" | "stacked-rectangle" | "bow-rect" | "stored-data" | "bow-tie-rectangle" | "cross-circ" | "crossed-circle" | "tag-doc" | "tagged-document" | "tag-rect" | "tagged-rectangle" | "tag-proc" | "tagged-process" | "flag" | "paper-tape" | "odd" | "rect_left_inv_arrow" | "lin-doc" | "lined-document", typeof state | typeof choice | typeof note | typeof composite | typeof rectWithTitle | typeof labelRect | typeof block_arrow | typeof collapsedGroup | typeof iconSquare | typeof iconCircle | typeof icon | typeof iconRounded | typeof imageSquare | typeof anchor | typeof kanbanItem | typeof mindmapCircle | typeof defaultMindmapNode | typeof classBox | typeof erBox | typeof requirementBox | typeof squareRect | typeof roundedRect | typeof stadium | typeof subroutine | typeof cylinder | typeof datastore | typeof folder | typeof bucket | typeof consoleWindow | typeof browser | typeof person | typeof circle | typeof bang | typeof cloud | typeof question | typeof hexagon | typeof lean_right | typeof lean_left | typeof trapezoid | typeof inv_trapezoid | typeof doublecircle | typeof text | typeof card | typeof shadedProcess | typeof stateStart | typeof stateEnd | typeof forkJoin | typeof hourglass | typeof curlyBraceLeft | typeof curlyBraceRight | typeof curlyBraces | typeof lightningBolt | typeof waveEdgedRectangle | typeof halfRoundedRectangle | typeof tiltedCylinder | typeof linedCylinder | typeof curvedTrapezoid | typeof dividedRectangle | typeof triangle | typeof windowPane | typeof filledCircle | typeof trapezoidalPentagon | typeof flippedTriangle | typeof slopedRect | typeof multiWaveEdgedRectangle | typeof multiRect | typeof bowTieRect | typeof crossedCircle | typeof taggedWaveEdgedRectangle | typeof taggedRect | typeof waveRectangle | typeof rect_left_inv_arrow | typeof linedWaveEdgedRect>;
 export declare function isValidShape(shape: string): shape is ShapeID;
 export type ShapeID = keyof typeof shapes;
 export {};

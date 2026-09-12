@@ -39,7 +39,7 @@
 
 # JavaScript Dependency Status & Refresh Plan
 
-(as of 2026-Aug-07, remind the user to run a check again by 2026-Sep-07 at the latest, and then perform it when authorized)
+(as of 2026-Sep-12, remind the user to run a check again by 2026-Oct-12 at the latest, and then perform it when authorized)
 
 Checked from `themes/hugo-bootstrap-bare/assets` with:
 - `npm outdated` to identify direct dependency updates;
@@ -49,12 +49,12 @@ Checked from `themes/hugo-bootstrap-bare/assets` with:
 |-----------|---------|--------|---------------|
 | bootstrap | 5.3.8   | 5.3.8  | No            |
 | lunr      | 2.3.9   | 2.3.9  | No            |
-| mermaid   | 11.16.1 | 11.16.1| No            |
-| katex     | 0.18.1  | 0.18.1 | No            |
+| mermaid   | 11.17.2 | 12.0.0 | No (12 deferred) |
+| katex     | 0.18.7  | 0.18.7 | No            |
 
-`yarn install --check-files` refreshed the vendored dependencies after bumping `katex` to `^0.18.1` and `mermaid` to `^11.16.1`; notable resulting versions include `dompurify@3.4.13`, `marked@16.4.2`, `@iconify/utils@3.1.3`, `@mermaid-js/parser@1.2.0`, `cytoscape@3.34.0`, `dayjs@1.11.21`, `tinyexec@1.1.2`, and `uuid@14.0.0`.
+`yarn install --check-files` refreshed the vendored dependencies after bumping `katex` to `^0.18.7` and `mermaid` to `^11.17.2`; notable resulting versions include `@mermaid-js/parser@1.2.1`, `commander@15.0.0`, `cytoscape@3.34.3`, and `dayjs@1.11.23`. Mermaid 12 is intentionally deferred.
 
-The KaTeX `0.16.47` to `0.18.1` update required no integration changes: the vendored CSS, fonts, browser bundle, and auto-render bundle retain the paths and globals used by the site. The Hugo build and browser smoke tests for inline/display math, Mermaid SVGs, Lunr search, and the Bootstrap navbar passed. Should a new release appear, follow the plan below for each dependency that becomes outdated:
+The KaTeX `0.18.1` to `0.18.7` and Mermaid `11.16.1` to `11.17.2` updates required no integration changes. The Hugo production build and browser smoke tests for inline/display math, Mermaid SVGs, and Lunr search passed. Should a new release appear, follow the plan below for each dependency that becomes outdated:
 
 1. **Update version spec** in `themes/hugo-bootstrap-bare/assets/package.json` (e.g. bump `bootstrap` from 5.3.3 → 5.3.x or whatever the new tag is).
 2. **Install dependencies** within `themes/hugo-bootstrap-bare/assets` using `yarn install --check-files` (preferred to keep `yarn.lock` in sync) or `npm install`.

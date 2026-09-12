@@ -17,6 +17,8 @@ import type { LayoutData } from './rendering-util/types.js';
 import type { ParseOptions, ParseResult, RenderResult } from './types.js';
 import type { DetailedError } from './utils.js';
 export type { AsyncIconLoader, DetailedError, ExternalDiagramDefinition, IconLoader, InternalHelpers, LayoutData, LayoutLoaderDefinition, MermaidConfig, ParseErrorFunction, ParseOptions, ParseResult, RenderOptions, RenderResult, SVG, SVGGroup, SyncIconLoader, UnknownDiagramError, };
+export { clearLayoutRenderState, createCommonLayoutRenderer, defaultMeasureLayout, paintLayoutData, } from './rendering-util/layout-algorithms/common/index.js';
+export type { CommonLayoutMeasure, CommonLayoutPaintContext, CommonLayoutPaintOptions, CommonLayoutRenderContext, CommonLayoutRendererDefinition, } from './rendering-util/layout-algorithms/common/index.js';
 export interface RunOptions {
     /**
      * The query selector to use when finding elements to render. Default: `".mermaid"`.

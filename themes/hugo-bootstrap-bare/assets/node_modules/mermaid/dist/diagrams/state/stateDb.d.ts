@@ -75,7 +75,6 @@ export interface NodeData {
     cssStyles: string[];
     id: string;
     dir?: string;
-    explicitDir?: boolean;
     domId?: string;
     type?: string;
     isGroup?: boolean;

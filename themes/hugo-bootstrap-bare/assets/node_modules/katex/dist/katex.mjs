@@ -248,15 +248,16 @@ function getImplicitDefault(type) {
   }
 }
 function getDefaultValue(schema) {
-  if (schema.default !== undefined) {
+  if (Object.prototype.hasOwnProperty.call(schema, "default") && schema.default !== undefined) {
     return schema.default;
   }
   var type = Array.isArray(schema.type) ? schema.type[0] : schema.type;
   return getImplicitDefault(type);
 }
 function applySetting(target, prop, options, schema) {
-  var optionValue = options[prop];
-  target[prop] = optionValue !== undefined ? schema.processor ? schema.processor(optionValue) : optionValue : getDefaultValue(schema);
+  var optionValue = Object.prototype.hasOwnProperty.call(options, prop) ? options[prop] : undefined;
+  var processor = Object.prototype.hasOwnProperty.call(schema, "processor") ? schema.processor : undefined;
+  target[prop] = optionValue !== undefined ? processor ? processor(optionValue) : optionValue : getDefaultValue(schema);
 }
 /**
  * The main Settings object
@@ -6817,6 +6818,24 @@ function checkSymbolNodeType(node) {
   }
   return null;
 }
+/**
+ * Returns the string spelled out by a group of plain characters, throwing the
+ * given ParseError if the group holds anything else. With allowSpaces, a
+ * literal space counts as a character; `~` and `\ ` do not.
+ */
+function assertCharacterGroup(group, errorMessage, allowSpaces) {
+  var text = "";
+  for (var node of group.body) {
+    if (node.type === "textord") {
+      text += node.text;
+    } else if (allowSpaces && node.type === "spacing" && node.text === " ") {
+      text += " ";
+    } else {
+      throw new ParseError(errorMessage, group);
+    }
+  }
+  return text;
+}
 
 var getBaseSymbol = group => {
   if (group instanceof SymbolNode) {
@@ -7657,19 +7676,14 @@ defineFunction({
   handler(_ref, args) {
     var parser = _ref.parser;
     var arg = assertNodeType(args[0], "ordgroup");
-    var group = arg.body;
-    var number = "";
-    for (var i = 0; i < group.length; i++) {
-      var node = assertNodeType(group[i], "textord");
-      number += node.text;
-    }
+    var number = assertCharacterGroup(arg, "\\@char has non-numeric argument");
     var code = parseInt(number);
     var text;
     if (isNaN(code)) {
       throw new ParseError("\\@char has non-numeric argument " + number);
       // If we drop IE support, the following code could be replaced with
       // text = String.fromCodePoint(code)
-    } else if (code < 0 || code >= 0x10ffff) {
+    } else if (code < 0 || code > 0x10ffff) {
       throw new ParseError("\\@char with invalid code point " + number);
     } else if (code <= 0xffff) {
       text = String.fromCharCode(code);
@@ -8704,7 +8718,7 @@ defineFunction({
   numArgs: 1,
   argTypes: ["primitive"],
   handler: (context, args) => {
-    var delim = checkDelimiter(args[0], context);
+    var delim = checkDelimiter(normalizeArgument(args[0]), context);
     return {
       type: "delimsizing",
       mode: context.parser.mode,
@@ -9477,9 +9491,9 @@ function parseArray(parser, _ref, style) {
       endRow();
       // Arrays terminate newlines with `\crcr` which consumes a `\cr` if
       // the last line is empty.  However, AMS environments keep the
-      // empty row if it's the only one.
+      // empty row if it's the only one or has a manual tag.
       // NOTE: Currently, `cell` is the last item added into `row`.
-      if (row.length === 1 && cell.type === "styling" && cell.body.length === 1 && cell.body[0].type === "ordgroup" && cell.body[0].body.length === 0 && (body.length > 1 || !emptySingleRow)) {
+      if (row.length === 1 && cell.type === "styling" && cell.body.length === 1 && cell.body[0].type === "ordgroup" && cell.body[0].body.length === 0 && (body.length > 1 || !emptySingleRow) && !Array.isArray(tags == null ? void 0 : tags[tags.length - 1])) {
         body.pop();
       }
       if (hLinesBeforeRow.length < body.length + 1) {
@@ -9947,19 +9961,19 @@ var alignedHandler = function alignedHandler(context, args) {
     body: []
   };
   if (args[0] && args[0].type === "ordgroup") {
-    var arg0 = "";
-    for (var i = 0; i < args[0].body.length; i++) {
-      var textord = assertNodeType(args[0].body[i], "textord");
-      arg0 += textord.text;
+    var message = "Number of columns should be a positive integer";
+    var numColumns = assertCharacterGroup(args[0], message);
+    if (!/^[0-9]+$/.test(numColumns) || Number(numColumns) < 1) {
+      throw new ParseError(message, args[0]);
     }
-    numMaths = Number(arg0);
+    numMaths = Number(numColumns);
     numCols = numMaths * 2;
   }
   var isAligned = !numCols;
   res.body.forEach(function (row) {
-    for (var _i4 = 1; _i4 < row.length; _i4 += 2) {
+    for (var i = 1; i < row.length; i += 2) {
       // Modify ordgroup node within styling node
-      var styling = assertNodeType(row[_i4], "styling");
+      var styling = assertNodeType(row[i], "styling");
       var ordgroup = assertNodeType(styling.body[0], "ordgroup");
       ordgroup.body.unshift(emptyGroup);
     }
@@ -9977,16 +9991,16 @@ var alignedHandler = function alignedHandler(context, args) {
   // Adjusting alignment.
   // In aligned mode, we add one \qquad between columns;
   // otherwise we add nothing.
-  for (var _i5 = 0; _i5 < numCols; ++_i5) {
+  for (var i = 0; i < numCols; ++i) {
     var align = "r";
     var pregap = 0;
-    if (_i5 % 2 === 1) {
+    if (i % 2 === 1) {
       align = "l";
-    } else if (_i5 > 0 && isAligned) {
+    } else if (i > 0 && isAligned) {
       // "aligned" mode.
       pregap = 1; // add one \quad
     }
-    cols[_i5] = {
+    cols[i] = {
       type: "align",
       align: align,
       pregap: pregap,
@@ -10336,10 +10350,7 @@ defineFunction({
     if (nameGroup.type !== "ordgroup") {
       throw new ParseError("Invalid environment name", nameGroup);
     }
-    var envName = "";
-    for (var i = 0; i < nameGroup.body.length; ++i) {
-      envName += assertNodeType(nameGroup.body[i], "textord").text;
-    }
+    var envName = assertCharacterGroup(nameGroup, "Environment name should contain only text characters and spaces", true);
     if (funcName === "\\begin") {
       // begin...end is similar to left...right
       if (!Object.prototype.hasOwnProperty.call(environments, envName)) {
@@ -12196,6 +12207,38 @@ defineFunction({
   }
 });
 
+var handler = (_ref, args) => {
+  var parser = _ref.parser;
+  return {
+    type: "reflectbox",
+    mode: parser.mode,
+    body: args[0]
+  };
+};
+defineFunction({
+  type: "reflectbox",
+  names: ["\\reflectbox"],
+  numArgs: 1,
+  argTypes: ["hbox"],
+  allowedInText: true,
+  handler,
+  htmlBuilder(group, options) {
+    return makeSpan(["mord", "reflectbox"], [buildGroup$1(group.body, options)], options);
+  },
+  mathmlBuilder(group, options) {
+    return buildGroup(group.body, options);
+  }
+});
+// Parse math directly so the shared builders inherit the surrounding style.
+// \reflectbox instead uses an hbox argument for LaTeX's text-box behavior.
+defineFunction({
+  type: "reflectbox",
+  names: ["\\mathreflectbox"],
+  numArgs: 1,
+  argTypes: ["math"],
+  handler
+});
+
 defineFunction({
   type: "internal",
   names: ["\\relax"],
@@ -13336,8 +13379,10 @@ class Namespace {
   get(name) {
     if (Object.prototype.hasOwnProperty.call(this.current, name)) {
       return this.current[name];
-    } else {
+    } else if (Object.prototype.hasOwnProperty.call(this.builtins, name)) {
       return this.builtins[name];
+    } else {
+      return undefined;
     }
   }
   /**
@@ -13368,7 +13413,7 @@ class Namespace {
       // value is the correct one.
       var top = this.undefStack[this.undefStack.length - 1];
       if (top && !Object.prototype.hasOwnProperty.call(top, name)) {
-        top[name] = this.current[name];
+        top[name] = Object.prototype.hasOwnProperty.call(this.current, name) ? this.current[name] : undefined;
       }
     }
     if (value == null) {
@@ -14073,6 +14118,8 @@ defineMacro("\u27e6", "\\llbracket"); // blackboard bold [
 defineMacro("\u27e7", "\\rrbracket"); // blackboard bold ]
 defineMacro("\\lBrace", "\\html@mathml{" + "\\mathopen{\\{\\mkern-3.2mu[}}" + "{\\mathopen{\\char`\u2983}}");
 defineMacro("\\rBrace", "\\html@mathml{" + "\\mathclose{]\\mkern-3.2mu\\}}}" + "{\\mathclose{\\char`\u2984}}");
+defineMacro("↤", "\\mapsfrom");
+defineMacro("\\mapsfrom", "\\html@mathml{\\mathrel{\\mathreflectbox{\\mapsto}}}{\\mathrel{\\char`↤}}");
 defineMacro("\u2983", "\\lBrace"); // blackboard bold {
 defineMacro("\u2984", "\\rBrace"); // blackboard bold }
 // TODO: Create variable sized versions of the last two items. I believe that
@@ -16262,7 +16309,7 @@ var renderToHTMLTree = function renderToHTMLTree(expression, options) {
     return renderError(error, expression, settings);
   }
 };
-var version = "0.18.1";
+var version = "0.18.7";
 var __domTree = {
   Span,
   Anchor,

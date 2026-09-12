@@ -21,7 +21,20 @@ export declare const insertLabel: <T extends SVGGraphicsElement>(parent: D3Selec
     halfPadding: number;
     label: import("d3-selection").Selection<SVGGElement, unknown, Element | null, unknown>;
 }>;
-export declare const updateNodeBounds: <T extends SVGGraphicsElement>(node: Node, element: D3Selection<SVGGElement> | D3Selection<T>) => void;
+export declare const updateNodeBounds: <T extends SVGGraphicsElement>(node: Node, element: D3Selection<SVGGElement> | D3Selection<T>, 
+/**
+ * Pre-computed geometry the caller already knows (e.g. an axis-aligned rect
+ * sized analytically from the label). When supplied, we skip `getBBox()` —
+ * reading it forces a synchronous reflow over the growing node tree, which is
+ * the dominant cost of the measure phase on large diagrams. Only pass this when
+ * the value is exactly equal to what `element.getBBox()` would return (so it is
+ * safe for plain rects, but not for hand-drawn/roughjs paths that overflow
+ * their nominal box).
+ */
+knownBounds?: {
+    width: number;
+    height: number;
+}) => void;
 /**
  * @param parent - Parent element to append the polygon to
  * @param w - Width of the polygon

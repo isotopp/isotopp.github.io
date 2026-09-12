@@ -1,10 +1,15 @@
 import type { Edge, Node } from '../../rendering-util/types.js';
 import type { EntityNode, Attribute, Relationship, EntityClass, RelSpec } from './erTypes.js';
 import type { DiagramDB } from '../../diagram-api/types.js';
+import type { ErSubGraph } from './erTypes.js';
 export declare class ErDB implements DiagramDB {
     private entities;
     private relationships;
     private classes;
+    subgraphDepth: number;
+    private subGraphs;
+    private subGraphLookup;
+    private subCount;
     private direction;
     private Cardinality;
     private Identification;
@@ -34,7 +39,25 @@ export declare class ErDB implements DiagramDB {
     private getCompiledStyles;
     addCssStyles(ids: string[], styles: string[]): void;
     addClass(ids: string[], style: string[]): void;
+    addSubGraph(_id: {
+        text: string;
+    }, list: string[], _title: {
+        text: string;
+        type: string;
+    }): string;
+    getSubGraphs(): ErSubGraph[];
     setClass(ids: string[], classNames: string[]): void;
+    /**
+     * Build a quick lookup for all node IDs already assigned to existing subgraphs.
+     */
+    private subgraphNodeCache;
+    /**
+     * Filter out nodes that are already part of another subgraph,
+     * keeping subgraph membership unique.
+     */
+    private makeUniq;
+    private sanitizeText;
+    private sanitizeNodeLabelType;
     clear(): void;
     getData(): {
         nodes: Node[];

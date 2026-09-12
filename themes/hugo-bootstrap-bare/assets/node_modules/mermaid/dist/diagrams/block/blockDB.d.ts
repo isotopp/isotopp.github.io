@@ -25,7 +25,7 @@ export declare const addStyle2Node: (id: string, styles?: string) => void;
  * @param cssClassName - CSS class name
  */
 export declare const setCssClass: (itemIds: string, cssClassName: string) => void;
-export declare function typeStr2Type(typeStr: string): "stadium" | "subroutine" | "cylinder" | "circle" | "diamond" | "hexagon" | "lean_right" | "lean_left" | "trapezoid" | "inv_trapezoid" | "doublecircle" | "rect_left_inv_arrow" | "square" | "round" | "na" | "block_arrow";
+export declare function typeStr2Type(typeStr: string): "stadium" | "subroutine" | "cylinder" | "circle" | "diamond" | "hexagon" | "lean_right" | "lean_left" | "trapezoid" | "inv_trapezoid" | "doublecircle" | "rect_left_inv_arrow" | "na" | "round" | "block_arrow" | "square";
 export declare function edgeTypeStr2Type(typeStr: string): string;
 export declare function edgeStrToEdgeData(typeStr: string): string;
 export declare function edgeStrToEdgeStartData(typeStr: string): string;

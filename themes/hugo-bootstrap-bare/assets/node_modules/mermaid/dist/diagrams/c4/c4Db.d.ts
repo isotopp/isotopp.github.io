@@ -1,127 +1,141 @@
-export function getC4Type(): any;
-export function setC4Type(c4TypeParam: any): void;
-export function addRel(type: any, from: any, to: any, label: any, techn: any, descr: any, sprite: any, tags: any, link: any): void;
-export function addPersonOrSystem(typeC4Shape: any, alias: any, label: any, descr: any, sprite: any, tags: any, link: any): void;
-export function addContainer(typeC4Shape: any, alias: any, label: any, techn: any, descr: any, sprite: any, tags: any, link: any): void;
-export function addComponent(typeC4Shape: any, alias: any, label: any, techn: any, descr: any, sprite: any, tags: any, link: any): void;
-export function addPersonOrSystemBoundary(alias: any, label: any, type: any, tags: any, link: any): void;
-export function addContainerBoundary(alias: any, label: any, type: any, tags: any, link: any): void;
-export function addDeploymentNode(nodeType: any, alias: any, label: any, type: any, descr: any, sprite: any, tags: any, link: any): void;
-export function popBoundaryParseStack(): void;
-export function updateElStyle(typeC4Shape: any, elementName: any, bgColor: any, fontColor: any, borderColor: any, shadowing: any, shape: any, sprite: any, techn: any, legendText: any, legendSprite: any): void;
-export function updateRelStyle(typeC4Shape: any, from: any, to: any, textColor: any, lineColor: any, offsetX: any, offsetY: any): void;
-export function updateLayoutConfig(typeC4Shape: any, c4ShapeInRowParam: any, c4BoundaryInRowParam: any): void;
-export function getC4ShapeInRow(): number;
-export function getC4BoundaryInRow(): number;
-export function getCurrentBoundaryParse(): string;
-export function getParentBoundaryParse(): string;
-export function getC4ShapeArray(parentBoundary: any): any[];
-export function getC4Shape(alias: any): any;
-export function getC4ShapeKeys(parentBoundary: any): string[];
-export function getBoundaries(parentBoundary: any): {
-    alias: string;
-    label: {
-        text: string;
+import type { C4Boundary, C4Rel, C4Shape } from './c4Types.js';
+/**
+ * The parser may pass a plain string or an object with a single
+ * `{ key: value }` entry for most attributes.
+ */
+type ParserAttribute = string | Record<string, string>;
+export declare const getC4Type: () => string | undefined;
+export declare const setC4Type: (c4TypeParam: string) => void;
+export declare const addRel: (type: string | null | undefined, from: string | null | undefined, to: string | null | undefined, label: string | null | undefined, techn?: ParserAttribute | null, descr?: ParserAttribute | null, sprite?: ParserAttribute, tags?: ParserAttribute, link?: ParserAttribute) => void;
+export declare const addPersonOrSystem: (typeC4Shape: string, alias: string | null, label: string | null | undefined, descr?: ParserAttribute | null, sprite?: ParserAttribute, tags?: ParserAttribute, link?: ParserAttribute) => void;
+export declare const addContainer: (typeC4Shape: string, alias: string | null, label: string | null | undefined, techn?: ParserAttribute | null, descr?: ParserAttribute | null, sprite?: ParserAttribute, tags?: ParserAttribute, link?: ParserAttribute) => void;
+export declare const addComponent: (typeC4Shape: string, alias: string | null, label: string | null | undefined, techn?: ParserAttribute | null, descr?: ParserAttribute | null, sprite?: ParserAttribute, tags?: ParserAttribute, link?: ParserAttribute) => void;
+export declare const addPersonOrSystemBoundary: (alias: string | null, label: string | null | undefined, type?: ParserAttribute | null, tags?: ParserAttribute, link?: ParserAttribute) => void;
+export declare const addContainerBoundary: (alias: string | null, label: string | null | undefined, type?: ParserAttribute | null, tags?: ParserAttribute, link?: ParserAttribute) => void;
+export declare const addDeploymentNode: (nodeType: string, alias: string | null, label: string | null | undefined, type?: ParserAttribute | null, descr?: ParserAttribute | null, sprite?: ParserAttribute, tags?: ParserAttribute, link?: ParserAttribute) => void;
+export declare const popBoundaryParseStack: () => void;
+export declare const updateElStyle: (typeC4Shape: string, elementName: string, bgColor?: ParserAttribute | null, fontColor?: ParserAttribute | null, borderColor?: ParserAttribute | null, shadowing?: ParserAttribute | null, shape?: ParserAttribute | null, sprite?: ParserAttribute | null, techn?: ParserAttribute | null, legendText?: ParserAttribute | null, legendSprite?: ParserAttribute | null) => void;
+export declare const updateRelStyle: (typeC4Shape: string, from: string, to: string, textColor?: ParserAttribute | null, lineColor?: ParserAttribute | null, offsetX?: ParserAttribute | null, offsetY?: ParserAttribute | null) => void;
+export declare const updateLayoutConfig: (typeC4Shape: string, c4ShapeInRowParam: ParserAttribute, c4BoundaryInRowParam: ParserAttribute) => void;
+export declare const getC4ShapeInRow: () => number;
+export declare const getC4BoundaryInRow: () => number;
+export declare const getCurrentBoundaryParse: () => string;
+export declare const getParentBoundaryParse: () => string;
+export declare const getC4ShapeArray: (parentBoundary?: string | null) => C4Shape[];
+export declare const getC4Shape: (alias: string) => C4Shape | undefined;
+export declare const getC4ShapeKeys: (parentBoundary?: string | null) => string[];
+export declare const getBoundaries: (parentBoundary?: string | null) => C4Boundary[];
+/**
+ * @deprecated Use {@link getBoundaries} instead
+ */
+export declare const getBoundarys: (parentBoundary?: string | null) => C4Boundary[];
+export declare const getRels: () => C4Rel[];
+export declare const getTitle: () => string;
+export declare const setWrap: (wrapSetting?: boolean) => void;
+export declare const autoWrap: () => boolean | undefined;
+export declare const clear: () => void;
+export declare const LINETYPE: {
+    SOLID: number;
+    DOTTED: number;
+    NOTE: number;
+    SOLID_CROSS: number;
+    DOTTED_CROSS: number;
+    SOLID_OPEN: number;
+    DOTTED_OPEN: number;
+    LOOP_START: number;
+    LOOP_END: number;
+    ALT_START: number;
+    ALT_ELSE: number;
+    ALT_END: number;
+    OPT_START: number;
+    OPT_END: number;
+    ACTIVE_START: number;
+    ACTIVE_END: number;
+    PAR_START: number;
+    PAR_AND: number;
+    PAR_END: number;
+    RECT_START: number;
+    RECT_END: number;
+    SOLID_POINT: number;
+    DOTTED_POINT: number;
+};
+export declare const ARROWTYPE: {
+    FILLED: number;
+    OPEN: number;
+};
+export declare const PLACEMENT: {
+    LEFTOF: number;
+    RIGHTOF: number;
+    OVER: number;
+};
+export declare const setTitle: (txt: string) => void;
+declare const _default: {
+    addPersonOrSystem: (typeC4Shape: string, alias: string | null, label: string | null | undefined, descr?: ParserAttribute | null, sprite?: ParserAttribute, tags?: ParserAttribute, link?: ParserAttribute) => void;
+    addPersonOrSystemBoundary: (alias: string | null, label: string | null | undefined, type?: ParserAttribute | null, tags?: ParserAttribute, link?: ParserAttribute) => void;
+    addContainer: (typeC4Shape: string, alias: string | null, label: string | null | undefined, techn?: ParserAttribute | null, descr?: ParserAttribute | null, sprite?: ParserAttribute, tags?: ParserAttribute, link?: ParserAttribute) => void;
+    addContainerBoundary: (alias: string | null, label: string | null | undefined, type?: ParserAttribute | null, tags?: ParserAttribute, link?: ParserAttribute) => void;
+    addComponent: (typeC4Shape: string, alias: string | null, label: string | null | undefined, techn?: ParserAttribute | null, descr?: ParserAttribute | null, sprite?: ParserAttribute, tags?: ParserAttribute, link?: ParserAttribute) => void;
+    addDeploymentNode: (nodeType: string, alias: string | null, label: string | null | undefined, type?: ParserAttribute | null, descr?: ParserAttribute | null, sprite?: ParserAttribute, tags?: ParserAttribute, link?: ParserAttribute) => void;
+    popBoundaryParseStack: () => void;
+    addRel: (type: string | null | undefined, from: string | null | undefined, to: string | null | undefined, label: string | null | undefined, techn?: ParserAttribute | null, descr?: ParserAttribute | null, sprite?: ParserAttribute, tags?: ParserAttribute, link?: ParserAttribute) => void;
+    updateElStyle: (typeC4Shape: string, elementName: string, bgColor?: ParserAttribute | null, fontColor?: ParserAttribute | null, borderColor?: ParserAttribute | null, shadowing?: ParserAttribute | null, shape?: ParserAttribute | null, sprite?: ParserAttribute | null, techn?: ParserAttribute | null, legendText?: ParserAttribute | null, legendSprite?: ParserAttribute | null) => void;
+    updateRelStyle: (typeC4Shape: string, from: string, to: string, textColor?: ParserAttribute | null, lineColor?: ParserAttribute | null, offsetX?: ParserAttribute | null, offsetY?: ParserAttribute | null) => void;
+    updateLayoutConfig: (typeC4Shape: string, c4ShapeInRowParam: ParserAttribute, c4BoundaryInRowParam: ParserAttribute) => void;
+    autoWrap: () => boolean | undefined;
+    setWrap: (wrapSetting?: boolean) => void;
+    getC4ShapeArray: (parentBoundary?: string | null) => C4Shape[];
+    getC4Shape: (alias: string) => C4Shape | undefined;
+    getC4ShapeKeys: (parentBoundary?: string | null) => string[];
+    getBoundaries: (parentBoundary?: string | null) => C4Boundary[];
+    getBoundarys: (parentBoundary?: string | null) => C4Boundary[];
+    getCurrentBoundaryParse: () => string;
+    getParentBoundaryParse: () => string;
+    getRels: () => C4Rel[];
+    getTitle: () => string;
+    getC4Type: () => string | undefined;
+    getC4ShapeInRow: () => number;
+    getC4BoundaryInRow: () => number;
+    setAccTitle: (txt: string) => void;
+    getAccTitle: () => string;
+    getAccDescription: () => string;
+    setAccDescription: (txt: string) => void;
+    getConfig: () => Required<import("../../config.type.js").C4DiagramConfig>;
+    clear: () => void;
+    LINETYPE: {
+        SOLID: number;
+        DOTTED: number;
+        NOTE: number;
+        SOLID_CROSS: number;
+        DOTTED_CROSS: number;
+        SOLID_OPEN: number;
+        DOTTED_OPEN: number;
+        LOOP_START: number;
+        LOOP_END: number;
+        ALT_START: number;
+        ALT_ELSE: number;
+        ALT_END: number;
+        OPT_START: number;
+        OPT_END: number;
+        ACTIVE_START: number;
+        ACTIVE_END: number;
+        PAR_START: number;
+        PAR_AND: number;
+        PAR_END: number;
+        RECT_START: number;
+        RECT_END: number;
+        SOLID_POINT: number;
+        DOTTED_POINT: number;
     };
-    type: {
-        text: string;
+    ARROWTYPE: {
+        FILLED: number;
+        OPEN: number;
     };
-    tags: null;
-    link: null;
-    parentBoundary: string;
-}[];
-export function getBoundarys(parentBoundary: any): {
-    alias: string;
-    label: {
-        text: string;
+    PLACEMENT: {
+        LEFTOF: number;
+        RIGHTOF: number;
+        OVER: number;
     };
-    type: {
-        text: string;
-    };
-    tags: null;
-    link: null;
-    parentBoundary: string;
-}[];
-export function getRels(): any[];
-export function getTitle(): string;
-export function setWrap(wrapSetting: any): void;
-export function autoWrap(): boolean;
-export function clear(): void;
-export namespace LINETYPE {
-    let SOLID: number;
-    let DOTTED: number;
-    let NOTE: number;
-    let SOLID_CROSS: number;
-    let DOTTED_CROSS: number;
-    let SOLID_OPEN: number;
-    let DOTTED_OPEN: number;
-    let LOOP_START: number;
-    let LOOP_END: number;
-    let ALT_START: number;
-    let ALT_ELSE: number;
-    let ALT_END: number;
-    let OPT_START: number;
-    let OPT_END: number;
-    let ACTIVE_START: number;
-    let ACTIVE_END: number;
-    let PAR_START: number;
-    let PAR_AND: number;
-    let PAR_END: number;
-    let RECT_START: number;
-    let RECT_END: number;
-    let SOLID_POINT: number;
-    let DOTTED_POINT: number;
-}
-export namespace ARROWTYPE {
-    let FILLED: number;
-    let OPEN: number;
-}
-export namespace PLACEMENT {
-    let LEFTOF: number;
-    let RIGHTOF: number;
-    let OVER: number;
-}
-export function setTitle(txt: any): void;
-declare namespace _default {
-    export { addPersonOrSystem };
-    export { addPersonOrSystemBoundary };
-    export { addContainer };
-    export { addContainerBoundary };
-    export { addComponent };
-    export { addDeploymentNode };
-    export { popBoundaryParseStack };
-    export { addRel };
-    export { updateElStyle };
-    export { updateRelStyle };
-    export { updateLayoutConfig };
-    export { autoWrap };
-    export { setWrap };
-    export { getC4ShapeArray };
-    export { getC4Shape };
-    export { getC4ShapeKeys };
-    export { getBoundaries };
-    export { getBoundarys };
-    export { getCurrentBoundaryParse };
-    export { getParentBoundaryParse };
-    export { getRels };
-    export { getTitle };
-    export { getC4Type };
-    export { getC4ShapeInRow };
-    export { getC4BoundaryInRow };
-    export { setAccTitle };
-    export { getAccTitle };
-    export { getAccDescription };
-    export { setAccDescription };
-    export function getConfig(): import("../../config.type.js").C4DiagramConfig | undefined;
-    export { clear };
-    export { LINETYPE };
-    export { ARROWTYPE };
-    export { PLACEMENT };
-    export { setTitle };
-    export { setC4Type };
-}
+    setTitle: (txt: string) => void;
+    setC4Type: (c4TypeParam: string) => void;
+};
 export default _default;
-import { setAccTitle } from '../common/commonDb.js';
-import { getAccTitle } from '../common/commonDb.js';
-import { getAccDescription } from '../common/commonDb.js';
-import { setAccDescription } from '../common/commonDb.js';

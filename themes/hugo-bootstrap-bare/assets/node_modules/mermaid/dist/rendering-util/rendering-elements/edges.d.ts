@@ -10,6 +10,7 @@ export function resolveEdgeCurveType(edgeCurve: any): string | undefined;
 export const edgeLabels: Map<any, any>;
 export const terminalLabels: Map<any, any>;
 export function clear(): void;
+export function hasEdgeLabel(edge: any): boolean;
 export function getLabelStyles(styleArray: any): any;
 export function insertEdgeLabel(elem: any, edge: any): Promise<SVGGElement>;
 export function positionEdgeLabel(edge: any, paths: any): void;
