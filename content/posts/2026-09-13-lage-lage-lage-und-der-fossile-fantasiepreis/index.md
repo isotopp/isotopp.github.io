@@ -54,7 +54,7 @@ Am Gebäude müssen drei Phasen mit ausreichender Absicherung anliegen. 3 × 25 
 
 Der Sicherungskasten muß auf aktuellem Stand sein und genügend Platz für Wärmepumpe, PV, Batterie und Ladeanschluß bieten. Wenn das alles neu muß, ist das lösbar. Es ist nur nicht kostenlos.
 
-Wenn man die Elektrik ohnehin öffnet, macht man sie einmal richtig – der Bestandschutz entfällt dan sowieso. In unserer Berliner Altbauwohnung hieß das: eine Sicherung pro Raum, FI-Schutz, an jeder Ecke eine Steckdose und aus einzelnen vorhandenen Steckdosen Dreiergruppen machen. Dazu zwei Netzwerkkabel in jeden Raum, zentral auf ein Patchfeld geführt. So lassen sich Access Points, DECT-Antennen und Arbeitsplätze dort anschließen, wo sie gebraucht werden. In einer langen Wohnung mit zwei internen Brandmauern hat sich das über Jahre bezahlt gemacht.
+Wenn man die Elektrik ohnehin öffnet, macht man sie einmal richtig – der Bestandschutz entfällt dann sowieso. In unserer Berliner Altbauwohnung hieß das: eine Sicherung pro Raum, FI-Schutz, an jeder Ecke eine Steckdose und aus einzelnen vorhandenen Steckdosen Dreiergruppen machen. Dazu zwei Netzwerkkabel in jeden Raum, zentral auf ein Patchfeld geführt. So lassen sich Access Points, DECT-Antennen und Arbeitsplätze dort anschließen, wo sie gebraucht werden. In einer langen Wohnung mit zwei internen Brandmauern hat sich das über Jahre bezahlt gemacht.
 
 Der Anlaß für diese Sanierung war übrigens nicht ästhetisch. Am Sicherungskasten roch es komisch und dann war es knapp: Ein Sicherungsautomat hatte angefangen zu schmoren. Erst kam die Notinspektion, danach alles neu. Alte Elektrik bleibt nicht deshalb gut, weil sie bisher nicht gebrannt hat.
 
