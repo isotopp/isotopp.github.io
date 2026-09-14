@@ -16,12 +16,12 @@ tags:
 ---
 
 OpenAI will 2026 nicht mehr an die Börse.
-Sam Altman begründet das mit AI Safety.
+Die Begründung, die Sam Altman offiziell gibt ist AI Safety.
 Zugleich erklärt er sich bereit,
 die Entwicklung leistungsfähiger Modelle gemeinsam mit anderen Labs zu verlangsamen.
 Anthropic fordert ebenfalls eine koordinierte Pause.
 
-Ich glaube den Wunsch nach der Pause, aber ich glaube die Geschichte dahinter nicht.
+Ich glaube denen den Wunsch nach der Pause, aber ich glaube die Geschichte dahinter nicht.
 
 Die AI-Firmen entdecken die Notwendigkeit einer Pause genau in dem Moment,
 in dem ihnen die Finanzierung davonläuft,
@@ -30,21 +30,20 @@ und Open-Weights-Modelle anfangen,
 auf Rechnern unter einem Schreibtisch nützlich zu werden.
 
 Das ist kein Zufall.
-Die Pause soll keinen Maschinengott aufhalten.
-Sie soll einen Investitionszyklus verlängern,
-der seine Kosten nicht mehr einspielen kann.
+Die Pause soll nicht den amoklaufenden Maschinengott aufhalten, sondern
+einen Investitionszyklus verlängern, der seine Kosten absehbar nicht mehr einspielen kann.
 
 # Die Kreditmaschine
 
-AI sieht von außen wie ein Softwaregeschäft aus.
-Tatsächlich ist Frontier AI eine kapitalintensive Schwerindustrie.
+AI sieht von außen wie ein Softwaregeschäft aus, aber 
+in Wahrheit ist Frontier AI eine kapitalintensive Schwerindustrie.
 
 Man braucht Grundstücke, Hallen, Umspannwerke, Stromverträge, Kühlung,
 Netzwerk, RAM, NVMe und sehr große Mengen Beschleuniger.
 Die Softwaremargen kommen erst danach, falls überhaupt.
 
 Die Anbieter haben diese Infrastruktur nicht aus laufenden Einnahmen bezahlt.
-Sie haben eine Kreditmaschine gebaut:
+Stattdessen haben sie eine Kreditmaschine gebaut:
 
 - OpenAI, Anthropic, xAI und andere versprechen langfristigen Compute-Bedarf.
 - Oracle, CoreWeave und die Hyperscaler bestellen Hardware und Rechenzentren.
@@ -53,14 +52,15 @@ Sie haben eine Kreditmaschine gebaut:
 - Die Verträge werden als Begründung für die nächste Finanzierungsrunde verwendet.
 
 Dabei entstehen überall Umsätze, Forderungen, Backlogs und Bewertungen.
-Cash entsteht sehr viel später.
+Cash entsteht sehr viel später, und der einzige Weg, auf dem Cash entstehen kann,
+ist wenn Unternehmen AIaaS kaufen und Token abnehmen.
+Und es sieht zunehmen so aus, als müssten sie das nicht tun.
 
 Die Finanzierungen sind zum Teil überzeichnet.
-Das klingt gesund, bedeutet aber nur,
-daß mehr Investoren eine hoch verzinste und gut besicherte Forderung kaufen wollen,
+Das klingt gesund, bedeutet aber nur, daß mehr Investoren eine hoch verzinste und gut besicherte Forderung kaufen wollen,
 als die Emission groß ist.
-CoreWeave konnte im Mai 2026 eine überzeichnete Finanzierung während der Syndizierung
-sogar um 50 Basispunkte billiger bekommen.
+CoreWeave konnte im Mai 2026 eine überzeichnete Finanzierung
+während der Syndizierung sogar um 50 Basispunkte billiger bekommen.
 
 Der Markt ist nicht leer.
 Das billige, unbesicherte und bedingungsarme Kapital ist leer.
@@ -139,17 +139,15 @@ Das kann funktionieren.
 Es funktioniert genau so lange,
 wie die Kunden zahlen und der Preis für Compute nicht schneller fällt als die Kosten der Verpflichtungen.
 
-Oracle ist damit der systemisch interessante Fall.
-CoreWeave kann platzen.
-Oracle kann Kreditmärkte, Leasinggesellschaften, Zulieferer und Aktionäre mitnehmen.
+Oracle ist
+damit der systemisch interessantere Fall, denn  CoreWeave kann alleine platzen, aber Oracle kann Kreditmärkte,
+Leasinggesellschaften, Zulieferer und Aktionäre mitnehmen.
 
 # Die Hyperscaler folgen
 
-Meta, Microsoft und Alphabet sind nicht CoreWeave in groß.
-Noch nicht.
+Meta, Microsoft und Alphabet sind nicht CoreWeave in groß – noch nicht.
 
-Sie besitzen profitable Kerngeschäfte,
-aus denen sie den Ausbau bezahlen können.
+Sie besitzen profitable Kerngeschäfte, aus denen sie den Ausbau bezahlen können.
 Aber auch ihre Bilanzen werden durch AI sichtbar umgebaut.
 
 Meta hatte Ende Juni
@@ -170,11 +168,9 @@ Operating Leases erscheinen nicht im ausgewiesenen Capex.
 Bezahlt werden müssen sie trotzdem.
 
 Diese Firmen sind noch nicht in einer Liquiditätskrise.
-Sie sind in einer Kapitalallokationskrise.
-Ihre alten Geschäfte erwirtschaften Geld,
-das in immer schneller alternde AI-Infrastruktur umgeleitet wird.
-Mit jedem Jahr wird es schwieriger,
-einen solchen Ausbau aus dem Cashflow zu bezahlen.
+Sie sind in einer Kapitalallokationskrise: 
+Ihre alten Geschäfte erwirtschaften Geld, das in immer schneller alternde AI-Infrastruktur umgeleitet wird.
+Mit jedem Jahr wird es schwieriger, einen solchen Ausbau aus dem Cashflow zu bezahlen.
 Also gehen auch die größten Firmen der Welt an die Kreditmärkte.
 
 Irgendwann konkurrieren Oracle, CoreWeave, Meta, Microsoft, Alphabet, Amazon,
@@ -223,8 +219,7 @@ Dazu kommen mehr als 13 Milliarden USD Finanzierungsschulden aus Transaktionen,
 die als Sale-and-Leaseback geplant waren,
 aber bilanziell nicht als Verkauf anerkannt wurden.
 
-Vor dem IPO war das eine Story.
-Nach dem IPO ist es eine Tabelle.
+Vor dem IPO warejn das Vermutungen, aber nach dem IPO ist es eine Tabelle in der Bilanz.
 
 OpenAI will diese Tabelle derzeit nicht veröffentlichen.
 
@@ -248,15 +243,17 @@ daß effizientere Modelle und alternative Architekturen die Nachfrage nach Infra
 
 Das ist der Kern des Problems:
 
-> Die Kredite laufen langsamer ab als der technische Burggraben.
+> Die Kredite laufen langsamer ab als die damit beschafften Werte, die den technischen Burggraben bauen sollen, um den Vorsprung zu sichern.
 
+Dazu kommt: 
 Ein Rechenzentrum kann ausgelastet sein und trotzdem eine schlechte Investition werden.
 Wenn der Marktpreis für dieselbe Aufgabe schneller fällt als Strom,
 Zins und Abschreibung, erzeugt mehr Nutzung keine gute Marge.
 
-AI-Nutzung kann explodieren.
-Das rettet nicht AIaaS.
-Es rettet höchstens gewöhnliches Hosting mit gewöhnlichen Cloud-Margen.
+Wir haben dadurch die Situation, daß zugleich die AI-Nutzung explodieren kann,
+aber AIaaS als Modell nicht ertragreich realisiert werden kann,
+weil es die erwarteten fantastischen Margen nicht liefern kann.
+Es generiert höchstens gewöhnliches Hosting mit gewöhnlichen Cloud-Margen.
 
 # Moore's Law für Inferenz
 
@@ -264,10 +261,10 @@ Es gibt kein [Moore's Law für Inferenz]({{< relref "2026-07-22-moores-law-und-d
 Es gibt keine Industrie-Roadmap,
 die alle zwei Jahre verläßlich doppelt so viele brauchbare Transistoren zum selben Preis garantiert.
 
-Es gibt aber gerade eine Entwicklung mit derselben wirtschaftlichen Wirkung.
+Es gibt aber gerade eine Entwicklung mit derselben wirtschaftlichen Wirkung,
+die sich vielleicht bis zu einem gewissen Punkt stabilsieren läßt.
 
-Alle paar Monate werden Modelle besser,
-während der Aufwand pro Token sinkt.
+Denn alle paar Monate werden Modelle besser, während der Aufwand pro Token sinkt.
 Der genaue Faktor ist nicht wichtig.
 Wichtig ist, daß die Faktoren multipliziert werden.
 
@@ -294,6 +291,8 @@ Diese Tabelle funktioniert eher wie ein riesiges Dictionary als wie der heiße K
 Die Adressen der benötigten Einträge stehen früh fest.
 Man kann sie aus Host Memory vorladen,
 während die GPU bereits rechnet.
+Das bedeutet, während das Modell 90 GB auf der Platte belegt, kommt es mit einem In-Memory Footprint von nur 64 GB,
+und generiert mit 6 Milliarden aktiven Parametern einen Working Set von einigen GB.
 
 [DeepSeek-V4.1-Flash](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/README.md)
 verwendet denselben Grundgedanken mit Engram Conditional Memory:
@@ -310,15 +309,17 @@ Das Modell wird zu einer Speicherhierarchie.
 Damit wird aus einem teuren HBM-Problem teilweise ein billiges Lookup-Problem.
 Das wird ein Standardwerkzeug für LLM-Architekturen werden.
 
+Und die Geschwindigkeit ist mit ( Speicherbandbreite / Anzahl der aktiven Parameter skaliert mit der Quantisierung ) abschätzbar. Ein "A6B" Modell als Q4 hat 3 GB aktiv. Ein M5max mit 634 GB/s kann also circa 210 Token/s generieren, aus einem Modell, das 90 GB auf der Platte belegt.
+
 # Low Terra auf einem Mac
 
 Die wirtschaftliche Frist ist keine theoretische Zukunft.
 
 Qwen3.8-27B läuft quantisiert auf einem Mac mit 32 GB Unified Memory gut.
 Das Modell hat brauchbares Niveau für Software-Entwicklung, es ist vergleichbar einem etwas schlechteren GPT-5.6 Terra (Medium) in dieser Domain.
-Es ist langsam im Vergleich zu einem Rechenzentrum, aber schnell genug zum Arbeiten.
+Es ist langsam im Vergleich zu einem Modell aus dem Rechenzentrum mit einem Cluster von H200, aber schnell genug zum Arbeiten.
 
-Das ist für den
+Ein Terra-class Modell ist für den
 [Specialization Workflow](https://github.com/isotopp/server-key-injection/blob/main/AGENTS.md#specialization-workflow)
 bereits ausreichend.
 Der normale Workflow verwendet:
@@ -327,7 +328,7 @@ Der normale Workflow verwendet:
 2. Terra mit 'medium'für die Ableitung der Implementation Tickets.
 3. Luna mit 'xhigh' für die Codegenerierung.
 
-Die erste Phase braucht das stärkere Modell,
+Die erste Phase braucht das stärkere Modell (und menschlichen Review),
 weil dort aus einer unscharfen Idee belastbare Anforderungen entstehen.
 Fehler an dieser Stelle werden in allen späteren Schritten multipliziert.
 
@@ -364,41 +365,10 @@ aber lokal, privat und ohne Preis pro Token.
 
 Man könnte annehmen,
 daß ein neues stärkeres Frontier-Modell den zentralen Anbietern wieder Abstand verschafft.
-Kurzfristig tut es das.
-Danach erhöht es den Druck.
+Vielleicht ist das auch so, für manche Anwendungen.
+Für "SWE" (Software Engineering) ist was wir haben aber in der Regel ausreichend.
 
-Ein besseres Modell ist nicht nur ein Produkt.
-Es ist ein Werkzeug für die Entwicklung seines Nachfolgers.
-Es erzeugt bessere synthetische Trainingsdaten,
-bewertet Trainingsläufe,
-findet Fehler in Datensätzen,
-schreibt Inferenzkernel,
-verbessert Quantisierung und Distillation
-und hilft bei der Suche nach effizienteren Architekturen.
-
-Die Entwicklung wird dadurch rekursiv.
-Das neue große Modell verbessert nicht nur die bezahlte API.
-Es verbessert auch die Verfahren,
-mit denen seine Leistung in ein kleineres Modell übertragen wird.
-Sein Vorsprung wird zum Trainingsmaterial der Konkurrenz.
-
-Für Coding ist diese Rückkopplung besonders direkt.
-Ein stärkeres Modell kann bessere User Stories und bessere Referenzlösungen erzeugen.
-Damit entstehen sauberere Tickets,
-Tests und Trainingsbeispiele für kleinere spezialisierte Modelle.
-Es verschiebt also nicht nur Phase 1 des Specialization Workflow nach vorn.
-Es macht die lokalen Modelle für Phase 2 und 3 schneller besser.
-
-Jeder Capability-Sprung steigert zugleich die Erwartungen der Kunden.
-Ein Rechenzentrum wird aber nicht wertvoller,
-weil die nächste Modellgeneration mehr kann.
-Seine vorhandenen Beschleuniger müssen die neue Generation erst einmal wirtschaftlich rechnen können.
-Wenn dafür neue Hardware erforderlich ist,
-wird der alte Capex vorzeitig entwertet.
-
-Bessere Modelle lösen das Finanzierungsproblem daher nicht.
-Sie verkürzen die Zeit,
-in der ein Modell und die dafür gebaute Hardware außergewöhnliche Preise erzielen können.
+Und der Druck wird größer:
 
 Wenn wir alle drei Monate die Leistung verdoppeln
 und zugleich den Inferenzaufwand halbieren,
@@ -411,8 +381,7 @@ Es sind mehr als drei und weniger als vier solche Schritte:
 4⁴ = 256
 ```
 
-Ob jeder einzelne Schritt exakt nach drei Monaten kommt,
-ist nicht wichtig.
+Ob jeder einzelne Schritt exakt nach drei Monaten kommt ist nicht wichtig.
 Die heutigen Rechenzentren sind auf Laufzeiten von bis zu 19 Jahren finanziert.
 Selbst eine deutlich langsamere Verbesserung gewinnt dieses Rennen.
 
@@ -446,10 +415,8 @@ arbeitet die bereits veröffentlichte Technik weiter.
 
 Trump hat eine Pause zunächst mit dem korrekten Argument abgelehnt,
 daß die USA damit den Vorsprung an China abgeben würden.
-Die Position wird sich nur ändern,
-wenn man eine Pause als Instrument amerikanischer Dominanz verkauft:
-nicht weniger AI,
-sondern weniger nicht-amerikanische und nicht-kontrollierte AI.
+Die Pause wird die amerikanische Dominanz schwächen:
+mehr nicht-amerikanische und nicht-kontrollierte AI.
 
 # Regulatory Capture
 
@@ -486,13 +453,18 @@ verteuert gleichzeitig die lokale Konkurrenz.
 Der Effekt ist bereits sichtbar:
 leistungsfähige GPUs, große RAM-Ausstattungen und schnelle NVMe sind knapp und teuer.
 
-Das hält die Entwicklung nicht auf.
+Der Gegeneffekt ist auch bereits sichtbar: CXML und andere chinesische Anbieter machen sich bereit,
+die so entstande Nachfrage zu befriedigen.
+
+Am Ende hält all das die Entwicklung nicht auf.
 Es verschiebt sie zu Architekturen,
 die weniger von jedem knappen Gut brauchen.
 MoE, Quantisierung, kleine KV-Caches, LPDDR und NVMe-Streaming
 sind genau die Antwort auf einen gecornerten Hardwaremarkt.
+Das bedeutet: Wir bekommen auf jeden Fall mehr und leistungsfähigere Modelle,
+die optimiert darauf sind, auf lokaler Hardware befriedigende Leistung zu bringen.
 
-Die EU kann dabei als freiwilliger Marktvernichter dienen.
+Wenn es aber um regulatory capture geht, dann kann die EU kann dabei als williger Marktvernichter dienen.
 Je komplexer Registrierung, Haftung und Zertifizierung werden,
 desto weniger europäische Firmen können eigene Modelle betreiben.
 US-Hyperscaler können die Compliance-Kosten auf Millionen Kunden verteilen.
@@ -503,7 +475,7 @@ Sie schützt amerikanische AI vor europäischer Konkurrenz.
 
 # Der Exit
 
-Für die AI-Investitionen gibt es nur wenige Ausgänge.
+Für die AI-Investitionen gibt es nur wenige mögliche Auswege aus dem aktuellen Szenario:
 
 Ein reguliertes Oligopol kann die Preise hochhalten
 und die vorhandenen Verpflichtungen auf die Kunden umlegen.
@@ -514,7 +486,7 @@ aber die außergewöhnlichen AIaaS-Margen verschwinden.
 
 Ein großer Kunde kann ausfallen oder Verträge reduzieren.
 Dann beginnt der Kreditunfall bei CoreWeave oder einem Oracle-Projekt
-und läuft durch Zweckgesellschaften, Leasingfirmen, Banken und Private Credit.
+und die Ansteckung läuft durch Zweckgesellschaften, Leasingfirmen, Banken und Private Credit.
 
 Die Hyperscaler können ihre Fehlallokationen abschreiben.
 Ihre Werbe-, Office- und Cloud-Geschäfte werden das überleben.
@@ -543,7 +515,7 @@ Deshalb wird sie verlangt.
 Aber die Pause wird nicht stattfinden.
 
 China entwickelt weiter.
-Open Weights sind bereits verteilt.
+Open Weights sind bereits publiziert.
 Architekturen werden effizienter.
 32-GB-Rechner erledigen heute Arbeiten,
 für die vor kurzem noch ein proprietärer Cloud-Service notwendig war.
