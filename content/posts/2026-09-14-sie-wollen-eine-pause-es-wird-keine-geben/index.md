@@ -219,7 +219,7 @@ Dazu kommen mehr als 13 Milliarden USD Finanzierungsschulden aus Transaktionen,
 die als Sale-and-Leaseback geplant waren,
 aber bilanziell nicht als Verkauf anerkannt wurden.
 
-Vor dem IPO warejn das Vermutungen, aber nach dem IPO ist es eine Tabelle in der Bilanz.
+Vor dem IPO waren das Vermutungen, aber nach dem IPO ist es eine Tabelle in der Bilanz.
 
 OpenAI will diese Tabelle derzeit nicht veröffentlichen.
 
@@ -464,7 +464,7 @@ sind genau die Antwort auf einen gecornerten Hardwaremarkt.
 Das bedeutet: Wir bekommen auf jeden Fall mehr und leistungsfähigere Modelle,
 die optimiert darauf sind, auf lokaler Hardware befriedigende Leistung zu bringen.
 
-Wenn es aber um regulatory capture geht, dann kann die EU kann dabei als williger Marktvernichter dienen.
+Wenn es aber um regulatory capture geht, dann kann die EU dabei als williger Marktvernichter dienen.
 Je komplexer Registrierung, Haftung und Zertifizierung werden,
 desto weniger europäische Firmen können eigene Modelle betreiben.
 US-Hyperscaler können die Compliance-Kosten auf Millionen Kunden verteilen.
