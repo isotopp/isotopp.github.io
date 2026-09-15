@@ -113,7 +113,7 @@ Die Firma setzt es aber vollständig als Sicherheit für die AI-Wette ein.
 
 Im Geschäftsjahr 2026 nahm Oracle 43 Milliarden USD neue Schulden
 und fünf Milliarden USD Eigenkapital auf.
-Im ersten Quartal 2027 verkaufte die Firma
+Zwischen Juni und August 2026 verkaufte die Firma
 [weitere Aktien für 20 Milliarden USD](https://investor.oracle.com/files/content_files/1q27-pressrelease-September_FINAL.pdf).
 
 Am 31. August 2026 standen
