@@ -2,6 +2,7 @@
 author: isotopp
 date: "2026-09-19T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
+toc: true
 tags:
   - lang_de
   - linux
