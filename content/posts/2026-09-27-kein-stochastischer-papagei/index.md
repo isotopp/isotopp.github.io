@@ -12,24 +12,30 @@ tags:
   - erklaerbaer
 ---
 
-Ein LLM sei ein stochastischer Papagei: Es erkenne eine Frage als Anfang eines schon gesehenen Dokuments und gebe den Rest mit etwas Zufall wieder.
+„Ein LLM ist ein stochastischer Papagei“ heißt heute meistens: Der Prompt triggert Gelerntes, und das Modell gibt Trainingsdaten in anderer Form wieder. Es kann umformulieren, aber nichts Wesentliches abstrahieren und kein bekanntes Verfahren auf einen neuen Fall anwenden.
 
-Das ist, so wie es oft gemeint und versanden wird, eine schlechte Beschreibung dessen, was ein heutiges LLM tut. Ein LLM tut mehr, als im Training gesehene Texte zu reproduzieren. Das wird sogar im originalen Paper, das den Begriff eingeführt hat, besser ausdifferenziert.
+Das ist eine klare Behauptung über die **Leistung** des Modells. Sie ist falsch.
 
-Vor allem ist es eine schlechte Beschreibung dessen, was man mit einem LLM und einem brauchbaren Arbeitsprozeß erreichen kann. Um die Behauptung zu prüfen, brauchen wir einen Maßstab, der mehr unterscheidet als „Text wurde (re-) produziert“.
+Der Ausdruck stammt aus [*On the Dangers of Stochastic Parrots* von Bender und anderen](https://www.research.pitt.edu/sites/default/files/on_the_dangers_of_stochastic_parrots_-_can_language_models_be_too_big.pdf). Dort bedeutet er etwas anderes: Sprachmodelle setzen sprachliche Formen nach statistischen Mustern zusammen, ohne selbst eine Mitteilungsabsicht oder einen Bezug zur Bedeutung der Worte zu haben.
+
+Kurz: **Das Modell erzeugt Sprache, aber es meint nichts damit.**
+
+Der Aufsatz warnt außerdem vor undokumentierten Trainingsdaten, übernommenen Vorurteilen, Umweltkosten und der Neigung von Menschen, plausiblen Text für eine Äußerung mit verantwortlichem Sprecher zu halten. [Bender beschreibt selbst](https://medium.com/@emilymenonbender/stochastic-parrots-frequently-unasked-questions-49c2e7d22d11), wie sich die Verwendung des Ausdrucks vom Paper gelöst hat.
+
+Ein Modell kann eine Aufgabe lösen, ohne dabei etwas mitteilen zu *wollen*. Darum entscheidet Benders These noch nicht, ob das Modell mehr als Gelerntes reproduzieren kann. Dafür brauchen wir einen Maßstab: Welche Arten von Aufgaben gibt es, und was muß bei einer gelungenen Lösung tatsächlich geleistet werden?
 
 # Vier Arten von Aufgaben
 
 Der Deutsche Bildungsrat unterschied 1970 vier Lernzielstufen: **Reproduktion**, **Reorganisation**, **Transfer** und **problemlösendes beziehungsweise entdeckendes Denken**. Grob: Bekanntes wiedergeben; Bekanntes selbständig ordnen und verknüpfen; Gelerntes auf einen neuen Fall übertragen; für eine nicht routinemäßige Lage einen Lösungsweg entwickeln. Die deutschen Prüfungsanforderungen fassen das später zu drei **Anforderungsbereichen** zusammen: AFB I für Reproduktion, AFB II für Reorganisation und Transfer, AFB III für Reflexion, Problemlösung und Bewertung. Die [KMK beschreibt diese Bereiche](https://www.kmk.org/fileadmin/veroeffentlichungen_beschluesse/1989/1989_12_01-EPA-Biologie.pdf) fachspezifisch; die Zuordnung ist kein mechanischer Wörterbuch-Lookup nach Aufgabenoperatoren.
 
-Die Taxonomie der KMK basiert auf Arbeiten von Bloom aus dem Jahr 1956. Bloom ordnete dabei  Lernziele nach kognitiven Anforderungen. Die [Revision von Anderson und Krathwohl von 2001](https://www.bu.edu/provost/files/2013/10/Anderson-Krathwohl-Revision-to-Blooms-Taxonomy-of-Educational-Objectives.pdf) trennt zwei Dimensionen:
+Die deutsche Einteilung geht auf Arbeiten von Bloom aus dem Jahr 1956 zurück. Bloom ordnete Lernziele nach kognitiven Anforderungen. Die [Revision von Anderson und Krathwohl von 2001](https://www.bu.edu/provost/files/2013/10/Anderson-Krathwohl-Revision-to-Blooms-Taxonomy-of-Educational-Objectives.pdf) trennt zwei Dimensionen:
 
 - **Was für Wissen?** Faktenwissen, begriffliches Wissen, Verfahrenswissen oder metakognitives Wissen.
 - **Was damit tun?** Remember, Understand, Apply, Analyze, Evaluate oder Create.
 
 Das ist ein wichtiger Unterschied. „Wende ein Verfahren an“ sagt noch nicht, ob Fakten, ein Begriffssystem oder ein Verfahren selbst Gegenstand der Aufgabe sind. Und eine Aufgabe kann mehrere dieser Prozesse verlangen.
 
-Ein Alternatives Modell ist [Webbs Depth of Knowledge](https://www.education.ky.gov/AA/Reports/Documents/2016-17%20K-PREP%20Technical%20Manual%2020180614.pdf). Es fragt nach der für die Lösung nötigen Denktiefe: DOK 1 ist Recall and Reproduction, DOK 2 Skills and Concepts, DOK 3 Strategic Thinking und DOK 4 Extended Thinking. Eine lange Aufgabe ist deshalb nicht automatisch DOK 4. Entscheidend ist, ob über mehrere Schritte Informationen integriert, Entscheidungen begründet und Erkenntnisse übertragen werden müssen.
+Ein anderes Modell ist [Webbs Depth of Knowledge](https://www.education.ky.gov/AA/Reports/Documents/2016-17%20K-PREP%20Technical%20Manual%2020180614.pdf). Es fragt nach der für die Lösung nötigen Denktiefe: DOK 1 ist Recall and Reproduction, DOK 2 Skills and Concepts, DOK 3 Strategic Thinking und DOK 4 Extended Thinking. Eine lange Aufgabe ist deshalb nicht automatisch DOK 4. Entscheidend ist, ob über mehrere Schritte Informationen integriert, Entscheidungen begründet und Erkenntnisse übertragen werden müssen.
 
 Schließlich schaut die [SOLO-Taxonomie von Biggs und Collis](https://doi.org/10.1177/000494418202600104) auf die *Struktur der beobachteten Antwort*: prestructural, unistructural, multistructural, relational und extended abstract. Nennt eine Antwort einen relevanten Aspekt, mehrere isolierte Aspekte, oder verbindet sie diese zu einem tragfähigen Ganzen? Kann sie das Ganze anschließend verallgemeinern?
 
@@ -48,7 +54,7 @@ Diese Systeme beschreiben Unterschiedliches. AFB, Bloom und DOK helfen, Anforder
 
 Das sind Beispiele, keine Umrechnungstabelle. Der konkrete Fall und die verlangte Begründung bestimmen das Niveau.
 
-# Was der Papagei kann und was nicht
+# Von Reproduktion zu Transfer
 
 Ein Modell soll „Hänsel und Gretel“ erzählen, aber die Kinder heißen Jens und Sophie. Das ist kein besonders starker Test. Namen in einer bekannten Geschichte kann auch ein triviales Programm ersetzen.
 
@@ -56,13 +62,7 @@ Interessanter wird es, wenn sich Rollen, Fähigkeiten und Schauplatz ändern. We
 
 Noch deutlicher ist Softwareentwicklung. Das Modell muß eine Anforderung als bestimmten Problemtyp erkennen, relevante Dateien finden, mögliche Verfahren auswählen und an der konkreten Codebasis anwenden. Bei einer Fehlersuche muß es Zusammenhänge zwischen Aufrufstellen, Datenfluß und beobachtetem Fehler herstellen. Das sind Leistungen im Bereich *Apply* und *Analyze*. Die schlichte Klassifikation eines Falls gehört bei Revised Bloom allerdings zunächst zu *Understand*. Erst das Zerlegen, Unterscheiden und Begründen der Beziehungen macht daraus *Analyze*.
 
-Man muß dafür nicht behaupten, das Modell habe eine Bibliothek fertiger Templates im Kopf, aus der es eines herauszieht. „Template erkennen und instanziieren“ ist ein brauchbares Modell für einen Teil seines **Verhaltens**, keine gesicherte Beschreibung seiner internen Mechanik. Und die Temperatur beim Generieren ist nicht die Quelle dieser Fähigkeit. Auch mit geringer Temperatur kann ein Modell einen unbekannten Fall strukturieren und bearbeiten.
-
-Der Ausdruck „stochastischer Papagei“ stammt aus [Bender et al. 2021](https://www.research.pitt.edu/sites/default/files/on_the_dangers_of_stochastic_parrots_-_can_language_models_be_too_big.pdf). Der Aufsatz ist mehr als die Behauptung, ein Modell kopiere Texte mit eingestreutem Zufall, aber so wird die Formulierung heute oft verstanden oder gemeint.
-
-Bender warnt insbesondere davor, aus sprachlich überzeugenden Antworten unmittelbar auf menschliches Bedeutungsverstehen zu schließen, und diskutiert Risiken von Trainingsdaten und Einsatz. Diese Warnung bleibt berechtigt: Der characteristische Unterschied ist genau, daß Modelle die Welt aus allen realen und fiktiven Texten gelernt haben, auf die der Trainingsprozeß seine Finger legen konnte, aber Menschen in der realen Welt leben, und diese unterscheidet sich von Büchern eben genau durch reale Konsequenzen als Reaktion auf Entscheidungen.
-
-Wie dem auch sei: Die verkürzte Erklärung „reproduziert nur Trainingsdokumente“ hält der beobachtbaren Leistung heutiger Systeme nicht stand.
+Das ist die Stelle, an der der verbreitete Papageienvorwurf scheitert. Eine Antwort kann Beziehungen zwischen bekannten Elementen erkennen und auf einen neuen Fall übertragen. Ob dabei menschliches Verstehen stattfindet, ist eine andere Frage.
 
 # Segmentieren und prüfen
 
@@ -88,7 +88,7 @@ Das ist kein Einwand gegen die Leistung. Ein Mensch löst Softwareprobleme ebenf
 
 # Modelle sind keine Anforderungsbereiche
 
-Luna, Terra, Sol und Astra sind keine Stufen von Bloom. Die aktuelle [OpenAI-Modellübersicht](https://developers.openai.com/api/docs/models) führt GPT-6 Luna für eng umrissene Arbeit in hoher Stückzahl, GPT-6 Sol für anspruchsvollere Arbeitsabläufe und GPT-6 Astra für besonders schwierige Aufgaben. 
+Luna, Terra, Sol und Astra sind keine Stufen von Bloom. Die aktuelle [OpenAI-Modellübersicht](https://developers.openai.com/api/docs/models) führt GPT-6 Luna für eng umrissene Arbeit in hoher Stückzahl, GPT-6 Sol für anspruchsvollere Arbeitsabläufe und GPT-6 Astra für besonders schwierige Aufgaben.
 
 Eine präzise spezifizierte AFB-III-Aufgabe kann ein günstiges Modell mit guten Gates lösen. Ein starkes Modell kann an einer AFB-I-Frage scheitern. Für Architektur und unklare Anforderungen ist mehr Urteilskraft wertvoll; nach der Segmentierung können kleine Modelle enge Tickets abarbeiten. So war es auch im verlinkten `server-key-injection`-Versuch. Die Taxonomie beschreibt die Aufgabe und die Antwort. Modellwahl ist eine Frage von Erfolgsrate, Kosten und benötigter Führung im konkreten Prozeß.
 
@@ -113,6 +113,9 @@ Newtons Gravitation sagt Bewegungen in ihrem Gültigkeitsbereich ausgezeichnet v
 
 Dasselbe Maß muß für menschliche und maschinelle Vorschläge gelten. Wer eine Theorie formuliert hat, ist eine Frage. Ob sie neue Fälle vorhersagt und Zusammenhänge erklärt, ist eine andere. Menschen bleiben bei Zielwahl, Versuchsplanung, Datenqualität und Interpretation in der Verantwortung. Ein LLM kann bei allen diesen Schritten helfen; ob es ein bestimmtes Modell erfolgreich gebildet hat, entscheidet sich an den beiden Gates und nicht an der Eleganz seiner Antwort.
 
-Der stochastische Papagei ist als Warnung vor unkritischer Zuschreibung von Verstehen nützlich: Ein LLM versteht die Welt nicht so wie ein Mensch, weil es nicht wie ein Mensch die Konsequenzen seiner Entscheidungen erleidet. 
+Benders Frage bleibt wichtig: Eine plausible Antwort hat keinen menschlichen Sprecher, der mit ihr etwas beabsichtigt und die Folgen in der Welt erlebt. Das sagt noch nicht, welche Aufgaben das System lösen kann.
 
-Als Erklärung dessen, was LLMs mit einem guten Prozeß **leisten** könnebn, ist es falsch, sie als stochastische Papageien zu beschreiben. Sie können reproduzieren, aber auch umorganisieren, übertragen, Probleme klassifizieren, Lösungen analysieren und mit Werkzeugen iterativ verbessern. Und bei Forschung und Modellbildung helfen.
+# TL;DR
+
+
+Die heute übliche Behauptung lautet: **Ein LLM gibt Gelerntes in wechselnden Formulierungen wieder, kann aber nichts Wesentliches abstrahieren oder auf einen neuen Fall anwenden.** Diese Behauptung ist falsch. Mit einem geeigneten Prozeß leisten LLMs bei klar abgegrenzten Codeaufgaben zuverlässig mehr als Reproduktion: Sie ordnen Informationen neu, übertragen Verfahren, analysieren Probleme und verbessern Lösungen anhand überprüfbarer Ergebnisse. Ob daraus menschliches Verstehen folgt und wie weit es bei eigenständiger Forschung und Modellbildung trägt, entscheidet dieser Befund nicht. Dort müssen neue Vorhersagen und funktionale Erklärungen die nächsten Quality Gates sein.
