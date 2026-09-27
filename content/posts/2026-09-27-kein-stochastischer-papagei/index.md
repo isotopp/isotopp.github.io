@@ -115,4 +115,8 @@ Benders Frage bleibt wichtig: Eine plausible Antwort hat keinen menschlichen Spr
 # TL;DR
 
 
-Die heute übliche Behauptung lautet: **Ein LLM gibt Gelerntes in wechselnden Formulierungen wieder, kann aber nichts Wesentliches abstrahieren oder auf einen neuen Fall anwenden.** Diese Behauptung ist falsch. Mit einem geeigneten Prozeß leisten LLMs bei klar abgegrenzten Codeaufgaben zuverlässig mehr als Reproduktion: Sie ordnen Informationen neu, übertragen Verfahren, analysieren Probleme und verbessern Lösungen anhand überprüfbarer Ergebnisse. Ob daraus menschliches Verstehen folgt und wie weit es bei eigenständiger Forschung und Modellbildung trägt, entscheidet dieser Befund nicht. Dort müssen neue Vorhersagen und funktionale Erklärungen die nächsten Quality Gates sein.
+Die heute übliche Behauptung lautet: **Ein LLM gibt Gelerntes in wechselnden Formulierungen wieder, kann aber nichts Wesentliches abstrahieren oder auf einen neuen Fall anwenden.** 
+
+Diese Behauptung ist nicht nur falsch, sie macht aus einer Diskussion über die Stärken und Schwächen der KI ein fast religiöses Dogma und verstellt den Blick auf die wichtigen Fragestellungen.
+
+Mit einem geeigneten Prozeß leisten LLMs bei klar abgegrenzten Codeaufgaben zuverlässig mehr als Reproduktion: Sie ordnen Informationen neu, übertragen Verfahren, analysieren Probleme und verbessern Lösungen anhand überprüfbarer Ergebnisse. Ob daraus menschliches Verstehen folgt und wie weit es bei eigenständiger Forschung und Modellbildung trägt, entscheidet dieser Befund nicht. Dort müssen neue Vorhersagen und funktionale Erklärungen die nächsten Quality Gates sein.
