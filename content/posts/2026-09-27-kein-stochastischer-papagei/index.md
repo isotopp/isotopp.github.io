@@ -1,0 +1,118 @@
+---
+author: isotopp
+date: "2026-09-27T01:02:03Z"
+feature-img: assets/img/background/rijksmuseum.jpg
+title: "Kein stochastischer Papagei"
+toc: true
+tags:
+  - lang_de
+  - ai
+  - llm
+  - software engineering
+  - erklaerbaer
+---
+
+Ein LLM sei ein stochastischer Papagei: Es erkenne eine Frage als Anfang eines schon gesehenen Dokuments und gebe den Rest mit etwas Zufall wieder.
+
+Das ist, so wie es oft gemeint und versanden wird, eine schlechte Beschreibung dessen, was ein heutiges LLM tut. Ein LLM tut mehr, als im Training gesehene Texte zu reproduzieren. Das wird sogar im originalen Paper, das den Begriff eingeführt hat, besser ausdifferenziert.
+
+Vor allem ist es eine schlechte Beschreibung dessen, was man mit einem LLM und einem brauchbaren Arbeitsprozeß erreichen kann. Um die Behauptung zu prüfen, brauchen wir einen Maßstab, der mehr unterscheidet als „Text wurde (re-) produziert“.
+
+# Vier Arten von Aufgaben
+
+Der Deutsche Bildungsrat unterschied 1970 vier Lernzielstufen: **Reproduktion**, **Reorganisation**, **Transfer** und **problemlösendes beziehungsweise entdeckendes Denken**. Grob: Bekanntes wiedergeben; Bekanntes selbständig ordnen und verknüpfen; Gelerntes auf einen neuen Fall übertragen; für eine nicht routinemäßige Lage einen Lösungsweg entwickeln. Die deutschen Prüfungsanforderungen fassen das später zu drei **Anforderungsbereichen** zusammen: AFB I für Reproduktion, AFB II für Reorganisation und Transfer, AFB III für Reflexion, Problemlösung und Bewertung. Die [KMK beschreibt diese Bereiche](https://www.kmk.org/fileadmin/veroeffentlichungen_beschluesse/1989/1989_12_01-EPA-Biologie.pdf) fachspezifisch; die Zuordnung ist kein mechanischer Wörterbuch-Lookup nach Aufgabenoperatoren.
+
+Die Taxonomie der KMK basiert auf Arbeiten von Bloom aus dem Jahr 1956. Bloom ordnete dabei  Lernziele nach kognitiven Anforderungen. Die [Revision von Anderson und Krathwohl von 2001](https://www.bu.edu/provost/files/2013/10/Anderson-Krathwohl-Revision-to-Blooms-Taxonomy-of-Educational-Objectives.pdf) trennt zwei Dimensionen:
+
+- **Was für Wissen?** Faktenwissen, begriffliches Wissen, Verfahrenswissen oder metakognitives Wissen.
+- **Was damit tun?** Remember, Understand, Apply, Analyze, Evaluate oder Create.
+
+Das ist ein wichtiger Unterschied. „Wende ein Verfahren an“ sagt noch nicht, ob Fakten, ein Begriffssystem oder ein Verfahren selbst Gegenstand der Aufgabe sind. Und eine Aufgabe kann mehrere dieser Prozesse verlangen.
+
+Ein Alternatives Modell ist [Webbs Depth of Knowledge](https://www.education.ky.gov/AA/Reports/Documents/2016-17%20K-PREP%20Technical%20Manual%2020180614.pdf). Es fragt nach der für die Lösung nötigen Denktiefe: DOK 1 ist Recall and Reproduction, DOK 2 Skills and Concepts, DOK 3 Strategic Thinking und DOK 4 Extended Thinking. Eine lange Aufgabe ist deshalb nicht automatisch DOK 4. Entscheidend ist, ob über mehrere Schritte Informationen integriert, Entscheidungen begründet und Erkenntnisse übertragen werden müssen.
+
+Schließlich schaut die [SOLO-Taxonomie von Biggs und Collis](https://doi.org/10.1177/000494418202600104) auf die *Struktur der beobachteten Antwort*: prestructural, unistructural, multistructural, relational und extended abstract. Nennt eine Antwort einen relevanten Aspekt, mehrere isolierte Aspekte, oder verbindet sie diese zu einem tragfähigen Ganzen? Kann sie das Ganze anschließend verallgemeinern?
+
+Diese Systeme beschreiben Unterschiedliches. AFB, Bloom und DOK helfen, Anforderungen an eine Aufgabe zu charakterisieren. SOLO hilft, die Qualität einer konkreten Antwort zu beurteilen. Keines davon ist ein Intelligenzquotient für ein Modell.
+
+| Aufgabe | AFB | Revised Bloom | ungefähr DOK |
+| --- | --- | --- | --- |
+| Definition wiedergeben | I | Remember | 1 |
+| Sachverhalt in eigenen Worten erklären | II, unterer Bereich | Understand | 1–2 |
+| Bekannte Informationen strukturieren | II | Understand/Analyze | 2 |
+| Bekannte Methode auf neuen Fall anwenden | II | Apply | 2–3 |
+| Unbekannten Fall und seine Beziehungen untersuchen | II–III | Analyze | 3 |
+| Alternativen anhand von Kriterien beurteilen | III | Evaluate | 3 |
+| Selbständig Modell oder Lösung entwickeln | III | Create | 3–4 |
+| Über längere Zeit untersuchen und verallgemeinern | III | Analyze/Create | 4 |
+
+Das sind Beispiele, keine Umrechnungstabelle. Der konkrete Fall und die verlangte Begründung bestimmen das Niveau.
+
+# Was der Papagei kann und was nicht
+
+Ein Modell soll „Hänsel und Gretel“ erzählen, aber die Kinder heißen Jens und Sophie. Das ist kein besonders starker Test. Namen in einer bekannten Geschichte kann auch ein triviales Programm ersetzen.
+
+Interessanter wird es, wenn sich Rollen, Fähigkeiten und Schauplatz ändern. Welche Beziehungen tragen die Handlung? Welche Ereignisse müssen sich ändern, damit der Konflikt weiterhin funktioniert? Welche neue Variante bewahrt das Muster und welche zerstört es? Eine gute Antwort benutzt eine Abstraktion der Geschichte und überträgt sie auf den veränderten Fall. Das ist beobachtbar mehr als das Wiedergeben eines Dokuments.
+
+Noch deutlicher ist Softwareentwicklung. Das Modell muß eine Anforderung als bestimmten Problemtyp erkennen, relevante Dateien finden, mögliche Verfahren auswählen und an der konkreten Codebasis anwenden. Bei einer Fehlersuche muß es Zusammenhänge zwischen Aufrufstellen, Datenfluß und beobachtetem Fehler herstellen. Das sind Leistungen im Bereich *Apply* und *Analyze*. Die schlichte Klassifikation eines Falls gehört bei Revised Bloom allerdings zunächst zu *Understand*. Erst das Zerlegen, Unterscheiden und Begründen der Beziehungen macht daraus *Analyze*.
+
+Man muß dafür nicht behaupten, das Modell habe eine Bibliothek fertiger Templates im Kopf, aus der es eines herauszieht. „Template erkennen und instanziieren“ ist ein brauchbares Modell für einen Teil seines **Verhaltens**, keine gesicherte Beschreibung seiner internen Mechanik. Und die Temperatur beim Generieren ist nicht die Quelle dieser Fähigkeit. Auch mit geringer Temperatur kann ein Modell einen unbekannten Fall strukturieren und bearbeiten.
+
+Der Ausdruck „stochastischer Papagei“ stammt aus [Bender et al. 2021](https://www.research.pitt.edu/sites/default/files/on_the_dangers_of_stochastic_parrots_-_can_language_models_be_too_big.pdf). Der Aufsatz ist mehr als die Behauptung, ein Modell kopiere Texte mit eingestreutem Zufall, aber so wird die Formulierung heute oft verstanden oder gemeint.
+
+Bender warnt insbesondere davor, aus sprachlich überzeugenden Antworten unmittelbar auf menschliches Bedeutungsverstehen zu schließen, und diskutiert Risiken von Trainingsdaten und Einsatz. Diese Warnung bleibt berechtigt: Der characteristische Unterschied ist genau, daß Modelle die Welt aus allen realen und fiktiven Texten gelernt haben, auf die der Trainingsprozeß seine Finger legen konnte, aber Menschen in der realen Welt leben, und diese unterscheidet sich von Büchern eben genau durch reale Konsequenzen als Reaktion auf Entscheidungen.
+
+Wie dem auch sei: Die verkürzte Erklärung „reproduziert nur Trainingsdokumente“ hält der beobachtbaren Leistung heutiger Systeme nicht stand.
+
+# Segmentieren und prüfen
+
+Ein einzelner Prompt ist ein schlechter Arbeitsprozeß für ein großes Problem. Man muß die Arbeit zerlegen: Ziel klären, unbekannte Voraussetzungen prüfen, Teilaufgaben bestimmen, Ergebnisse jeweils abnehmen und erst dann den nächsten Schritt beginnen. Das ist für Menschen normale Projektarbeit. Für LLMs ist es besonders wichtig, weil Kontext begrenzt ist und ein früher Fehler sonst in allen späteren Antworten weiterlebt.
+
+Bei der Codegenerierung kann ein **Agentic Harness** diese Arbeit unterstützen. Es gibt dem Modell Zugriff auf Repository, Dateien, Shell, Git und Tests. Entscheidungen liegen als Dateien vor und überleben einen neuen Modellkontext. Ein Ticket kann klein genug werden, daß sein Ergebnis prüfbar ist. Ich habe diesen Ablauf in [„LLM Driven Development“]({{< relref "2026-06-05-llm-driven-development" >}}) und am konkreten Projekt in [„Building server-key-injection by specialization“]({{< relref "2026-08-23-llm-specialization-workflow" >}}) beschrieben. [„Die Menschmaschine muß eingearbeitet werden“]({{< relref "2026-09-13-die-menschmaschine-muss-eingearbeitet-werden" >}}) erklärt, weshalb lokales Firmenwissen und Einarbeitung dabei entscheidend sind.
+
+Mechanische **Quality Gates** machen einen Teil der Arbeit überprüfbar:
+
+```bash
+uv run pytest
+uv run ruff check
+uv run ty check
+```
+
+Ein Test kann beobachtbares Verhalten prüfen. Ein Linter kann Regelverstöße finden. Ein Typechecker kann bestimmte Widersprüche im Code aufdecken. Git macht Änderungen sichtbar und rücknehmbar. Das Modell kann Fehlermeldungen lesen, eine Hypothese korrigieren und erneut prüfen. Es bleibt nicht bei einer einzigen plausiblen Antwort.
+
+Grüne Gates beweisen allerdings nur, was sie tatsächlich prüfen. Ein Test, der bloß einen Mock-Aufruf wiederholt, sagt wenig über das Verhalten des Programms. Ein Typechecker kennt die Geschäftsanforderung nicht. Ein Benchmark ist ebenfalls ein von außen angelegtes Gate; sein Bestehen macht die Bewertung nicht automatisch zu einer eigenen *Evaluate*-Leistung des Modells. *Evaluate* zeigt sich, wenn es die Prüfkriterien hinterfragt, Lücken erkennt und eine aussagekräftigere Prüfung entwirft.
+
+Die Leistung gehört dem **System aus Modell, Harness, Kontext, Werkzeugen und menschlicher Führung**. Wie groß der Anteil der Umgebung ist, zeigt auch die Forschung zu [SWE-agent](https://papers.nips.cc/paper_files/paper/2024/hash/5a7c947568c1b1328ccc5230172e1e7c-Abstract-Conference.html): Schon die Gestaltung der Schnittstelle zum Computer verändert die Ergebnisse bei Softwareaufgaben erheblich.
+
+Das ist kein Einwand gegen die Leistung. Ein Mensch löst Softwareprobleme ebenfalls mit Editor, Dokumentation, Tests und Kollegen und typischerweise nicht in einem One-Shot. Man muß nur sauber benennen, was man gemessen hat. Ein Agent mit Tests ist nicht dasselbe Versuchsobjekt wie ein nackter Modellaufruf.
+
+# Modelle sind keine Anforderungsbereiche
+
+Luna, Terra, Sol und Astra sind keine Stufen von Bloom. Die aktuelle [OpenAI-Modellübersicht](https://developers.openai.com/api/docs/models) führt GPT-6 Luna für eng umrissene Arbeit in hoher Stückzahl, GPT-6 Sol für anspruchsvollere Arbeitsabläufe und GPT-6 Astra für besonders schwierige Aufgaben. 
+
+Eine präzise spezifizierte AFB-III-Aufgabe kann ein günstiges Modell mit guten Gates lösen. Ein starkes Modell kann an einer AFB-I-Frage scheitern. Für Architektur und unklare Anforderungen ist mehr Urteilskraft wertvoll; nach der Segmentierung können kleine Modelle enge Tickets abarbeiten. So war es auch im verlinkten `server-key-injection`-Versuch. Die Taxonomie beschreibt die Aufgabe und die Antwort. Modellwahl ist eine Frage von Erfolgsrate, Kosten und benötigter Führung im konkreten Prozeß.
+
+# Verstehen und Erzeugen
+
+Die Taxonomien liefern keine einfache Antwort auf die Frage, ob ein LLM *versteht*. Sie klassifizieren Anforderungen und sichtbare Leistungen, nicht subjektive Erfahrung oder eine bestimmte innere Repräsentation. Wenn ein Modell einen fremden Fehler richtig einordnet und behebt, darf man die funktionale Leistung beschreiben. Daraus folgt noch keine Gleichheit mit menschlichem Verstehen. Umgekehrt verschwindet die Leistung nicht, nur weil das Modell anders arbeitet als ein Mensch.
+
+Bei *Create* ist die Grenze noch interessanter. Ein neues Stück Code ist nicht schon Forschung. Es kann eine Variante einer bekannten Lösung sein. Eine neue Hypothese ist ebenfalls noch keine Erkenntnis. Sie muß etwas riskieren: Sie muß an einem bislang nicht verwendeten Fall scheitern können.
+
+Es gibt bereits Beispiele, in denen LLMs an neuen Ergebnissen beteiligt waren. [FunSearch](https://www.nature.com/articles/s41586-023-06924-6) kombinierte ein Sprachmodell mit einer Suche und einem automatischen Evaluator und fand neue mathematische Konstruktionen sowie Algorithmen. Das ist eine Leistung des zusammengesetzten Systems unter günstigen Bedingungen: Das Problem ließ sich so formulieren, daß Kandidaten automatisch bewertet werden konnten. Daraus folgt nicht, daß jedes Modell allein ein offenes Forschungsprogramm führen kann.
+
+# Wissenschaft als Quality Gate
+
+Murray Gell-Mann beschreibt in [*The Quark and the Jaguar*](https://www.sfipress.org/books/the-quark-and-the-jaguar) Wissenschaft als einen Prozeß, der aus Beobachtungen, Modellen, Vorhersagen und deren Prüfung lebt. Für die wissenschaftliche Methode gibt es zwei Anforderungen an ein neues Modell, eine wissenschaftliche Hypothese:
+
+1. **Vorhersage:** Sagt die Hypothese neue Beobachtungen vorab für den vorgesehenen Zweck genau genug voraus? Daten, Fehlertoleranz und Gültigkeitsbereich müssen vorher feststehen. Eine nachträglich passend gemachte Kurve besteht dieses Gate nicht.
+2. **Funktionale Erklärung:** Beschreibt die Hypothese Beziehungen und Mechanismen so, daß man versteht, warum das Verhalten auftritt und was bei einer gezielten Änderung anders werden sollte? Eine Erklärung muß selbst prüfbare Konsequenzen haben.
+
+Das zweite Gate ist stärker, aber nicht identisch mit der Frage nach einer letzten Ursache.
+
+Newtons Gravitation sagt Bewegungen in ihrem Gültigkeitsbereich ausgezeichnet voraus. Die allgemeine Relativitätstheorie erklärt Gravitation geometrisch und geht bei schwachen Feldern (also außerhalb von schwarzen Löchern) und langsamen Bewegungen (also deutlich langsamer als die Lichtgeschwindigkeit) in die Newtonsche Beschreibung über. Trotzdem ist damit nicht jede tiefere Frage nach Gravitation, insbesondere ihrer Verbindung mit der Quantentheorie, beantwortet. Ein Modell kann wissenschaftlich nützlich sein, ohne die Welt endgültig erklärt zu haben. [Zum Newtonschen Grenzfall: MIT OpenCourseWare](https://live.ocw.mit.edu/courses/8-962-general-relativity-spring-2020/resources/lecture-14-linearized-gravity-i-principles-and-static-limit/).
+
+Dasselbe Maß muß für menschliche und maschinelle Vorschläge gelten. Wer eine Theorie formuliert hat, ist eine Frage. Ob sie neue Fälle vorhersagt und Zusammenhänge erklärt, ist eine andere. Menschen bleiben bei Zielwahl, Versuchsplanung, Datenqualität und Interpretation in der Verantwortung. Ein LLM kann bei allen diesen Schritten helfen; ob es ein bestimmtes Modell erfolgreich gebildet hat, entscheidet sich an den beiden Gates und nicht an der Eleganz seiner Antwort.
+
+Der stochastische Papagei ist als Warnung vor unkritischer Zuschreibung von Verstehen nützlich: Ein LLM versteht die Welt nicht so wie ein Mensch, weil es nicht wie ein Mensch die Konsequenzen seiner Entscheidungen erleidet. 
+
+Als Erklärung dessen, was LLMs mit einem guten Prozeß **leisten** könnebn, ist es falsch, sie als stochastische Papageien zu beschreiben. Sie können reproduzieren, aber auch umorganisieren, übertragen, Probleme klassifizieren, Lösungen analysieren und mit Werkzeugen iterativ verbessern. Und bei Forschung und Modellbildung helfen.
