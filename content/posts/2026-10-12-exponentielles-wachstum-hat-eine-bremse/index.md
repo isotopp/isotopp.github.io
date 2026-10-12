@@ -11,21 +11,23 @@ tags:
   - mathematik
 ---
 
-In den letzten paar Jahren haben wir in der öffentlichen Diskussion oft von exponentiellem Wachstum geredet.
-Bei Covid, beim Startup auf dem Weg zum Weltkonzern, beim Wechsel vom Verbrenner zum Elektroauto,
-und bei noch vielen anderen Gelegenheiten.
+Wir reden oft von exponentiellem Wachstum:
+bei Covid, beim Wachstum eines Startups zum Weltkonzern, beim Wechsel vom Verbrenner zum Elektroauto.
+Das sind nur drei Beispiele.
 
-In den meisten Fällen ist das aber gar kein exponentielles Wachstum,
-denn die Welt ist in der Regel endlich und setzt einem solchem exponentiellen Wachstum Grenzen:
-Menschen, Nahrung, Energie, Rohstoffe, Kunden und deren Geld sorgen dafür, daß eine Veränderung irgendwann auch wieder zum Stillstand kommt.
-Wir wissen nicht immer von vorneherein, wo die Grenze liegt, und das kann Dinge komplizierter machen als ein einfaches Modell.
-Aber Grenzen sind in jedem Fall gegeben, und wie wir sehen werden, schon früh wirksam.
+Die Welt ist endlich.
+Menschen, Nahrung, Energie, Rohstoffe, Kunden und deren Geld begrenzen das Wachstum.
+Wir wissen nicht immer, wo die Grenze liegt.
+Das erschwert die Prognose, hebt die Grenze aber nicht auf.
 
-**Die S-Kurve (Sigmoid) oder logistische Kurve ist eine Exponentialkurve mit einer Bremse.**
+Als Modell für den gesamten Verlauf greift die Exponentialkurve deshalb meist zu kurz.
+Sie kennt keine Grenze.
 
-Es ist sinnvoll, bei solchen Prozessen die S-Kurve als Ausgangspunkt zu nehmen, statt einer Exponentialkurve.
-Sie enthält dieselbe Selbstverstärkung, aber außerdem eine Sättigungsbremse.
-Damit steht die Wachstumsgrenze von Anfang an in der Diskussion, statt erst dann aufzutauchen, wenn die Prognose schon an ihr gescheitert ist.
+**Die logistische S-Kurve beschreibt exponentielles Wachstum mit einer Bremse.**
+
+Bei solchen Prozessen sollten wir mit der S-Kurve anfangen.
+Sie enthält dieselbe Selbstverstärkung und zusätzlich eine Sättigungsbremse.
+So fragen wir von Anfang an nach der Grenze, bevor die Prognose an ihr scheitert.
 
 # Wachstum ohne Bremse
 
@@ -58,30 +60,31 @@ $$
 
 Aus 10 werden 20, aus 20 werden 40, dann 80 und 160.
 Jede Verdopplung dauert gleich lange.
-Die absolute Menge, die pro Zeiteinheit hinzukommt, wird dabei immer größer.
+Der Zuwachs pro Zeiteinheit wird immer größer.
 
-Die Gleichung hat keinen Begriff von Nahrung, Platz, Kunden oder sonst irgendeiner Grenze.
-Sie wächst einfach weiter.
-Das ist ihre mathematische Eigenschaft und ihr Problem als Modell für einen vollständigen realen Wachstumsprozeß.
+Die Gleichung enthält keine Grenze durch Nahrung, Platz oder Kunden.
+Der Bestand wächst unbegrenzt weiter.
+Deshalb taugt die Gleichung nicht als Modell für den gesamten Verlauf eines begrenzten Wachstumsprozesses.
 
 # Wachstum mit Bremse
 
 Wir ergänzen eine Grenze K.
-Bei einer Population ist das die Tragfähigkeit des Lebensraums, bei einem Unternehmen zum Beispiel die Größe des erreichbaren Marktes.
+Bei Tieren ist das die Anzahl, die der Lebensraum ernähren kann.
+Bei einem Unternehmen kann es die Größe des erreichbaren Marktes sein.
 
-Das einfachste Modell läßt die relative Wachstumsrate mit dem ausgeschöpften Anteil der Kapazität sinken:
+Das einfachste Modell läßt die relative Wachstumsrate sinken, je näher der Bestand der Grenze kommt:
 
 $$
 \frac{dN}{dt}=rN\left(1-\frac{N}{K}\right).
 $$
 
 Das ist die **logistische Differentialgleichung**.
-Gegenüber der Exponentialgleichung ist genau ein Faktor hinzugekommen: die Bremse.
+Die Exponentialgleichung hat einen zusätzlichen Faktor bekommen: die Bremse.
 
 Bei N = 0 ist der Faktor eins.
 Bei N = K ist er null.
 Dazwischen sinkt er linear mit dem Bestand.
-Wir betrachten einen positiven Anfangsbestand unterhalb der Grenze.
+Wir beginnen mit einem Bestand zwischen null und K.
 
 Die Lösung lautet:
 
@@ -94,8 +97,8 @@ $$
 Das ist die logistische Kurve, eine S-Kurve.
 Sie wächst zuerst immer schneller, dann immer langsamer und nähert sich der Grenze K an.
 
-Nicht jede S-Kurve ist exakt logistisch.
-Die logistische Kurve ist das einfache Modell, an dem man den Mechanismus gut erklären kann: **Selbstverstärkung mit Sättigungsbremse.**
+Nicht jede S-Kurve ist logistisch.
+An der logistischen Kurve läßt sich das Prinzip einfach erklären: **Selbstverstärkung mit Sättigungsbremse.**
 
 # Am Anfang sieht man die Bremse nicht
 
@@ -108,12 +111,12 @@ N\ll K
 \frac{dN}{dt}\approx rN.
 $$
 
-Deswegen sehen wir exponentielles Wachstum.
-Die Grenze ist schon da, aber noch weit weg.
+Deswegen sieht der Anfang exponentiell aus.
+Die Grenze wirkt schon, aber ihr Einfluß ist noch klein.
 
 Bei einem Prozent der Kapazität bleiben 99 Prozent der ungebremsten Wachstumsrate übrig.
-Die sinkt dann linear mit der genutzten Kapazität:
-Bei zehn Prozent sind es noch 90 Prozent, 
+Sie sinkt linear mit dem Anteil der genutzten Kapazität:
+Bei zehn Prozent sind es noch 90 Prozent,
 bei halber Kapazität nur noch 50 Prozent.
 
 | Bestand als Anteil von K | Verbleibender Wachstumsfaktor |
@@ -125,30 +128,28 @@ bei halber Kapazität nur noch 50 Prozent.
 | 90 % | 0,10 |
 | 99 % | 0,01 |
 
-Auch die untere Hälfte der S-Kurv ist also streng genommen nicht exponentiell,
-aber am Anfang sieht man das nicht. 
-Wir können die S-Kurve Anfangs durch eine Exponentialkurve annähern, 
-und sprechen dann vorschnell von "exponentiellem Wachstum", 
-weil wir die Bremse noch nicht im Blick haben.
+Die untere Hälfte der S-Kurve ist also nicht durchgehend exponentiell.
+Am Anfang können wir sie durch eine Exponentialkurve annähern.
+Wir sprechen dann von „exponentiellem Wachstum“, weil wir die Bremse noch nicht erkennen.
+Vorschnell wird das, wenn wir die frühe Wachstumsrate auf den gesamten Verlauf übertragen.
 
 <p class="md__image"><a href="wachstum.svg"><img src="wachstum.svg" alt="Exponentielles und logistisches Wachstum mit linearen y-Achsen und unterschiedlichen Wertebereichen, nebeneinander." /></a></p>
 
 *Zwei Modelle mit N₀ = 10, derselben anfänglichen Steigung und derselben Zeitachse.
 Links exponentielles Wachstum, rechts logistisches Wachstum mit K = 1.000.
 Beide y-Achsen sind linear, haben aber unterschiedliche Wertebereiche.
-(Die Zahlen sind ein Rechenbeispiel, keine Messdaten.)*
+Die Zahlen sind ein Rechenbeispiel, keine Messdaten.*
 
-Wir müssen den Vergleich in zwei getrennten Diagrammen machen, 
-weil die S-Kurve beschränkt ist – hier im Beispiel auf 1000. 
-Die echte Exponentialkurve wächst ohne Beschränkung 
-und würde eine gemeinsame Skala dominieren.
-Die S-Kurve wird unten zusammengedrückt und man kann die Form nicht mehr erkennen.
+Wir zeigen die Kurven in getrennten Diagrammen.
+Die S-Kurve bleibt unter 1.000, die Exponentialkurve wächst unbegrenzt.
+Auf einer gemeinsamen linearen Skala drückt die Exponentialkurve die S-Kurve zusammen, bis man deren Form nicht mehr erkennt.
 
-Im Vergleich hier sehen wir beide Formen: 
-links die immer steiler werdende Exponentialkurve, 
+Hier sehen wir beide Formen:
+links die immer steiler werdende Exponentialkurve,
 rechts die S-Kurve mit Wendepunkt und Sättigung.
+Die Wertebereiche der y-Achsen unterscheiden sich: Wir vergleichen die Formen, nicht die Höhen im Bild.
 
-Für das Beispiel haben wir für die logistische Kurve r = 0,8 gewählt.
+Für die logistische Kurve wählen wir r = 0,8 pro Zeiteinheit.
 Damit beide Modelle am Anfang genau dieselbe Steigung haben,
 bekommt die Exponentialkurve die Rate:
 
@@ -157,15 +158,14 @@ r_{\mathrm{exp}}=r\left(1-\frac{N_0}{K}\right)=0{,}792.
 $$
 
 Nach zehn Zeiteinheiten liegt die Exponentialkurve bei rund 27.500,
-die logistische bei rund 968 (bei einem gewählten Limit von K=1000).
+die logistische bei rund 968 und einer Grenze von K = 1.000.
 
-Obwohl beide Kurven ähnlich anfangen haben sie schnell einen unterschiedlichen Verlauf.
+Beide Kurven beginnen gleich und weichen dann schnell voneinander ab.
 
 # Bremse von Anfang an
 
-Die S-Kurve ist eine Exponentialkurve mit einem zusätzlichen Bremsfaktor, der linear mit $1- (N/K)$ skaliert.
-
-Wir können nun bei der S-Kurve die relative Wachstumsrate und den absoluten Zuwachs betrachten.
+Der Bremsfaktor $1-N/K$ ändert sich linear mit dem Bestand.
+Wir unterscheiden die relative Wachstumsrate und den absoluten Zuwachs.
 
 Die relative Wachstumsrate ist der Zuwachs geteilt durch die vorhandene Menge:
 
@@ -174,7 +174,7 @@ $$
 $$
 
 Sie fällt von Anfang an.
-Bei konstantem K wird die Bremse mit jedem weiteren Stück stärker.
+Bei festem K wird die Bremse mit jedem weiteren Stück stärker.
 
 Der absolute Zuwachs ist dagegen:
 
@@ -182,7 +182,7 @@ $$
 \frac{dN}{dt}=rN\left(1-\frac{N}{K}\right).
 $$
 
-Am Anfang wächst der Bestand so schnell, daß sein Einfluß die zunehmende Bremse überwiegt.
+Am Anfang überwiegt der wachsende Bestand die zunehmende Bremse.
 Der absolute Zuwachs steigt, obwohl die relative Wachstumsrate schon sinkt.
 
 Bei N = K/2 erreicht der absolute Zuwachs sein Maximum:
@@ -196,40 +196,38 @@ Danach wächst der Bestand weiter, aber der Zuwachs pro Zeiteinheit wird kleiner
 
 <p class="md__image"><a href="bremse.svg"><img src="bremse.svg" alt="Relative Wachstumsrate und absoluter Zuwachs als Funktionen der ausgeschöpften Kapazität." /></a></p>
 
-*Links die relative Wachstumsrate, rechts die absoluten Zuwächse.
-Die relative Wachstumsrate $r (1- (N/K))$ fällt bei $r = 0{,}8$ beginnend mit $0{,}8$ durchgehend linear nach 0.*
+*Links die relative Wachstumsrate, rechts der absolute Zuwachs.
+Für $r = 0{,}8$ fällt die relative Wachstumsrate $r(1-N/K)$ linear von $0{,}8$ auf null.*
 
-*Das absolute Wachstum steigt bis zur halben Kapazität und fällt erst danach.
+*Der absolute Zuwachs steigt bis zur halben Kapazität und fällt erst danach.
 Für r = 0,8 und K = 1.000 beträgt sein Maximum 200 Einheiten pro Zeiteinheit.*
 
 **Die Bremse gewinnt am Wendepunkt ein gegen die Selbstverstärkung.**
 
 # Die Grenze gehört ins Modell
 
-Bei Covid konnte eine frühe Ausbreitungsphase tatsächlich näherungsweise exponentiell verlaufen.
-Das wurde auch [in den Daten beobachtet](https://doi.org/10.1073/pnas.2006520117).
+Bei Covid zeigten [die Daten](https://doi.org/10.1073/pnas.2006520117) näherungsweise exponentielles Wachstum in frühen Ausbreitungsphasen.
 Die endliche Bevölkerung widerlegt diese Beobachtung nicht.
 Sie begrenzt den Zeitraum, für den man die Wachstumsrate fortschreiben kann.
 
 Aber Menschen werden immun, Kontakte ändern sich, Menschen ziehen zu, Varianten verändern die Bedingungen.
-Für die Dynamik ist entscheidend, wie viele Menschen unter den jeweiligen Bedingungen noch empfänglich und erreichbar sind.
-Dabei muß man auch sagen, ob man Neuinfektionen, aktuell Infizierte oder kumulierte Infektionen zeichnet.
-Eine einzelne Welle ist keine einzelne S-Kurve der täglichen Neuinfektionen.
+Entscheidend ist, wie viele Menschen das Virus unter diesen Bedingungen noch infizieren kann.
+Außerdem muß man sagen, ob man Neuinfektionen, aktuell Infizierte oder die Summe aller bisherigen Infektionen zeichnet.
+Bei einer einzelnen Welle steigen und fallen die täglichen Neuinfektionen; eine S-Kurve zeigt diesen Verlauf nicht.
 
 Beim Startup können Umsatz, Kunden und Kapital einander verstärken.
-Aber es gibt nur eine bestimmte Menge erreichbarer Kunden mit einem bestimmten Budget.
+Aber die Zahl der erreichbaren Kunden und ihr Geld sind begrenzt.
 Ein neuer Markt verschiebt diese Grenze.
 Ein Konkurrent kann sie wieder verkleinern.
 
-Bei Elektroautos kann man den Anteil an den Neuzulassungen betrachten, den Anteil am Fahrzeugbestand oder die absolute Anzahl der Fahrzeuge.
+Bei Elektroautos kann man den Anteil an den Neuzulassungen betrachten, den Anteil am Fahrzeugbestand oder die Zahl der Fahrzeuge.
 Das sind verschiedene Größen und verschiedene Kurven.
 Ein Anteil endet spätestens bei 100 Prozent.
 Die Zahl der Autos hängt außerdem davon ab, wie viele Menschen überhaupt ein Auto brauchen,
-sich eines leisten können,
+sich eines leisten können
 und welche anderen Mobilitätsangebote es gibt.
 
-Technologieverbreitung hat zusätzliche Rückkopplungen:
-Preise, Infrastruktur, Angebot, Erfahrungen anderer Nutzer.
+Preise, Ladenetz, Angebot und Erfahrungen anderer Nutzer beeinflussen die Verbreitung von Elektroautos.
 [Modelle zur Verbreitung von Elektroautos](https://www.nature.com/articles/s41467-025-66072-5) berücksichtigen deshalb mehr als eine einfache logistische Gleichung.
 
 Das ist alles komplizierter als eine feste Zahl K.
@@ -244,19 +242,19 @@ $$
 $$
 
 Auch r kann sich ändern.
-Dann haben wir weiterhin Selbstverstärkung mit einer Sättigungsbremse, aber nicht mehr zwingend die saubere logistische S-Kurve mit fester Grenze.
+Dann haben wir weiterhin Selbstverstärkung mit einer Sättigungsbremse, aber nicht mehr zwingend die logistische S-Kurve mit fester Grenze.
 
-Vor allem können wir die Lage der Grenze aus dem Anfang der Kurve oft noch gar nicht bestimmen.
+Aus dem Anfang der Kurve können wir die Grenze oft noch nicht bestimmen.
 Solange N klein gegenüber K ist, sehen sehr unterschiedliche Grenzen im frühen Verlauf fast gleich aus.
-Eine gute Anpassung an die ersten Daten ist deshalb noch keine gute langfristige Prognose.
+Ein Modell, das die ersten Daten gut beschreibt, muß deshalb nicht den weiteren Verlauf gut vorhersagen.
 
-Ob ein System seine Grenze ruhig erreicht, überschwingt oder zusammenbricht, ist eine weitere Diskussion.
-Dafür braucht man weitere Mechanismen im Modell.
-Hier geht es darum, die Wachstumsgrenze überhaupt erst hineinzunehmen.
+Ob ein System seine Grenze erreicht, überschreitet oder zusammenbricht, ist eine andere Frage.
+Dafür muß das Modell weitere Vorgänge beschreiben.
+Hier geht es darum, die Wachstumsgrenze von Anfang an zu berücksichtigen.
 
 **Bei selbstverstärkendem Wachstum in begrenzten Systemen gehört die S-Kurve an den Anfang.**
-Die Exponentialkurve bekommt dann ihren Platz als frühe Näherung, solange die Bremse noch kaum spürbar ist.
+Die Exponentialkurve beschreibt den Anfang, solange die Bremse kaum wirkt.
 
-Wer „exponentiell“ sagt, sollte also gleich die nächste Frage beantworten: Was wird diesen Prozeß begrenzen?
-„Wissen wir noch nicht“ ist eine brauchbare Antwort,
-aber „Kommt in unserem Modell nicht vor“ schwach und strukturell falsch.
+Wer „exponentiell“ sagt, sollte gleich beantworten: Was begrenzt dieses Wachstum?
+„Wissen wir noch nicht“ ist eine brauchbare Antwort.
+„Kommt in unserem Modell nicht vor“ ist ein Fehler.
