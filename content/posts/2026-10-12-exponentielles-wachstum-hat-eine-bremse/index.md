@@ -197,8 +197,9 @@ Danach wächst der Bestand weiter, aber der Zuwachs pro Zeiteinheit wird kleiner
 <p class="md__image"><a href="bremse.svg"><img src="bremse.svg" alt="Relative Wachstumsrate und absoluter Zuwachs als Funktionen der ausgeschöpften Kapazität." /></a></p>
 
 *Links die relative Wachstumsrate, rechts die absoluten Zuwächse.
-Die relative Wachstumsrate fällt durchgehend linear.
-Das absolute Wachstum steigt bis zur halben Kapazität und fällt erst danach.
+Die relative Wachstumsrate $r (1- (N/K))$ fällt bei $r = 0{,}8$ beginnend mit $0{,}8$ durchgehend linear nach 0.*
+
+*Das absolute Wachstum steigt bis zur halben Kapazität und fällt erst danach.
 Für r = 0,8 und K = 1.000 beträgt sein Maximum 200 Einheiten pro Zeiteinheit.*
 
 **Die Bremse gewinnt am Wendepunkt ein gegen die Selbstverstärkung.**
