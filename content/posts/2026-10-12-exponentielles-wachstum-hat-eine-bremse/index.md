@@ -202,7 +202,7 @@ Für $r = 0{,}8$ fällt die relative Wachstumsrate $r(1-N/K)$ linear von $0{,}8$
 *Der absolute Zuwachs steigt bis zur halben Kapazität und fällt erst danach.
 Für r = 0,8 und K = 1.000 beträgt sein Maximum 200 Einheiten pro Zeiteinheit.*
 
-**Die Bremse gewinnt am Wendepunkt ein gegen die Selbstverstärkung.**
+**Die Bremse gewinnt am Wendepunkt gegen die Selbstverstärkung.**
 
 # Die Grenze gehört ins Modell
 
