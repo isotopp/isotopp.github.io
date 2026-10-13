@@ -10,48 +10,47 @@ tags:
   - security
 ---
 
-In der [Heise-Meldung zur Supply-Chain-Attacke auf LiteLLM](https://www.heise.de/news/Supply-Chain-Attacke-auf-LiteLLM-Betroffene-sollen-Credentials-sofort-aendern-11223618.html) ist die Rede von einem Credential-Stealer in LiteLLM. Der wird bei jedem Start von Python aktiviert, wenn LiteLLM installiert ist, auch dann, wenn das Paket nicht importiert wird oder benutzt wird. Es reicht, wenn es ist den Site Packages enthalten ist. Das ist der interessante Teil an dem Angriff, weil er eine Eigenschaft von Python ausnutzt, die mir bisher nicht geläufig war.
+Die [Heise-Meldung zum Angriff auf LiteLLM](https://www.heise.de/news/Supply-Chain-Attacke-auf-LiteLLM-Betroffene-sollen-Credentials-sofort-aendern-11223618.html) beschreibt Schadcode, der Zugangsdaten stiehlt. Er läuft bei jedem Python-Start, sobald das befallene Paket in `site-packages` liegt. Die Anwendung muss es weder importieren noch benutzen. Der Angriff nutzt eine Eigenschaft von Python, die ich bisher nicht kannte.
 
-Laut Heise waren die kompromittierten LiteLLM-Versionen `1.82.7` und `1.82.8` mehrere Stunden auf PyPI verfügbar. Betroffene sollen Credentials sofort rotieren. Das ist die richtige operative Reaktion. Technisch spannender ist aber die Frage: Wie wird so ein Payload eigentlich aktiviert, also genauer: Warum reicht es, das Paket installiert zu haben?
+Laut Heise waren die befallenen LiteLLM-Versionen `1.82.7` und `1.82.8` mehrere Stunden auf PyPI verfügbar. Betroffene sollen ihre Zugangsdaten sofort ersetzen. Das ist richtig. Aber warum reicht die Installation, um den Schadcode auszuführen?
 
 Ich habe eine Demo in [`pth-example`](https://github.com/isotopp/pth-example).
 
 # Python und Site Packages
 
-Python startet normalerweise nicht mit einem komplett nackten Interpreter. Standardmaessig wird das Modul [`site`](https://docs.python.org/3/library/site.html) automatisch geladen. Dieses Modul erweitert `sys.path`, verarbeitet `.pth`-Dateien in `site-packages` und versucht danach `sitecustomize` und `usercustomize` zu importieren.
+Python lädt beim Start normalerweise das Modul [`site`](https://docs.python.org/3/library/site.html). Es erweitert `sys.path`, verarbeitet `.pth`-Dateien in `site-packages` und versucht danach, `sitecustomize` und `usercustomize` zu importieren.
 
-Das ist normales Python-Verhalten. Und genau deshalb ist es für Supply-Chain-Angriffe interessant: Paketinstallation ist in Python nicht nur Dateikopie, sondern sehr schnell auch Code-Ausführung.
+So kann ein installiertes Paket schon beim Python-Start Code ausführen.
 
 # `.pth`-Dateien?
 
-`.pth`-Dateien sind zunächst einmal harmlose Pfadkonfiguration. Sie liegen in `site-packages` und enthalten typischerweise einfach zusätzliche Suchpfade, je eine Zeile pro Eintrag.
+`.pth`-Dateien liegen in `site-packages` und enthalten meist zusätzliche Suchpfade, einen pro Zeile.
 
-```python {linenos=inline}
+```text {linenos=inline}
 /opt/vendor/lib/python
 /srv/app/src
 ```
 
-Die Zeilen `1` und `2` sind genau das, was man erwartet: weitere Einträge fuer `sys.path`. Laut Python-Dokumentation werden leere Zeilen und Kommentare ignoriert, nicht existente Pfade ebenfalls.
+Die Zeilen `1` und `2` ergänzen `sys.path`. Laut Dokumentation ignoriert Python leere Zeilen, Kommentare und Pfade, die nicht existieren.
 
-Der Mechanismus der `.pth`-Dateien ist selbst schon esotherisch, er ist vielen Entwicklern nicht aktiv bekannt. Aber selbst wenn Leute von `.pth`-Dateien wissen kennen sie meist nur diese Form.
+Viele Entwickler kennen `.pth`-Dateien nicht. Wer sie kennt, kennt meist nur diese Form.
 
-# `import`-Variante von `.pth`
+# Code in `.pth`-Dateien
 
-Die Dokumentation von [`site`](https://docs.python.org/3/library/site.html) jedoch:
+Die Dokumentation von [`site`](https://docs.python.org/3/library/site.html) nennt aber eine weitere Funktion:
 
 >  Lines starting with `import` (followed by space or tab) are executed.
 
-Die Demo benutzt genau so eine Datei:
+Die Demo nutzt eine solche Zeile:
 
 ```python {linenos=inline}
 import pth_demo.bootstrap
 ```
 
-Die Datei wird also geladen und der Code daraus, der Funktionen und Klassen definiert macht genau das.
-Code auf dem Toplevel wird, wie üblich, als Modul-Initialisierung ausgeführt.
-Das passiert jedoch beim Interpreterstart, also während der Initialisierung von `site-packages`, wenn das Runtime noch nicht komplett ist.
+Python importiert damit das Modul `pth_demo.bootstrap`. Dabei führt es dessen Code auf Modulebene aus, einschließlich der Definitionen von Funktionen und Klassen.
+Das passiert beim Interpreterstart, während Python `site-packages` einrichtet. Der Start ist noch nicht abgeschlossen.
 
-Die Execution kann man direkt beobachten:
+Das lässt sich beobachten:
 
 ```bash {linenos=inline}
 uv run python3 -c 'print("user code")'
@@ -62,13 +61,13 @@ Hello, Python!
 user code
 ```
 
-Die Ausgabe in Zeile `1` kommt aus dem Payload. Erst danach erreicht der Prozess in Zeile `2` den eigentlichen Benutzer-Code.
+Zeile `1` kommt aus dem Demo-Code. Erst danach läuft unser `print` aus der Kommandozeile und erzeugt Zeile `2`.
 
 # Start während der Initialisierung
 
-Ein `.pth`-`import` laeuft wie gesagt beim Interpreterstartt, also sehr früh. Zu diesem Zeitpunkt ist der Interpreter zwar schon da, aber der Start ist noch nicht fertig. Genau deshalb macht die Demo in der `pth`-Datei nicht viel direkt, sondern installiert nur einen Meta-Path-Handler, das Python Äquivalent zu einem Java Classloader.
+Weil der Python-Start noch läuft, richtet die Demo zunächst nur einen Import-Finder ein: ein Objekt, das Importversuche beobachtet.
 
-Meta-Path-Handler hängen in `sys.meta_path`. Immer, wenn Python ein Modul importieren will, fragt es diese Finder der Reihe nach, ob sie für dieses Modul zuständig sind. Sie werden also nicht einmal aufgerufen, sondern bei jedem Importversuch.
+Diese Finder stehen in `sys.meta_path`. Bei der Suche nach einem Modul fragt Python sie der Reihe nach, ob sie dafür zuständig sind.
 
 Hier ist der erste Teil von `src/pth_demo/bootstrap.py`:
 
@@ -102,27 +101,25 @@ class _PostSitePayloadFinder(MetaPathFinder):
         return None
 ```
 
-Die Struktur ist simpel:
+Der Ablauf:
 
-- In Zeile `10` ist der Finder am Anfang noch nicht "scharf".
-- In Zeile `22` schaut er auf den Importnamen. Sobald Python `sitecustomize` laden will, setzt er in Zeile `23` `_armed = True`. Das `sitecustomize` signaliert den Abschluss der Initialisierung, der Interpreter hat also ein komplettes Runtime.
-- In Zeile `30` bis `31` prüfen wir, ob der Mechanismus scharf geschaltet ist. Wenn nein, machen wir nichts.
-- In Zeile `26` bis `28` prüfen wir auf das Laden von `usercustomize` – das passiert nach `sitecustomize`, aber nicht in allen Python-Interpretern. Wie dem auch sei, wenn es passiert, wissen wir, daß wir ein komplettes Environment haben.
-- In Zeile `33` wird ansonsten beim nächsten beliebigen Import nach `sitecustomize` gefeuert.
+- Zeile `10` setzt `_armed` zunächst auf `False`.
+- Sobald Python `sitecustomize` laden will, setzt Zeile `23` `_armed = True`. Der Aufbau der Suchpfade ist dann abgeschlossen.
+- Versucht Python danach, `usercustomize` zu laden, ruft Zeile `27` `_fire()` auf. Dieser Importversuch findet nicht in allen Python-Umgebungen statt.
+- Solange `_armed` noch `False` ist, tun Zeile `30` bis `31` nichts.
+- Sonst ruft Zeile `33` beim nächsten Importversuch `_fire()` auf.
 
-Das ist wichtig: Der Finder kapert nicht den Import von `sitecustomize`. Er beobachtet nur, dass dieser Importversuch stattfindet und weiß dann, dass das Environment komplett ist. Er gibt in Zeile `24` weiter `None` zurueck, damit die normale Importlogik weiterläuft.
+Der Finder beobachtet den Importversuch. Mit `None` in Zeile `24` überlässt er das Laden von `sitecustomize` den übrigen Findern.
 
-# `sitecustomize` als Endesignal für die Initialisierung
+# `sitecustomize` als Signal
 
-`sitecustomize` ist für die Demo der entscheidende Marker. Laut Python-Dokumentation versucht `site` nach den Pfadmanipulationen genau dieses Modul zu laden, danach `usercustomize`. Falls `sitecustomize` gar nicht existiert, wird der `ImportError` still ignoriert. Für den Finder ist das egal. Der Importversuch findet trotzdem statt, und genau dieser Versuch ist das Signal.
+`site` versucht nach dem Aufbau der Suchpfade, `sitecustomize` zu laden, danach gegebenenfalls `usercustomize`. Fehlt `sitecustomize`, ignoriert Python den entsprechenden `ImportError`. Der Finder sieht den Importversuch trotzdem.
 
-Praktisch bedeutet das: Wenn `sitecustomize` angefragt wird, ist der Interpreter weit genug, dass `site` seine Vorarbeit erledigt hat. Wir sind nicht mehr mitten im empfindlichen Pfadaufbau, sondern an einem Punkt, an dem unmittelbar danach reguläre Import und Benutzer-Code folgen.
+Für die Demo reicht dieses Signal: Die Suchpfade sind eingerichtet, die Anwendung hat noch nicht begonnen. Sie muss das Demo-Paket nicht selbst importieren.
 
-Wir landen also in einer kompletten Umgebung, aber bevor irgendwelcher Usercode zum Zug kommt. Und immer, auch dann, wenn unser Code nie importiert wird.
+# Demo-Code starten
 
-# Payload starten
-
-Der zweite Teil von `bootstrap.py` führt den eigentlichen Payload aus:
+Der zweite Teil von `bootstrap.py` startet den Demo-Code:
 
 ```python {linenos=inline,linenostart=36}
     def _fire(self) -> None:
@@ -154,22 +151,21 @@ def install() -> None:
 install()
 ```
 
-Was passiert?
+Der Ablauf:
 
-- Zeile `40` setzt `_done`, damit der Finder genau einmal feuert.
-- Zeile `41` entfernt den Finder sofort wieder aus `sys.meta_path`. Das führt zu Zeile 49:
-- Zeile `49` ist die eigentliche `remove_self()` Methode.
-- Zeile `43` importiert erst jetzt den eigentlichen Payload, also nicht in der empfindlichen `.pth`-Phase.
-- Zeile `45` ruft die Initialisierung explizit auf.
-- Zeile `54` bis `62` sorgen dafür, dass der Finder genau einmal installiert wird, auch wenn `bootstrap` aus irgendeinem Grund mehrfach importiert werden sollte.
+- Zeile `40` setzt `_done`, damit der Finder den Demo-Code nur einmal startet.
+- Zeile `41` ruft `_remove_self()` auf. Zeile `49` entfernt den Finder aus `sys.meta_path`.
+- Zeile `43` importiert `pth_demo.payload` erst nach dem Aufbau der Suchpfade.
+- Zeile `45` ruft dessen `init()` auf.
+- Zeile `54` bis `62` richten den Finder nur einmal ein, auch wenn `bootstrap` mehrfach läuft.
 
-Der Finder blockiert und entfernt sich, damit weitere Imports nicht zu rekursiven Aufrufen führen.
+Mit `_done` und dem Entfernen aus `sys.meta_path` verhindert der Finder, dass weitere Imports ihn erneut auslösen.
 
-# Payload
+# Demo-Code
 
-Die eigentliche Nutzlast in `src/pth_demo/payload.py` ist banal:
+`src/pth_demo/payload.py` enthält:
 
-```python {linenos=table,linenostart=1}
+```python {linenos=inline,linenostart=1}
 from __future__ import annotations
 
 _INITIALIZED = False
@@ -185,19 +181,17 @@ def init() -> None:
     print("Hello, Python!")
 ```
 
-Zeile `13` macht nichts weiter als `Hello, Python!` auszugeben. Es reicht ein einfaches `uv run python3`, um den Code auszuführen, weil der Auslöser nicht die Anwendung ist, sondern der Interpreterstart.
+Zeile `13` gibt `Hello, Python!` aus. Schon `uv run python3` führt den Code aus: Der Interpreterstart löst ihn aus.
 
-Die Schutzschranke in Zeile `9` bis `12` verhindert nur doppelte Initialisierung. Für einen realen Angreifer stünde dort statt ab Zeile 13 dann die eigentliche Payload.
+Zeile `9` bis `12` verhindern, dass `init()` die Ausgabe wiederholt. Ein Angreifer könnte die Ausgabe in Zeile `13` durch Schadcode ersetzen.
 
-# "Python macht... was?"
+# Folgen
 
-Wir lernen:
-
-- Ein Python-Paket kann beim Start von Python aktiv werden, ohne dass die Anwendung das Paket explizit importiert.
+- Ein installiertes Python-Paket kann beim Python-Start Code ausführen, ohne dass die Anwendung es importiert.
 - Eine `.pth`-Datei kann Code laden und ausführen.
-- Es gibt keinen "Interpreter ready"-Callback (`__start__()`), aber `sitecustomize` und `usercustomize` sind brauchbare Signale.
-- Wer ein kompromittiertes Paket installiert hat, muss davon ausgehen, dass schon ein banales `python`, `uv run python3` oder ein CI-Schritt gereicht haben kann.
+- Eine Startfunktion wie `__start__()` fehlt, aber die Importversuche für `sitecustomize` und `usercustomize` liefern brauchbare Signale.
+- Wer ein befallenes Paket installiert hat, muss davon ausgehen, dass schon `python`, `uv run python3` oder ein CI-Schritt den Schadcode ausgeführt haben kann.
 
-Wer defensiv prüfen will, schaut zuerst in `site-packages` nach `.pth`-Dateien und liest jede `import`-Zeile so, wie sie gelesen werden muss: als ausführbaren Code.
+Prüft zuerst die `.pth`-Dateien in `site-packages`. Jede `import`-Zeile ist ausführbarer Code.
 
-Und ja: `python -S` unterdrückt den automatischen Import von `site`. Das ist für Analyse und Incident Response nützlich. Aber ein `python -S` ist auch nur eingeschränkt brauchbar.
+`python -S` unterdrückt den automatischen Import von `site`. Das hilft bei der Untersuchung eines Angriffs, schränkt aber auch die Python-Umgebung ein.
