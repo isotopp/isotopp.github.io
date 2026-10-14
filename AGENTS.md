@@ -39,7 +39,7 @@
 
 # JavaScript Dependency Status & Refresh Plan
 
-(as of 2026-Sep-12, remind the user to run a check again by 2026-Oct-12 at the latest, and then perform it when authorized)
+(as of 2026-Oct-14, remind the user to run a check again by 2026-Nov-14 at the latest, and then perform it when authorized)
 
 Checked from `themes/hugo-bootstrap-bare/assets` with:
 - `npm outdated` to identify direct dependency updates;
@@ -49,12 +49,20 @@ Checked from `themes/hugo-bootstrap-bare/assets` with:
 |-----------|---------|--------|---------------|
 | bootstrap | 5.3.8   | 5.3.8  | No            |
 | lunr      | 2.3.9   | 2.3.9  | No            |
-| mermaid   | 11.17.2 | 12.0.0 | No (12 deferred) |
-| katex     | 0.18.7  | 0.18.7 | No            |
+| mermaid   | 11.17.2 | 12.2.0 | No (12 deferred) |
+| katex     | 0.19.0  | 0.19.0 | No            |
 
-`yarn install --check-files` refreshed the vendored dependencies after bumping `katex` to `^0.18.7` and `mermaid` to `^11.17.2`; notable resulting versions include `@mermaid-js/parser@1.2.1`, `commander@15.0.0`, `cytoscape@3.34.3`, and `dayjs@1.11.23`. Mermaid 12 is intentionally deferred.
+`yarn install --check-files` refreshed the vendored dependencies after bumping `katex` from `^0.18.7` to `^0.19.0`. The lockfile changes only the direct KaTeX entry; Bootstrap, Lunr, Mermaid, and their locked dependencies remain unchanged. Mermaid 12 is intentionally deferred.
 
-The KaTeX `0.18.1` to `0.18.7` and Mermaid `11.16.1` to `11.17.2` updates required no integration changes. The Hugo production build and browser smoke tests for inline/display math, Mermaid SVGs, and Lunr search passed. Should a new release appear, follow the plan below for each dependency that becomes outdated:
+KaTeX `0.19.0` changes strict handling: missing character metrics use the `symbolNotInFont` strict diagnostic, and strict callbacks returning `undefined` or `null` now warn. See the [upstream release notes](https://github.com/KaTeX/KaTeX/releases/tag/v0.19.0). The site explicitly uses `strict: "warn"` without a callback, so no integration changes were needed.
+
+The Hugo production build (`hugo --minify`) and browser smoke tests for math, Mermaid SVGs, Bootstrap navbar expansion, and Lunr search passed.
+
+Goldmark passthrough is enabled in `config.yaml` for `\[...\]`, `\(...\)`, and `$$...$$`. It preserves TeX delimiters and content, including matrix row separators, for client-side KaTeX. This fixed the pre-existing loss of backslashes during Markdown rendering; the KaTeX test page now renders three inline and three display formulas. Single-dollar math remains a per-page JavaScript opt-in (`katex: true`), outside the global passthrough delimiters to avoid treating currency text as math. After changing math rendering configuration, run `python3 scripts/check-math-passthrough.py` to verify TeX preservation and ordinary Markdown/currency/code handling, then check the KaTeX test page in a browser.
+
+Restart a running Hugo server after vendored dependency updates: its watcher does not watch `node_modules`, and the existing preview continued serving KaTeX `0.18.7` until a fresh server was used.
+
+Should a new release appear, follow the plan below for each dependency that becomes outdated:
 
 1. **Update version spec** in `themes/hugo-bootstrap-bare/assets/package.json` (e.g. bump `bootstrap` from 5.3.3 → 5.3.x or whatever the new tag is).
 2. **Install dependencies** within `themes/hugo-bootstrap-bare/assets` using `yarn install --check-files` (preferred to keep `yarn.lock` in sync) or `npm install`.
