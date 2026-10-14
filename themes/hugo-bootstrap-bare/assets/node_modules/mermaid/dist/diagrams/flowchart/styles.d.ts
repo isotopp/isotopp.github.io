@@ -14,6 +14,11 @@ export interface FlowChartStyleOptions {
     textColor: string;
     titleColor: string;
     strokeWidth: string;
+    theme?: string;
+    look?: string;
+    THEME_COLOR_LIMIT?: number;
+    borderColorArray?: string[];
+    bkgColorArray?: string[];
 }
 declare const getStyles: (options: FlowChartStyleOptions) => string;
 export default getStyles;

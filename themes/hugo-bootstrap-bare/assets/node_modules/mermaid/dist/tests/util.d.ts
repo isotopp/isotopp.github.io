@@ -25,7 +25,7 @@ interface JsdomItInput {
  *
  * This makes it possible to make structural tests instead of mocking everything.
  */
-export declare function jsdomIt(message: string, run: (input: JsdomItInput) => void | Promise<void>): void;
+export declare function jsdomIt(message: string, run: (input: JsdomItInput) => void | Promise<void>, timeout?: number): void;
 /**
  * Retrieves the node from its parent with ParentNode#querySelector,
  * then checks that it exists before returning it.

@@ -5,7 +5,7 @@ export declare function outgoing(g: Graph, v: NodeId): EdgeRef[];
 export declare function buildSuccessorMap(g: Graph): Map<NodeId, NodeId[]>;
 export declare function buildSortedSuccessorMap(g: Graph): Map<NodeId, NodeId[]>;
 export declare function buildInDegreeMap(g: Graph): Map<NodeId, number>;
-export declare function sortedZeroInDegreeNodes(indeg: Map<NodeId, number>): NodeId[];
+export declare function sortedZeroInDegreeNodes(g: Graph, indeg: Map<NodeId, number>): NodeId[];
 export declare function buildPredecessorSuccessorMaps(g: Graph, includeEdge?: (edge: EdgeRef) => boolean): {
     preds: Map<NodeId, NodeId[]>;
     succs: Map<NodeId, NodeId[]>;

@@ -23,7 +23,7 @@ export declare function replaceIconSubstring(text: string, config?: MermaidConfi
  * @param config - Mermaid configuration object
  * @returns The created text element, either a `<foreignObject>` or a `<text>` element depending on the options.
  */
-export declare const createText: (el: D3Selection<SVGGElement>, text?: string, { style, isTitle, classes, useHtmlLabels, markdown, isNode, width, addSvgBackground, }?: {
+export declare const createText: (el: D3Selection<SVGGElement>, text?: string, { style, isTitle, classes, useHtmlLabels, markdown, isNode, width, minWidth, addSvgBackground, }?: {
     style?: string | undefined;
     isTitle?: boolean | undefined;
     classes?: string | undefined;
@@ -31,5 +31,6 @@ export declare const createText: (el: D3Selection<SVGGElement>, text?: string, {
     markdown?: boolean | undefined;
     isNode?: boolean | undefined;
     width?: number | undefined;
+    minWidth?: number | undefined;
     addSvgBackground?: boolean | undefined;
 }, config?: MermaidConfig) => Promise<SVGGElement>;

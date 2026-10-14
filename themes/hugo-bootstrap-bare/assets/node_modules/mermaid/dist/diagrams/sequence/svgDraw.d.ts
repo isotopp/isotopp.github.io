@@ -1,4 +1,5 @@
 export const ACTOR_TYPE_WIDTH: number;
+export function paletteColor(palette: any, index: any): any;
 export function drawRect(elem: any, rectData: any): import("../common/commonTypes.js").D3RectElement;
 export function drawPopup(elem: any, actor: any, minMenuWidth: any, textAttrs: any, forceMenus: any): {
     height: any;
@@ -21,7 +22,8 @@ export function insertArrowHead(elem: any, id: any): void;
 export function insertArrowFilledHead(elem: any, id: any): void;
 export function insertSequenceNumber(elem: any, id: any): void;
 export function insertArrowCrossHead(elem: any, id: any): void;
-export function insertDropShadow(elem: any, conf: any): void;
+export function dropShadowId(diagramId: any): string;
+export function insertDropShadow(elem: any, conf: any, diagramId: any): void;
 export function getTextObj(): {
     x: number;
     y: number;

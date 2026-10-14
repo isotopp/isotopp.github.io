@@ -20,7 +20,7 @@ export declare const internalHelpers: {
     };
     getConfig: () => import("./config.type.js").MermaidConfig;
     insertCluster: (elem: any, node: import("./rendering-util/types.js").ClusterNode) => Promise<any>;
-    insertEdge: (elem: any, edge: any, clusterDb: any, diagramType: any, startNode: any, endNode: any, diagramId: any, skipIntersect?: boolean) => {
+    insertEdge: (elem: any, edge: any, clusterDb: any, diagramType: any, startNode: any, endNode: any, diagramId: any, skipIntersect?: boolean, layoutAlgorithm?: undefined) => {
         updatedPath: any;
         originalPath: any;
     };
@@ -28,7 +28,9 @@ export declare const internalHelpers: {
     insertMarkers: (elem: any, markerArray: any, type: any, id: any) => void;
     insertNode: typeof insertNode;
     interpolateToCurve: typeof interpolateToCurve;
-    labelHelper: <T extends SVGGraphicsElement>(parent: import("./types.js").D3Selection<T>, node: import("./rendering-util/types.js").Node, _classes?: string) => Promise<{
+    labelHelper: <T extends SVGGraphicsElement>(parent: import("./types.js").D3Selection<T>, node: import("./rendering-util/types.js").Node, _classes?: string, { ignoreMinWidth }?: {
+        ignoreMinWidth?: boolean;
+    }) => Promise<{
         shapeSvg: import("d3-selection").Selection<SVGGElement, unknown, Element | null, unknown>;
         bbox: DOMRect;
         halfPadding: number;

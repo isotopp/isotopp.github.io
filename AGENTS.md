@@ -49,12 +49,16 @@ Checked from `themes/hugo-bootstrap-bare/assets` with:
 |-----------|---------|--------|---------------|
 | bootstrap | 5.3.8   | 5.3.8  | No            |
 | lunr      | 2.3.9   | 2.3.9  | No            |
-| mermaid   | 11.17.2 | 12.2.0 | No (12 deferred) |
+| mermaid   | 12.2.0  | 12.2.0 | No            |
 | katex     | 0.19.0  | 0.19.0 | No            |
 
-`yarn install --check-files` refreshed the vendored dependencies after bumping `katex` from `^0.18.7` to `^0.19.0`. The lockfile changes only the direct KaTeX entry; Bootstrap, Lunr, Mermaid, and their locked dependencies remain unchanged. Mermaid 12 is intentionally deferred.
+The October refresh upgraded KaTeX from `0.18.7` to `0.19.0` and Mermaid from `11.17.2` to `12.2.0`, using `yarn install --check-files` to update `yarn.lock` and the committed `node_modules` tree. The maintainer approved Mermaid 12 after browser verification; the earlier deferral no longer applies. Bootstrap and Lunr remain unchanged.
 
 KaTeX `0.19.0` changes strict handling: missing character metrics use the `symbolNotInFont` strict diagnostic, and strict callbacks returning `undefined` or `null` now warn. See the [upstream release notes](https://github.com/KaTeX/KaTeX/releases/tag/v0.19.0). The site explicitly uses `strict: "warn"` without a callback, so no integration changes were needed.
+
+Mermaid 12 changes the default layout to ELK and default appearance to `redux-color` / `neo`; the maintainer approved the new appearance. It requires ES2024-compatible browsers (Safari 17.4+) and Node 22.12+, which the CI Node 24 runtime satisfies. The existing `dist/mermaid.min.js` path, global `mermaid`, and `initialize`/`run` calls still work without integration changes. The bundled browser script grew from 3,572,661 to 5,494,801 bytes (gzip: 976,006 to 1,566,718 bytes). See the [Mermaid 12 release notes](https://github.com/mermaid-js/mermaid/releases/tag/mermaid@12.0.0). All ten diagrams across the four Mermaid posts rendered on a fresh preview server without console warnings or errors.
+
+Yarn warns about Mermaid's transitive KaTeX `0.18.11`, which upstream marked as accidentally published with breaking strict-mode changes. It remains Mermaid's declared `^0.18.0` dependency; the site's separately loaded KaTeX renderer remains `0.19.0`. The tested diagrams and site math rendered successfully.
 
 The Hugo production build (`hugo --minify`) and browser smoke tests for math, Mermaid SVGs, Bootstrap navbar expansion, and Lunr search passed.
 

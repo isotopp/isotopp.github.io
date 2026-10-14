@@ -41,11 +41,13 @@ export declare class MindmapDB {
     }): void;
     type2Str(type: number): string;
     /**
-     * Assign section numbers to nodes based on their position relative to root
+     * Assign color sections by top-level branch (default) or structural depth.
      * @param node - The mindmap node to process
      * @param sectionNumber - The section number to assign (undefined for root)
+     * @param depth - Distance from the root, independent of indentation width
+     * @param colorByDepth - Whether to assign sections by depth instead of top-level branch
      */
-    assignSections(node: MindmapNode, sectionNumber?: number): void;
+    assignSections(node: MindmapNode, sectionNumber?: number, depth?: number, colorByDepth?: boolean): void;
     /**
      * Convert mindmap tree structure to flat array of nodes
      * @param node - The mindmap node to process

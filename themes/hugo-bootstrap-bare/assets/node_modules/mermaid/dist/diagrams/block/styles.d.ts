@@ -10,9 +10,15 @@ export interface BlockChartStyleOptions {
     mainBkg: string;
     nodeBorder: string;
     nodeTextColor: string;
+    strokeWidth?: number;
     tertiaryColor: string;
     textColor: string;
     titleColor: string;
+    theme?: string;
+    look?: string;
+    borderColorArray?: string[];
+    bkgColorArray?: string[];
+    THEME_COLOR_LIMIT?: number;
 }
 declare const getStyles: (options: BlockChartStyleOptions) => string;
 export default getStyles;

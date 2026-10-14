@@ -1,0 +1,260 @@
+import { DEFAULT_PARSER_CONFIG } from "../parser.js";
+import {
+  ILookaheadStrategy,
+  IParserConfig,
+  OptionalProductionType,
+} from "@chevrotain/types";
+import {
+  AT_LEAST_ONE_IDX,
+  AT_LEAST_ONE_SEP_IDX,
+  MANY_IDX,
+  MANY_SEP_IDX,
+  OPTION_IDX,
+  OR_IDX,
+} from "../../grammar/keys.js";
+import { MixedInParser } from "./parser_traits.js";
+import {
+  Alternation,
+  GAstVisitor,
+  getProductionDslName,
+  Option,
+  Repetition,
+  RepetitionMandatory,
+  RepetitionMandatoryWithSeparator,
+  RepetitionWithSeparator,
+  Rule,
+} from "@chevrotain/gast";
+import { LLkLookaheadStrategy } from "../../grammar/llk_lookahead.js";
+
+/**
+ * Trait responsible for the lookahead related utilities and optimizations.
+ */
+export class LooksAhead {
+  maxLookahead: number;
+  // Indexed by rule, then by the DSL method and occurrence local to that rule.
+  lookAheadFuncsCache: Function[][];
+  // Cached rule table for the active rule
+  currRuleLookaheadFuncs: Function[];
+  dynamicTokensEnabled: boolean;
+  lookaheadStrategy: ILookaheadStrategy;
+
+  initLooksAhead(config: IParserConfig) {
+    this.dynamicTokensEnabled = Object.hasOwn(config, "dynamicTokensEnabled")
+      ? (config.dynamicTokensEnabled as boolean) // assumes end user provides the correct config value/type
+      : DEFAULT_PARSER_CONFIG.dynamicTokensEnabled;
+
+    this.maxLookahead = Object.hasOwn(config, "maxLookahead")
+      ? (config.maxLookahead as number) // assumes end user provides the correct config value/type
+      : DEFAULT_PARSER_CONFIG.maxLookahead;
+
+    this.lookaheadStrategy = Object.hasOwn(config, "lookaheadStrategy")
+      ? (config.lookaheadStrategy as ILookaheadStrategy) // assumes end user provides the correct config value/type
+      : new LLkLookaheadStrategy({ maxLookahead: this.maxLookahead });
+
+    this.lookAheadFuncsCache = [];
+    this.currRuleLookaheadFuncs = [];
+  }
+
+  preComputeLookaheadFunctions(this: MixedInParser, rules: Rule[]): void {
+    rules.forEach((currRule) => {
+      this.TRACE_INIT(`${currRule.name} Rule Lookahead`, () => {
+        const {
+          alternation,
+          repetition,
+          option,
+          repetitionMandatory,
+          repetitionMandatoryWithSeparator,
+          repetitionWithSeparator,
+        } = collectMethods(currRule);
+
+        alternation.forEach((currProd) => {
+          const prodIdx = currProd.idx === 0 ? "" : currProd.idx;
+          this.TRACE_INIT(`${getProductionDslName(currProd)}${prodIdx}`, () => {
+            const laFunc = this.lookaheadStrategy.buildLookaheadForAlternation({
+              prodOccurrence: currProd.idx,
+              rule: currRule,
+              maxLookahead: currProd.maxLookahead || this.maxLookahead,
+              hasPredicates: currProd.hasPredicates,
+              dynamicTokensEnabled: this.dynamicTokensEnabled,
+            });
+
+            this.setLaFuncCache(
+              this.fullRuleNameToShort[currRule.name],
+              OR_IDX | currProd.idx,
+              laFunc,
+            );
+          });
+        });
+
+        repetition.forEach((currProd) => {
+          this.computeLookaheadFunc(
+            currRule,
+            currProd.idx,
+            MANY_IDX,
+            "Repetition",
+            currProd.maxLookahead,
+            getProductionDslName(currProd),
+          );
+        });
+
+        option.forEach((currProd) => {
+          this.computeLookaheadFunc(
+            currRule,
+            currProd.idx,
+            OPTION_IDX,
+            "Option",
+            currProd.maxLookahead,
+            getProductionDslName(currProd),
+          );
+        });
+
+        repetitionMandatory.forEach((currProd) => {
+          this.computeLookaheadFunc(
+            currRule,
+            currProd.idx,
+            AT_LEAST_ONE_IDX,
+            "RepetitionMandatory",
+            currProd.maxLookahead,
+            getProductionDslName(currProd),
+          );
+        });
+
+        repetitionMandatoryWithSeparator.forEach((currProd) => {
+          this.computeLookaheadFunc(
+            currRule,
+            currProd.idx,
+            AT_LEAST_ONE_SEP_IDX,
+            "RepetitionMandatoryWithSeparator",
+            currProd.maxLookahead,
+            getProductionDslName(currProd),
+          );
+        });
+
+        repetitionWithSeparator.forEach((currProd) => {
+          this.computeLookaheadFunc(
+            currRule,
+            currProd.idx,
+            MANY_SEP_IDX,
+            "RepetitionWithSeparator",
+            currProd.maxLookahead,
+            getProductionDslName(currProd),
+          );
+        });
+      });
+    });
+  }
+
+  computeLookaheadFunc(
+    this: MixedInParser,
+    rule: Rule,
+    prodOccurrence: number,
+    prodKey: number,
+    prodType: OptionalProductionType,
+    prodMaxLookahead: number | undefined,
+    dslMethodName: string,
+  ): void {
+    this.TRACE_INIT(
+      `${dslMethodName}${prodOccurrence === 0 ? "" : prodOccurrence}`,
+      () => {
+        const laFunc = this.lookaheadStrategy.buildLookaheadForOptional({
+          prodOccurrence,
+          rule,
+          maxLookahead: prodMaxLookahead || this.maxLookahead,
+          dynamicTokensEnabled: this.dynamicTokensEnabled,
+          prodType,
+        });
+        this.setLaFuncCache(
+          this.fullRuleNameToShort[rule.name],
+          prodKey | prodOccurrence,
+          laFunc,
+        );
+      },
+    );
+  }
+
+  setLaFuncCache(
+    this: MixedInParser,
+    ruleIdx: number,
+    key: number,
+    value: Function,
+  ): void {
+    let ruleLookaheadFuncs = this.lookAheadFuncsCache[ruleIdx];
+    if (ruleLookaheadFuncs === undefined) {
+      ruleLookaheadFuncs = [];
+      this.lookAheadFuncsCache[ruleIdx] = ruleLookaheadFuncs;
+    }
+    ruleLookaheadFuncs[key] = value;
+  }
+}
+
+class DslMethodsCollectorVisitor extends GAstVisitor {
+  public dslMethods: {
+    option: Option[];
+    alternation: Alternation[];
+    repetition: Repetition[];
+    repetitionWithSeparator: RepetitionWithSeparator[];
+    repetitionMandatory: RepetitionMandatory[];
+    repetitionMandatoryWithSeparator: RepetitionMandatoryWithSeparator[];
+  } = {
+    option: [],
+    alternation: [],
+    repetition: [],
+    repetitionWithSeparator: [],
+    repetitionMandatory: [],
+    repetitionMandatoryWithSeparator: [],
+  };
+
+  reset() {
+    this.dslMethods = {
+      option: [],
+      alternation: [],
+      repetition: [],
+      repetitionWithSeparator: [],
+      repetitionMandatory: [],
+      repetitionMandatoryWithSeparator: [],
+    };
+  }
+
+  public visitOption(option: Option): void {
+    this.dslMethods.option.push(option);
+  }
+
+  public visitRepetitionWithSeparator(manySep: RepetitionWithSeparator): void {
+    this.dslMethods.repetitionWithSeparator.push(manySep);
+  }
+
+  public visitRepetitionMandatory(atLeastOne: RepetitionMandatory): void {
+    this.dslMethods.repetitionMandatory.push(atLeastOne);
+  }
+
+  public visitRepetitionMandatoryWithSeparator(
+    atLeastOneSep: RepetitionMandatoryWithSeparator,
+  ): void {
+    this.dslMethods.repetitionMandatoryWithSeparator.push(atLeastOneSep);
+  }
+
+  public visitRepetition(many: Repetition): void {
+    this.dslMethods.repetition.push(many);
+  }
+
+  public visitAlternation(or: Alternation): void {
+    this.dslMethods.alternation.push(or);
+  }
+}
+
+const collectorVisitor = new DslMethodsCollectorVisitor();
+export function collectMethods(rule: Rule): {
+  option: Option[];
+  alternation: Alternation[];
+  repetition: Repetition[];
+  repetitionWithSeparator: RepetitionWithSeparator[];
+  repetitionMandatory: RepetitionMandatory[];
+  repetitionMandatoryWithSeparator: RepetitionMandatoryWithSeparator[];
+} {
+  collectorVisitor.reset();
+  rule.accept(collectorVisitor);
+  const dslMethods = collectorVisitor.dslMethods;
+  // avoid uncleaned references
+  collectorVisitor.reset();
+  return <any>dslMethods;
+}
