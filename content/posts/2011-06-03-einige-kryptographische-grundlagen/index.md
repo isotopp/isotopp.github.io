@@ -41,7 +41,7 @@ wird, sondern es ist die umgebende Infrastruktur, die kaputt geht:
 Zufallszahlengeneratoren, die keine zufälligen Zahlen produzieren oder
 Verwaltungssysteme für geheime Schlüssel, die geheimzuhaltende Daten
 herausgeben. Oder halt der Fehler, sich selbst einen
-Verschlüsselungsalgorithmus auszudenken ohne die entsprechende Mathematik zu
+Verschlüsselungsalgorithmus auszudenken, ohne die entsprechende Mathematik zu
 beherrschen.
 
 
@@ -79,7 +79,7 @@ Man kann diesen Effekt gar nicht genug betonen: Wenn man sich mit Laien
 (oder in der Politik) über Bedrohungen unterhält, dann diskutieren diese
 Sicherheit oftmals in den Begriffen von Maßnahmen, anstatt über Angreifer,
 Bedrohungen, Eintrittswahrscheinlichkeiten und Schadenshöhen zu reden und
-die Maßnahmen anhang dieser Dinge auszuwählen oder zu bewerten. Das erzeugt
+die Maßnahmen anhand dieser Dinge auszuwählen oder zu bewerten. Das erzeugt
 dann jede Menge operative Hektik, verbessert die Sicherheit aber in der
 Regel kein Stück.
 
@@ -92,7 +92,7 @@ Inhalt kennen, Dritte nicht. Eine schwächere Forderung wäre, eine Nachricht
 integer zu halten, also Veränderungen der Nachricht durch Dritte erkennbar
 zu machen. Eine stärkere Forderung wäre, nicht nur den Inhalt einer
 Nachricht vertraulich zu halten, sondern die Tatsache, daß zwei bestimmte
-Personen überhaupt miteinander kommuniziert haben zu verbergen -
+Personen überhaupt miteinander kommuniziert haben, zu verbergen -
 Unbeobachtbarkeit.
 
 Man kann fordern, die Identitäten des Senders und des Empfängers voreinander
@@ -145,7 +145,7 @@ sondern wer die Kontrolle über die Recovery Keys hat.
 
 Auguste Kerckhoffs hat 1883 das 
 [Kerckhoffsche Prinzip](http://de.wikipedia.org/wiki/Kerckhoffs%E2%80%99_Prinzip)
-formuliert. Kerckhoffs war ein früher Kryptograph, und hat kryptographische
+formuliert. Kerckhoffs war ein früher Kryptograph und hat kryptographische
 Verfahren untersucht und eine Reihe von Anforderungen an Kryptosysteme
 formuliert.
 
@@ -156,13 +156,13 @@ Schlüssel abhängen darf.
 
 In einer schärferen Formulierung kann man sogar sagen, daß ein Kryptosystem,
 dessen Algorithmen nicht allgemein bekannt und durch viele anerkannte
-Kryptographen untersucht und bestätigt worden sind wahrscheinlich unsicher
+Kryptographen untersucht und bestätigt worden sind, wahrscheinlich unsicher
 ist und nicht verwendet werden sollte.
 
 Wir können nach dem heutigen Stand der Mathematik nicht beweisen, daß ein
 Algorithmus unangreifbar ist. Wir können lediglich unsere hellsten Köpfe auf
 einen Algorithmus loslassen. Wenn die dann alle scheitern (und was das
-bedeutet klären wir gleich), dann ist der Algorithmus wahrscheinlich zur
+bedeutet, klären wir gleich), dann ist der Algorithmus wahrscheinlich zur
 Zeit sicher.
 
 Es gibt in der Geschichte der Kryptographie eine ganze Menge Beispiele für
@@ -181,7 +181,7 @@ Angriff auf CSS mit trivialer Rechenleistung möglich und CSS ist in etwa
 genau so sicher wie Klartext.
 
 Ein anderes Beispiel ist der vom GSM-Konsortium selbstgekochte 
-[A5](http://en.wikipedia.org/wiki/A5/1#Security) Algorithmus, mit dem einige
+[A5](http://en.wikipedia.org/wiki/A5/1#Security)-Algorithmus, mit dem einige
 Mobilfunkbetreiber GSM-Kommunikation verschlüsselt haben, statt einen
 anerkannten Algorithmus zu nehmen. Auch die verschiedenen Varianten von A5
 sind gebrochen worden und mit diesen (inzwischen nicht mehr verwendeten)
@@ -197,9 +197,9 @@ Bei einem Brute Force-Angriff entschlüsselt man eine verschlüsselte
 Nachricht (also unlesbaren Bitsalat) mit dem falschen Schlüssel (bekommt
 also anderen unlesbaren Bitsalat). Erwischt man zufällig den korrekten
 Schlüssel, bekommt man lesbaren Text - und muß diese Situation erkennen. Das
-heißt, es hilft, wenn man ein wenig über den Klartext weiß ('es handet sich
-um englischen Text', 'am Ende des Textes ist eine CRC32 Prüfsumme über alle
-vorhergehenden Bytes und wenn die Prüfsumme aufgeht, ist die Nachricht
+heißt, es hilft, wenn man ein wenig über den Klartext weiß ('es handelt sich
+um englischen Text', 'am Ende des Textes ist eine CRC32-Prüfsumme über alle
+vorhergehenden Bytes, und wenn die Prüfsumme aufgeht, ist die Nachricht
 korrekt').
 
 Hat man solches Wissen nicht, muß man raten - etwa wenn die Nachricht nur
@@ -208,7 +208,7 @@ Häufigkeiten der Buchstaben in etwa dem Muster englischer Sprache
 entsprechen, dann ist die Nachricht möglicherweise korrekt entschlüsselt
 worden und man legt sie einem Operator zur Kontrolle vor.
 
-Im zweiten Weltkrieg zum Beispiel haben die Engländer die mit der Engima
+Im Zweiten Weltkrieg zum Beispiel haben die Engländer die mit der Enigma
 verschlüsselten Nachrichten deutscher U-Boote abgefangen. Diese U-Boote
 haben wichtige Nachrichten mit dem Flottenkommando ausgetauscht, aber auch
 Wetternachrichten an das Kommando zurück gesendet. Diese Wetternachrichten
@@ -218,7 +218,7 @@ wichtige Nachrichten verwendet worden ist.
 Wenn man nun also das Wetter an der Position des U-Bootes kennt und weiß,
 wie ein militärischer Wetterbericht abgefaßt wird, dann kann man den Klartext
 der Wettermeldung des U-Bootes recht gut vorhersagen und hat eine gute
-Stop-Bedingung für einen Brute Force-Angriff.
+Stopp-Bedingung für einen Brute Force-Angriff.
 
 Zum anderen muß man fertig werden können. Das heißt, der Schlüsselraum (alle
 möglichen K) muß klein genug sein, daß man im Verhältnis zur
@@ -258,7 +258,7 @@ ein Verfahren mit einer Schlüssellänge von nur 56 Bit, und die
 [Deep Crack](http://en.wikipedia.org/wiki/EFF_DES_cracker) gebaut, um DES in
 wenigen Stunden zu brute forcen. DES ist aber nicht gebrochen - es ist kein
 Verfahren bekannt, mit dem es möglich wäre, die 2^56 Schlüssel abzukürzen.
-Daher kann man unsichere DES noch verwenden, um das
+Daher kann man das unsichere DES noch verwenden, um das
 [sichere](http://en.wikipedia.org/wiki/Triple_DES#Security) und ungebrochene 
 [Triple DES](http://en.wikipedia.org/wiki/EFF_DES_cracker) zu konstruieren.
 
@@ -267,7 +267,7 @@ Andererseits existiert der DES-Nachfolger
 hat einen K-Raum mit 2^256 Einträgen, aber AES ist
 [gebrochen](http://en.wikipedia.org/wiki/Advanced_Encryption_Standard#Known_attacks) -
 der K-Raum ist auf 2^200 Einträge reduziert, also kleiner als Brute Force.
-Allerdings ist diese Zahl immer noch zu groß, daß der Algorithmus als sicher
+Allerdings ist diese Zahl immer noch so groß, daß der Algorithmus als sicher
 gilt.
 
 
@@ -298,7 +298,7 @@ kurz ist: Nehmen wir an, daß Andreas seiner Internet-Verbindung zu Birgit
 nicht traut, aber seiner Telefonverbindung - dies nennen wir einen sicheren
 Kanal.
 
-Eine Eigenschaft von sicheren Kanälen ist, daß ihre Kapaziät oft begrenzt
+Eine Eigenschaft von sicheren Kanälen ist, daß ihre Kapazität oft begrenzt
 ist - entweder in der Menge oder in der Zeit, zu der sie verfügbar sind.
 
 Zum Beispiel ist es für Andreas nicht möglich, Birgit sein neustes, viele
@@ -322,8 +322,8 @@ davon und sende diese mit einem Kurier zum Empfänger oder übergebe diese dem
 Empfänger, wenn man ihn trifft.
 
 Später, wenn man Bedarf an sicherer Kommunikation hat, sendet man dem
-Empfänger die Nachricht XOR-codiert mit diesen Zufallszahlen, und streiche
-diese Zahlen sodaß sie niemals wieder verwendet werden können.
+Empfänger die Nachricht XOR-codiert mit diesen Zufallszahlen und streicht
+diese Zahlen, sodaß sie niemals wieder verwendet werden können.
 
 Dieses Verfahren nennt sich 
 [One-Time Pad](http://en.wikipedia.org/wiki/One-time_pad) und ist das
@@ -345,10 +345,10 @@ Teilnehmern also 4950 verschiedene Schlüssel.
 
 ![](kryptogrundlagen/img4.png)
 
-Um dieses Problem besser beherrschen zu können hat man in den 1970er Jahren
+Um dieses Problem besser beherrschen zu können, hat man in den 1970er Jahren
 asymmetrische Verfahren entwickelt. Ein asymmetrisches Verfahren ist eines,
 bei dem man einen Verschlüssel P und einen Entschlüssel Q hat. Wenn man also
-den Ciphertext C = P(M) produziert, dann braucht man den anderen Schlüssel Q
+den Ciphertext C = P(M) produziert, dann braucht man den anderen Schlüssel Q,
 um wieder an den Klartext zu kommen: M = Q(C), d.h. M = Q(P(M)). Wendet man
 stattdessen P ein zweites Mal an, bekommt man kein sinnvolles Ergebnis.
 
@@ -378,7 +378,7 @@ von den Empfängern auch geheim gehalten werden.
 
 Ein Nachteil: Asymmetrische Verfahren haben deutlich längere Schlüssel als
 symmetrische Verfahren. Schlüssel sind bis zu 4096 Bit lang. Daher ist auch
-ihre Verarbeitung sehr viel langsamer, im Schnitt 10-20 mal langsamer als
+ihre Verarbeitung sehr viel langsamer, im Schnitt 10-20 Mal langsamer als
 bei den bekannten symmetrischen Verfahren.
 
 
@@ -401,14 +401,14 @@ schneller ist: K(M).
 
 Birgit bekommt die Nachricht "P(K) K(M)". Mit ihrem geheimen Schlüssel Q
 kann sie K = Q(P(K)) ermitteln. Dadurch kennt sie K und kann nun M = K(K(M))
-berechnen, und hat nun die Nachricht im Klartext.
+berechnen und hat nun die Nachricht im Klartext.
 
 
 ![](kryptogrundlagen/img6.png)
 
 Wir können den Session-Key der Nachricht sogar mehrfach voranstellen:
 P<sub>birgit</sub>(K) P<sub>marit</sub>(K) und so weiter. Alle diese
-Empfänger können nun ihre Kopie des Session-Key entschlüsseln und die
+Empfänger können nun ihre Kopie des Session-Keys entschlüsseln und die
 Nachricht decodieren. Dabei muß man sich erinnern, daß K(M) recht lang sein
 kann, die ganze Nachricht halt. Die einzelnen Kopien des Session-Keys sind
 jedoch recht kurz.
@@ -423,7 +423,7 @@ entschlüsselt den Session-Key der DVD von dort und kann so die DVD
 abspielen.
 
 Das wäre angreifbar in dem Sinne, daß dazu ja der geheime Schlüssel jedes
-Lizenznehmers in jedem seiner Produke - den Playern - enthalten sein müßte,
+Lizenznehmers in jedem seiner Produkte - den Playern - enthalten sein müßte,
 und tatsächlich hat man diese Schlüssel auch für kurze Zeit aus
 Software-DVD-Spielern extrahiert, bis man gemerkt hatte, daß das
 symmetrische Verschlüsselungsverfahren, CSS, auf einer DVD sowieso Schrott
@@ -432,7 +432,7 @@ ist und man sich das Lesen der Keys aus dem Index vorne auch sparen kann...
 Es verbleiben zwei zu lösende Probleme:
 
 Erstens: Wir müssen irgendwie sicherstellen, daß der Schlüssel, der uns als
-der Schlüssel von Birgit im Verzeichnis verkauft wird auch wirklich der
+der Schlüssel von Birgit im Verzeichnis verkauft wird, auch wirklich der
 Schlüssel ist, der zu Birgits Q paßt.
 
 Zweitens: Bei einigen Nachrichten sollte man sicherstellen, daß nicht
@@ -464,12 +464,12 @@ Danach wird das Verschlüsselungsverfahren angewendet, und zwar auf jeden
 Block. Dabei kann jeder Block mit demselben Schlüssel K verschlüsselt
 werden, oder mit einem Schlüssel, der irgendwie aus dem Startschlüssel K,
 dem Blockindex i, vorhergehenden Blöcken von Klartext oder Ciphertext oder
-einem weiteren Startwert (dem Initialisierungsvektor IV, eine weitere
+einem weiteren Startwert (dem Initialisierungsvektor IV, einer weiteren
 Zufallszahl) abgeleitet wird. Je nachdem, wie man sich diese Dinge
 zusammenbastelt, handelt man sich bestimmte Vor- und Nachteile ein.
 
 Verfahren, bei denen die Verschlüsselung von M<sub>i</sub> nicht von
-vorhergehendem Klartext oder Ciphertext abhängig sind, sind gut
+vorhergehendem Klartext oder Ciphertext abhängig ist, sind gut
 parallelisierbar und sind auch unempfindlich gegen Leitungsstörungen oder
 Plattenlesefehler, bei denen eventuell einmal ein Block zwischendrin
 verloren geht.
@@ -483,7 +483,7 @@ verloren geht.
 
 ![](kryptogrundlagen/img10.png)
 
-Verschüsselt man mit einem festen Schlüssel K ('Electronic Codebook', ECB),
+Verschlüsselt man mit einem festen Schlüssel K ('Electronic Codebook', ECB),
 dann werden zwei Blöcke M<sub>1</sub> und M<sub>2</sub>, die denselben
 Inhalt haben, auch gleich verschlüsselt - der Klartext der Nachricht scheint
 im Ciphertext durch.
@@ -526,14 +526,14 @@ eine Klartextnachricht, die keine Muster mehr enthält.
 Neben Verschlüsselungsalgorithmen gibt es ein zweites wichtiges
 Grundkonstrukt in der Kryptographie, den Hash. Ein Hash ist eine
 Prüfsummenfunktion, also etwas, in das man eine beliebig lange Nachricht
-vorne reinfüttern darf, und bei der dann am Ende eine Zahl h mit einer
+vorne reinfüttern darf und bei dem dann am Ende eine Zahl h mit einer
 festen Anzahl von Bits herauskommt: h = Hash(M).
 
 Allen Prüfsummen ist gemeinsam, daß man aus einer gegebenen Prüfsumme die
 Originalnachricht nicht eindeutig rekonstruieren kann, da es mehr als eine
 Nachricht gibt, die diese Prüfsumme hat. Das gilt selbst für eine
 [ISBN](http://en.wikipedia.org/wiki/International_Standard_Book_Number#ISBN-10):
-Die ISBN 0-306-40615 hat die Prüfzummer 2, aber es gibt noch weitere ISBNs,
+Die ISBN 0-306-40615 hat die Prüfziffer 2, aber es gibt noch weitere ISBNs,
 die diese Prüfziffer haben.
 
 Bei einer ISBN ist es jedoch relativ leicht, eine ISBN zu konstruieren, die
@@ -546,7 +546,7 @@ finden, müßte man idealerweise den ganzen M-Raum durchsuchen (also einen
 Brute Force-Angriff starten).
 
 In der Praxis gibt es einige populäre Funktionen, von denen wir geglaubt
-haben, daß sie diese Eigenschaft hätten und das ist auch eine Weile gut
+haben, daß sie diese Eigenschaft hätten, und das ist auch eine Weile gut
 gegangen. Derzeit sieht es aber eher schlecht aus.
 
 
@@ -566,13 +566,13 @@ jedermann bekannt.
 
 Wenn wir also die Nachricht M nehmen und selber die Prüfsumme h = Hash(M)
 berechnen, dann können wir dieses Ergebnis mit der Prüfsumme vergleichen,
-die Andreas mit seinem private Key verschlüsselt hat und die jeder
-entschlüsseln kann, der den public Key von Andreas kennt. Stimmen beide
+die Andreas mit seinem Private Key verschlüsselt hat und die jeder
+entschlüsseln kann, der den Public Key von Andreas kennt. Stimmen beide
 überein, wissen wir, daß die Nachricht unverändert ist.
 
 "Unverändert" (oder authentisch) bedeutet hier, daß der Inhalt der
 Nachricht, den wir sehen, identisch ist mit dem Inhalt der Nachricht, die
-jemand abgesendet hat, der den private Key von Andreas gekannt hat. Wenn
+jemand abgesendet hat, der den Private Key von Andreas gekannt hat. Wenn
 Andreas also seine Schlüsselverwaltung im Griff hat, dann ist das nur
 Andreas.
 
@@ -596,7 +596,7 @@ erzeugt, die aus der Nachricht M und ihrer Signatur
 Q<sub>Andreas</sub>(Hash(M)) zusammengesetzt ist. Nachricht und Signatur
 werden jetzt mit einem Session-Key K verschlüsselt: "K(M
 Q<sub>Andreas</sub>(Hash(M)))" und der Session-Key K wird mit dem
-öffentliche Schlüssel des Empfängers verschlüsselt vorangestellt.
+öffentlichen Schlüssel des Empfängers verschlüsselt vorangestellt.
 
 Das Gesamtprodukt: "P<sub>Birgit</sub>(K) K(M
 Q<sub>Andreas</sub>(Hash(M)))". Nur Birgit kann nun den Session-Key K
@@ -608,10 +608,10 @@ Nachricht vergleichen.
 
 ![](kryptogrundlagen/img14.png)
 
-Was jetzt noch fehlt ist ein Weg, mit dem Andreas und Birgit und jeder sonst
+Was jetzt noch fehlt, ist ein Weg, mit dem Andreas und Birgit und jeder sonst
 an die öffentlichen Schlüssel aller anderen kommt, ohne daß irgendein
 Angreifer etwa Andreas den Schlüssel eines Angreifers im Namen von Birgit
-unterschrieben kann und Birgit den Schlüssel des Angreifers im Namen von
+unterschieben kann und Birgit den Schlüssel des Angreifers im Namen von
 Andreas.
 
 Damit man das kann, muß man die Identität von Personen an Schlüssel binden.
@@ -625,11 +625,11 @@ Intervall von-bis.
 
 Jede dieser Informationen hat eine spezifische Aufgabe in unserem System.
 
-Der öffentlichen Schlüssel P erlaubt das Entschlüsseln von Prüfsummen, also
+Der öffentliche Schlüssel P erlaubt das Entschlüsseln von Prüfsummen, also
 das Prüfen von Signaturen. Er erlaubt auch das Verschlüsseln von Nachrichten
 an einen Empfänger.
 
-Die Inhaberdaten definieren, was für ein Empfänger ist. Der Empfänger ist
+Die Inhaberdaten definieren, was für ein Empfänger es ist. Der Empfänger ist
 immer eine natürliche Person, denn zu einem öffentlichen Schlüssel gehört
 immer auch ein geheimer Schlüssel, und es ist unmöglich, den geheimen
 Schlüssel geheim zu halten, wenn er nicht an eine natürliche Person gebunden
@@ -648,7 +648,7 @@ Daten.
 
 ![](kryptogrundlagen/img15.png)
 
-Das Problem, das wir lösen wollen: Wir kann Andreas sicher sein, daß
+Das Problem, das wir lösen wollen: Wie kann Andreas sicher sein, daß
 P<sub>Birgit</sub> wirklich von Birgit stammt?
 
 Der Ansatz mit einer CA definiert <strike>einen Single Point of
@@ -661,7 +661,7 @@ Q<sub>CA</sub>(Hash(P<sub>Birgit</sub>)) P<sub>Birgit</sub>. Die CA
 verschlüsselt also die Prüfsumme über den Schlüssel von Birgit und Birgit
 fügt diese Prüfsumme an ihren Schlüssel an.
 
-Die Augabe der CA ist es nun, nur das P<sub>Birgit</sub> zu unterschreiben,
+Die Aufgabe der CA ist es nun, nur das P<sub>Birgit</sub> zu unterschreiben,
 das wirklich zu Birgit gehört. In der Praxis funktionieren unterschiedliche
 CAs sehr unterschiedlich gut. Dabei ist das System schon im wirtschaftlichen
 Kern kaputt: Da die CA Geld von Birgit bekommt (und nicht von allen außer
@@ -696,18 +696,18 @@ Und schließlich noch das Implosionsproblem: Was passiert, wenn Andreas
 seinen privaten Schlüssel verbummelt?
 
 Wenn der Schlüssel eine Laufzeit hat, löst sich dieses Problem mit dem
-Auflauf der Laufzeit des Schlüssels von selber. Gilt Andreas' Schlüssel etwa
+Ablauf der Laufzeit des Schlüssels von selber. Gilt Andreas' Schlüssel etwa
 noch ein Jahr, genügt es, das Problem ein Jahr lang zu ignorieren und dann
 ist es weg.
 
 Will man es nicht ignorieren, dann braucht man eine Rückziehliste der
 'irrtümlich unterschriebenen oder jetzt auf Wunsch des Inhabers
-zurückgezogenen Unterschriften'. Das ist eine Certificate Revokation List,
+zurückgezogenen Unterschriften'. Das ist eine Certificate Revocation List,
 CRL.
 
 Die URL der CRL einer CA sollte in jedem Zertifikat enthalten sein, und es
-sollte theoretisch ein Protokoll (eine API) geben, mit der man das Prädikat
-'gültig?' für ein gegebenes Zertifikat effizient prüfen kann, und mit der
+sollte theoretisch ein Protokoll (eine API) geben, mit dem man das Prädikat
+'gültig?' für ein gegebenes Zertifikat effizient prüfen kann und mit dem
 man die gesamte CRL einer CA komplett für den Offline-Gebrauch runterladen
 kann. In der Praxis funktioniert beides nicht sehr gut...
 
@@ -725,8 +725,8 @@ Soweit die Technik.
 
 Jetzt will man das Ganze noch in eine Form gießen, die in Deutschland auch
 juristisch anwendbar ist. Dazu muß man quasi das Gesetz mit der Technik
-verkabeln. Diese Aufgabe haben die EU Signaturrichtlinie, das deutsche
-Signaturgesetz und die Durchführungsverordnung dazu, sowie eine Reihe von
+verkabeln. Diese Aufgabe haben die EU-Signaturrichtlinie, das deutsche
+Signaturgesetz und die Durchführungsverordnung dazu sowie eine Reihe von
 Gesetzen, die bestehende Gesetze so ändern, daß die alte Vokabel
 "Unterschrift" zu einem Hook wird, der wahlweise eine traditionelle
 Unterschrift oder eine digitale Signatur aufrufen kann.
