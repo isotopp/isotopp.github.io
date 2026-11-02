@@ -101,3 +101,20 @@ As an experiment, you can compare requested resources with observed usage in pro
 You cannot cancel them automatically, because they may still be necessary in rare situations.
 No traffic during the observation period does not prove that a dependency is obsolete: it may serve disaster recovery, a seasonal job, or another infrequent task.
 But this would at least keep the nagging manageable.
+
+The useful part is the feedback loop: declarations drive access, so missing declarations break things and give teams a reason to fix them.
+A directory maintained only as documentation has no such pressure to stay accurate.
+Using it to generate firewall rules and accounts ties its upkeep to running the service.
+That helps keep the dependency graph useful for capacity planning and recovery, though extra declarations still need review.
+
+# Links
+
+The Google SRE books cover several of the operational problems that this directory helps address:
+
+- [Managing Critical State: Distributed Consensus for Reliability](https://sre.google/sre-book/managing-critical-state/), in *Site Reliability Engineering*: service discovery and the reliable storage of shared configuration.
+- [Addressing Cascading Failures](https://sre.google/sre-book/handling-overload/), in *Site Reliability Engineering*: how overload, retries and lost capacity spread failures across services.
+- [Disaster Recovery Testing](https://sre.google/sre-book/disaster-recovery-testing/), in *Site Reliability Engineering*: testing recovery plans and finding assumptions that do not hold during an outage.
+- [Non-Abstract Large System Design](https://sre.google/workbook/non-abstract-design/), in *The Site Reliability Workbook*: turning demand estimates into capacity requirements and accounting for failures.
+
+For more on the underlying mechanics, [*Designing Data-Intensive Applications*](https://dataintensive.net/) covers replication, partial failures and the limits of distributed systems.
+These books provide background for the planning and recovery work; the directory supplies the ownership and dependency data that work needs.
