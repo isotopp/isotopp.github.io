@@ -1,10 +1,8 @@
 ---
 author: isotopp
 date: "2026-11-06T01:02:03Z"
-draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-title: "Innovation und Restwerte"
-description: "Über den Umgang mit neuer Technik"
+title: "Über den Umgang mit neuer Technik"
 toc: true
 tags:
   - lang_de

@@ -1,7 +1,6 @@
 ---
 author: isotopp
 date: "2026-11-06T02:03:04Z"
-draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Wie werden Rechenzentren gekühlt?"
 description: "Vom offenen Facebook-Rack zum AI-Rack mit 120 kW. Wo die Wärme hingeht, wann Wasser verdunstet und warum die Abwärme nicht einfach ins Fernwärmenetz passt."
